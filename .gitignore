@@ -1,7 +1,8 @@
 **/node_modules/
 .archive/
 deploy/
-courses/
+courses/*
+!courses/.gitkeep
 .DS_Store
 dist/
 .env
