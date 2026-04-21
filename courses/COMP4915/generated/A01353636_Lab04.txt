@@ -1,0 +1,175 @@
+Comp 4915 - Lab 4
+=================
+
+1. Using sort as a filter, rewrite the following sequence of commands:
+   $ sort list > temp
+   $ lpr temp
+   $ rm temp
+
+     sort list | lpr
+
+   The pipe connects sort's stdout directly to lpr's stdin, eliminating
+   the temporary file.
+
+
+2. Give a command to:
+
+   a. Redirect the standard output from a sort command into a file named
+      phone_list. Assume that the input file is named numbers.
+
+        sort numbers > phone_list
+
+   b. Translate all occurrences of [ and { to ( and all occurrences of
+      ] and } to ) in the file permdemos.c.
+
+        tr '[{]}' '(())' < permdemos.c
+
+   c. Create a file named book that contains the contents of two other
+      files: part1 and part2.
+
+        cat part1 part2 > book
+
+
+3. Explain the following error message. What filenames would a subsequent
+   ls display?
+
+   $ ls
+   abc abd abe abf abg abh
+   $ rm abc ab*
+   rm: cannot remove 'abc' : No such file or directory
+
+   The shell expands ab* BEFORE passing arguments to rm, so the actual
+   command is: rm abc abc abd abe abf abg abh. rm deletes abc first,
+   then encounters abc again (from the expansion) and reports the error.
+   It continues and deletes the rest.
+
+   A subsequent ls shows nothing -- all files were removed.
+
+
+4. Demonstrate that the shell creates the output file immediately, before
+   the command is executed.
+
+     $ cat oldfile > oldfile
+     $ cat oldfile
+     (empty)
+
+   The shell opens oldfile for writing (truncating it to 0 bytes) BEFORE
+   cat runs. So cat reads the now-empty file and writes nothing back.
+
+
+5. Alex accidentally deletes his PATH variable.
+
+   He cannot run commands by name ("ls" gives "command not found") because
+   the shell searches PATH to find executables. He can still use full
+   paths (e.g., /usr/bin/ls) and shell builtins (cd, echo, pwd).
+
+   To restore, source the profile:
+     . /etc/profile
+
+
+6. Assume your permissions allow you to write to a file but not delete it.
+
+   a. Command to empty the file without an editor:
+        > filename
+
+   b. How is this possible? Deleting a file requires write permission on
+      the parent directory (it's a directory operation). Writing to a file
+      requires write permission on the file itself. You can have one
+      without the other.
+
+
+7. Explain the possibly unexpected result:
+
+   $ cat > date
+   echo "This is my own version of date."
+   ^D
+   $ date
+   Sat May 24 11:45:49 PDT 2008
+
+   Even though PATH starts with "." (current directory), the local "date"
+   file lacks execute permission (cat > date creates it without +x). The
+   shell skips it and finds /bin/date instead. Running "chmod +x date"
+   first would make the local script execute.
+
+
+8. Two ways to execute a shell script without execute permission:
+
+   a. Pass it to the interpreter:
+        bash scriptname
+
+   b. Source it in the current shell:
+        . scriptname
+
+   Can you execute a script without read permission? No. Shell scripts
+   are interpreted -- the shell must read the file line by line. (This
+   differs from compiled binaries, which need execute but not read.)
+
+
+9. The journal shell script:
+
+   a. To execute it: add #!/bin/bash as the first line and
+      chmod +x journal.
+
+   b. read captures a single line (the name). cat >> $file captures
+      multiple lines of freeform notes until EOF (Ctrl-D). read is for
+      one line; cat is for arbitrary multi-line input.
+
+
+10. Write a shell script that outputs the name of the shell executing it.
+
+      #!/bin/bash
+      echo "$0"
+
+
+11. What is the IFS variable used for?
+
+    IFS (Internal Field Separator) controls word splitting. When the shell
+    expands unquoted variables or uses the read builtin, it splits text on
+    characters in IFS. Default value: space, tab, newline.
+
+
+12. How to use grep to find all lines in dog that start with a lower case
+    consonant:
+
+      grep '^[bcdfghjklmnpqrstvwxyz]' dog
+
+
+13. How to use grep to find all lines in dog that contain "t" followed by
+    any character:
+
+      grep 't.' dog
+
+    The dot matches any single character after "t".
+
+
+14. How to use grep to find all empty lines in dog:
+
+      grep '^$' dog
+
+
+15. What does this command do: grep '^.[1-9]*\!$' myfile
+
+    Finds lines that start with exactly one character, followed by zero
+    or more digits 1-9, ending with an exclamation mark.
+
+    Matches: "a!", "x5!", "Z123!"
+    Does not match: "!", "ab!", "a0!"
+
+
+16. What does the sed command do?
+
+    sed (Stream EDitor) reads input line by line, applies editing commands,
+    and writes results to stdout. It does not modify the input file unless
+    -i is used. Useful for search/replace, deleting lines, and automating
+    edits in pipelines.
+
+
+17. Use sed to delete all lines in dog that contain the letter "c":
+
+      sed '/c/d' dog
+
+
+18. Use sed to change every 4-letter word starting with "t" to the name
+    of your favorite childhood pet:
+
+      sed -E 's/\bt[a-zA-Z]{3}\b/Luna/g' dog

@@ -1,0 +1,867 @@
+# B7 draft — IPC 1 + IPC 2 module enrichment (staging)
+# All cards carry: explanation, example, source, bloom.
+# Source tags cite slide part + research file used for verification.
+# SuperMemo violations in the original bank are rewritten below:
+#   - "Three standard file descriptors" (3-item list) → split into 3 atomic.
+#   - "POSIX semaphore operations" (5-item list) → split into 5 atomic.
+#   - "8 IPC mechanisms in Linux taxonomy" (8-item list) → replaced with
+#     one overlapping cloze + 4 comparison cards (mechanisms tested in groups).
+# All other cards preserved verbatim in prompt/answer and enriched.
+
+modules:
+  - id: ipc-sync
+    name: IPC & Synchronization
+    topics:
+      - id: 4736-ipc1-sem
+        name: IPC1/Sem
+        tags:
+          - ipc
+          - sync
+        prose: Race conditions, mutual exclusion, and semaphores for coordinating concurrent processes.
+        cards:
+          - type: name
+            prompt: What is a **race condition**?
+            answer: Two or more processes access shared data and the final result depends on the timing of their execution.
+            explanation: >-
+              Races appear only when an operation is non-atomic — read, modify, write can interleave with another
+              process's read, modify, write, and the interleavings produce different outcomes. The fix is
+              serialization via mutual exclusion or hardware atomicity.
+            example: |-
+              Counter: two threads each do `x = x + 1` on shared x = 0.
+              Interleaving read(0) / read(0) / write(1) / write(1) → x = 1,
+              not 2. Same code without interleaving → x = 2.
+            source: "Part 6/7, Slide 4; research-ipc1-semaphore.md §1"
+            bloom: understand
+          - type: name
+            prompt: What is a **critical region**?
+            answer: >-
+              The part of a program that accesses shared data and must not be executed by more than one process at a
+              time.
+            explanation: >-
+              Critical regions are the smallest unit of code that needs mutual exclusion. The goal of every mutex,
+              semaphore, and monitor is to enforce "only one process inside the CR at a time" without blocking
+              processes that are not competing for the same CR.
+            example: |-
+              Bank transfer: `balance -= amount; other.balance += amount`.
+              Two transfers on the same account must serialize.
+              The two-line block is the critical region.
+            source: "Part 6/7, Slide 5; research-ipc1-semaphore.md §1"
+            bloom: understand
+          - type: cloze
+            prompt: >-
+              Mutual-exclusion condition #1: no two processes simultaneously in their {{critical region (aka critical
+              section)}}.
+            answer: critical region (aka critical section)
+            explanation: >-
+              This is the *goal* of mutual exclusion, stated as a requirement. All four conditions together define
+              what a correct solution must satisfy — any candidate failing #1 allows races.
+            example: |-
+              Peterson's satisfies #1 (only one passes the wait loop).
+              Lock variable without atomicity violates #1 (both can read 0).
+            source: "Part 6/7, Slide 6; research-ipc1-semaphore.md §2"
+            bloom: remember
+          - type: cloze
+            prompt: "Mutual-exclusion condition #2: no assumption about {{CPU speed}} or {{number of CPUs}}."
+            answer: CPU speed, number of CPUs
+            explanation: >-
+              Correctness must not depend on relative CPU speeds or process count. Solutions that rely on
+              "process A will always be faster" fail on different hardware; those that rely on disabling interrupts
+              fail on multiprocessors.
+            example: |-
+              Disabling interrupts works on uniprocessor → breaks on SMP
+              (one CPU can interrupt-disable, another keeps running).
+              Violates condition #2.
+            source: "Part 6/7, Slide 6; research-ipc1-semaphore.md §2"
+            bloom: remember
+          - type: cloze
+            prompt: >-
+              Mutual-exclusion condition #3: a process {{outside}} its critical region cannot {{block}} another from
+              entering.
+            answer: outside, block
+            explanation: >-
+              This is the subtle requirement. A process idling (or running non-critical code) must never force another
+              process to wait. This is precisely what strict alternation violates — turn-taking forces waiting even
+              when the other process is nowhere near its CR.
+            example: |-
+              Strict alternation: turn = 0. Process 0 never enters its CR.
+              Process 1 is perpetually blocked waiting its turn.
+              Condition #3 violated.
+            source: "Part 6/7, Slide 6; research-ipc1-semaphore.md §2, §3"
+            bloom: remember
+          - type: cloze
+            prompt: >-
+              Mutual-exclusion condition #4: no process should wait {{forever (= no starvation)}} to enter its critical
+              region.
+            answer: forever (= no starvation)
+            explanation: >-
+              Bounded waiting. Even if other processes keep entering their CR, every waiting process must
+              eventually get a turn. Satisfied by fair schedulers and by semaphore queues (FIFO wake). Violated by
+              purely-priority-based wake policies if a high-priority stream monopolizes.
+            example: |-
+              TSL with spin lock: under heavy contention a process may
+              never win the race. Requires bounded-waiting queue on top.
+            source: "Part 6/7, Slide 6; research-ipc1-semaphore.md §2"
+            bloom: remember
+          - type: name
+            prompt: "Semaphore operation `P(s)`: what happens if s > 0? If s == 0?"
+            answer: "If s > 0: atomically decrement s. If s == 0: block until another process calls V(s)."
+            explanation: >-
+              `P` ("proberen", test) is the gate. If the counter shows a resource is available, grab it by
+              decrementing. If not, sleep — the OS maintains a queue of blocked processes per semaphore and wakes
+              one when `V` is called later.
+            example: |-
+              sem_t s; sem_init(&s, 0, 1);    // binary semaphore
+              P(s);   // s=1 → decrement to 0, continue
+              // ... critical region ...
+              V(s);   // s=0 → increment to 1 (wake waiter if any)
+            source: "Part 6/7, Slide 38; Semaphore supplement; research-ipc1-semaphore.md §4"
+            bloom: understand
+          - type: name
+            prompt: "Semaphore operation `V(s)`: what does it do?"
+            answer: Atomically increment s; if any processes are blocked on s, wake one (OS picks).
+            explanation: >-
+              `V` ("verhogen", increment) is the release. The OS maintains the blocked-queue; exactly which process
+              wakes on V is implementation-defined (typically FIFO for fairness). Every `P` that successfully
+              decremented must be matched by a `V` to avoid permanent blocking.
+            example: |-
+              Producer calls V(full) after adding an item.
+              Consumer blocked on P(full) wakes up, decrements full,
+              proceeds to read the item.
+            source: "Part 6/7, Slide 38; Semaphore supplement; research-ipc1-semaphore.md §4"
+            bloom: understand
+          - type: name
+            prompt: Binary semaphore vs counting semaphore?
+            answer: "Binary: initialized to 1, acts like a lock. Counting: initialized to N, represents N available resources."
+            explanation: >-
+              Binary semaphores enforce mutual exclusion (one process in the CR). Counting semaphores track a pool
+              of N interchangeable resources — multiple processes can hold the resource simultaneously, up to N.
+              Same `P`/`V` primitives for both.
+            example: |-
+              Binary (mutex):  sem_init(&mtx, 0, 1);
+              Counting (pool): sem_init(&slots, 0, 10);  // 10 connections
+            source: "Part 6/7, Slide 40; research-ipc1-semaphore.md §4"
+            bloom: remember
+          - type: name
+            prompt: "Producer-consumer: initial values of `empty`, `full`, `mutex`?"
+            answer: "`empty = N` (# slots), `full = 0`, `mutex = 1`."
+            explanation: >-
+              `empty` counts unused slots (start at N). `full` counts ready items (start at 0). `mutex` protects
+              buffer manipulation (binary, start at 1). The initial values encode "buffer is empty; no items ready;
+              no one is inside the buffer right now".
+            example: |-
+              Producer: P(empty); P(mutex); put_item(); V(mutex); V(full);
+              Consumer: P(full);  P(mutex); get_item(); V(mutex); V(empty);
+              Initial: empty=N, full=0, mutex=1.
+            source: "Part 6/7, Slides 45-48; Semaphore supplement; research-ipc1-semaphore.md §6"
+            bloom: understand
+          - type: name
+            prompt: In producer-consumer with semaphores, why must P(empty) happen BEFORE P(mutex)?
+            answer: >-
+              Otherwise producer could hold mutex while waiting for an empty slot — consumer cannot enter buffer to
+              remove an item → deadlock.
+            explanation: >-
+              The ordering reflects resource-then-lock discipline. Grab the resource-count semaphore first; only if
+              you know you can proceed should you grab the mutex. Flipping the order creates a hold-and-wait on
+              empty while holding mutex — the exact Coffman pattern.
+            example: |-
+              Buffer full, producer calls P(mutex) first → mutex = 0.
+              Then P(empty) blocks (empty = 0). Consumer tries P(mutex)
+              → blocks. Both stuck. Classic semaphore ordering deadlock.
+            source: "Part 6/7, Slide 48; research-ipc1-semaphore.md §6"
+            bloom: understand
+          - type: name
+            prompt: Who invented semaphores and in what year?
+            answer: Edsger W. Dijkstra, 1965.
+            explanation: >-
+              Dijkstra introduced P/V (Dutch passeren/vrijgeven — pass/release) in his 1965 paper "Cooperating
+              Sequential Processes". Semaphores were the first principled solution to mutex + signaling without
+              busy waiting.
+            example: |-
+              Modern equivalents: POSIX sem_wait/sem_post, Java Semaphore class,
+              C# SemaphoreSlim. Same model, 60 years later.
+            source: "Part 6/7, Slide 37; research-ipc1-semaphore.md §4"
+            bloom: remember
+          - type: name
+            prompt: What is the **lost-wakeup problem**?
+            answer: >-
+              A wakeup signal arrives before the other process actually sleeps → wakeup is ignored → process sleeps
+              forever. Semaphores fix this.
+            explanation: >-
+              Sleep/wakeup has no memory — a wakeup with no waiter is discarded. Semaphores fix it because the
+              counter stays incremented until a P consumes it, so an early "wakeup" is not lost. This is the same
+              reason condition variables need an associated predicate check.
+            example: |-
+              Sleep/wakeup: Consumer sees count=0, about to sleep.
+              Producer increments count, calls wakeup (no one waiting yet).
+              Consumer calls sleep → waits forever. Fix: use semaphores.
+            source: "Part 6/7, Slide 35-36; research-ipc1-semaphore.md §3"
+            bloom: understand
+          - type: name
+            prompt: "Peterson's solution: how many processes does it handle?"
+            answer: "**Exactly 2.** Generalization exists but the slide version is 2-process only."
+            explanation: >-
+              Peterson's uses two arrays (interested[], turn) indexed by process ID. The 2-process proof depends on
+              the turn variable being a boolean. N-process generalization exists (Peterson's tournament) but is
+              out of scope per the slides.
+            example: |-
+              interested[i] = 1; turn = j;
+              while (interested[j] && turn == j) /* busy wait */;
+              // critical region
+              interested[i] = 0;
+            source: "Part 6/7, Slides 20-22; research-ipc1-semaphore.md §3"
+            bloom: remember
+          - type: name
+            prompt: What does `TSL RX, LOCK` do atomically?
+            answer: Reads LOCK into register RX AND stores a non-zero value into LOCK, in one uninterruptible operation.
+            explanation: >-
+              TSL (test-and-set-lock) is hardware mutual exclusion. The CPU asserts bus-lock for the duration of
+              the read-modify-write so no other CPU can observe or modify LOCK mid-instruction. x86 implements this
+              via XCHG with LOCK prefix.
+            example: |-
+              enter_region:
+                TSL REGISTER, LOCK    ; atomic
+                CMP REGISTER, #0
+                JNE enter_region      ; spin until LOCK was 0
+                RET
+              leave_region:
+                MOV LOCK, #0
+                RET
+            source: "Part 6/7, Slides 25-26; research-ipc1-semaphore.md §3"
+            bloom: understand
+          - type: name
+            prompt: Why does a simple lock variable NOT solve mutual exclusion?
+            answer: >-
+              Reading and setting it are separate operations → another process can read the 0 before the first sets it →
+              both enter CS.
+            explanation: >-
+              Without hardware atomicity, the read-then-write sequence is exposed to interleaving. Two processes
+              both see `lock == 0`, both write `lock = 1`, both enter. TSL and XCHG exist specifically to close
+              this window.
+            example: |-
+              Thread A: read(lock)=0; [context switch]
+              Thread B: read(lock)=0; write(lock=1); enter;
+              Thread A: write(lock=1); enter.  Both in CR.
+            source: "Part 6/7, Slides 11-12; research-ipc1-semaphore.md §3"
+            bloom: understand
+          - type: name
+            prompt: What is a **monitor**?
+            answer: >-
+              Language-level construct where only one process can be active in the monitor at a time. Uses condition
+              variables with wait/signal.
+            explanation: >-
+              Monitors synthesize mutual exclusion automatically — every method is implicitly wrapped by the
+              compiler/runtime. Programmers use condition variables for richer waits (e.g. "wait until buffer is
+              non-empty"), avoiding the manual P/V discipline that's easy to get wrong.
+            example: |-
+              monitor BoundedBuffer {
+                condition notFull, notEmpty;
+                void put(x) { if (full) wait(notFull); ...; signal(notEmpty); }
+              }
+              Compiler inserts mutex around every method body.
+            source: "Part 6/7, Slides 49-50; research-ipc1-semaphore.md §5"
+            bloom: understand
+          - type: name
+            prompt: "Condition variable: does `signal()` remember the signal if no one is waiting?"
+            answer: "**No.** If no one is waiting, the signal is lost. Condition variables have no memory."
+            explanation: >-
+              This is why every monitor pattern uses `while (!predicate) wait()`, not `if (!predicate) wait()`.
+              The while-loop re-checks the condition after wakeup so a spurious or late arrival cannot enter with
+              the predicate still false.
+            example: |-
+              Wrong: if (!available) wait(cv);   // spurious wakeup bug
+              Right: while (!available) wait(cv);
+            source: "Part 6/7, Slide 51; research-ipc1-semaphore.md §5"
+            bloom: understand
+          - type: name
+            prompt: "Busy waiting vs blocking: which wastes CPU?"
+            answer: >-
+              Busy waiting. The waiting process continuously checks a condition. Blocking puts process to sleep (no CPU
+              use).
+            explanation: >-
+              Busy waiting is fine for very short waits (microseconds on SMP) because the context-switch cost
+              exceeds the spin. For long waits, blocking wins — the OS can schedule something else. Semaphores block;
+              TSL spin locks busy-wait.
+            example: |-
+              TSL spin:   while (lock != 0);   // burns 100% CPU
+              Semaphore:  P(sem);              // process sleeps; CPU free
+            source: "Part 6/7, Slide 23; research-ipc1-semaphore.md §3"
+            bloom: understand
+          - type: name
+            prompt: Strict alternation violates which of the 4 mutual-exclusion conditions?
+            answer: >-
+              Condition #3: a process outside its CS can block another from entering (when it's not that process's
+              turn).
+            explanation: >-
+              If process 0 is running non-critical code (or blocked on I/O), process 1 is forced to wait its turn
+              even though no process is in a CR. Professor highlights this as orange/red text on the strict
+              alternation slide per `diagnosis.md:207`.
+            example: |-
+              turn = 0. Process 0 never enters its CR (maybe sleeping).
+              Process 1 spins at `while (turn != 1)` forever, even though
+              no process is in a CR. Violates #3.
+            source: "Part 6/7, Slides 17-18; research-ipc1-semaphore.md §3"
+            bloom: analyze
+          - type: name
+            prompt: Which system call creates a pipe? What does it return in `fd[0]` / `fd[1]`?
+            answer: "`pipe(fd)`. `fd[0]` = read end, `fd[1]` = write end."
+            explanation: >-
+              `pipe(2)` returns a pair of connected file descriptors — one for each end. The OS allocates a kernel
+              buffer; writes go into it via `fd[1]`, reads pull from it via `fd[0]`. The pair is inherited across
+              `fork()`, which is how parent and child communicate.
+            example: |-
+              int fd[2];
+              pipe(fd);        // fd[0] = read, fd[1] = write
+              if (fork() == 0) { close(fd[1]); read(fd[0], ...); }
+              else             { close(fd[0]); write(fd[1], ...); }
+            source: "Part 8, pipe section; research-ipc2.md §1"
+            bloom: remember
+          - type: name
+            prompt: "Unnamed pipes: which processes can use them?"
+            answer: Related processes only (parent/child/siblings) — the pipe is inherited through `fork()`.
+            explanation: >-
+              Unnamed pipes have no filesystem name, so the only way another process can obtain the fd is to
+              inherit it via fork. For unrelated processes, use named pipes (FIFO — filesystem entry) or UNIX-domain
+              sockets.
+            example: |-
+              Shell pipeline `ls | grep foo`:
+              shell forks, parent-child inherit pipe fds, ls writes,
+              grep reads. Unrelated processes cannot use the same pipe.
+            source: "Part 8, pipe section; research-ipc2.md §1"
+            bloom: remember
+          - type: name
+            prompt: "`dup2(fd, 1)` — what does it do?"
+            answer: Redirects stdout (fd 1) to `fd`. Any subsequent write to stdout goes to `fd`.
+            explanation: >-
+              `dup2` closes the destination fd (fd 1 = stdout) if open, then makes it an alias for the source fd.
+              After this call, the process has two fds pointing at the same underlying file/pipe. Shell redirection
+              `>` and pipeline `|` are implemented with dup2.
+            example: |-
+              // Redirect stdout to a pipe's write end before exec
+              dup2(fd[1], 1);   // stdout now goes to pipe
+              close(fd[1]);     // original fd no longer needed
+              execvp("ls", ...); // ls prints into pipe
+            source: "Part 8, pipe section; research-ipc2.md §1"
+            bloom: understand
+
+          # ---- Former list-recall "Three standard file descriptors" → 3 atomic cards ----
+          - type: name
+            prompt: Which standard file descriptor has number 0?
+            answer: "`stdin` (standard input)."
+            explanation: >-
+              fd 0 is always opened to the process's input source. By default it's the terminal; redirected with
+              `< file` in the shell. Reading from fd 0 blocks until input arrives.
+            example: |-
+              read(0, buf, sizeof(buf));   // read from stdin
+              Shell: `sort < data.txt`     // dup2(fd_of_data, 0)
+            source: "Part 8, stdio section; research-ipc2.md §2"
+            bloom: remember
+          - type: name
+            prompt: Which standard file descriptor has number 1?
+            answer: "`stdout` (standard output)."
+            explanation: >-
+              fd 1 is the process's normal output. Buffered by stdio (line-buffered for TTY, fully-buffered for
+              pipes) — which is why `printf` output can appear after a crash if stdout was redirected to a file
+              without flushing.
+            example: |-
+              write(1, "hi\n", 3);         // unbuffered write
+              Shell: `prog > out.txt`      // dup2(fd_of_out, 1)
+            source: "Part 8, stdio section; research-ipc2.md §2"
+            bloom: remember
+          - type: name
+            prompt: Which standard file descriptor has number 2?
+            answer: "`stderr` (standard error)."
+            explanation: >-
+              fd 2 is traditionally unbuffered so error messages appear immediately even if the program crashes.
+              Shell `2> err.log` redirects it independently of stdout; `2>&1` merges stderr into stdout by
+              duplicating fd 1 over fd 2.
+            example: |-
+              write(2, "error\n", 6);
+              Shell: `prog 2>&1`  // dup2(1, 2) — stderr follows stdout
+            source: "Part 8, stdio section; research-ipc2.md §2"
+            bloom: remember
+          # ---- end file-descriptor split ----
+
+          - type: name
+            prompt: Shared memory sequence of calls (System V)?
+            answer: "`shmget` → `shmat` → use → `shmdt` → `shmctl(IPC_RMID)`."
+            explanation: >-
+              `shmget` creates or opens the segment by key. `shmat` attaches it to the process's address space
+              (returns a pointer). After use, `shmdt` detaches (segment still exists in the kernel).
+              `shmctl(IPC_RMID)` schedules removal when last process detaches — this is kernel-lifetime.
+            example: |-
+              int id = shmget(key, 4096, IPC_CREAT|0666);
+              char *p = shmat(id, NULL, 0);     // attach
+              strcpy(p, "hello");
+              shmdt(p);                          // detach
+              shmctl(id, IPC_RMID, NULL);        // mark for removal
+            source: "Part 8, Slides 20-22; research-ipc2.md §3"
+            bloom: apply
+          - type: name
+            prompt: Why is shared memory the fastest IPC?
+            answer: No kernel data copy. Processes read/write directly in their address space (mapped to same physical pages).
+            explanation: >-
+              Pipes, message queues, and sockets copy bytes through kernel buffers — each send/recv is a
+              user→kernel→user copy. Shared memory maps the same physical pages into both processes' page tables,
+              so a write is visible to the other process with no syscall and no copy.
+            example: |-
+              Transfer 1 GB:
+              pipe: ~2 GB copied (to kernel + back) → slow.
+              shm:  0 bytes copied, just pointer writes → fastest.
+            source: "Part 8, Slides 20-22; research-ipc2.md §3"
+            bloom: understand
+          - type: name
+            prompt: Two special signal handlers?
+            answer: "`SIG_DFL` (default action) and `SIG_IGN` (ignore the signal)."
+            explanation: >-
+              `SIG_DFL` restores the signal's default behavior (e.g. terminate for SIGINT). `SIG_IGN` tells the
+              kernel to silently drop the signal — works for every signal except SIGKILL and SIGSTOP, which can
+              never be caught, blocked, or ignored.
+            example: |-
+              signal(SIGINT, SIG_IGN);   // Ctrl-C now does nothing
+              signal(SIGINT, SIG_DFL);   // restore default (terminate)
+              signal(SIGKILL, SIG_IGN);  // has NO effect — SIGKILL absolute
+            source: "Part 8, Slides 50-53; research-ipc2.md §7"
+            bloom: remember
+          - type: name
+            prompt: "`raise(SIGUSR1)` vs `kill(pid, SIGUSR1)`?"
+            answer: "`raise` sends to self. `kill` sends to any process by pid."
+            explanation: >-
+              `raise(sig)` is a shortcut for `kill(getpid(), sig)`. Both invoke the same delivery mechanism; choice
+              is stylistic. Use `raise` when sending to self makes the intent clearer.
+            example: |-
+              raise(SIGUSR1);             // self-signal
+              kill(child_pid, SIGTERM);   // signal another process
+              kill(-pgid, SIGHUP);        // signal whole process group
+            source: "Part 8, Slides 50-53; research-ipc2.md §7"
+            bloom: remember
+
+          # ---- Analyze-level IPC 1 cards ----
+          - type: name
+            prompt: >-
+              A new programmer writes a monitor method with `if (!available) wait(cv)` instead of `while (...)`.
+              What goes wrong and why?
+            answer: >-
+              Spurious wakeups or multiple signals can release `wait` with the predicate still false. With `if`,
+              the process proceeds as if available — race reintroduced. `while` re-checks after wakeup and loops
+              until the predicate actually holds.
+            explanation: >-
+              Condition variables promise "I was signaled", not "the predicate is now true". Between wakeup and
+              re-acquiring the monitor mutex, another process may have consumed the resource. `while` is
+              re-verification; `if` is a bet.
+            example: |-
+              Wrong: if (!item) wait(notEmpty); get_item();
+              Two consumers both wake on signal, both call get_item() → one
+              gets garbage. `while` would make the second loop back to wait.
+            source: "Part 6/7, Slide 51; research-ipc1-semaphore.md §5"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              Show the deadlock sequence when producer and consumer both use ordering `P(mutex); P(resource)` instead
+              of the correct `P(resource); P(mutex)`.
+            answer: >-
+              Buffer full: producer calls P(mutex)→mutex=0, then P(empty) blocks (empty=0). Consumer tries P(mutex)
+              → blocks (mutex=0). Neither can progress; producer holds mutex, consumer needs mutex to free a slot.
+              Deadlock.
+            explanation: >-
+              The bad ordering violates the "resource-then-lock" discipline. Holding the lock while waiting for a
+              resource is hold-and-wait (Coffman condition 2) — and the resource (empty slot) only becomes available
+              by someone holding the lock. Perfect cycle.
+            example: |-
+              Correct flow (P(empty) first):
+              buffer full → P(empty) blocks; no mutex held; consumer
+              enters freely, removes item, V(empty) → producer wakes. OK.
+            source: "Part 6/7, Slide 48; research-ipc1-semaphore.md §6"
+            bloom: analyze
+          # ---- end IPC 1 Analyze ----
+
+      - id: 4736-ipc2
+        name: IPC2
+        tags:
+          - ipc
+        prose: Classic IPC problems (producer-consumer, readers-writers, dining philosophers) and monitors.
+        cards:
+          - type: name
+            prompt: Call to create a FIFO?
+            answer: "`mkfifo(\"path\", mode)` or `mknod(\"path\", S_IFIFO|mode, 0)`."
+            explanation: >-
+              Both create a filesystem entry of type FIFO that unrelated processes can open by path. `mkfifo(3)`
+              is the portable wrapper; `mknod(2)` is the older low-level call with an explicit type flag. Either
+              way, the FIFO persists until explicitly unlinked.
+            example: |-
+              mkfifo("/tmp/chatq", 0666);
+              // Process A: int fd = open("/tmp/chatq", O_RDONLY);
+              // Process B: int fd = open("/tmp/chatq", O_WRONLY);
+              // Data flows B → A.
+            source: "Part 8, FIFO section; research-ipc2.md §1"
+            bloom: remember
+          - type: name
+            prompt: "FIFO vs unnamed pipe: key difference?"
+            answer: FIFO has a name in the filesystem → usable by **unrelated** processes. Unnamed pipes only between related.
+            explanation: >-
+              The name in the filesystem is the only structural difference. Both use the same in-kernel buffering
+              and have byte-stream semantics (no message boundaries). Named pipes persist across process lifetimes
+              (until unlinked); unnamed pipes disappear when the last fd closes.
+            example: |-
+              Unrelated processes need a rendezvous point:
+              mkfifo("/tmp/chatq"); then A opens for read, B opens for write.
+              Equivalent unnamed pipe would require a common ancestor fork.
+            source: "Part 8, FIFO section; research-ipc2.md §1"
+            bloom: understand
+          - type: name
+            prompt: Three System V message queue calls?
+            answer: "`msgget` (create/open), `msgsnd` (send), `msgrcv` (receive). Also `msgctl` for control."
+            explanation: >-
+              `msgget` returns a queue identifier keyed by an integer. `msgsnd` appends a typed message (type is an
+              integer used for selective receive). `msgrcv` can block or non-block and can filter by type.
+              `msgctl(IPC_RMID)` removes the queue.
+            example: |-
+              int q = msgget(key, IPC_CREAT|0666);
+              struct { long type; char text[64]; } m = {1, "hi"};
+              msgsnd(q, &m, 64, 0);
+              msgrcv(q, &m, 64, 1, 0);   // receive type-1 messages
+            source: "Part 8, message queue section; research-ipc2.md §4"
+            bloom: apply
+          - type: name
+            prompt: Do message queues preserve message boundaries?
+            answer: "**Yes.** Each msgsnd delivers one discrete typed message. Unlike pipes (byte stream)."
+            explanation: >-
+              Pipes and FIFOs concatenate bytes — if you send "abc" then "def", a reader might get "ab" + "cdef".
+              Message queues deliver each msgsnd as one atomic unit. Readers always get exactly one message per
+              msgrcv call.
+            example: |-
+              Pipe: writer sends 10+20 bytes. Reader may get 30 bytes
+              in one read or 15+15 bytes — boundaries invisible.
+              msgq: writer sends 2 messages. Reader gets each separately.
+            source: "Part 8, message queue section; research-ipc2.md §4"
+            bloom: understand
+          - type: name
+            prompt: Command to list System V IPC objects?
+            answer: "`ipcs` (add `-q` for queues, `-m` for shared memory, `-s` for semaphores)."
+            explanation: >-
+              Useful for debugging: see which IPC objects are still around because a process forgot to call
+              `IPC_RMID`. `ipcrm` complements it — manually removes an object by id. These are common
+              tools in OS labs.
+            example: |-
+              $ ipcs -m
+              key        shmid  owner  perms   bytes   nattch
+              0x00001234 32768  kevin  666     4096    2
+              $ ipcrm -m 32768
+            source: "Part 8, System V admin; research-ipc2.md §3, §4"
+            bloom: remember
+          - type: name
+            prompt: "Persistence of System V IPC objects (shm, msgq, sem): process-lifetime or kernel-lifetime?"
+            answer: "**Kernel-lifetime.** They persist after creating process dies, until explicitly removed or system reboots."
+            explanation: >-
+              This is why labs sometimes accumulate "orphan" IPC objects across runs — the creator process died
+              without cleanup. `ipcs` + `ipcrm` or a shutdown script must clear them. POSIX IPC (`sem_open`, named
+              shared memory) has the same property.
+            example: |-
+              Process A: shmget + shmat + crash (no cleanup).
+              Process B reboot-less: shmget with same key finds A's
+              segment still allocated. Manual ipcrm required.
+            source: "Part 8, System V admin; research-ipc2.md §3, §4"
+            bloom: understand
+          - type: name
+            prompt: "Named semaphore: which call opens it?"
+            answer: "`sem_open(\"/name\", O_CREAT, 0666, initial_value)`."
+            explanation: >-
+              Named semaphores are POSIX IPC — accessed by a `/name` path (not a filesystem path). Unrelated
+              processes can synchronize by opening the same name. Unnamed semaphores (`sem_init`) only work between
+              threads of one process or across fork-related processes via shared memory.
+            example: |-
+              sem_t *s = sem_open("/my_sync", O_CREAT, 0666, 1);
+              sem_wait(s); /* critical region */ sem_post(s);
+              sem_close(s); sem_unlink("/my_sync");
+            source: "Part 8, POSIX semaphore section; research-ipc2.md §5"
+            bloom: remember
+
+          # ---- Former list-recall "POSIX semaphore operations" → 5 atomic cards ----
+          - type: name
+            prompt: Which POSIX semaphore call is the equivalent of Dijkstra's P operation?
+            answer: "`sem_wait(sem_t*)` — atomically decrement; block if value was 0."
+            explanation: >-
+              Direct analog of P — the counter semantics are identical. POSIX also provides `sem_trywait` (returns
+              immediately with EAGAIN if would block) and `sem_timedwait` (blocks up to a timeout).
+            example: |-
+              sem_wait(&slots);   // block until a slot is free
+              // use slot ...
+              sem_post(&slots);   // release
+            source: "Part 8, POSIX semaphore section; research-ipc2.md §5"
+            bloom: remember
+          - type: name
+            prompt: Which POSIX semaphore call is the equivalent of Dijkstra's V operation?
+            answer: "`sem_post(sem_t*)` — atomically increment; wake one blocked waiter if any."
+            explanation: >-
+              Mirror of V. Critical property: sem_post never blocks — if the counter overflows the implementation
+              limit, it returns an error rather than waiting. Every successful sem_wait must be paired with a
+              sem_post to avoid permanent blocking of future waiters.
+            example: |-
+              sem_wait(&sem); do_work(); sem_post(&sem);
+              // Missing sem_post → next sem_wait blocks forever.
+            source: "Part 8, POSIX semaphore section; research-ipc2.md §5"
+            bloom: remember
+          - type: name
+            prompt: Which POSIX semaphore call initializes an unnamed (in-process) semaphore?
+            answer: "`sem_init(sem_t*, int pshared, unsigned int value)`."
+            explanation: >-
+              `pshared = 0` restricts the semaphore to threads of one process. `pshared = 1` allows sharing across
+              fork-related processes (requires the sem_t to live in shared memory). Named semaphores use
+              `sem_open` instead; you don't call sem_init on them.
+            example: |-
+              sem_t mtx;
+              sem_init(&mtx, 0, 1);   // 0 = process-local, initial value 1
+              // threads of this process can sem_wait/sem_post(&mtx)
+            source: "Part 8, POSIX semaphore section; research-ipc2.md §5"
+            bloom: remember
+          - type: name
+            prompt: Which POSIX semaphore call releases a process's handle to a named semaphore without removing it?
+            answer: "`sem_close(sem_t*)`."
+            explanation: >-
+              Releases this process's handle. The semaphore itself keeps existing in the kernel — other processes
+              that have opened it continue using it. To remove the semaphore from the system, call `sem_unlink`
+              and ensure every user has also called `sem_close`.
+            example: |-
+              sem_t *s = sem_open("/mysync", 0);
+              /* use */
+              sem_close(s);   // this process is done, semaphore remains
+            source: "Part 8, POSIX semaphore section; research-ipc2.md §5"
+            bloom: understand
+          - type: name
+            prompt: Which POSIX semaphore call removes a named semaphore from the system?
+            answer: "`sem_unlink(\"/name\")`."
+            explanation: >-
+              Marks the semaphore for removal; the kernel deletes it after the last `sem_close`. Analogous to
+              `unlink(2)` on a file — the name goes away immediately but the object persists until all handles
+              are gone. Always pair sem_open with eventual sem_unlink to avoid orphan objects.
+            example: |-
+              sem_unlink("/mysync");
+              // New sem_open with same name now creates a fresh semaphore,
+              // while existing handles continue to operate on the old one.
+            source: "Part 8, POSIX semaphore section; research-ipc2.md §5"
+            bloom: remember
+          # ---- end POSIX semaphore split ----
+
+          - type: name
+            prompt: Socket server call sequence (TCP)?
+            answer: "`socket` → `bind` → `listen` → `accept` → `recv/send`."
+            explanation: >-
+              `socket` allocates the descriptor. `bind` attaches an address (IP:port). `listen` marks the socket
+              passive with a backlog. `accept` blocks until a client connects, returning a new connected socket
+              for that client (original listener keeps listening).
+            example: |-
+              int s = socket(AF_INET, SOCK_STREAM, 0);
+              bind(s, ...); listen(s, 5);
+              int c = accept(s, ...);   // per-client socket
+              recv(c, ...); send(c, ...);
+            source: "Part 8, socket section; research-ipc2.md §6"
+            bloom: apply
+          - type: name
+            prompt: Socket client call sequence (TCP)?
+            answer: "`socket` → `connect` → `send/recv`."
+            explanation: >-
+              The client skips bind/listen/accept — the kernel assigns an ephemeral source port automatically on
+              connect. `connect` performs the TCP 3-way handshake (SYN → SYN-ACK → ACK) and returns once the
+              connection is established.
+            example: |-
+              int s = socket(AF_INET, SOCK_STREAM, 0);
+              connect(s, server_addr, sizeof(server_addr));
+              send(s, buf, len, 0); recv(s, buf, len, 0);
+            source: "Part 8, socket section; research-ipc2.md §6"
+            bloom: apply
+          - type: name
+            prompt: "`SOCK_STREAM` vs `SOCK_DGRAM`?"
+            answer: STREAM = TCP (connected, reliable, ordered). DGRAM = UDP (connectionless, unreliable, unordered).
+            explanation: >-
+              STREAM is the right default — TCP handles retransmission, ordering, and flow control. DGRAM is for
+              scenarios where these overheads matter more than reliability: real-time audio, DNS queries, game
+              state updates where a late packet is worthless.
+            example: |-
+              HTTP/HTTPS → STREAM (order and reliability required).
+              DNS query  → DGRAM (single small request/reply; retry on timeout).
+            source: "Part 8, socket section; research-ipc2.md §6"
+            bloom: understand
+          - type: name
+            prompt: "`mmap` flag that makes the mapping shared with other mappers and flushed to file?"
+            answer: "`MAP_SHARED`."
+            explanation: >-
+              MAP_SHARED makes mmap behave like shared memory IPC when two processes map the same file — they see
+              each other's writes. It's the bridge concept between Part 10 (virtual memory) and Part 8 (IPC), and
+              likely an exam target per the knowledge graph.
+            example: |-
+              int fd = open("shared.dat", O_RDWR);
+              char *p = mmap(NULL, 4096, PROT_READ|PROT_WRITE,
+                             MAP_SHARED, fd, 0);
+              // Two processes mapping the same file see each other's writes.
+            source: "Part 8, mmap section; Part 10 memory; research-ipc2.md §8"
+            bloom: apply
+          - type: name
+            prompt: "`MAP_PRIVATE` — what happens when process writes?"
+            answer: Copy-on-write. Changes are private to the process and NOT written back to the file.
+            explanation: >-
+              First read touches the file page directly. First write triggers a COW fault — the kernel allocates a
+              fresh private page, copies the original, redirects the mapping. Other processes and the on-disk file
+              are untouched. Used by dynamic linkers and fork.
+            example: |-
+              char *p = mmap(NULL, 4096, PROT_READ|PROT_WRITE,
+                             MAP_PRIVATE, fd, 0);
+              p[0] = 'x';   // COW fault; process now has private page
+              // file content unchanged; other mappers see no write.
+            source: "Part 8, mmap section; research-ipc2.md §8"
+            bloom: understand
+          - type: name
+            prompt: "`socketpair()` — what does it create?"
+            answer: A pair of connected sockets (local, bidirectional) — like a two-way pipe.
+            explanation: >-
+              Single syscall returns two fds already connected to each other. Commonly used as a bidirectional
+              pipe between parent and child post-fork. AF_UNIX only — no networking; the pair lives in kernel
+              memory.
+            example: |-
+              int sv[2];
+              socketpair(AF_UNIX, SOCK_STREAM, 0, sv);
+              if (fork() == 0) { close(sv[0]); write(sv[1], "hi", 2); }
+              else             { close(sv[1]); read(sv[0], buf, 2); }
+            source: "Part 8, socket section; research-ipc2.md §6"
+            bloom: remember
+          - type: name
+            prompt: "Which IPC: transfer 10 MB between unrelated processes on same host?"
+            answer: "Shared memory (via `shmget` or `mmap` with MAP\\_SHARED) — fastest. Alternatives: FIFO or UNIX socket."
+            explanation: >-
+              Shared memory avoids the user→kernel→user copy that pipes, FIFOs, and sockets impose. For 10 MB this
+              is ~20 MB of bytes moved in a pipe vs. 0 bytes with shm. FIFO and UNIX socket still work but pay the
+              copy cost twice.
+            example: |-
+              shm:   2 processes mmap the same file → writes are pointer
+                     stores. 10 MB transfer = 0 bytes copied.
+              pipe:  write 10 MB → kernel buffer → read → ~20 MB moved.
+            source: "Part 8, IPC comparison; research-ipc2.md §3, §9"
+            bloom: apply
+          - type: name
+            prompt: "Which IPC: communicate between two processes on different hosts?"
+            answer: Sockets (TCP or UDP).
+            explanation: >-
+              Sockets are the only IPC mechanism in Part 8 that crosses machine boundaries — the rest (pipes,
+              FIFOs, shm, msgq, sem, signals) are host-local. Across hosts, TCP for reliable ordered delivery,
+              UDP when low latency matters more than reliability.
+            example: |-
+              Client on host A, server on host B:
+              A: socket → connect → send/recv
+              B: socket → bind → listen → accept → recv/send
+              Either TCP (AF_INET, SOCK_STREAM) or UDP (SOCK_DGRAM).
+            source: "Part 8, socket section; research-ipc2.md §6, §9"
+            bloom: apply
+          - type: name
+            prompt: After `pipe(fd); fork();`, what must parent and child do with unused fds?
+            answer: >-
+              Close the unused ends. Parent (writer) closes `fd[0]`. Child (reader) closes `fd[1]`. Otherwise EOF is
+              never signaled.
+            explanation: >-
+              The OS sends EOF on a pipe only when all writers have closed fd[1]. If parent forgets to close its
+              own fd[0], the child's reads still block waiting for more data because a reader is "open" even though
+              it never reads. Closing unused ends is standard hygiene.
+            example: |-
+              pipe(fd); if (fork() == 0) {
+                close(fd[1]);               // child: reader only
+                while (read(fd[0], ...)) ;  // reads until parent closes
+              } else {
+                close(fd[0]);               // parent: writer only
+                write(fd[1], ...);
+                close(fd[1]);               // signals EOF to child
+              }
+            source: "Part 8, pipe section; research-ipc2.md §1"
+            bloom: apply
+          - type: name
+            prompt: Signal that cannot be caught or ignored?
+            answer: "`SIGKILL` (and `SIGSTOP`)."
+            explanation: >-
+              The kernel enforces these two regardless of process handlers. SIGKILL terminates immediately;
+              SIGSTOP suspends. This is how `kill -9` always works and why `nohup` can't protect against it. Every
+              other signal can be caught, blocked, or ignored via `sigaction`.
+            example: |-
+              signal(SIGINT,  handler);   // OK: Ctrl-C caught
+              signal(SIGKILL, handler);   // has NO effect
+              kill(pid, SIGKILL);         // immediate termination
+            source: "Part 8, signals section; research-ipc2.md §7"
+            bloom: remember
+          - type: name
+            prompt: Pipes — unidirectional or bidirectional?
+            answer: Unidirectional. For bidirectional, use two pipes or a `socketpair`.
+            explanation: >-
+              A single pipe has one read end (fd[0]) and one write end (fd[1]); data flows only write→read. True
+              bidirectional IPC needs either two pipes (one per direction) or a `socketpair` (same kernel-level
+              channel, but read+write on each end).
+            example: |-
+              Bidirectional parent↔child (two-pipe method):
+              int p2c[2], c2p[2]; pipe(p2c); pipe(c2p);
+              Parent writes p2c[1], reads c2p[0]. Child writes c2p[1], reads p2c[0].
+            source: "Part 8, pipe section; research-ipc2.md §1"
+            bloom: understand
+
+          # ---- Former list-recall "8 IPC mechanisms" → 2 Apply comparison cards (dropped 8-blank cloze
+          #      on pass-1 review; comparison cards already surface the full set through structural prompts) ----
+          - type: name
+            prompt: Which IPC mechanisms are bidirectional without needing two instances?
+            answer: "Sockets (including `socketpair`). Pipes and FIFOs are unidirectional per instance."
+            explanation: >-
+              This is an MCQ trap — students often mis-recall pipes as bidirectional. Only socket-family mechanisms
+              (including AF_UNIX socketpair) provide true bidirectionality in a single instance. Pipes, FIFOs, and
+              message queues are half-duplex.
+            example: |-
+              Parent↔child bidirectional chat:
+              wrong → one pipe (half-duplex).
+              right → socketpair(AF_UNIX) or two pipes (one per direction).
+            source: "Part 8, IPC comparison; research-ipc2.md §9"
+            bloom: apply
+          - type: name
+            prompt: Which IPC mechanisms persist with kernel lifetime (survive creator death)?
+            answer: "System V shm, System V msgq, System V semaphores, named pipes (FIFO), POSIX named semaphores."
+            explanation: >-
+              Anything with a name (System V key or POSIX path) lives until explicit removal or reboot. Process-
+              lifetime IPC: unnamed pipes, unnamed semaphores, signals. This is the source of "orphan IPC" bugs
+              in labs — creator crashes, object lingers, `ipcs` shows it.
+            example: |-
+              Lab test: create shm, crash before cleanup.
+              On re-run: shmget with same key finds existing segment, fails
+              if you forgot IPC_CREAT|IPC_EXCL. `ipcrm` to clear.
+            source: "Part 8, IPC lifetime section; research-ipc2.md §9"
+            bloom: apply
+          # ---- end 8-mechanism overlap ----
+
+          # ---- Analyze-level IPC 2 cards ----
+          - type: name
+            prompt: >-
+              Design decision: two processes on the same host need to stream audio (low-latency, tolerant of some loss)
+              through a bounded buffer. Which IPC + which synchronization primitive?
+            answer: >-
+              **Shared memory** (lowest-latency, no copy) + **counting semaphores** (`empty` + `full` + `mutex` on
+              the ring buffer). Sockets add copy overhead; pipes add copy AND are unidirectional; msgq preserves
+              boundaries you don't need.
+            explanation: >-
+              For audio, the cost hierarchy is latency > throughput > reliability. Shm + semaphores is the
+              producer-consumer template scaled up: ring buffer in shared memory, producer fills empty slots,
+              consumer drains full slots, mutex protects head/tail updates.
+            example: |-
+              Shared ring buffer with 128 audio frames:
+              sem_init(&empty, 1, 128); sem_init(&full, 1, 0); sem_init(&mutex, 1, 1);
+              Producer: sem_wait(&empty); sem_wait(&mutex); write_frame(); sem_post(&mutex); sem_post(&full);
+            source: "Part 8, IPC comparison; Part 6/7 producer-consumer; research-ipc2.md §9"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              A server uses `pipe(fd); fork()` for parent-child communication but forgets to close unused ends. Under
+              what load scenario does the bug first manifest?
+            answer: >-
+              When the child finishes writing and exits, the parent's read on `fd[0]` blocks indefinitely instead of
+              returning EOF — because the parent's own (unused) `fd[1]` remains open, so "at least one writer" is
+              still true from the kernel's perspective.
+            explanation: >-
+              The EOF condition is "all writer fds closed". The parent owns an unused write fd that it forgot to
+              close, keeping the writer count at 1 even after the child exits. The symptom is a hung read that
+              looks like the child is still running.
+            example: |-
+              Hang-reproducing code:
+              pipe(fd); if (fork()==0) { write(fd[1], "hi", 2); exit(0); }
+              // parent forgets close(fd[1]) → read(fd[0], ...) after "hi"
+              // blocks forever. Fix: close(fd[1]) in parent before read.
+            source: "Part 8, pipe section; research-ipc2.md §1"
+            bloom: analyze
+          # ---- end IPC 2 Analyze ----

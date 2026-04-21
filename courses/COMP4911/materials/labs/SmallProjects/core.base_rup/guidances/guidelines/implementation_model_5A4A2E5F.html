@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Guideline: Implementation Model</title>
+<meta name="uma.type" content="Guideline">
+<meta name="uma.name" content="implementation_model">
+<meta name="uma.presentationName" content="Implementation Model">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_QV4x0AISEdqTna4sZVFRow", "_M6RHkN7IEdm8G6yT7-Wdqw", "{157E9B67-C619-410D-A927-F2CD217BF8FE}", "2.012199185622896E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_EOvXUN7HEdm8G6yT7-Wdqw", "_M6RHkN7IEdm8G6yT7-Wdqw", "{157E9B67-C619-410D-A927-F2CD217BF8FE}", "2.012199185622896E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_jijhYAIaEdqEutyfYo0quQ", "_mTMIkN7REdmjRZts2c4ZjQ", "{157E9B67-C619-410D-A927-F2CD217BF8FE}", "2.012199185622896E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_2ClPcDIcEdqDs_9ORT1Rig", "2.012199185622896E-305"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="2.012199185622896E-305"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Guideline: Implementation Model</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/guidance.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">The Implementation Model principally models the Implementation Subsystems, including dependencies and other management information. This guideline describes its purpose and structure.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/workproducts/rup_implementation_model_5858DB65.html" guid="{157E9B67-C619-410D-A927-F2CD217BF8FE}">Implementation Model</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    <a id="XE_implementation_model__explanation_of" name="XE_implementation_model__explanation_of"></a><a id="Explanation" name="Explanation"></a>Explanation
+</h3>
+<p>
+    In the programming environment, an implementation is composed of Implementation Elements, including source code files,
+    binary files, and data files, organized in directories. In addition to these low level elements, there is often the
+    need to create higher level units of management, the Implementation Subsystems, that group Implementation Elements and
+    other Implementation Subsystems.
+</p>
+<p>
+    The Implementation Model principally models the Implementation Subsystems, including dependencies and other management
+    information. It may also model key elements of an Implementation Subsystem, such as deployable files, or directory
+    structures.
+</p>
+<p class="picturecenter" align="center">
+    <img height="195" alt="Diagram described in accompanying text." src="./../../../core.base_rup/guidances/guidelines/resources/md_impm2.gif" width="163" />
+</p>
+<p class="picturetext">
+    The notation in the Implementation Model. The arrows show possible ownership.
+</p>
+<p>
+    There is optionally a package that serves as the top-level (root) node in the Implementation Model. Packages,
+    stereotyped as &lt;&lt;implementation subsystem&gt;&gt; group the Implementation Elements (files and directories) and
+    other Implementation Subsystems.
+</p>
+<h5>
+    Example:
+</h5>
+<p class="example">
+    In a banking system the implementation subsystems are organized as a flat structure in the top-level node of the
+    implementation model. Another way of viewing the subsystems in the implementation model is in layers. (See <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/guidelines/import_dependency_in_implementation_20C8C9DC.html" guid="2.390918925290993E-305">Work Product Guideline: Import Dependency</a>).
+</p>
+<p class="picturecenter" align="center">
+    <img height="155" alt="Diagram described in accompanying text." src="./../../../core.base_rup/guidances/guidelines/resources/md_impm3.gif" width="477" />
+</p>
+<p class="picturetext">
+    The implementation model for a banking system, showing the ownership hierarchy.
+</p>
+<p>
+    The Implementation Model not only defines the basic structure of the implementation in terms of hierarchy of
+    Implementation Subsystems, but may also show import dependencies between Implementation Subsystems, compilation
+    dependencies between Implementation Elements, and diagrams that show dependencies between Implementation Model elements
+    and Design Model elements.
+</p>
+<p>
+    For more information see:
+</p>
+<ul>
+    <li>
+        <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/import_dependency_in_implementation_20C8C9DC.html" guid="2.390918925290993E-305">Guideline: Import Dependency in Implementation</a>
+    </li>
+    <li>
+        <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/compilation_dependency_in_implementation_BED92496.html" guid="6.725844217842153E-306">Guideline: Compilation Dependency in Implementation</a>
+    </li>
+    <li>
+        <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/manifest_dependency_5790834E.html" guid="7.405934676741527E-306">Guideline: Manifest Dependency</a>
+    </li>
+</ul>
+<h3>
+    <a id="Use" name="Use"></a>Use
+</h3>
+<p>
+    The Implementation Model focuses on the concern of the physical organization of the software in terms of Implementation
+    Subsystems and Implementation Elements. You may optionally create a single model that addresses both the physical
+    implementation and the logical design in a single model. This is common in a round-trip engineering approach that
+    synchronizes source code files with a combined Implementation/Design Model.
+</p>
+<p>
+    The organization of Implementation Subsystems can be more or less close to the Design Model, depending on how you
+    decide to map between these two models. This is an process decision that should be captured in the design guidelines
+    specific to the project. When the mapping is exact, that is, each Implementation Subsystem is also a Design Subsystem,
+    then you can create diagrams that focus on a single Design Subsystem, summarizing both its design and its
+    implementation.
+</p>
+<p>
+    For more information, about how to structure the Implementation Model, and map between Design and Implementation
+    Models, refer to the <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/concepts/mapping_from_design_to_code_D1454680.html" guid="1.424219730601675E-305">Technique: Mapping Design to Code</a>, <a class="elementLinkWithType" href="./../../../core.base_rup/tasks/structure_implementation_model_E0E0DEF9.html" guid="{35272424-8A0A-4DDD-BA74-C91B80A8D046}">Task: Structure the Implementation Model</a>, and <img alt="" src="./../../../images/no_rup.gif">&#160;<a class="elementLinkWithType" href="./../../../pages_not_installed/pages_not_installed.html" guid="1.0315418523886092E-305">Guideline: Implementation Element</a>.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

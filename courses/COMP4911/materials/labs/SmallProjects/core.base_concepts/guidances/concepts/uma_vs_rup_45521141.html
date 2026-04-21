@@ -1,0 +1,933 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Concept: UMA versus RUP 2003 meta-model</title>
+<meta name="uma.type" content="Concept">
+<meta name="uma.name" content="uma_vs_rup">
+<meta name="uma.presentationName" content="UMA versus RUP 2003 meta-model">
+<meta name="element_type" content="concept">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:3.2329841703462285E-305", path: ["3.2329841703462285E-305", "_uDU1oASEEdq61bDkWg1SXw", "_SZDtIEdjEdqBmOmOgjH2IQ"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "3.2329841703462285E-305", "_uDU1oASEEdq61bDkWg1SXw", "_SZDtIEdjEdqBmOmOgjH2IQ"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="_SZDtIEdjEdqBmOmOgjH2IQ"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Concept: UMA versus RUP 2003 meta-model</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/concept.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This concept describes the key differences between the Unified Method Architecture and the Rational Unified Process / Rational Process Workbench 2003 meta-model.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><h3>
+    Background
+</h3>
+<p>
+    The Unified Method Architecture (UMA) has been developed with the aim to unify the representation schemata and
+    terminology of all method and process engineering approaches within IBM as well as to support the most important
+    standards in industry.&nbsp; Hence, as shown in the figure below, UMA has been developed in a collaborative effort by
+    the architects of the IBM Rational Unified Process (RUP), IBM Global Services Method (GS Method), and IBM Rational
+    Summit Ascendant.&nbsp; In addition to this core group of architects, stakeholders of many other development process
+    initiatives within and outside of IBM reviewed and contributed to the specification.&nbsp; The specification itself has
+    been submitted to the <a href="http://www.omg.org/" target="_blank">OMG</a>&nbsp;as a proposal for the <a href="http://www.omg.org/cgi-bin/doc?ad/2004-11-4" target="_blank">SPEM 2.0 standard</a>.&nbsp; Because, the RUP 2003
+    meta-model had been developed based on the current <a href="http://www.omg.org/technology/documents/formal/spem.htm" target="_blank">SPEM 1.1 standard</a>, this SPEM 2.0 draft proposal can be seen as a significant but continuous
+    evolution of that standard.
+</p>
+<center>
+    <img alt="Picture showing the evolution of the Unified Method Architecture" src="./../../../core.base_concepts/guidances/concepts/./resources/uma-evo.gif" />
+</center>
+<p>
+    The main goal of this unification was to come up with one set of terms and data structures that allows all of these
+    methods and processes to be expressed without&nbsp;losing key characteristics.&nbsp; For example, UMA had to be
+    designed to support many different lifecycle models: the RUP iterative development lifecycle, incremental GS Method
+    lifecycles, and Summit Ascendant waterfall and iterative lifecycles.&nbsp; In addition, terminology differences needed
+    to be resolved: What RUP would call an Activity was called Task in GS Method, RUP would speak of Artifacts where Summit
+    Ascendant would define Deliverables, and so on.
+</p>
+<h3>
+    Changes in UMA for RUP 2003 Users
+</h3>
+<p>
+    As a result of defining just one data structure and more importantly one terminology for all of these approaches,
+    compromises and changes had to be accepted by all stakeholders. Although these changes might be disturbing to the
+    current RUP user, on the long run they will benefit from one broadly used unified terminology and standardized way of
+    expressing method content and processes improving communication about processes and facilitating reuse.&nbsp; The
+    following list summarizes the most important changes to the RUP 2003 meta-model.&nbsp; The table at the end of this
+    page provides you with a complete terminology comparison of all the key sources for UMA.
+</p>
+<ul>
+    <li>
+        <strong>Activities have been renamed to task</strong>: To provide a tighter link to process enactment and project
+        management we renamed the lowest assignable units of work to Task, because this is the term most commonly used.
+    </li>
+    <li>
+        <strong>Workflow details renamed to activity</strong>: Workflows are commonly expressed in hierarchies of activity
+        diagrams (e.g. activity diagrams defined in the UML 2.0).&nbsp; Although RUP only provided one level of workflow
+        breakdown, UMA is designed to provide multiple levels of such a breakdown. Because the word Activity was more
+        commonly used to express the elements of activity diagrams as well as the activity diagram itself, we decided to
+        replace the name Workflow Detail used in RUP with the name Activity.&nbsp; We realize that the shift in the usage
+        of the word Activity might cause confusion with existing RUP users.&nbsp; However, one important goal of the UMA
+        work was to use terms in the way they are most commonly used in standards and industry.&nbsp;
+    </li>
+    <li>
+        <strong>Tasks (former RUP Activities) can be performed by many roles</strong>:&nbsp; In RUP 2003 an activity was
+        modeled as an operation of a role.&nbsp; Customer feedback, a look at other process modeling approaches, as well as
+        changes introduced in UML 2.0 indicated that this was a too restrictive way of modeling human behavior.&nbsp; This
+        approach did not allow expressing that some work was performed as a collaboration of different roles.&nbsp; UMA
+        addresses this issue&nbsp;by making&nbsp;Task an independent model element to which performing roles can be
+        assigned as resources.&nbsp; UMA therefore now allows several roles to be assigned to a task.&nbsp; For backward
+        compatibility, it still allows a primary performing role to be identified&nbsp;(being responsible for the task) as
+        well as several additional performers.
+    </li>
+    <li>
+        <strong>Refinement of the artifact concept</strong>: RUP only used the concept of artifact to define things that
+        are used and produced in a development project.&nbsp; UMA defines an extended taxonomy for these concepts.&nbsp; It
+        defines the general concept of work product, which has three different specializations (specific work product
+        types): Artifacts (managed work products), Deliverables (packaged work products that will be delivered to a
+        stakeholder for review), and Outcome (unmanaged, intangible work products).
+    </li>
+    <li>
+        <strong>Different categorizations for work products and roles</strong>: In RUP, artifacts and roles were all
+        categorized by discipline.&nbsp; However, sometimes artifacts were used across disciplines and a categorization to
+        only one discipline caused confusion.&nbsp; In UMA different categories have been defined for work definitions
+        (discipline for tasks and activities), work products (domain and work product kind), and roles (role sets).&nbsp;
+    </li>
+    <li>
+        <strong>Process Components renamed to Method Package</strong>: The concept of component is commonly used in many
+        standards and technologies. Most applications of component link it to the abstraction of encapsulation defining a
+        component as a black box which can be used via well-defined interfaces. RUP components did not fulfill this black
+        box criterion. Also the SPEM standard defined packages as well as components. To be compliant to SPEM and the
+        industry usage of the word component, we renamed Process Component to Method Package. (It is technically a 'method'
+        because it can contain method elements or process elements.)
+    </li>
+    <li>
+        <strong>Separation of method content elements from process elements</strong>: In RUP 2003&nbsp;you created a new
+        process by defining a new configuration and documenting manually in a development case artifact changes to standard
+        RUP.&nbsp; UMA provides extended concepts in addition to the configuration concept for tailoring processes.&nbsp;
+        It allows you to model concretely for a process what work defined in the method content you want to actually do in
+        each phase, because you can easily add, remove, and reorder elements in the process structure, reusing or not
+        reusing whatever you want from the method content. It achieves these features by a more clear separation of method
+        content (e.g. tasks defined for disciplines) and the application of method content in process (expressed with
+        activity diagrams and/or work breakdown structures) as well as the modeling of processes (i.e. creating new or
+        adapted activity diagrams or new or adapted work breakdown structures).&nbsp; It introduces a few new concepts such
+        as descriptor that support this separation and achieve new capabilities for maintaining and reusing many different
+        families of alternative processes and process parts all within the same configuration.
+    </li>
+</ul>
+<h3>
+    Terminology Comparison
+</h3>The following table shows how the UMA terminology maps to terms used in other process engineering approaches.<br />
+<br />
+<table cellspacing="0" cellpadding="0" width="938" border="1">
+    <colgroup>
+        <col style="WIDTH: 48pt" width="64" />
+        <col style="WIDTH: 176pt" width="235" />
+        <col style="WIDTH: 117pt" width="156" />
+        <col style="WIDTH: 108pt" width="144" />
+        <col style="WIDTH: 139pt" width="185" />
+        <col style="WIDTH: 116pt" width="154" />
+    </colgroup>
+    <tbody>
+        <tr bgcolor="#CCCCCC" height="17">
+            <td width="64" height="17">
+                &nbsp;
+            </td>
+            <td width="235">
+                <b>UMA/RMC</b>
+            </td>
+            <td width="156">
+                <b>RUP 2003</b>
+            </td>
+            <td width="144">
+                <b>SUMMIT</b>
+            </td>
+            <td width="185">
+                <b>IGSM</b>
+            </td>
+            <td width="154">
+                <b>SPEM 1.1</b>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" height="17">
+                Basic Method Elements
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td height="136" rowspan="8">
+                &nbsp;
+            </td>
+            <td>
+                Role
+            </td>
+            <td>
+                Role
+            </td>
+            <td>
+                Role
+            </td>
+            <td>
+                Role
+            </td>
+            <td>
+                Process Role
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Work Product
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Deliverable
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Work Product/Artifact
+            </td>
+            <td>
+                Artifact
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Work Product Description
+            </td>
+            <td>
+                Work Product
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Work Product/Outcome
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Task Outcome
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Work Product/Deliverable
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Deliverable Content Descripription
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Task
+            </td>
+            <td>
+                Activity
+            </td>
+            <td>
+                Activity
+            </td>
+            <td>
+                Task
+            </td>
+            <td>
+                Activity
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Step
+            </td>
+            <td>
+                Step
+            </td>
+            <td>
+                Step
+            </td>
+            <td>
+                Subtask
+            </td>
+            <td>
+                Step
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" height="17">
+                Process Related
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td height="102" rowspan="6">
+                &nbsp;
+            </td>
+            <td>
+                Activity
+            </td>
+            <td>
+                Workflow Detail
+            </td>
+            <td>
+                Task
+            </td>
+            <td>
+                Activity
+            </td>
+            <td>
+                Work Definition
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Iteration
+            </td>
+            <td>
+                Iteration
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Iteration
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Phase
+            </td>
+            <td>
+                Phase
+            </td>
+            <td>
+                Phase
+            </td>
+            <td>
+                Phase
+            </td>
+            <td>
+                Phase
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Capability Pattern
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Capability Pattern
+            </td>
+            <td>
+                (Process Component)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Delivery Process
+            </td>
+            <td>
+                Lifecycle/Configuration
+            </td>
+            <td>
+                Route Map
+            </td>
+            <td>
+                Engagement Model
+            </td>
+            <td>
+                (Process)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" height="17">
+                Categorization
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td height="85" rowspan="5">
+                &nbsp;
+            </td>
+            <td>
+                Discipline
+            </td>
+            <td>
+                Discipline
+            </td>
+            <td>
+                Module
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Discipline
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Domain
+            </td>
+            <td>
+                (Artifact Set)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Domain
+            </td>
+            <td>
+                Work Product Kind
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Role Set
+            </td>
+            <td>
+                (Role Set)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Tool
+            </td>
+            <td>
+                Tool
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" height="17">
+                Method Packaging
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td height="102" rowspan="6">
+                &nbsp;
+            </td>
+            <td>
+                Method Plug-in
+            </td>
+            <td>
+                Process Model Plug-in
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Process
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Method Package
+            </td>
+            <td>
+                Process Component
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Package
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Method Package/Content Package&nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Package
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Method Package/Process Package
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Package
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Process Package/Process Component
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Process Component
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" height="17">
+                Guidance Types
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td height="204" rowspan="12">
+                &nbsp;
+            </td>
+            <td>
+                Guideline
+            </td>
+            <td>
+                Guideline
+            </td>
+            <td>
+                Reference Paper
+            </td>
+            <td>
+                Technique Paper
+            </td>
+            <td>
+                Guideline
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Concept
+            </td>
+            <td>
+                Concept
+            </td>
+            <td>
+                Reference Paper
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Whitepaper
+            </td>
+            <td>
+                Whitepaper
+            </td>
+            <td>
+                Reference Paper
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Checklist
+            </td>
+            <td>
+                Checklist
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Technique Paper (V&V)
+            </td>
+            <td>
+                Checklist
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Tool Mentor
+            </td>
+            <td>
+                Tool Mentor
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Tool Guide
+            </td>
+            <td>
+                Tool Mentor
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Template
+            </td>
+            <td>
+                Templates
+            </td>
+            <td>
+                Template
+            </td>
+            <td>
+                Template
+            </td>
+            <td>
+                Template
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Report
+            </td>
+            <td>
+                Report
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Estimate
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Estimate
+            </td>
+            <td>
+                Estimating Considerations
+            </td>
+            <td>
+                Estimate
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Example
+            </td>
+            <td>
+                Example
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                Reference Item/Example
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Roadmap&nbsp;
+            </td>
+            <td>
+                Roadmap
+            </td>
+            <td>
+                Route Map Description
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Term Definition
+            </td>
+            <td>
+                (Glossary)
+            </td>
+            <td>
+                (Glossary)
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Practice
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+    </tbody>
+</table><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2005&nbsp;All Rights Reserved
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

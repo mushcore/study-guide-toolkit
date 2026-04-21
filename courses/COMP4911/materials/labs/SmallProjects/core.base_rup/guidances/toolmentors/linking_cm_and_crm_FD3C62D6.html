@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Linking Configuration Management and Change Request Management Using Rational ClearQuest and Rational ClearCase</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="linking_cm_and_crm">
+<meta name="uma.presentationName" content="Linking Configuration Management and Change Request Management Using Rational ClearQuest and Rational ClearCase">
+<meta name="uma.category" content="Tool:rup_clearcase:Rational ClearCase">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational ClearCase">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_qS-iwAIOEdqTna4sZVFRow", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{D7831113-CEE7-42F2-9DC5-B9C9DE120B02}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_U5tiUAISEdqTna4sZVFRow", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{D7831113-CEE7-42F2-9DC5-B9C9DE120B02}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_LWLSQDIEEdqwaNnSEheSAg", "_85i-sDIFEdqwaNnSEheSAg", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{D7831113-CEE7-42F2-9DC5-B9C9DE120B02}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_4U33kAILEdq-_NKqZM1EhA", "_XxCC0AIUEdqEutyfYo0quQ", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{D7831113-CEE7-42F2-9DC5-B9C9DE120B02}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{D7831113-CEE7-42F2-9DC5-B9C9DE120B02}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_9U7IkDIEEdqwaNnSEheSAg", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{D7831113-CEE7-42F2-9DC5-B9C9DE120B02}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{D7831113-CEE7-42F2-9DC5-B9C9DE120B02}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{D7831113-CEE7-42F2-9DC5-B9C9DE120B02}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Linking Configuration Management and Change Request Management Using Rational ClearQuest and Rational ClearCase</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to enable the use of Rational ClearQuest with Rational ClearCase Unified Change Management (UCM) projects.</td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_clearcase_9665C.html" guid="{B2D1373B-A826-4169-A38A-B53B2122DC7C}">Rational ClearCase</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/setup_cm_environment_78ABEDF9.html" guid="{FC91D0C9-759E-4D3D-86D8-22D7B26AA0F6}">Set Up Configuration Management (CM) Environment</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    Overview
+</h3>
+<p>
+    ClearCase UCM projects can be integrated with ClearQuest, a change request management tool. Using ClearQuest, you can
+    submit change requests, view and modify existing change requests, and create and run user or site-specific queries and
+    reports. The UCM-ClearQuest integration adds significant project management and activity management capabilities to UCM
+    projects. For example, ClearQuest records can be linked with ClearCase activities and policies that can be set to
+    govern when you can deliver an activity in ClearCase and when you can close an activity in ClearQuest.
+</p>
+<p>
+    This tool mentor is applicable when running Microsoft Windows.
+</p>
+<p>
+    &nbsp;<img height="16" alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;For additional
+    information, see the manual <i>IBM Rational ClearCase Guide to Managing Software Projects</i>.
+</p>
+<h4>
+    <a id="ToolSteps" name="ToolSteps">Tool Steps</a>
+</h4>
+<p>
+    To set up the UCM-ClearQuest integration:
+</p>
+<ol>
+    <li>
+        <a href="#IntegrateClearQuestWithAUCMSchema">Enable a ClearQuest schema to work with UCM or use the predefined
+        UCM-enabled schema</a>
+    </li>
+    <li>
+        <a href="#SetupAClearQuestDatabaseToUseTheSchema">Create or upgrade a change request database to use the schema</a>
+    </li>
+    <li>
+        <a href="#IntegrateYourUCMProjectWithClearQuest">Enable your UCM project to work with ClearQuest</a>
+    </li>
+</ol>
+<h3>
+    1.&nbsp;<a id="IntegrateClearQuestWithAUCMSchema" name="IntegrateClearQuestWithAUCMSchema">Enable a ClearQuest schema
+    to work with UCM or use the predefined UCM-enabled schema</a> <a href="#ToolSteps"><img height="20" alt="To Tool Steps"     src="./../../../core.base_rup/resources/top.gif" width="26" border="0" /></a>
+</h3>
+<p>
+    The following steps tell you how to use predefined UCM-enabled schemas to set up a change request database to work with
+    UCM. The predefined UCM schemas, named <b>UnifiedChangeManagement</b> and <b>Enterprise</b>, include the record type,
+    field, form, state, and other definitions necessary to work with a UCM project.
+</p>
+<p>
+    To set up a change request database to work with UCM:
+</p>
+<ol>
+    <li>
+        Create a user database that is associated with one of the predefined UCM-enabled schemas.
+    </li>
+    <li>
+        In the ClearQuest Designer, click <b>Database</b> &gt; <b>New Database</b> to start the New Database Wizard.
+    </li>
+    <li>
+        Complete the steps in the wizard; number 4 prompts you to select a schema to associate with the new database.
+        Scroll the list of schema names and select the new schema.
+    </li>
+    <li>
+        Click <b>Finish</b>.
+    </li>
+</ol>
+<p>
+    &nbsp;<img height="15" alt="book icon" src="./../../../core.base_rup/resources/book.gif" width="16" border="0" />&nbsp;For information on
+    how to enable a ClearQuest schema for use with the UCM-ClearQuest integration, see the chapter "Setting up a Rational
+    ClearQuest user database for UCM" in the manual <i>IBM Rational ClearCase Guide to Managing Software Projects</i>.
+</p>
+<h3>
+    2.&nbsp;<a id="SetupAClearQuestDatabaseToUseTheSchema" name="SetupAClearQuestDatabaseToUseTheSchema">Create or upgrade
+    a change request database to use the schema</a> <a href="#ToolSteps"><img height="20" alt="To Tool Steps"     src="./../../../core.base_rup/resources/top.gif" width="26" border="0" /></a>
+</h3>
+<p>
+    The predefined UCM schemas let you use the UCM-ClearQuest integration right away, but you may prefer to design a custom
+    schema to track your project's activities and change requests. You may even prefer to use a different, predefined
+    schema. There are several ways to do this, depending on your project's needs.
+</p>
+<p>
+    We recommend you become familiar with information in the chapter "Setting up a Rational ClearQuest user database for
+    UCM" in the manual <i>IBM Rational ClearCase Guide to Managing Software Projects</i> before proceeding. Detailed
+    information on procedures for this task are also presented in this section of the ClearCase documentation set.
+</p>
+<p>
+    &nbsp;<img height="15" alt="book icon" src="./../../../core.base_rup/resources/book.gif" width="16" border="0" />&nbsp; For detailed
+    information on this procedure, see "Planning how to use the UCM integration with Rational ClearQuest" in the manual
+    <i>IBM Rational ClearCase Guide to Managing Software Projects.</i>
+</p>
+<h3>
+    3.&nbsp;<a id="IntegrateYourUCMProjectWithClearQuest" name="IntegrateYourUCMProjectWithClearQuest">Enable your UCM
+    project to work with ClearQuest</a> <a href="#ToolSteps"><img height="20" alt="To Tool Steps"     src="./../../../core.base_rup/resources/top.gif" width="26" border="0" /></a>
+</h3>
+<ul>
+    <li>
+        In the left pane of the ClearCase Project Explorer, right-click the project to display its shortcut menu. Click
+        <b>Properties</b> to display its property sheet.
+    </li>
+    <li>
+        Click the <b>ClearQuest</b> tab and then select the <b>Project is ClearQuest-enabled</b> check box. On Windows
+        systems, <b>Link to the ClearQuest User Database</b> is seeded with a name. The Rational ClearQuest Schema
+        Repository dialog appears with the connection corresponding to that user database selected.
+    </li>
+    <li>
+        Select the user database from the "Link to this Change Request Database" list.
+    </li>
+    <li>
+        The first time you enable a project, ClearQuest opens its Login dialog box. Enter your user name, password, and the
+        name of the database to which you are linking the project.
+    </li>
+    <li>
+        Click <b>OK</b>.
+    </li>
+</ul>
+<p>
+    &nbsp;<img height="15" alt="book icon" src="./../../../core.base_rup/resources/book.gif" width="16" border="0" />&nbsp; <b>Advanced
+    feature</b>: You can also set development policies for projects that use the UCM-ClearQuest integration. See "Policies
+    for the UCM integration with Rational ClearQuest" in the manual <i>IBM Rational ClearCase Guide to Managing Software
+    Projects</i> for more information.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

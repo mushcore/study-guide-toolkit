@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Configuring the Test Environment in Rational Test RealTime</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="configuring_test_environment">
+<meta name="uma.presentationName" content="Configuring the Test Environment in Rational Test RealTime">
+<meta name="uma.category" content="Tool:rup_test_realtime:Rational Test RealTime">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational Test RealTime">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{18E6764A-2366-4F59-A5F2-FDF4891EBCE9}", "{C67F4C23-2951-4496-B3A6-94CE71E75125}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_9U7IkDIEEdqwaNnSEheSAg", "{18E6764A-2366-4F59-A5F2-FDF4891EBCE9}", "{C67F4C23-2951-4496-B3A6-94CE71E75125}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{18E6764A-2366-4F59-A5F2-FDF4891EBCE9}", "{C67F4C23-2951-4496-B3A6-94CE71E75125}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{C67F4C23-2951-4496-B3A6-94CE71E75125}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Configuring the Test Environment in Rational Test RealTime</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to configure a test environment in Rational Test RealTime. </td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_test_realtime_861C5353.html" guid="{18E6764A-2366-4F59-A5F2-FDF4891EBCE9}">Rational Test RealTime</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/support_development_1443EF07.html" guid="{35936CF9-4B04-402A-9482-07E5CFB45D99}">Support Development</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><p>
+    Every combination of compiler, linker, debugger and execution environment requires a customized Target Deployment Port
+    (TDP). Additional modifications can be made to this TDP on a node-by-node basis within a Test RealTime project
+</p>
+<p>
+    The Rational Test RealTime Target Deployment Port Technology ensures virtually unlimited build environment and target
+    support. Such flexibility is crucial because the test and runtime analysis functionality of Test RealTime could not be
+    considered valid unless they use the same compiler, linker, debugger and execution architecture used by the application
+    under test.
+</p>
+<p>
+    Basic TDP adaptations are accomplished via the TDP Editor. This separate utility enables the specification of
+    information crucial for Test RealTime support of a particular build and execution environment. Proper TDP adaptation
+    can only be accomplished by a developer well acquainted with the characteristics and intricacies of the targeted
+    development environment and execution platform. Adaptations can be everything from simply listing paths to standard
+    compiler include files to defining heap management functions to ensure the memory profiling feature of Test RealTime
+    can track nonstandard memory allocation functions.
+</p>
+<p>
+    Although this basic adaptation is sufficient for use of both the Component Testing and Runtime Analysis functionality
+    of Test RealTime, additional modifications can be performed to accommodate particular execution requirements, such as
+    modifying the level and type of instrumentation to be used for runtime analysis. By default, each Test RealTime project
+    is assigned a base Configuration derived from the TDP selected in the Project Creation Wizard. Child nodes inherit this
+    configuration from the project. However, a custom configuration can be created for each child node; in fact, this
+    custom configuration can be based on a completely different TDP.
+</p>
+<p>
+    Basic adaptation of a Target Deployment Port, combined with individual Configurations, ensures a properly configured
+    test environment.
+</p>
+<h4>
+    Tool Steps
+</h4>
+<p>
+    To configure your test environment to ensure successful usage of Test RealTime:
+</p>
+<ol>
+    <li>
+        <a href="#CustomizeTDP">Use the TDP Editor to customize a Target Deployment Port</a>
+    </li>
+    <li>
+        <a href="#MakeNode-SpecificModifications">Use the Test RealTime Configuration Settings to make node-specific
+        modifications</a>
+    </li>
+</ol>
+<h3>
+    <a id="CustomizeTDP" name="CustomizeTDP">Use the TDP Editor to customize a Target Deployment Port</a>
+</h3>
+<p>
+    The TDP Editor lets you modify the default settings of Target Deployment Ports shipped with Test RealTime, as well as
+    to create brand new TDPs for as yet unsupported development and execution environments.
+</p>
+<p>
+    TDPs are stored in XML-based files with a .xdp extension; these files are located in the folder
+    ….\Rational\TestRealTime\targets\xml. The TDP Editor graphically organizes the .xdp contents in an orderly,
+    well-documented fashion to ensure easy maneuverability and comprehension. The left-hand side of the TDP Editor lists
+    the various categories for which customization may be required. The upper right-hand window contains Help information.
+    The lower right-hand window is used for actual data entry.
+</p>
+<p>
+    Once the TDP has been properly configured, pressing the Save button automatically creates a variety of customized files
+    and folders in the folder …\Rational\TestRealTime\targets. Changes made to the .xdp file can be saved within the TDP
+    Editor, at which time the target files will be properly overwritten.
+</p>
+<p>
+    To configure an existing TDP or create a new one:
+</p>
+<ol>
+    <li>
+        In Test RealTime, select the menu item Tools-&gt;Target Deployment Port Editor-&gt;Start
+    </li>
+    <li>
+        Select the menu item File-&gt;Open - the contents of the folder …\Rational\TestRealTime\targets\xml are displayed
+    </li>
+    <li>
+        If you wish to configure an existing Target Deployment Port, select the corresponding .xdp file and Open it.<br />
+         If you wish to create a new Target Deployment Port, select the menu item File-&gt;New, then select the appropriate
+        language.
+    </li>
+    <li>
+        Modify the various Basic Settings, Build Settings, Library Settings and Parser Settings to accommodate your
+        environment. Left-click those items you wish to modify in the left-hand window, then enter the appropriate values
+        in the lower right-hand window. Use the upper right-hand window for guidance.
+    </li>
+    <li>
+        When you have finished configuring your TDP, press the Save button or select the menu item File-&gt;Save.
+    </li>
+</ol>
+<p>
+    <img height="16" alt="book icon" src="./../../../core.base_rup/resources/book.gif" width="16" border="0" /> For detailed information refer
+    to the <i>Rational Test RealTime Target Deployment Guide</i>.
+</p>
+<h3>
+    <a id="MakeNode-SpecificModifications" name="MakeNode-SpecificModifications">Use the Test RealTime Configuration
+    Settings to make node-specific modifications</a>
+</h3>
+<p>
+    When creating a project in Test RealTime, you must select a Target Deployment Port. This TDP becomes the basis for a
+    project's Configuration Settings. The project Configuration file lets the user define node-specific settings that do
+    the following:
+</p>
+<ul>
+    <li>
+        override basic settings entered via the TDP Editor
+    </li>
+    <li>
+        modify runtime analysis parameters that can only be set within Test RealTime itself
+    </li>
+</ul>
+<p>
+    Using Configuration Settings, one could assign a different TDP to each Test node within a group node, or different
+    levels of instrumentation to multiple Application nodes. Such flexibility gives you the freedom to test and analyze
+    multiple languages at the same time or acquire different levels of information during a single run.
+</p>
+<p>
+    To access and modify a Test RealTime project's Configuration Settings:
+</p>
+<ol>
+    <li>
+        After opening a project in Test RealTime, select the menu item Project-&gt;Settings.
+    </li>
+    <li>
+        Move and resize the resulting window, entitled "&lt;Project Name&gt; Configuration Setting" so that you can freely
+        view the Project Browser window on the right-hand side of the screen.
+    </li>
+    <li>
+        Left-click any node in the Project Browser to access the Configuration Settings for that particular node.
+    </li>
+    <li>
+        Use the Configuration Settings window to define and/or override existing settings. Anytime a setting is overridden,
+        the setting name and its category name are listed in bold-faced letters.
+    </li>
+    <li>
+        Press the Apply button to save your modifications.
+    </li>
+</ol>
+<p>
+    Additional areas of interest in Configuration Setting modification:
+</p>
+<ul>
+    <li>
+        General-&gt;Host Configuration-&gt;Target Deployment Port<br />
+         Used to select which TDP will be used with each Group, Application or Test Node.<br />
+    </li>
+    <li>
+        General-&gt;Target Deployment Port-&gt;Name<br />
+         Used to create a custom name for the Configuration file, whose default name was the active TDP selected during
+        project creation.
+    </li>
+    <li>
+        Runtime Analysis<br />
+         Various settings used to specify the exact type and level of runtime analysis to be used for each node.<br />
+    </li>
+</ul>
+<p>
+    <img height="16" alt="book icon" src="./../../../core.base_rup/resources/book.gif" width="16" border="0" /> For detailed information refer
+    to the <i>Rational Test RealTime User Guide</i>, under the topic Graphical User Interface-&gt; Configurations and
+    Settings.
+</p></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

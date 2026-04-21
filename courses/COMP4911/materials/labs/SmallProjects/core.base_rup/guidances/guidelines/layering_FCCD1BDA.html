@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Guideline: Layering</title>
+<meta name="uma.type" content="Guideline">
+<meta name="uma.name" content="layering">
+<meta name="uma.presentationName" content="Layering">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_QV4x0AISEdqTna4sZVFRow", "_kjFBYN7HEdm8G6yT7-Wdqw", "{8CDAEAD4-5E84-4F50-87FD-3240ED047DE7}", "4.458864982057142E-306"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_EOvXUN7HEdm8G6yT7-Wdqw", "_kjFBYN7HEdm8G6yT7-Wdqw", "{8CDAEAD4-5E84-4F50-87FD-3240ED047DE7}", "4.458864982057142E-306"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_jijhYAIaEdqEutyfYo0quQ", "_mTMIkN7REdmjRZts2c4ZjQ", "{8CDAEAD4-5E84-4F50-87FD-3240ED047DE7}", "4.458864982057142E-306"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_2ClPcDIcEdqDs_9ORT1Rig", "4.458864982057142E-306"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="4.458864982057142E-306"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Guideline: Layering</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/guidance.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This guideline introduces strategies for dividing a system into layers.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/workproducts/rup_design_model_2830034D.html" guid="{8CDAEAD4-5E84-4F50-87FD-3240ED047DE7}">Design Model</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a><a id="XE_layering__guidelines" name="XE_layering__guidelines"></a> 
+<h3>
+    <a id="LayeringGuidelines" name="LayeringGuidelines">Layering Guidelines</a>
+</h3>
+<p>
+    Layering provides a logical partitioning of subsystems into a number of sets, with certain rules as to how
+    relationships can be formed between layers. The layering provides a way to restrict inter-subsystem dependencies, with
+    the result that the system is more loosely coupled and therefore more easily maintained.
+</p>
+<p>
+    The criteria for grouping subsystems follow a few patterns:
+</p>
+<ul>
+    <li>
+        <b>Visibility</b>. Subsystems may only depend on subsystems in the same layer and the next lower layer.
+    </li>
+    <li>
+        <b>Volatility</b>. 
+        <ul>
+            <li>
+                <b>In the highest layers</b>, put elements which vary when user requirements change.
+            </li>
+            <li>
+                <b>In the lowest layers</b>, put elements that vary when the implementation platform (hardware, language,
+                operating system, database, etc.) changes.
+            </li>
+            <li>
+                Sandwiched in the middle, put elements which are generally applicable across wide ranges of systems and
+                implementation environments.
+            </li>
+            <li>
+                Add layers when additional partitions within these broad categories helps to organize the model.
+            </li>
+        </ul>
+    </li>
+    <li>
+        <b>Generality</b>. Abstract model elements tend to be placed lower in the model. If not implementation-specific,
+        they tend to gravitate toward the middle layers.
+    </li>
+    <li>
+        <b>Number of Layers.</b> For a small system, three layers are sufficient. For a complex system, 5-7 layers are
+        usually sufficient. For any degree of complexity, more than 10 layers should be viewed with suspicion that
+        increases with the number of layers. Some rules of thumb are presented below:
+    </li>
+</ul>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <th width="40%">
+                    <p align="center" scope="col">
+                        <b># Classes</b>
+                    </p>
+                </th>
+                <th width="60%">
+                    <p align="center" scope="col">
+                        <b># Layers</b>
+                    </p>
+                </th>
+            </tr>
+            <tr>
+                <td width="40%">
+                    <p align="center">
+                        0 - 10
+                    </p>
+                </td>
+                <td width="60%">
+                    No layering needed
+                </td>
+            </tr>
+            <tr>
+                <td width="40%">
+                    <p align="center">
+                        10 - 50
+                    </p>
+                </td>
+                <td width="60%">
+                    2 layers
+                </td>
+            </tr>
+            <tr>
+                <td width="40%">
+                    <p align="center">
+                        25 - 150
+                    </p>
+                </td>
+                <td width="60%">
+                    3 layers
+                </td>
+            </tr>
+            <tr>
+                <td width="40%">
+                    <p align="center">
+                        100 - 1000
+                    </p>
+                </td>
+                <td width="60%">
+                    4 layers
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    Subsystems and packages within a particular layer should only depend upon subsystems within the same layer, and at the
+    next lower layer. Failure to restrict dependencies in this way causes architectural degradation and makes the system
+    brittle and difficult to maintain.
+</p>
+<p>
+    Exceptions include cases where subsystems need direct access to lower layer services: a conscious decision should be
+    made on how to handle primitive services needed throughout the system, such as printing, sending messages, etc. There
+    is little value in restricting messages to lower layers if the solution is to effectively implement call pass-throughs
+    in the intermediate layers.
+</p>
+<h3>
+    <a id="PartitioningPatterns" name="PartitioningPatterns">Partitioning Patterns</a>
+</h3>
+<p>
+    Within the top-layers of the system, additional partitioning may help organize the model. The following guidelines for
+    partitioning present different issues to consider:
+</p>
+<ul>
+    <li>
+        <b>User organization</b>. Subsystems may be organized along lines that mirror the organization of functionality in
+        the business organization (e.g. partitioning occurs along departmental lines). This partitioning often occurs early
+        in the design because an existing enterprise model has a strongly organizationally partitioned structure. This
+        organization pattern usually affects only the top few layers of application-specific services, and often disappears
+        as the design evolves. 
+        <ul>
+            <li>
+                Partitioning along user organization lines can be a good starting point for the model.
+            </li>
+            <li>
+                The structure of the user organization is not stable over a long period of time (due to business
+                reorganization), and is not a good long-term basis for system partitioning. The internal organization of
+                the system should enable the system to evolve and be maintained independently of the organization of the
+                business it supports.
+            </li>
+        </ul>
+    </li>
+    <li>
+        <b>Areas of competence and/or skills</b>. Subsystems may be organized to partition responsibilities for parts of
+        the model among different groups within the development organization. Typically, this occurs in the middle and
+        lower layers of the system, and reflects the need for specialization in skills during the development and support
+        of complex infrastructural technology. Examples of such technologies include network and distribution management,
+        database management, communication management, and process control, among others. Partitioning along competence
+        lines may also occur in upper layers, where special competency in the problem domain is required to understand and
+        support key business functionality; examples include telecommunication call management, securities trading,
+        insurance claims processing, and air traffic control, to name a few.
+    </li>
+    <li>
+        <b>System distribution</b>. Within any of the layers of the system, the layers may be further partitioned
+        "horizontally" to reflect the physical distribution of functionality. 
+        <ul>
+            <li>
+                Partitioning to reflect distribution can help to visualize the network communication which will occur as
+                the system executes.
+            </li>
+            <li>
+                Partitioning to reflect distribution can, however, make the system more difficult to change if the
+                Deployment Model changes significantly.
+            </li>
+        </ul>
+    </li>
+</ul>
+<ul>
+    <li>
+        <b>Secrecy areas</b>. Some applications, especially those requiring special security clearance to develop and/or
+        support, require additional partitioning along security access privilege lines. Software that control access to
+        secrecy areas must be developed and maintained by personnel with appropriate clearance. If the number of persons
+        with this background on the project is limited, the functionality requiring special clearance must be partitioning
+        into subsystems that will be developed independently of other subsystems, with the interfaces to the secrecy areas
+        the only visible aspect of these subsystems.
+    </li>
+    <li>
+        <b>Variability areas</b>. Functionality that is likely to be optional, and thereby delivered only in some variants
+        of the system, should be organized into independent subsystems which are developed and delivered independently of
+        the mandatory functionality of the system.
+    </li>
+</ul><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

@@ -1,0 +1,4 @@
+<!DOCTYPE html>
+<html><head></head><body style="color: rgb(32, 33, 34); font-family: undefined;"><p>If you want migrations to be applied automatically, add the following code in Program.cs right before the last “app.Run()” statement:</p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">using (var scope = app.Services.CreateScope()) {</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; var services = scope.ServiceProvider;</span></p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; var context = services.GetRequiredService&lt;HealthContext&gt;(); &nbsp; &nbsp;</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; context.Database.Migrate();</span><br><span style="font-family: 'courier new', courier, sans-serif;">}</span></p></body></html>

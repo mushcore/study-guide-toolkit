@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html><head></head><body style="color: rgb(32, 33, 34); font-family: undefined;"><h1>DatabaseSeeder.php</h1>
+<p>&lt;?php</p>
+<p>namespace Database\Seeders;</p>
+<p>use App\Models\User;<br>use Illuminate\Database\Console\Seeds\WithoutModelEvents;<br>use Illuminate\Database\Seeder;</p>
+<p>class DatabaseSeeder extends Seeder<br>{<br>&nbsp; &nbsp; use WithoutModelEvents;</p>
+<p>&nbsp; &nbsp; /**<br>&nbsp; &nbsp; &nbsp;* Seed the application's database.<br>&nbsp; &nbsp; &nbsp;*/<br>&nbsp; &nbsp; public function run(): void<br>&nbsp; &nbsp; {<br>&nbsp; &nbsp; &nbsp; &nbsp; // User::factory(10)-&gt;create();</p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp; User::firstOrCreate(<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ['email' =&gt; 'test@example.com'],<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; [<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 'name' =&gt; 'Test User',<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 'email_verified_at' =&gt; now(),<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 'password' =&gt; bcrypt('password'),<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ]<br>&nbsp; &nbsp; &nbsp; &nbsp; );</p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp; $this-&gt;call(StudentSeeder::class);<br>&nbsp; &nbsp; }<br>}</p>
+<h1>startup.sh</h1>
+<div>
+<div>#!/bin/bash</div>
+<br>
+<div># Stop Nginx</div>
+<div>service nginx stop</div>
+<br>
+<div># Check if school.sqlite exists, and create it if it doesn't</div>
+<div>if [ ! -f /home/site/wwwroot/database/database.sqlite ]; then</div>
+<div>touch /home/site/wwwroot/database/database.sqlite</div>
+<div>chmod 666 /home/site/wwwroot/database/database.sqlite</div>
+<div>fi</div>
+<br>
+<div># Ensure storage directories exist</div>
+<div>mkdir -p /home/site/wwwroot/storage/framework/views</div>
+<div>mkdir -p /home/site/wwwroot/storage/framework/cache</div>
+<div>mkdir -p /home/site/wwwroot/storage/framework/sessions</div>
+<div>mkdir -p /home/site/wwwroot/storage/logs</div>
+<br>
+<div># Set correct permissions</div>
+<div>chmod -R 775 /home/site/wwwroot/storage</div>
+<div>chmod -R 775 /home/site/wwwroot/bootstrap/cache</div>
+<div>chown -R www-data:www-data /home/site/wwwroot/storage</div>
+<div>chown -R www-data:www-data /home/site/wwwroot/bootstrap/cache</div>
+<br>
+<div># Run database migrations and seeders</div>
+<div>php /home/site/wwwroot/artisan migrate --force</div>
+<div>php /home/site/wwwroot/artisan db:seed --force</div>
+<br>
+<div># Clear and cache Laravel configurations</div>
+<div>php /home/site/wwwroot/artisan cache:clear</div>
+<div>php /home/site/wwwroot/artisan config:clear</div>
+<div>php /home/site/wwwroot/artisan config:cache</div>
+<div>php /home/site/wwwroot/artisan route:clear</div>
+<div>php /home/site/wwwroot/artisan view:clear</div>
+<div>php /home/site/wwwroot/artisan view:cache</div>
+<br>
+<div># Copy default Nginx configuration</div>
+<div>cp /home/site/wwwroot/default /etc/nginx/sites-available/default</div>
+<div>ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default</div>
+<br>
+<div># Start Nginx</div>
+<div>service nginx start</div>
+</div></body></html>

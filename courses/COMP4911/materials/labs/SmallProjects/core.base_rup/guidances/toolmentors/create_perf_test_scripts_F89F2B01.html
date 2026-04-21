@@ -1,0 +1,315 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Creating an Automated Performance Test Script Using Rational Robot</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="create_perf_test_scripts">
+<meta name="uma.presentationName" content="Creating an Automated Performance Test Script Using Rational Robot">
+<meta name="uma.category" content="Tool:rup_robot:Rational Robot">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational Robot">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{1A26E508-8140-4241-865E-0A2A5BCAEFFF}", "{DEBC41D9-6B28-40CE-BD55-4888609A46FA}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_9U7IkDIEEdqwaNnSEheSAg", "{1A26E508-8140-4241-865E-0A2A5BCAEFFF}", "{DEBC41D9-6B28-40CE-BD55-4888609A46FA}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{1A26E508-8140-4241-865E-0A2A5BCAEFFF}", "{DEBC41D9-6B28-40CE-BD55-4888609A46FA}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{DEBC41D9-6B28-40CE-BD55-4888609A46FA}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Creating an Automated Performance Test Script Using Rational Robot</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to use Rational Robot to record an automated performance test script for performance testing. </td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_robot_26C85D92.html" guid="{1A26E508-8140-4241-865E-0A2A5BCAEFFF}">Rational Robot</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    Overview
+</h3>
+<p class="MsoNormal">
+    For performance testing, scripts are often created by recording them in Robot. When you record a virtual user script,
+    your interactions with the application under test cause protocol-specific communication between the client and the
+    server. Robot records this communication and abstracts it into VU language test scripts after session recording is
+    complete.
+</p>
+<p class="MsoNormal">
+    A performance test suite in TestManager then executes multiple instances of this script to apply a load to the system
+    under test.
+</p>
+<p class="MsoNormal">
+    This tool mentor applies to Windows 98/ME/XP/2000 and NT 4.0 platforms.
+</p>
+<h4>
+    Tool Steps
+</h4>
+<p>
+    To record a virtual user script using Robot:&nbsp;&nbsp;&nbsp;
+</p>
+<ol type="1">
+    <li>
+        <a href="#Start recording the virtual user script">Start recording the virtual user script</a>
+    </li>
+    <li>
+        <a href="#Insert timers, blocks, comments, and synchronization points">Insert timers, blocks, comments,
+        and synchronization points</a>
+    </li>
+    <li>
+        <a href="#Split script or end session recording">Split script or end session recording</a>
+    </li>
+    <li>
+        <a href="#Edit the virtual user test script, if necessary">Edit the virtual user test script if
+        necessary</a>
+    </li>
+</ol>
+<h3>
+    1. <a id="Start recording the virtual user script" name="Start recording the virtual user script">Start recording the
+    virtual user script</a>
+</h3>
+<p>
+    When you record a virtual user script, your interactions with the application under test cause protocol-specific
+    communication between the client and the server. Robot records this communication and uses it for script generation
+    after you end the recording session.
+</p>
+<ol>
+    <li>
+        Prepare the test environment by setting the virtual user record options. See "Setting Recording Options" in the
+        manual <i>Rational Robot User's Guide</i>.
+    </li>
+    <li>
+        Click the <b>Record VU Script</b> button on the Robot toolbar.&nbsp;
+    </li>
+    <li>
+        Type a session name (40 characters maximum).
+    </li>
+    <li>
+        Click <b>OK</b> to start recording.
+    </li>
+    <li>
+        Robot is then minimized (default behavior), and the&nbsp;floating <b>Session Record</b> toolbar appears. Use this
+        toolbar to stop recording or split scripts and redisplay Robot. Use the <b>Session Insert</b> toolbar
+        to&nbsp;insert features like timers, blocks, comments, or synchronization points into a script. It can also be used
+        to start an application.&nbsp;
+    </li>
+    <li>
+        In the Start Application Dialog box, specify the executable to launch. This executable should be the executable of
+        your client application. For Web applications, use the browser to access the Web site.
+    </li>
+    <li>
+        Click <b>OK</b> to start the client application.
+    </li>
+    <li>
+        Begin interacting with the application under test as specified by your test case. Protocol traffic between the
+        client and server is recorded.
+    </li>
+</ol>
+<h3>
+    2. <a id="Insert timers, blocks, comments, and synchronization points" name="Insert timers, blocks, comments, and synchronization points">Insert timers, blocks, comments, and synchronization
+    points</a>
+</h3>
+<p>
+    You may insert timers, blocks, comments or synchronization points while recording a virtual user session. Click the
+    <b>Display Session Insert</b> toolbar button on the <b>Session Record</b> toolbar, and then click <b><i>one</i></b> of
+    these buttons:
+</p>
+<ul>
+    <li>
+        <b>Start Timer</b>: The Start Timer dialog box appears and prompts you for the name of the timer you want to
+        start.&nbsp;Enter a name and click <b>OK</b> or use the <b>Cancel</b> button to exit the dialog box.<br />
+    </li>
+    <li>
+        <b>Stop Timer</b>: The Stop Timer dialog box appears and prompts you for the name of the timer you want to
+        stop.&nbsp;Enter a name and click <b>OK</b> or use the <b>Cancel</b> button to exit the dialog box.&nbsp;
+    </li>
+</ul>
+<blockquote>
+    <p>
+        A timer is a "bracket" around a set of client-server interactions. After execution of a performance test suite in
+        TestManager, the times required for the executions of each timer are shown in the Performance and Response reports.
+    </p>
+</blockquote>
+<ul>
+    <li>
+        <b>Comment</b>: The Comment dialog box appears and prompts you for the comment you want to add to the script. Enter
+        a comment and click <b>OK</b> or use the <b>Cancel</b> button to exit the dialog box.&nbsp;Comments are text within
+        a script. They aid script readers in understanding the script but have no effect on the execution of the
+        script.<br />
+    </li>
+    <li>
+        <b>Sync Point</b>: The Comment dialog box appears and prompts you for the name of the synchronization point
+        you&nbsp;want to add to the script. Enter a name and click <b>OK</b> or use the <b>Cancel</b> button to exit the
+        dialog box.&nbsp;A synchronization point is a script feature that, during script execution, allows for coordination
+        of actions among&nbsp;multiple virtual testers.<br />
+    </li>
+    <li>
+        <b>Start Block</b>: The Start Block dialog box appears and prompts you for the block you want to start in the
+        script.&nbsp;Enter a name and click <b>OK</b> or use the <b>Cancel</b> button to exit the dialog box.<br />
+    </li>
+    <li>
+        <b>Stop Block</b>: The Stop Block dialog box appears and shows the name of the current block.&nbsp;<br />
+         Click <b>OK</b> or use the <b>Cancel</b> button to exit the dialog box.
+    </li>
+</ul>
+<blockquote>
+    <p>
+        Like a timer, a block is a bracket around a set of client-server interactions.&nbsp;Unlike a timer, initial user
+        think time is not included in a block. Additionally,&nbsp;all command identifiers within a block are prefixed with
+        the block name (whereas in a timer, all command identifiers are prefixed with the name of the script).
+    </p>
+</blockquote>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;&nbsp; Refer to the following
+    topics in the Robot online Help:&nbsp;
+</p>
+<ul>
+    <li>
+        <i>Creating a new Suite</i>
+    </li>
+    <li>
+        <i>Inserting Comments into a Script</i>
+    </li>
+    <li>
+        <i>Inserting a Block into a Script</i>
+    </li>
+    <li>
+        <i>Inserting a Timer During Virtual User Recording</i>
+    </li>
+    <li>
+        <i>Inserting a Synchronization Point During Recording</i>
+    </li>
+</ul>(All dialog boxes for inserting a feature into a virtual user script contain a Help button to start Robot online
+Help.) 
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/book.gif" width="16" />&nbsp;&nbsp; Refer to the topic titled
+    <i>Adding Features to Scripts</i> in <i>Rational Robot User's Guide</i>.&nbsp;
+</p>
+<h3>
+    3. <a id="Split script or end session recording" name="Split script or end session recording">Split script or end
+    session recording</a>
+</h3>
+<p>
+    After you have finished performing the test case or logical unit of user activity, you can split a script or end the
+    session recording.&nbsp;
+</p>
+<p>
+    Splitting a session signifies that everything you have recorded since the last session split (or beginning of the
+    session) represents a logical unit, such as login to a database or the modification of a particular record; for
+    example, updating a customer's information in a customer relationship management application.
+</p>
+<ol>
+    <li>
+        To split a script:
+    </li>
+</ol>
+<ul>
+    <li>
+        <p>
+            Click the <b>Split Script</b> button on the <b>Session Recording</b> toolbar.&nbsp;
+        </p>
+    </li>
+    <li>
+        <p>
+            Type a virtual user script name (40 characters maximum) for the activity just recorded.
+        </p>
+    </li>
+</ul>
+<ol start="2">
+    <li>
+        To stop session recording:
+    </li>
+</ol>
+<ul>
+    <li>
+        Click the <b>Stop Recording</b> button on the <b>Session Recording</b> toolbar.&nbsp;
+    </li>
+    <li>
+        Type a virtual user script name (40 characters maximum).
+    </li>
+    <li>
+        To change the recording options, click <b>Options</b>. When finished, click <b>OK</b>.
+    </li>
+    <li>
+        Depending on your previous settings for virtual user recordings, the generator either&nbsp;generates a script
+        (Automatic Filtering) or prompts you to select the client server&nbsp;communications and protocol (Manual
+        Filtering), which should be used for generating&nbsp;a virtual user script.
+    </li>
+</ul>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/book.gif" width="16" />&nbsp;&nbsp; Refer to the chapter titled
+    <i>Recording Sessions - Choosing the Protocols to Include in a Script</i> in the <i>Rational Robot User's Guide</i>.
+</p>
+<h3>
+    4. <a id="Edit the virtual user test script, if necessary" name="Edit the virtual user test script, if necessary">Edit
+    the virtual user test script, if necessary</a>
+</h3>
+<p>
+    You can edit existing scripts by manually changing the text of a script, as follows:
+</p>
+<ul type="disc">
+    <li>
+        Edit the text of a script (delete a line, move text, and so forth).
+    </li>
+    <li>
+        Add a new user action to an existing script (add a shared variable or functionality).
+    </li>
+    <li>
+        Add a new feature to an existing script (add timers, blocks, comments, and so on).
+    </li>
+</ul>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;&nbsp; Refer to the topic titled
+    <i>VU Language Reference</i> in the Robot online Help.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

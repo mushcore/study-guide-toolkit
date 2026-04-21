@@ -1,0 +1,467 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Managing Dependencies Using Rational RequisitePro</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="manage_dependencies_tm">
+<meta name="uma.presentationName" content="Managing Dependencies Using Rational RequisitePro">
+<meta name="uma.category" content="Tool:rup_requisite_pro:Rational RequisitePro">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational RequisitePro">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_qS-iwAIOEdqTna4sZVFRow", "{887DBA0C-5761-494D-862D-5956F1C51BF7}", "{FB197165-FFE2-4683-9EF3-B3D5E9501492}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{887DBA0C-5761-494D-862D-5956F1C51BF7}", "{FB197165-FFE2-4683-9EF3-B3D5E9501492}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{887DBA0C-5761-494D-862D-5956F1C51BF7}", "{FB197165-FFE2-4683-9EF3-B3D5E9501492}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{FB197165-FFE2-4683-9EF3-B3D5E9501492}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Managing Dependencies Using Rational RequisitePro</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to use Rational RequisitePro® to manage dependencies by using requirement attributes and Traceability.</td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_requisite_pro_593FD397.html" guid="{887DBA0C-5761-494D-862D-5956F1C51BF7}">Rational RequisitePro</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><h3>
+    Overview
+</h3>
+<p>
+    RequisitePro enables you to create and maintain a clear organization of <a class="elementLink" href="./../../../core.base_rup/guidances/concepts/requirements_62E28784.html" guid="4.582668643506599E-305">Requirements</a>. You
+    can group your requirements according to user-defined attributes, such as function, priority, risk, and cost. In
+    addition, you can establish hierarchical relationships that represent requirements in logical parent-child groups.
+    Finally, you can create a traceability relationship between two requirements that establishes dependency from one
+    requirement to the other.
+</p>
+<h4>
+    Tool Steps
+</h4>
+<p>
+    The following requirements management concepts and procedures are presented in more detail.
+</p>
+<ol>
+    <li>
+        <a href="#Organize Requirements">Organize requirements</a>
+    </li>
+    <li>
+        <a href="#Create Requirement Hierarchies">Create requirement hierarchies</a>
+    </li>
+    <li>
+        <a href="#Create Requirement Traceability">Create requirement traceability</a>
+    </li>
+    <li>
+        <a href="#Query Requirements">Query requirements</a>
+    </li>
+</ol>
+<h3>
+    <b><font size="4">1.&nbsp; <a id="Organize Requirements" name="Organize Requirements">Organize
+    requirements</a></font></b>
+</h3>
+<p>
+    <b>Functional organization can be expressed in requirement types.</b> A <img alt="" src="./../../../images/no_rup.gif">&#160;<a class="elementLinkWithUserText" href="./../../../pages_not_installed/pages_not_installed.html" guid="5.360970653483052E-305">requirement
+    type</a> is simply a class of requirements that enable teams to organize large numbers of requirements into meaningful
+    and more manageable groups. Establishing different types of requirements in a project helps team members classify
+    requirements and communicate more clearly.
+</p>
+<p>
+    One type of requirement usually can be decomposed into other types. For example, business rules and vision statements
+    typically include high-level requirements from which teams derive user needs, features, and product requirement types.
+    Use cases drive design requirements that can be used to define software requirements. Test requirements are derived
+    from the software requirements and are divided into specific test procedures. (If your installation includes Rational
+    TestManager&reg;, we recommend that you use that tool for managing test work products.)
+</p>
+<p>
+    When there are hundreds, thousands, or even tens of thousands of requirements in a given project, classifying
+    requirements into types makes the project more manageable. Using RequisitePro, you can create requirements of a given
+    type in a requirements document or directly in the project database. Each requirement type has specific attributes that
+    are unique to that type.
+</p>
+<p>
+    To create <img alt="" src="./../../../images/no_rup.gif">&#160;<a class="elementLinkWithUserText" href="./../../../pages_not_installed/pages_not_installed.html" guid="5.360970653483052E-305">requirement
+    types</a>:
+</p>
+<ol>
+    <li>
+        Click <b>File &gt; Open Project</b>, select the project, and select the <b>Exclusive</b> check box. (The project
+        must be opened in exclusive mode to create new requirement types.) Click <b>OK</b>.
+    </li>
+    <li>
+        In the Explorer, select the project, and click <b>File &gt; Properties</b>. The Project Properties dialog box
+        appears.
+    </li>
+    <li>
+        Click the <b>Requirement Types</b> tab, and click <b>Add</b>. Type the requirement type information (name,
+        description, tag prefix, color, and style of the requirement format).
+    </li>
+    <li>
+        Click <b>OK</b>.
+    </li>
+</ol>
+<p>
+    To create <a class="elementLink" href="./../../../core.base_rup/guidances/concepts/requirements_62E28784.html" guid="4.582668643506599E-305">Requirements</a> in a document:
+</p>
+<ol>
+    <li>
+        In the document, select the text to define the requirement.
+    </li>
+    <li>
+        Do one of the following: 
+        <ul>
+            <li>
+                Right-click and select <b>New Requirement</b>.
+            </li>
+            <li>
+                Click <b>RequisitePro</b> &gt; <b>Requirement</b> &gt; <b>New</b>.<br />
+                 The Requirement Properties dialog box appears.
+            </li>
+        </ul>
+    </li>
+    <li>
+        Click the tabs and type the appropriate information to define the requirement. Click <b>OK</b>.
+    </li>
+</ol>
+<p>
+    To create requirements in an Attribute Matrix:
+</p>
+<ol>
+    <li>
+        In the Explorer, select the package in which you want to place the view. Then click <b>File &gt; New &gt; View</b>.
+        The View Properties dialog box appears.
+    </li>
+    <li>
+        Type a name for and description of the view. The view type is Attribute Matrix. Select the requirement type for the
+        Attribute Matrix from the list. Click <b>OK</b>. The Attribute Matrix appears.
+    </li>
+    <li>
+        Either click twice the field marked <b>&lt;Click here to create a requirement&gt;</b>, or click the field and then
+        click <b>Requirement &gt; New</b>. The <b>Name</b> and <b>Text</b> boxes appear.
+    </li>
+    <li>
+        Type a name for and the text of the new requirement.
+    </li>
+    <li>
+        Press the <b>Tab</b> key to move across the matrix. Add attribute values as needed.
+    </li>
+    <li>
+        Click anywhere in the view to save the requirement.
+    </li>
+</ol>
+<p>
+    You can also open an existing requirement in an Attribute Matrix by selecting the requirement and clicking&nbsp;
+    <b>Requirement &gt; Properties</b>. The Requirement Properties dialog box appears. On the <b>General</b> tab, you can
+    modify the text for the requirement. Click the <b>Attributes</b> tab and select the appropriate values for the
+    attributes.
+</p>
+<h4>
+    For More Information
+</h4>
+<p>
+    <b><img height="16" alt="helpbook icon" src="./../../../core.base_rup/guidances/toolmentors/resources/helpbook.gif" width="16" /></b> Refer to the following topics in
+    the RequisitePro online Help:
+</p>
+<ul>
+    <li>
+        <i>Creating and modifying requirement types</i> (Index: requirement types &gt; creating)
+    </li>
+    <li>
+        <i>Creating requirements in a document</i> (Index: requirements &gt; creating)
+    </li>
+    <li>
+        <i>Creating requirements in an Attribute Matrix</i> (Index: requirements &gt; creating)
+    </li>
+</ul>
+<h3>
+    <b><font size="4">2.&nbsp; <a id="Create Requirement Hierarchies" name="Create Requirement Hierarchies">Create
+    requirement hierarchies</a></font></b>
+</h3>
+<p>
+    <b>You can manage dependencies in hierarchical relationships.</b> Hierarchical requirement relationships are
+    parent-child relationships that reflect a logical grouping between requirements. These associations provide helpful
+    tools for organizing requirements.
+</p>
+<p>
+    Use hierarchical relationships to subdivide a general requirement into more explicit requirements. Parent requirements
+    are upper level, more general requirements; child requirements are lower level, more specific requirements. Each child
+    requirement can have only one parent, but a requirement can be both a parent and a child.
+</p>
+<p>
+    <b>Note:</b> Hierarchical requirement relationships should not be confused with traceability relationships. A
+    traceability relationship is generally established between different types of requirements, like software and test
+    requirements, whereas hierarchical relationships group requirements of the same type, at the same level of the
+    requirement traceability tree.
+</p>
+<p>
+    To create child requirements in a document:
+</p>
+<ol>
+    <li>
+        In the requirements document, select the information that defines the requirement.
+    </li>
+    <li>
+        Do one of the following: 
+        <ul>
+            <li>
+                Right-click and select <b>New Requirement</b>.
+            </li>
+            <li>
+                Click <b>RequisitePro &gt; Requirement &gt; New</b>.<br />
+                 The Requirement Properties dialog box appears.
+            </li>
+        </ul>
+    </li>
+    <li>
+        Click the tabs and enter the appropriate information to define the requirement.
+    </li>
+    <li>
+        On the <b>Hierarchy</b> tab, select a parent from the <b>Parent</b> list. If the parent is not displayed in the
+        list, select &lt;<b>choose parent...</b>&gt;, and select a parent from the list displayed in the Parent Requirement
+        Browser dialog box.
+    </li>
+    <li>
+        Click <b>OK</b> to close each dialog box.
+    </li>
+</ol>
+<p>
+    To create child requirements in a view:
+</p>
+<ol>
+    <li>
+        Open an Attribute Matrix based on the requirement type of the requirement you want to create. Select the
+        requirement that you want to be the parent of the new requirement.
+    </li>
+    <li>
+        Click <b>Requirement</b> &gt; <b>New Child</b>. You can create a child requirement in a view only if the selected
+        requirement (which will become the child's parent) is also located in a view (that is, it is not located in a
+        document).
+    </li>
+    <li>
+        Type a description for the child requirement.
+    </li>
+    <li>
+        Press the <b>Tab</b> key to move across the matrix. Add attribute values as needed.
+    </li>
+    <li>
+        Click anywhere in the view to save the requirement.
+    </li>
+</ol>
+<h4>
+    For More Information
+</h4>
+<p>
+    <b><img height="16" alt="helpbook icon" src="./../../../core.base_rup/guidances/toolmentors/resources/helpbook.gif" width="16" /></b> Refer to the following topics in
+    the RequisitePro online Help:
+</p>
+<ul>
+    <li>
+        <i>Hierarchical relationships overview</i> (Index: hierarchical requirements&gt;overview)
+    </li>
+    <li>
+        <i>Creating child requirements in a document</i> (Index:hierarchical requirements&gt;creating child requirements)
+    </li>
+    <li>
+        <i>Creating child requirements in a view</i> (Index: hierarchical requirements&gt;creating child requirements)
+    </li>
+    <li>
+        <i>Assigning parent requirements in a view</i> (Index: parent requirements&gt;assigning new parent requirements)
+    </li>
+</ul>
+<h3>
+    <b><font size="4">3.&nbsp; <a id="Create Requirement Traceability" name="Create Requirement Traceability">Create
+    requirement traceability</a></font></b>
+</h3>
+<p>
+    <b>You can use traceability to manage dependencies.</b> As implied in the description of requirement types, no single
+    expression of a requirement stands alone. The process of decomposing user needs into derived requirements implies
+    relationships between high-level expectations and subsequent work products needed for implementation and validation. In
+    effect, one traces to many or vice versa.
+</p>
+<p>
+    For example, stakeholder requests are related to the product features proposed to meet them. Product features are
+    <i>traced to</i> individual requirements for specific functional behavior. Test cases are <i>traced from</i> the
+    requirements they verify and validate.
+</p>
+<p>
+    To determine the impact of changes and feel confident that the system conforms to expectations, team members must
+    understand, document, and maintain these traceability relationships. Traceability is an essential tool for
+    accommodating change and ensuring complete coverage. Establishing clear requirement types can help make traceability
+    easier to implement and maintain.
+</p>
+<p>
+    To create requirement traceability:
+</p>
+<ol>
+    <li>
+        In the Explorer, select the package in which you want to place the view you create, and then click <b>File &gt; New
+        &gt; View</b>. The View Properties dialog box appears.
+    </li>
+    <li>
+        Select the Traceability Matrix view type. Select one requirement type for the rows and one for the columns of the
+        matrix. Click <b>OK</b>.
+    </li>
+    <li>
+        In the Traceability Matrix, select a cell that intersects the two requirements for which you want to create a
+        traceability relationship. (Use a multiple select action to select multiple cells.)
+    </li>
+    <li>
+        Do one of the following: 
+        <ul>
+            <li>
+                Click <b>Traceability &gt; Trace To</b> or <b>Traceability &gt; Trace From</b>.
+            </li>
+            <li>
+                Right-click the cell and select <b>Trace To</b> or <b>Trace From</b>.
+            </li>
+        </ul>
+    </li>
+</ol>
+<h4>
+    For More Information
+</h4>
+<p>
+    <b><img height="16" alt="helpbook icon" src="./../../../core.base_rup/guidances/toolmentors/resources/helpbook.gif" width="16" /></b> Refer to the following topics in
+    the RequisitePro online Help:
+</p>
+<ul>
+    <li>
+        <i>Trace to/trace from overview</i> (Index: trace to/trace from relationship&gt;overview)
+    </li>
+    <li>
+        <i>Creating traceability relationships in a view</i> (Index: traceability &gt;creating )
+    </li>
+</ul>
+<p>
+    <b><img alt="" src="./../../../images/no_rup.gif">&#160;<a class="elementLinkWithUserText" href="./../../../pages_not_installed/pages_not_installed.html" guid="1.4005695544042474E-306">Suspect Relationships</a>.</b> A relationship between requirements becomes questionable
+    or <i>suspect</i> if RequisitePro detects that one of the requirements in the relationship has been modified. If a
+    requirement's text is modified, all <i>direct</i> relationships <i>to</i> and <i>from</i> that requirement become
+    suspect. Moreover, you can define attributes that, when modified, cause traceability relationships to become suspect.
+</p>
+<h3>
+    <font size="4"><b>4.&nbsp; <a id="Query Requirements" name="Query Requirements">Query requirements</a></b></font>
+</h3>
+<p>
+    <b>Query to retrieve and organize requirements by attribute values or traceability.</b> The RequisitePro query features
+    provide a method for filtering and sorting requirements in views by limiting the values of one or more attributes or by
+    limiting traceability and specifying the order in which the filtered requirements are displayed. Filtering restricts
+    the information being displayed; sorting determines the order in which information is displayed. For example, in an
+    Attribute Matrix, you may want to use filter criteria to view only those requirements assigned to you; you can also use
+    sorting criteria to arrange the requirements from highest to lowest priority.
+</p>
+<p>
+    You filter and sort requirements by applying query criteria to the requirements and their attributes. These criteria
+    limit the values of the attributes or conditions of the traceability relationships. You can create a query based on a
+    single attribute value, or you can select multiple attribute values to create more complex query criteria.
+</p>
+<p>
+    RequisitePro allows you to save and rerun queries with user-defined views. You can dynamically rerun queries to update
+    a requirements collection or refresh the returned data with updated values at any time.
+</p>
+<p>
+    To create a query:
+</p>
+<ol>
+    <li>
+        Open an Attribute Matrix, Traceability Matrix, or Traceability Tree view.
+    </li>
+    <li>
+        Click <b>View &gt; Query Row Requirements</b>. If you have not yet added any query criteria, the Select Attribute
+        dialog box appears.
+    </li>
+    <li>
+        Select the attribute and attribute value that you want to use in your query, and click <b>OK</b>.
+    </li>
+    <li>
+        For list-type attributes, select one or more values. The logical operator OR is assumed for list-type attributes.
+        For entry-type attributes, select an operator and specify the values.
+    </li>
+    <li>
+        To create compound queries (with multiple attributes), click <b>Add</b> and select additional query criteria.
+    </li>
+    <li>
+        Click <b>OK</b>.
+    </li>
+</ol>
+<p>
+    To save a view:
+</p>
+<ol>
+    <li>
+        Click <b>File</b> &gt; <b>Save View As</b>. The View Properties dialog box appears.
+    </li>
+    <li>
+        Type a name for the view.
+    </li>
+    <li>
+        Select the <b>Private</b> check box to save the view so that it can be opened only by the user who created it.
+    </li>
+    <li>
+        Click <b>OK</b>.
+    </li>
+</ol>
+<h4>
+    For More Information
+</h4>
+<p>
+    <img height="16" alt="helpbook icon" src="./../../../core.base_rup/guidances/toolmentors/resources/helpbook.gif" width="16" /> Refer to the following topics in the
+    RequisitePro online Help:
+</p>
+<ul>
+    <li>
+        <i>Creating a view</i> (Index: Views &gt; creating views)
+    </li>
+    <li>
+        <i>Creating and modifying queries</i> (Index: queries &gt; creating)
+    </li>
+</ul><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

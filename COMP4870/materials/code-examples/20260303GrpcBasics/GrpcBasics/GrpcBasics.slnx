@@ -1,4 +1,0 @@
-<Solution>
-  <Project Path="GrpcStudentsClient/GrpcStudentsClient.csproj" />
-  <Project Path="GrpcStudentsServer/GrpcStudentsServer.csproj" />
-</Solution>

@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Guideline: Unit Test</title>
+<meta name="uma.type" content="Guideline">
+<meta name="uma.name" content="unit_test">
+<meta name="uma.presentationName" content="Unit Test">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_QV4x0AISEdqTna4sZVFRow", "_M6RHkN7IEdm8G6yT7-Wdqw", "{74C60DFE-7221-45F1-BB8B-922A81C5AA98}", "9.315724622037552E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_EOvXUN7HEdm8G6yT7-Wdqw", "_M6RHkN7IEdm8G6yT7-Wdqw", "{74C60DFE-7221-45F1-BB8B-922A81C5AA98}", "9.315724622037552E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_jijhYAIaEdqEutyfYo0quQ", "_OKm3oN7UEdmjRZts2c4ZjQ", "{74C60DFE-7221-45F1-BB8B-922A81C5AA98}", "9.315724622037552E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_2ClPcDIcEdqDs_9ORT1Rig", "9.315724622037552E-305"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="9.315724622037552E-305"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Guideline: Unit Test</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/guidance.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">Unit testing is fine-grained testing of the internal structure a software module. This guideline discusses White-Box and Black-Box approaches to unit testing.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/workproducts/rup_developer_test_44109C5.html" guid="{74C60DFE-7221-45F1-BB8B-922A81C5AA98}">Developer Test</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/tasks/implement_developer_test_66FE6BEE.html" guid="{862F3EC5-70C3-4D9C-BF0E-EF93AE1BF936}">Implement Developer Test</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a><a id="XE_test__developer_testing__unit_test__guidelines_for" name="XE_test__developer_testing__unit_test__guidelines_for"></a> 
+<h3>
+    <a id="Introduction" name="Introduction">Introduction</a>
+</h3>
+<p>
+    Unit testing is implemented against the smallest testable element (units) of the software, and involves testing the
+    internal structure such as logic and data flow, and the unit's function and observable behaviors. Designing and
+    implementing tests focused on a unit's internal structure rely upon the knowledge of the unit's implementation
+    (white-box approach). The design and implementation of tests to verify the unit's observable behaviors and functions do
+    not rely upon a knowledge of the implementation and therefore is known as black-box approach.&nbsp;
+</p>
+<p>
+    Both approaches are used to design and implement the different types of tests (see <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/concepts/types_of_test_8AB94831.html" guid="1.6037730846300355E-307">Technique: Type of
+    Tests</a>) needed to successfully and completely test units.&nbsp;
+</p>
+<p>
+    See also <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/test_case_81FD1D9F.html" guid="1.3981505661923931E-304">Guideline: Test Case</a> for additional information on deriving test cases for unit
+    test.
+</p>
+<h4>
+    <a id="WhiteBox_Test" name="WhiteBox_Test">White-Box Test Approach</a><a id="XE_unit_test__white-box_test" name="XE_unit_test__white-box_test"></a><a id="XE_test__white-box_test__of_units" name="XE_test__white-box_test__of_units"></a>
+</h4>
+<p>
+    A white-box test approach should be taken to verify a unit's internal structure. Theoretically, you should test every
+    possible path through the code, but that is possible only in very simple units. At the very least you should exercise
+    every <b>decision-to-decision path</b> (DD-path) at least once because you are then executing all statements at least
+    once. A decision is typically an if-statement, and a DD-path is a path between two decisions.
+</p>
+<p>
+    To get this level of test coverage, it is recommended that you choose test data so that every decision is evaluated in
+    every possible way.&nbsp;
+</p>
+<p>
+    Use code-coverage tools to identify the code not exercised by your white box testing. Reliability testing should be
+    done simultaneously with your white-box testing.
+</p>
+<p>
+    See <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/test_case_81FD1D9F.html" guid="1.3981505661923931E-304">Guideline: Test Case</a> for additional information&nbsp;
+</p>
+<h4>
+    <a id="BlackBox_Test" name="BlackBox_Test">Black-Box Test Approach</a><a id="XE_unit_test__black-box_test" name="XE_unit_test__black-box_test"></a><a id="XE_test__black-box_test__of_units" name="XE_test__black-box_test__of_units"></a>
+</h4>
+<p>
+    The purpose of a black-box test is to verify the unit's specified function and observable behavior without knowledge of
+    <b>how</b> the unit implements the function and behavior. Black-box tests focus and rely upon the unit's input and
+    output.
+</p>
+<p>
+    Deriving unit tests based upon the black-box approach utilizes the input and output arguments of the unit's operations,
+    and / or output state for evaluation. For example, the operation may include an algorithm (requiring two values as
+    input and return a third as output), or initiate change in an object's or component's state, such as adding or deleting
+    a database record.&nbsp; Both must be tested completely. To test an operation, you should derive sufficient test cases
+    to verify the following:
+</p>
+<blockquote>
+    <ul>
+        <li>
+            an appropriate value was returned by the operation for each valid value used as input
+        </li>
+        <li>
+            an appropriate value was returned by the operation for each invalid value used as input
+        </li>
+        <li>
+            an appropriate output state occurs for each valid input state
+        </li>
+        <li>
+            an appropriate output state occurs for each invalid input state
+        </li>
+    </ul>
+</blockquote>
+<p>
+    Use code-coverage tools to identify the code not exercised by your white box testing. Reliability testing should be
+    done simultaneously with your black-box testing.
+</p>
+<p>
+    See <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/test_case_81FD1D9F.html" guid="1.3981505661923931E-304">Guideline: Test Case</a> for additional information&nbsp;
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

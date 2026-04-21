@@ -1,0 +1,478 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Task: Subsystem Design</title>
+<meta name="uma.type" content="TaskDescriptor">
+<meta name="uma.name" content="subsystem_design">
+<meta name="uma.presentationName" content="Subsystem Design">
+<meta name="uma.guid" content="_nM9FIUocEdqrjq4i3fchvA">
+<meta name="element_type" content="TaskDescriptor">
+<meta name="filetype" content="description">
+<meta name="role" content="">
+<link rel="StyleSheet" href="./../../css/default.css" type="text/css">
+<script src="./../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ActivityTreeTable.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ProcessElementPage.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/processElementData.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var defaultQueryStr = '?proc={002674F9-6511-4D15-8623-B761D8C48986}&path={002674F9-6511-4D15-8623-B761D8C48986},{9C683674-97C1-4AEE-8DB0-9514AEFF698E},_nM9FIUocEdqrjq4i3fchvA';
+					var backPath = './../../';
+					var imgPath = './../../images/';
+					var nodeInfo=[{view: "view:_e_O28N7KEdm8G6yT7-Wdqw", path: ["_e_O28N7KEdm8G6yT7-Wdqw", "_vCtak0JHEdq4z9xc-r201w", "_vChNQkJHEdq4z9xc-r201w", "_vChNREJHEdq4z9xc-r201w", "_XSr4YCFtEdqrX8YVzvtlIg", "_RP00kCCdEdq3qtLcbHn6PQ", "_nM9FIUocEdqrjq4i3fchvA"]}, {view: "view:_e_O28N7KEdm8G6yT7-Wdqw", path: ["_e_O28N7KEdm8G6yT7-Wdqw", "_vCtak0JHEdq4z9xc-r201w", "_vCtajUJHEdq4z9xc-r201w", "_vCtai0JHEdq4z9xc-r201w", "_J1u8gCGYEdqMcovRzkCQow", "_RP00kCCdEdq3qtLcbHn6PQ", "_nM9FIUocEdqrjq4i3fchvA"]}, {view: "view:_e_O28N7KEdm8G6yT7-Wdqw", path: ["_e_O28N7KEdm8G6yT7-Wdqw", "_vCtak0JHEdq4z9xc-r201w", "_vCtaj0JHEdq4z9xc-r201w", "_vCtakkJHEdq4z9xc-r201w", "_rw4S4Z5IEdq7s5zuJVEAAw", "_RP00kCCdEdq3qtLcbHn6PQ", "_nM9FIUocEdqrjq4i3fchvA"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_PEpmMCVuEdqSZ9OimJ-AzA", "_-kFhcCVuEdqSZ9OimJ-AzA", "_pV4NgSFsEdqrX8YVzvtlIg", "_XSr4YCFtEdqrX8YVzvtlIg", "_RP00kCCdEdq3qtLcbHn6PQ", "_nM9FIUocEdqrjq4i3fchvA"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_PEpmMCVuEdqSZ9OimJ-AzA", "_SkuIwCVwEdqSZ9OimJ-AzA", "_gM9X0CGFEdqMcovRzkCQow", "_J1u8gCGYEdqMcovRzkCQow", "_RP00kCCdEdq3qtLcbHn6PQ", "_nM9FIUocEdqrjq4i3fchvA"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_PEpmMCVuEdqSZ9OimJ-AzA", "_cn2akCVwEdqSZ9OimJ-AzA", "_zUDkgSGFEdqMcovRzkCQow", "_vllcADIKEdqGgPtrSpB0vQ", "_RP00kCCdEdq3qtLcbHn6PQ", "_nM9FIUocEdqrjq4i3fchvA"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_e_O28N7KEdm8G6yT7-Wdqw", "_vCtak0JHEdq4z9xc-r201w", "_vChNQkJHEdq4z9xc-r201w", "_vChNREJHEdq4z9xc-r201w", "_XSr4YCFtEdqrX8YVzvtlIg", "_RP00kCCdEdq3qtLcbHn6PQ", "_nM9FIUocEdqrjq4i3fchvA"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_e_O28N7KEdm8G6yT7-Wdqw", "_vCtak0JHEdq4z9xc-r201w", "_vCtajUJHEdq4z9xc-r201w", "_vCtai0JHEdq4z9xc-r201w", "_J1u8gCGYEdqMcovRzkCQow", "_RP00kCCdEdq3qtLcbHn6PQ", "_nM9FIUocEdqrjq4i3fchvA"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_e_O28N7KEdm8G6yT7-Wdqw", "_vCtak0JHEdq4z9xc-r201w", "_vCtaj0JHEdq4z9xc-r201w", "_vCtakkJHEdq4z9xc-r201w", "_rw4S4Z5IEdq7s5zuJVEAAw", "_RP00kCCdEdq3qtLcbHn6PQ", "_nM9FIUocEdqrjq4i3fchvA"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo, defaultQueryStr, true, true, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top">
+<div id="page-guid" value="_nM9FIUocEdqrjq4i3fchvA"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Task: Subsystem Design</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../images/taskdes_lg_dgm32.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This task describes how to document Subsystem elements and their behavior as well as Subsystem dependencies. </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Purpose</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a><a id="XE_design_subsystem__designing" name="XE_design_subsystem__designing"></a> 
+<ul>
+    <li>
+        To define the behaviors specified in the subsystem's interfaces in terms of collaborations of contained design
+        elements and external subsystems/interfaces.
+    </li>
+    <li>
+        To document the internal structure of the subsystem.
+    </li>
+    <li>
+        To define realizations between the subsystem's interfaces and contained classes.
+    </li>
+    <li>
+        To determine the dependencies upon other subsystems
+    </li>
+</ul></td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Roles</th><td class="sectionTableCell" width="30%"><span class="sectionTableCellHeading">Primary:
+								</span>
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_designer_FCD65796.html" guid="_CQ1sARi2Edq_uI8xTPML6g">Designer</a>
+</li>
+</ul>
+</td><td class="sectionTableCell" width="30%"><span class="sectionTableCellHeading">Additional:
+								</span></td><td class="sectionTableCell"><span class="sectionTableCellHeading">Assisting:
+								</span></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Inputs</th><td class="sectionTableCell" width="30%"><span class="sectionTableCellHeading">Mandatory:
+								</span>
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_design_subsystem_4A8BFDF3.html" guid="_CQ1sDRi2Edq_uI8xTPML6g">Design Subsystem</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_interface_39251209.html" guid="_CQ1sDhi2Edq_uI8xTPML6g">Interface</a>
+</li>
+</ul>
+</td><td class="sectionTableCell" width="30%"><span class="sectionTableCellHeading">Optional:
+								</span>
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_design_model_7D6F5DFE.html" guid="_CQ7yohi2Edq_uI8xTPML6g">Design Model</a>
+</li>
+</ul>
+</td><td class="sectionTableCell"><span class="sectionTableCellHeading">External:
+								</span>
+<ul>
+<li>None</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Outputs</th><td class="sectionTableCell" colspan="3">
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_design_class_7B5C3BC4.html" guid="_CQ1sCBi2Edq_uI8xTPML6g">Design Class</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_design_model_7D6F5DFE.html" guid="_CQ7yohi2Edq_uI8xTPML6g">Design Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_design_subsystem_4A8BFDF3.html" guid="_CQ1sDRi2Edq_uI8xTPML6g">Design Subsystem</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_interface_39251209.html" guid="_CQ1sDhi2Edq_uI8xTPML6g">Interface</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><h4>
+    &nbsp;UML 1.x Representation
+</h4>
+<p>
+    The same considerations about <a href="#Describe Subsystem Dependencies">subsystemdependencies</a>&nbsp;apply if
+    UML 1.5 notation is being used:
+</p>
+<p align="center">
+    <br />
+     <img height="554" alt="Diagram described in accompanying text." src="./../../core.base_rup/tasks/resources/layerib.gif" width="496" border="0" />
+</p>
+<p class="picturetext">
+    Example of Subsystem Layering using direct dependencies
+</p>
+<p class="picturetext">
+    <img height="322" alt="Diagram described in accompanying text." src="./../../core.base_rup/tasks/resources/layerif.gif" width="496" />
+</p>
+<p class="picturetext">
+    Example of Subsystem Layering using Interface dependencies
+</p>
+<p>
+    Refer to <a class="elementLink" href="./../../core.base_rup/guidances/supportingmaterials/differences_between_uml_1_x_and_uml_2_0_CA70F2E6.html" guid="4.792914878943572E-306">Differences Between UML 1.x and UML 2.0 </a> for more information.
+</p></td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Steps</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="sectionTableCell">
+<div class="stepHeading"> Distribute Subsystem Behavior to Subsystem Elements </div>
+<div class="stepContent">
+<table class="stepTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td><a id="XE_design_subsystem__distributing_behavior_on_subsystem_elements" name="XE_design_subsystem__distributing_behavior_on_subsystem_elements"></a><a id="Distribute Subsystem behavior" name="Distribute Subsystem behavior"></a> 
+<div align="left">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="100%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <td width="5%">
+                    <b>Purpose</b>
+                </td>
+                <td width="95%">
+                    To specify the internal behavior of the subsystem.<br />
+                     To identify new <a class="elementLinkWithUserText" href="./../../core.base_rup/workproducts/rup_design_class_B33BD5E5.html" guid="{952A9CE9-D5A3-43AC-980D-0B9298F3872E}">design classes</a> or <a class="elementLinkWithUserText" href="./../../core.base_rup/workproducts/rup_design_subsystem_1A8D169B.html" guid="{A3C60B25-9780-4BFA-81AF-C1AD40D8A833}">design subsystems</a> needed to satisfy subsystem
+                    behavioral requirements.&nbsp;
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+     The external behavior of a subsystem is primarily defined by the interfaces it realizes. When a subsystem realizes an
+    interface, it makes a commitment to support each and every operation defined by the interface. The operation may be in
+    turn realized by an operation on a design element (i.e., <a class="elementLink" href="./../../core.base_rup/workproducts/rup_design_class_B33BD5E5.html" guid="{952A9CE9-D5A3-43AC-980D-0B9298F3872E}">Design Class</a> or <a class="elementLink" href="./../../core.base_rup/workproducts/rup_design_subsystem_1A8D169B.html" guid="{A3C60B25-9780-4BFA-81AF-C1AD40D8A833}">Design Subsystem</a>) contained by the subsystem; this operation may
+    require collaboration with other design elements
+</div>
+<p>
+    The collaborations of model elements within the subsystem should be documented using sequence diagrams which show how
+    the subsystem behavior is realized. Each operation on an interface realized by the subsystem should have one or more
+    documenting sequence diagrams. This diagram is owned by the subsystem, and is used to design the <b>internal</b>
+    behavior of the subsystem.
+</p>
+<p>
+    If the behavior of the subsystem is highly state-dependent and represents one or more threads of control, state
+    machines are typically more useful in describing the behavior of the subsystem. State machines in this context are
+    typically used in conjunction with active classes to represent a decomposition of the threads of control of the system
+    (or subsystem in this case), and are described in statechart diagrams, see <a class="elementLinkWithType" href="./../../core.base_rup/guidances/guidelines/statechart_diagram_640B5D0B.html" guid="1.4528459404144188E-304">Guideline: Statechart Diagram</a>. <font color="#000000">In real-time systems, the behavior of <img alt="" src="./../../images/no_rup.gif">&#160;<a class="elementLinkWithType" href="./../../pages_not_installed/pages_not_installed.html" guid="{4423FCE1-FF59-4C8E-A6C4-AA4B13CB3250}">Artifact: Capsule</a>s will also be described using state machines.</font><font color="#000000">Within the subsystem, there may
+    be independent threads of execution, represented by active classes.</font>
+</p>
+<p class="reactive">
+    <font color="#000000">In real-time systems, <img alt="" src="./../../images/no_rup.gif">&#160;<a class="elementLinkWithType" href="./../../pages_not_installed/pages_not_installed.html" guid="{4423FCE1-FF59-4C8E-A6C4-AA4B13CB3250}">Artifact: Capsule</a>s will be used to encapsulate these threads.</font>
+</p>
+<p class="exampleheading">
+    Example:
+</p>
+<p class="example">
+    The collaboration of subsystems to perform some required behavior of the system can be expressed using sequence
+    diagrams:
+</p>
+<p align="center">
+    <img height="298" alt="Diagram described in accompanying text." src="./../../core.base_rup/tasks/resources/excollab.gif" width="429" />
+</p>
+<p class="picturetext">
+    This diagram shows how the interfaces of the subsystems are used to perform a scenario. Specifically, for the Network
+    Handling subsystem, we see the specific interfaces (ICoordinator in this case) and operations the subsystem must
+    support. We also see the NetworkHandling subsystems is dependent on the IBHandler and IAHandler interfaces.
+</p>
+<p class="example">
+    Looking inside the Subsystem, we see how the ICoordinator interface is realized:
+</p>
+<p align="center">
+    <img height="314" alt="Diagram described in accompanying text." src="./../../core.base_rup/tasks/resources/incollab.gif" width="504" />
+</p>
+<p class="picturetext">
+    The Coordinator class acts as a "proxy" for the ICoordinator interface, handling the interface operations and
+    coordinating the interface behavior.
+</p>
+<p>
+    This "internal" sequence diagram shows exactly what classes provide the interface, what needs to happen internally to
+    provide the subsystem's functionality, and which classes send messages out from the subsystem. The diagram clarifies
+    the internal design, and is essential for subsystems with complex internal designs. It also enables the subsystem
+    behavior to be easily understood, hopefully rendering it reusable across contexts.
+</p>
+<p>
+    Creating these "interface realization" diagrams, it may be necessary to create new classes and subsystems to perform
+    the required behavior. The process is similar to that defined in Use Case Analysis, but instead of Use Cases we are
+    working with interface operations. For each interface operation, identify the classes (or in some cases where the
+    required behavior is complex, a contained subsystem) within the current subsystem which are needed to perform the
+    operation. Create new classes/subsystems where existing classes/subsystems cannot provide the required behavior (but
+    try to reuse first).
+</p>
+<p>
+    Creation of new design elements should force reconsideration of subsystem content and boundary. Be careful to avoid
+    having effectively the same class in two different subsystems. Existence of such a class implies that the subsystem
+    boundaries may not be well-drawn. Periodically revisit <a class="elementLinkWithType" href="./../../core.base_rup/tasks/identify_design_elements_E884AB82.html" guid="{97D7343A-6993-4AB7-8F86-4DAC8C9075C8}">Task: Identify Design Elements</a> to re-balance subsystem responsibilities.
+</p>
+<p>
+    It is sometimes useful to create two separate internal models of the subsystem - a specification targeted to the
+    subsystem client and a realization targeted to the implementers. The specification may include "ideal" classes and
+    collaborations to describe the behavior of the subsystem in terms of ideal classes and collaborations. The realization,
+    on the other hand, corresponds more closely to the implementation, and may evolve to become the implementation.&nbsp;
+    For more information on Design Subsystem specification and realization, see <a class="elementLinkWithUserText" href="./../../core.base_rup/guidances/guidelines/design_subsystem_B26FD609.html#Subsystem Specification and Realization" guid="1.2314266786534317E-305">Work Product Guideline: Design Subsystem, Subsystem Specification and Realization</a>.
+</p></td>
+</tr>
+</table>
+</div>
+<div class="stepHeading"> Document Subsystem Elements </div>
+<div class="stepContent">
+<table class="stepTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td><a id="Document Subsystem Elements" name="Document Subsystem Elements"></a>
+<div align="left">
+    <table border="1" width="100%" cellspacing="0" cellpadding="4" style="border: 1px solid rgb(128,128,128)"     bordercolorlight="#808080" bordercolordark="#808080">
+        <tr>
+            <td width="5%">
+                <b>Purpose</b>
+            </td>
+            <td width="95%">
+                To document the internal structure of the subsystem.&nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+<p>
+    To document the internal structure of the subsystem, create one or more class diagrams showing the elements contained
+    by the subsystem, and their associations with one another. One class diagram should be sufficient, but more can be used
+    to reduce complexity and improve readability.
+</p>
+<p>
+    An example class diagram is shown below:
+</p>
+<p align="center">
+    <img src="./../../core.base_rup/tasks/resources/classdg.gif" alt="Diagram described in accompanying text." width="470" height="396" />
+</p>
+<p class="picturetext">
+    Example Class Diagram for an Order-Entry System.
+</p>
+<p>
+    Modeled as a component, the internal content of a subsystem can be alternatively represented within the component
+    rectangle in a component diagram. This representation also allows us to include the interaction points of this
+    subsystem to other parts of the system, which is done through its interfaces.
+</p>
+<p>
+    An example of component diagram is shown below, depicting the Order subsystem, its internal content, as well as its
+    provided and required interfaces.
+</p>
+<p align="center">
+    <img src="./../../core.base_rup/tasks/resources/compdg.jpg" alt="Diagram described in accompanying text." />
+</p>
+<p class="picturetext">
+    Example component diagram for Order Subsystem
+</p>
+<p>
+    As a component is a <a class="elementLink" href="./../../core.base_rup/guidances/termdefinitions/structured_class_4BB99B12.html" guid="_yW3E4NnmEdmO6L4XMImrsA">structured class</a>, it can be tightly encapsulated by forcing communications from
+    outside to pass through ports obeying declared interfaces, which brings additional precision in specification and
+    interconnection for that component. This representation allows us to "wire" instances of parts through connectors to
+    play a specific role in the component implementation (refer to <a class="elementLinkWithType" href="./../../core.base_rup/guidances/concepts/structured_class_FF8DB16F.html" guid="1.1994826813129747E-304">Concept: Structured Class</a> for additional information).
+</p>An example of composite structure diagram for the Order subsystem using interfaces and ports is shown below. 
+<p align="center">
+    <img src="./../../core.base_rup/tasks/resources/structdg.jpg" alt="Diagram described in accompanying text." />
+</p>
+<p class="picturetext">
+    Example composite structure diagram for Order Subsystem
+</p><br />
+<br />
+ In addition, a statechart diagram may be needed to document the possible states the subsystem can assume, see <a class="elementLinkWithType" href="./../../core.base_rup/guidances/guidelines/statechart_diagram_640B5D0B.html" guid="1.4528459404144188E-304">Guideline: Statechart Diagram</a>. 
+<p>
+    The description of the classes contained in the subsystem itself is handled in the <a class="elementLinkWithType" href="./../../core.base_rup/tasks/class_design_98F20FF9.html" guid="{27AE0601-2E95-4A6A-8EB3-0A4BA8E5626B}">Task: Class Design</a>.
+</p></td>
+</tr>
+</table>
+</div>
+<div class="stepHeading"> Describe Subsystem Dependencies </div>
+<div class="stepContent">
+<table class="stepTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td><a id="XE_design_subsystem__describing_subsystem_dependencies" name="XE_design_subsystem__describing_subsystem_dependencies"></a><a id="Describe Subsystem Dependencies" name="Describe Subsystem Dependencies"></a>
+<div align="left">
+    <table border="1" width="100%" cellspacing="0" cellpadding="4" style="border: 1px solid rgb(128,128,128)"     bordercolorlight="#808080" bordercolordark="#808080">
+        <tr>
+            <td width="5%">
+                <b>Purpose</b>
+            </td>
+            <td width="95%">
+                To document the interfaces upon which the subsystem is dependent.&nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+<p>
+    When an element contained by a subsystem uses some behavior of an element contained by another subsystem, a dependency
+    is created between the enclosing subsystems. To improve reuse and reduce maintenance dependencies, we want to express
+    this in terms of a dependency on a particular <a class="elementLink" href="./../../core.base_rup/workproducts/rup_interface_9816B54F.html" guid="{C6938487-1DAA-4F6A-B3BC-CB99165F0680}">Interface</a>
+    of the subsystem, not upon the subsystem itself nor on the element contained in the subsystem.
+</p>
+<p>
+    The reason for this is two-fold:
+</p>
+<ul>
+    <li>
+        We want to be able to substitute one model element (including subsystems) for one another as long as they offer the
+        same behavior. We specify the required behavior in terms of interfaces, so any behavioral requirements one model
+        element has on another should be expressed in terms of interfaces.
+    </li>
+    <li>
+        We want to allow the designer total freedom in designing the <b>internal</b> behavior of the subsystem so long as
+        it provides the correct external behavior. If a model element in one subsystem references a model element in
+        another subsystem, the designer is no longer free to remove that model element or redistribute the behavior of that
+        model element to other elements. As a result, the system is more brittle.
+    </li>
+</ul>
+<p>
+    In creating dependencies, ensure that there are no direct dependencies or associations between model elements contained
+    by the subsystem and model elements contained by other subsystems. Also ensure that there are no circular dependencies
+    between subsystems and interfaces; a subsystem cannot both realize an interface and be dependent on it as well.
+</p>
+<p>
+    Dependencies between subsystems, and between subsystems and packages, can be drawn directly as shown below. When shown
+    this way, the dependency states that one subsystem (Invoice Management, for example) is directly dependent on another
+    subsystem (Payment Scheduling Management).
+</p>
+<p align="center">
+    <br />
+     <img src="./../../core.base_rup/tasks/resources/layerib1.jpg" border="0" alt="Diagram described in accompanying text." />
+</p>
+<p class="picturetext">
+    Example of Subsystem Layering using direct dependencies
+</p>
+<p>
+    When there is a potential for substitution of one subsystem for another (where they have the same interfaces), the
+    dependency can be drawn to an <b><a class="elementLink" href="./../../core.base_rup/workproducts/rup_interface_9816B54F.html" guid="{C6938487-1DAA-4F6A-B3BC-CB99165F0680}">Interface</a></b> realized by the subsystem, rather than to the subsystem
+    itself. This allows any other model element (subsystem or class) which realizes the same interface to be used. Using
+    interface dependencies allows flexible frameworks to be designed using replaceable design elements.
+</p>
+<p align="center">
+    <br />
+     <img src="./../../core.base_rup/tasks/resources/layerif1.jpg" border="0" alt="Diagram described in accompanying text." />
+</p>
+<p class="picturetext">
+    Example of Subsystem Layering using Interface dependencies
+</p>
+<p class="picturetext">
+    &nbsp;
+</p></td>
+</tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Properties</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Multiple Occurrences" abbr="Multiple Occurrences">Multiple Occurrences</th><td class="sectionTableCell" align="left" headers="property_Multiple Occurrences"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Event Driven" abbr="Event Driven">Event Driven</th><td class="sectionTableCell" align="left" headers="property_Event Driven"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Ongoing" abbr="Ongoing">Ongoing</th><td class="sectionTableCell" align="left" headers="property_Ongoing"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Optional" abbr="Optional">Optional</th><td class="sectionTableCell" align="left" headers="property_Optional"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Planned" abbr="Planned">Planned</th><td class="sectionTableCell" align="left" headers="property_Planned"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Repeatable" abbr="Repeatable">Repeatable</th><td class="sectionTableCell" align="left" headers="property_Repeatable"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">More Information</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Guidelines</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/guidances/guidelines/statechart_diagram_640B5D0B.html" guid="1.4528459404144188E-304">Statechart Diagram</a>
+</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Tool Mentors</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/guidances/toolmentors/designing_subsystems_7438223D.html" guid="{9DD25EA9-F3A1-4C38-917A-1C759F37F565}">Designing Subsystems Using Rational XDE Developer</a>
+</li>
+<li>
+<a href="./../../core.base_rup/guidances/toolmentors/manage_subsystems_CE198D48.html" guid="{6943FA40-808B-4E3E-94FE-D7843FA59E91}">Managing Subsystems Using Rational Rose</a>
+</li>
+<li>
+<a href="./../../core.base_rup/guidances/toolmentors/manage_design_model_1D45D75E.html" guid="{BD1DD906-031C-4D8C-8078-87B6869A8C14}">Managing the Design Model Using Rational Rose</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script language="JavaScript" type="text/javascript">
+					contentPage.onload();
+					contentPage.processPage.fixDescriptorLinks();
+				</script>
+</html>

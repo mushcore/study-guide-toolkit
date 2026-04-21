@@ -1,0 +1,3 @@
+<!DOCTYPE html>
+<html><head></head><body style="color: rgb(32, 33, 34); font-family: undefined;"><p><span style="font-family: 'courier new', courier, sans-serif;">List&lt;string&gt; envVars = new List&lt;string&gt;();</span></p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">foreach (DictionaryEntry de in Environment.GetEnvironmentVariables())</span><br><span style="font-family: 'courier new', courier, sans-serif;">{</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; envVars.Add($"{de.Key} = {de.Value}");</span><br><span style="font-family: 'courier new', courier, sans-serif;">}</span></p></body></html>

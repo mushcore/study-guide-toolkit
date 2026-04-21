@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Process Details Page";
+
+    var process = ViewData["proc"] as Process;
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Here are the details of the process: @process?.ProcessName.</p>
+
+<table>
+    <tr>
+        <th>Id</th>
+        <td>@process?.Id</td>
+    </tr>
+    <tr>
+        <th>Name</th>
+        <td>@process?.ProcessName</td>
+    </tr>
+    <tr>
+        <th>Memory (MB)</th>
+        <td>@(process != null ? process.WorkingSet64 / 1024 / 1024 : 0)</td>
+    </tr>
+    <tr>
+        <th>Start Time</th>
+        <td>@(process != null ? process.StartTime.ToString() : "N/A")</td>
+    </tr>
+    <tr>
+        <th>Total Processor Time</th>
+        <td>@(process != null ? process.TotalProcessorTime.ToString() : "N/A")</td>
+    </tr>

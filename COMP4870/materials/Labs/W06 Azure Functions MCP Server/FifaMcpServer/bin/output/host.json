@@ -1,9 +1,0 @@
-{
-  "version": "2.0",
-  "extensions": {
-    "mcp": {
-      "serverName": "FifaMcpServer",
-      "serverVersion": "1.0.0"
-    }
-  }
-}

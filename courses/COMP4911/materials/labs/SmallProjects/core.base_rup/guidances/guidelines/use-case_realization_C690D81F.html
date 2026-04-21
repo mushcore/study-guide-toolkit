@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Guideline: Use-Case Realization</title>
+<meta name="uma.type" content="Guideline">
+<meta name="uma.name" content="use-case_realization">
+<meta name="uma.presentationName" content="Use-Case Realization">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_qwxC8N7YEdmjRZts2c4ZjQ", "{DB21F5EF-810B-4994-B120-79FA8774FA9D}", "1.6790343052744206E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_f6_YwN7DEdmsEI4YDGX2ag", "_qwxC8N7YEdmjRZts2c4ZjQ", "{DB21F5EF-810B-4994-B120-79FA8774FA9D}", "1.6790343052744206E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_jijhYAIaEdqEutyfYo0quQ", "_n7ZcgN7REdmjRZts2c4ZjQ", "{87EB094F-095B-4981-ACC3-319B3B298641}", "1.6790343052744206E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_2ClPcDIcEdqDs_9ORT1Rig", "1.6790343052744206E-305"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="1.6790343052744206E-305"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Guideline: Use-Case Realization</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/guidance.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">A use-case realization represents how a use case will be implemented in terms of collaborating objects. This guideline describes its purpose and UML notation.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/roles/rup_designer_BA8DE74E.html" guid="{DB21F5EF-810B-4994-B120-79FA8774FA9D}">Designer</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/tasks/use_case_analysis_A6990185.html" guid="{28014615-A62F-452D-B821-30C7CAB0EC44}">Use-Case Analysis</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/tasks/use_case_design_92D13EEE.html" guid="{76E2B93D-051C-4B8C-BEA1-B40A40CBD986}">Use-Case Design</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/workproducts/rup_use_case_realization_E4F713BD.html" guid="{87EB094F-095B-4981-ACC3-319B3B298641}">Use-Case Realization</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a><a id="XE_use-case_realization__guidelines_for" name="XE_use-case_realization__guidelines_for"></a> 
+<h3>
+    <a id="Introduction" name="Introduction">Introduction</a>
+</h3>
+<p>
+    A use-case realization represents how a use case will be implemented in terms of collaborating objects. This artifact
+    can take various forms. It may include, for example, a textual description (a document), class diagrams of
+    participating classes and subsystems, and interaction diagrams (communication and sequence diagrams) that illustrate
+    the flow of interactions between class and subsystem instances.
+</p>
+<p>
+    In a model, a use-case realization is represented as a UML collaboration that groups the diagrams and other information
+    (such as textual descriptions) that form part of the use-case realization.
+</p>
+<p>
+    The reason for separating the use-case realization from its use case is that doing so allows the use cases to be
+    managed separately from their realizations. This is particularly important for larger projects, or families of systems
+    where the same use cases may be designed differently in different products within the product family. Consider the case
+    of a family of telephone switches which have many use cases in common, but which design and implement them differently
+    according to product positioning, performance and price.
+</p>
+<p>
+    For larger projects, separating the use case and its realization allows changes to the design of the use case without
+    affecting the baselined use case itself.
+</p>
+<p>
+    For each use case in the use-case model, there is a use-case realization in the analysis/design model with a
+    realization relationship to the use case. In the UML this is shown as a dashed arrow, with an arrowhead like a
+    generalization relationship, indicating that a realization is a kind of inheritance, as well as a dependency (i.e. it
+    could have been shown as a dependency stereotyped with &lt;&lt;realize&gt;&gt;).
+</p>
+<p class="picturecenter" align="center">
+    <img height="109" alt="Diagram described in caption." src="./../../../core.base_rup/guidances/guidelines/resources/ucrea1.gif" width="291" border="0" />
+</p>
+<p class="picturetext">
+    A use-case realization in the analysis/design model can be traced to a use case in the use-case model.
+</p>
+<h3>
+    <a id="Class Diagrams" name="Class Diagrams">Class Diagrams Owned by a Use-Case Realization</a>
+</h3>
+<p>
+    For each use-case realization there may be one or more class diagrams depicting its participating classes. The figure
+    below shows a class diagram for the realization of the <b>Receive Deposit Item</b> use case. A class and its objects
+    often participate in several use-case realizations. It is important during design to coordinate all the requirements on
+    a class and its objects that different use-case realizations may have.
+</p>
+<p class="picturecenter" align="center">
+    <img height="213" alt="a communication diagram depicting a use-case realization" src="./../../../core.base_rup/guidances/guidelines/resources/md_ucre3.gif"     width="328" />
+</p>
+<p class="picturetext">
+    The use case Receive Deposit Item and its class diagram.
+</p>
+<h3>
+    Communication and <a id="Sequence Diagrams" name="Sequence Diagrams">Sequence Diagrams Owned by a Use-Case
+    Realization</a>
+</h3>
+<p>
+    For each use-case realization there is one or more interaction diagrams depicting its participating objects and their
+    interactions. There are two types of interaction diagrams: Sequence diagrams and communication diagrams. They express
+    similar information, but show it in different ways. Sequence diagrams show the explicit sequence of messages and are
+    better when it is important to visualize the time ordering of messages, whereas communication diagrams show the
+    communication links between objects and are better for understanding all of the effects on a given object and for
+    algorithm design. See <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/sequence_diagram_AFA76EBB.html" guid="3.211008403369512E-306">Guideline: Sequence Diagram</a> and <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/communication_diagram_FFFEA1B5.html" guid="4.5194432001390347E-305">Guideline: Communication Diagram</a> below for more information.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

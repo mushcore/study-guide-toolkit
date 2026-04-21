@@ -1,0 +1,433 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Task: Structure the Implementation Model</title>
+<meta name="uma.type" content="TaskDescriptor">
+<meta name="uma.name" content="structure_implementation_model">
+<meta name="uma.presentationName" content="Structure the Implementation Model">
+<meta name="uma.guid" content="_AS4V0EofEdqrjq4i3fchvA">
+<meta name="element_type" content="TaskDescriptor">
+<meta name="filetype" content="description">
+<meta name="role" content="">
+<link rel="StyleSheet" href="./../../css/default.css" type="text/css">
+<script src="./../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ActivityTreeTable.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ProcessElementPage.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/processElementData.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var defaultQueryStr = '?proc={F2AD342D-0F3B-4E19-A351-75ECDCB806F5}&path={F2AD342D-0F3B-4E19-A351-75ECDCB806F5},{4C4FF747-885B-4569-A462-756C8ADD79AB},_AS4V0EofEdqrjq4i3fchvA';
+					var backPath = './../../';
+					var imgPath = './../../images/';
+					var nodeInfo=null;
+					contentPage.preload(imgPath, backPath, nodeInfo, defaultQueryStr, true, true, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top">
+<div id="page-guid" value="_AS4V0EofEdqrjq4i3fchvA"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Task: Structure the Implementation Model</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../images/taskdes_lg_dgm32.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This task describes how to establish the structure of the implementation elements based upon assigned responsibilities for implementation subsystems and their contents.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Roles</th><td class="sectionTableCell" width="30%"><span class="sectionTableCellHeading">Primary:
+								</span>
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_software_architect_E4FCFF9F.html" guid="_AS-ccEofEdqrjq4i3fchvA">Software Architect</a>
+</li>
+</ul>
+</td><td class="sectionTableCell" width="30%"><span class="sectionTableCellHeading">Additional:
+								</span></td><td class="sectionTableCell"><span class="sectionTableCellHeading">Assisting:
+								</span></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Inputs</th><td class="sectionTableCell" width="30%"><span class="sectionTableCellHeading">Mandatory:
+								</span>
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_design_model_EF9ADFAF.html" guid="_AS-ccUofEdqrjq4i3fchvA">Design Model</a>
+</li>
+</ul>
+</td><td class="sectionTableCell" width="30%"><span class="sectionTableCellHeading">Optional:
+								</span>
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_deployment_model_470DC98A.html" guid="_AS-cc0ofEdqrjq4i3fchvA">Deployment Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_implementation_model_2D464D8F.html" guid="_CSFCKxi2Edq_uI8xTPML6g">Implementation Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_supplementary_specification_DE33F3C5.html" guid="_AS-cckofEdqrjq4i3fchvA">Supplementary Specifications</a>
+</li>
+</ul>
+</td><td class="sectionTableCell"><span class="sectionTableCellHeading">External:
+								</span>
+<ul>
+<li>None</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Outputs</th><td class="sectionTableCell" colspan="3">
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_implementation_model_2D464D8F.html" guid="_CSFCKxi2Edq_uI8xTPML6g">Implementation Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_implementation_subsystem_74705DB1.html" guid="_wAEZgPRUEdyv-tm4a00cLg">Implementation Subsystem</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_software_architecture_document_A98EE1BE.html" guid="_AS-cdEofEdqrjq4i3fchvA">Software Architecture Document</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Steps</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="sectionTableCell">
+<div class="stepHeading"> Establish the implementation model structure </div>
+<div class="stepContent">
+<table class="stepTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td><a id="Establish the Implementation Model Structure" name="Establish the Implementation Model Structure"></a>
+<div align="left">
+    <table border="1" width="100%" cellspacing="0" cellpadding="4" style="border: 1px solid rgb(128,128,128)"     bordercolorlight="#808080" bordercolordark="#808080">
+        <tr>
+            <td width="5%">
+                <b>Purpose</b>
+            </td>
+            <td width="95%">
+                To establish the structure of the Implementation Model.&nbsp;
+            </td>
+        </tr>
+    </table><br />
+</div>
+<p>
+    In moving from the 'design space' to the 'implementation space' start by mirroring the structure of the Design Model in
+    the Implementation Model.
+</p>
+<p>
+    Design Packages will have corresponding Implementation Subsystems, which will contain one or more directories and files
+    (Artifact: Implementation Element) needed to implement the corresponding design elements. The mapping from the Design
+    Model to the Implementation Model may change as each Implementation Subsystem is allocated to a specific layer in the
+    architecture.
+</p>
+<p>
+    Create a diagram to represent the Implementation Model Structure (see Guidelines: Implementation Diagram).
+</p></td>
+</tr>
+</table>
+</div>
+<div class="stepHeading"> Adjust implementation subsystems </div>
+<div class="stepContent">
+<table class="stepTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td><a id="Adjust Subsystems" name="Adjust Subsystems"></a>
+<div align="left">
+    <table border="1" width="100%" cellspacing="0" cellpadding="4" style="border: 1px solid rgb(128,128,128)"     bordercolorlight="#808080" bordercolordark="#808080">
+        <tr>
+            <td width="5%">
+                <b>Purpose</b>
+            </td>
+            <td width="95%">
+                Adapt the structure of the model to reflect team organization or implementation language constraints.&nbsp;
+            </td>
+        </tr>
+    </table><br />
+</div>
+<p>
+    Decide whether the organization of subsystems needs to be changed, by addressing small tactical issues related to the
+    implementation environment. Below are some examples of such tactical issues. Note that if you decide to change the
+    organization of implementation subsystems you must also decide whether you should go back and update the design model,
+    or allow design model to differ from the implementation model.
+</p>
+<ul>
+    <li>
+        <b>Development team organization</b>. The subsystem structure must allow several implementers or teams of
+        implementers to proceed in parallel without too much overlap and agitation. It is recommended that each
+        implementation subsystem be the responsibility of one and only one team. This means that you might want to split a
+        subsystem in two (if it is large), and assign the two pieces to be implemented by two implementers or two teams of
+        implementers,&nbsp; particularly if the two implementers (or teams) have different build/release cycles.
+    </li>
+    <li>
+        <b>Declarations of types</b>. In implementation you may realize that a subsystem needs to import work products from
+        a another subsystem, because a type is declared in that subsystem. Typically, this occurs when you use typed
+        programming languages, such as C++, Java and Ada. In this situation, and in general, it may be a good idea to
+        extract type declarations into a separate subsystem.
+    </li>
+</ul>
+<p class="exampleheading">
+    Example
+</p>
+<p class="example">
+    You extract some type declarations from <b>Subsystem D</b>, into a new subsystem Types, to make <b>Subsystem A</b>
+    independent of changes to the public (visible) work products in <b>Subsystem D</b>.
+</p>
+<p align="center">
+    <img src="./../../core.base_rup/tasks/resources/ac_stri1.gif" alt="Illustration of Type Declaration Subsystem Extraction" width="567"     height="207" />
+</p>
+<p class="picturetext">
+    Type declarations are extracted from Subsystem D
+</p>
+<p>
+    .
+</p>
+<ul>
+    <li>
+        <b>Existing legacy code and component systems.</b> You may need to incorporate legacy code, a library of reusable
+        components, or off-the-shelf products. If these have not been modeled in design, then implementation subsystems
+        must be added.
+    </li>
+    <li>
+        <b>Adjust dependencies.</b> Assume that a subsystem A and a subsystem B have import dependencies to each other.
+        However, you may want to make B less dependent on changes in subsystem A. Extract the work products of A that B
+        imports and put in a new implementation subsystem A1 in a lower layer.
+    </li>
+</ul>
+<p align="center">
+    <img src="./../../core.base_rup/tasks/resources/ac_stri2.gif" alt="Sample Artifact Grouping Transfer Diagram" width="403" height="106" />
+</p>
+<p class="picturetext">
+    Work products are extracted from subsystem A, and placed in a new subsystem A1.
+</p>
+<p>
+    Now that the Implementation Subsystems no longer map one-to-one with packages/subsystems in the Design Model, you can
+    either make a corresponding change in the Design Model (if you have decided to keep the Design Model closely aligned
+    with the Implementation Model), or keep track of the mapping between Implementation and Design Models (such as through
+    traceability or realization dependencies). If and how such mapping is done is a process decision that should be
+    captured in the <img alt="" src="./../../images/no_rup.gif">&#160;<a class="elementLinkWithType" href="./../../pages_not_installed/pages_not_installed.html" guid="{E5501201-7EE6-4243-AE91-73880FF76FC1}">Artifact: Project-Specific Guidelines</a>.
+</p></td>
+</tr>
+</table>
+</div>
+<div class="stepHeading"> Define imports for each implementation subsystem </div>
+<div class="stepContent">
+<table class="stepTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td><a id="Define Imports for Each Subsystem" name="Define Imports for Each Subsystem"></a>
+<div align="left">
+    <table border="1" width="100%" cellspacing="0" cellpadding="4" style="border: 1px solid rgb(128,128,128)"     bordercolorlight="#808080" bordercolordark="#808080">
+        <tr>
+            <td width="5%">
+                <b>Purpose</b>
+            </td>
+            <td width="95%">
+                To define dependencies between subsystems.&nbsp;
+            </td>
+        </tr>
+    </table><br />
+</div>
+<p>
+    For each subsystem, define which other subsystems it imports. This can be done for whole sets of subsystems, allowing
+    all subsystems in one layer to import all subsystems in a lower layer. Generally, the dependencies in the
+    Implementation Model will mirror those of the Design Model, except where the structure of the Implementation Model has
+    been adjusted (see <a href="#Adjust Subsystems">Adjust implementation subsystems</a>).
+</p>
+<p>
+    Present the layered structure of subsystems in component diagrams.
+</p></td>
+</tr>
+</table>
+</div>
+<div class="stepHeading"> Decide how to treat executable programs (and other derived objects) </div>
+<div class="stepContent">
+<table class="stepTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td><a id="Decide how to treat executable programs (and other derived objects)" name="Decide how to treat executable programs (and other derived objects)"></a>
+<p>
+    Executables (and other derived objects) are the result of applying a build process to an implementation subsystem (or
+    subsystems) or a part thereof, and so logically belong with the implementation subsystem. However, the software
+    architect, working with the configuration manager, will need to decide the configuration item structure to be applied
+    to the implementation model.&nbsp;
+</p>
+<p>
+    For ease of selection and reference, particularly for deployment, the default recommendation is to define separate
+    configuration items to contain the sets of executable programs that are deployable (what executable programs are
+    deployed on what nodes is captured in the <a class="elementLink" href="./../../core.base_rup/workproducts/rup_deployment_model_57DF1DF5.html" guid="{5981B6BE-2FD1-4984-AA94-2F7428439BA6}">Deployment Model</a>). Thus, in the simple case, for each implementation
+    subsystem there would be a configuration item for the deployable executable programs and a configuration item to
+    contain the source etc. used to produce them.&nbsp;The implementation subsystem can be considered to be represented by
+    a composite configuration item containing these configuration items (and perhaps others, such as test assets).
+</p>
+<p>
+    From a modeling point of view, a collection of executable programs produced by a build process can be represented as a
+    <a class="elementLinkWithType" href="./../../core.base_rup/workproducts/rup_build_BA336272.html" guid="{53728CD9-FA47-4B58-A443-E9F9DC196916}">Artifact: Build</a> (which is a package) contained within the associated
+    implementation subsystem (itself a package).&nbsp;&nbsp;
+</p></td>
+</tr>
+</table>
+</div>
+<div class="stepHeading"> Decide how to treat test assets </div>
+<div class="stepContent">
+<table class="stepTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td><a id="Decide how to treat test assets" name="Decide how to treat test assets"></a>
+<div align="left">
+    <table border="1" width="100%" cellspacing="0" cellpadding="4" style="border: 1px solid rgb(128,128,128)"     bordercolorlight="#808080" bordercolordark="#808080">
+        <tr>
+            <td width="5%">
+                <b>Purpose</b>
+            </td>
+            <td width="95%">
+                To add test work products to the Implementation Model.&nbsp;
+            </td>
+        </tr>
+    </table><br />
+</div>
+<p>
+    In general, test work products and test subsystems are not treated much differently in the Rational Unified Process
+    from other developed software. However, test work products and subsystems do not usually form part of the deployed
+    system, and often are not deliverable to the customer. Therefore the default recommendation is to align the test assets
+    with the target-of-test (e.g. implementation element for unit test, implementation subsystem for integration test,
+    system for system test) but keep the test assets in, for example, separate test directories, if the project repository
+    is organized as a set or hierarchy of directories. Distinct test subsystems (intended for testing above the unit test
+    level) should be treated in the same way as other implementation subsystems - as distinct configuration items.
+</p>
+<p>
+    For modeling, a collection of test work products can be represented as a <a class="elementLinkWithType" href="./../../core.base_rup/workproducts/rup_implementation_subsystem_118747E9.html" guid="{0F629848-C19E-49AB-A6C1-C8D6A094898A}">Artifact: Implementation Subsystem</a> (a package). For unit test, such a
+    test subsystem would normally be contained within the associated (tested) implementation subsystem. The software
+    architect, in consultation with the configuration manager should decide whether test work products at this level should
+    be configured together with the implementation elements they test, or as separate configuration items. For integration
+    and system test, the test subsystems may be peers of the implementation subsystems under test.
+</p></td>
+</tr>
+</table>
+</div>
+<div class="stepHeading"> Update the implementation view </div>
+<div class="stepContent">
+<table class="stepTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td><a id="XE_implementation_view__updating" name="XE_implementation_view__updating"></a><a id="Update the Implementation View" name="Update the Implementation View"></a>
+<div align="left">
+    <table border="1" width="100%" cellspacing="0" cellpadding="4" style="border: 1px solid rgb(128,128,128)"     bordercolorlight="#808080" bordercolordark="#808080">
+        <tr>
+            <td width="5%">
+                <b>Purpose</b>
+            </td>
+            <td width="95%">
+                To update the Implementation View of the Software Architecture Document.&nbsp;
+            </td>
+        </tr>
+    </table><br />
+</div>
+<p>
+    The Implementation View is described in the <a class="elementLink" href="./../../core.base_rup/workproducts/rup_software_architecture_document_C367485C.html" guid="{6F49641A-ED10-47B5-9E5D-3F90A6BF3006}">Software Architecture Document</a>. This section contains component
+    diagrams that show the layers and the allocation of implementation subsystems to layers, as well as import dependencies
+    between subsystems.
+</p></td>
+</tr>
+</table>
+</div>
+<div class="stepHeading"> Evaluate the implementation model </div>
+<div class="stepContent">
+<table class="stepTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td><a id="Evaluate the implementation model" name="Evaluate the implementation model"></a>
+<p>
+    See <a class="elementLinkWithType" href="./../../core.base_rup/guidances/checklists/implementation_model_DD65F54E.html" guid="2.400665964241535E-305">Checklist: Implementation Model</a>.
+</p>&nbsp; <br />
+<br /></td>
+</tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Properties</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Multiple Occurrences" abbr="Multiple Occurrences">Multiple Occurrences</th><td class="sectionTableCell" align="left" headers="property_Multiple Occurrences"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Event Driven" abbr="Event Driven">Event Driven</th><td class="sectionTableCell" align="left" headers="property_Event Driven"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Ongoing" abbr="Ongoing">Ongoing</th><td class="sectionTableCell" align="left" headers="property_Ongoing"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Optional" abbr="Optional">Optional</th><td class="sectionTableCell" align="left" headers="property_Optional"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Planned" abbr="Planned">Planned</th><td class="sectionTableCell" align="left" headers="property_Planned"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Repeatable" abbr="Repeatable">Repeatable</th><td class="sectionTableCell" align="left" headers="property_Repeatable"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">More Information</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Tool Mentors</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/guidances/toolmentors/accessing_clearcase_3570C723.html" guid="{B67E317F-3C7C-4377-9F44-E9B38321C3F1}">Accessing Rational ClearCase from Rational Rose</a>
+</li>
+<li>
+<a href="./../../core.base_rup/guidances/toolmentors/setting_up_for_project_637A2D05.html" guid="{F4DEA91A-7EBD-4853-8517-ACB4ED6FD5AD}">Setting Up Rational Rose for a Project</a>
+</li>
+<li>
+<a href="./../../core.base_rup/guidances/toolmentors/setup_implementation_model_40C73358.html" guid="{FEEAA9AD-2CEE-41C6-BD6C-BBF14CA205A5}">Setting Up the Implementation Model Using Rational ClearCase</a>
+</li>
+<li>
+<a href="./../../core.base_rup/guidances/toolmentors/setting_up_impl_model_with_ucm_C9DD9D5A.html" guid="{10964F4E-39B2-4D34-9A75-3B6360B47C2B}">Setting Up the Implementation Model with UCM Using Rational ClearCase</a>
+</li>
+<li>
+<a href="./../../core.base_rup/guidances/toolmentors/structure_impl_model_D03711A8.html" guid="{AE16EC14-5366-4CFD-A207-14F352D1B3E3}">Structuring the Implementation Model Using Rational Rose</a>
+</li>
+<li>
+<a href="./../../core.base_rup/guidances/toolmentors/structuring_the_implementation_model_63DD71E7.html" guid="{ED12F411-0BE2-4A9D-AF41-07329966116F}">Structuring the Implementation Model Using Rational XDE Developer</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script language="JavaScript" type="text/javascript">
+					contentPage.onload();
+					contentPage.processPage.fixDescriptorLinks();
+				</script>
+</html>

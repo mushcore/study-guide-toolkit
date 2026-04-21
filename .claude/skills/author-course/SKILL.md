@@ -9,7 +9,7 @@ disable-model-invocation: false
 You are driving Phase A authoring for a new course. Your output is a complete, audit-clean `content/{id}/` tree — every rule from `content/STANDARDS.md` enforced. The five stages in `ADD-NEW-COURSE.md §Phase A` are the spec; this skill is the driver.
 
 **Core principles (non-negotiable):**
-- Every authored unit cites a source in `COMP{id}/materials/` or a `research-*.md` file. LLM parametric knowledge is forbidden (STANDARDS §Source discipline).
+- Every authored unit cites a source in `courses/COMP{id}/materials/` or a `research-*.md` file. LLM parametric knowledge is forbidden (STANDARDS §Source discipline).
 - You pause after each stage. The user reviews and says "proceed" / redirects / asks for revisions. Do not chain stages without that handshake — authoring is judgment-heavy and per-stage quality gates prevent drift.
 - No critical audit findings may cross a stage boundary. Warnings can if the user approves; advisories always can.
 - Do not invent content. Sparse source → sparse output. If materials don't cover a topic, flag it rather than fabricate.
@@ -39,7 +39,7 @@ Three stages fan out to sub-agents; two stay serial. Parallel authoring drifts i
 
 ## Inputs
 
-- `$ARGUMENTS` — `<course-id> [materials-path]`. Course id required (e.g. `4920`). Materials path optional; defaults to `COMP{id}/materials/` at TERM4 root.
+- `$ARGUMENTS` — `<course-id> [materials-path]`. Course id required (e.g. `4920`). Materials path optional; defaults to `courses/COMP{id}/materials/` at TERM4 root.
 
 If the course id is empty or `content/{id}/` already has substantive content, stop and clarify — this skill is for authoring *new* courses. Use `/enrich-course {id}` for upgrading existing trees.
 
@@ -64,7 +64,7 @@ Spawn agents in a single tool-call message (so they run concurrently). Typical f
 
 **Sub-agent brief per agent** (fill `{SUBFOLDER}`):
 
-> Read every file under `COMP{id}/materials/{SUBFOLDER}/`. Do not read other subfolders. Report (under 400 words):
+> Read every file under `courses/COMP{id}/materials/{SUBFOLDER}/`. Do not read other subfolders. Report (under 400 words):
 > 1. Topics covered, with estimated emphasis per topic (bold / repeated / chapter-heading signals).
 > 2. Every diagram encountered — type (page table, RAG, matrix, state machine, timing, tree), associated question or slide #.
 > 3. For past-exams: question count per topic, wrong-answer patterns from solution keys if present.
@@ -73,7 +73,7 @@ Spawn agents in a single tool-call message (so they run concurrently). Typical f
 >
 > Do not write files. Return structured markdown.
 
-Also spawn one additional agent to read (if present): `COMP{id}/generated/exam-study/research-*.md` and `COMP{id}/graphify-out/GRAPH_REPORT.md`. Report: dense topic summaries available per topic, god-node list, surprising cross-topic connections.
+Also spawn one additional agent to read (if present): `courses/COMP{id}/generated/exam-study/research-*.md` and `courses/COMP{id}/graphify-out/GRAPH_REPORT.md`. Report: dense topic summaries available per topic, god-node list, surprising cross-topic connections.
 
 **Main thread merges** all agent outputs into `content/{id}/_scratch/topic-map.md`:
 
@@ -356,17 +356,17 @@ Wait.
 
 1. Full `/audit-content {id}`. Close every remaining critical. Warnings ship-blocking, advisories defer.
 2. Verify cheat-sheet blocks all filled (no empty `##` headings).
-3. Invoke `/add-course {id}` — it re-runs audit preflight, compiles the bundle, wires the three touchpoints (`scripts/build-content.js`, `content/_dist/_aggregator.js`, `study-guidev2/src/main.jsx`), verifies `npm run build`.
+3. Invoke `/add-course {id}` — it re-runs audit preflight, compiles the bundle, wires the three touchpoints (`scripts/build-content.js`, `content/_dist/_aggregator.js`, `app/src/main.jsx`), verifies `npm run build`.
 4. Report final status: course id, bundle counts, touchpoints modified, audit warning/advisory counts for the user's follow-up list.
 
-Tell the user the next manual step: `cd study-guidev2 && npm run dev`, smoke-test dashboard + every subview, then `./deploy.sh`.
+Tell the user the next manual step: `cd app && npm run dev`, smoke-test dashboard + every subview, then `./deploy.sh`.
 
 ## Handoff and safety
 
 - Never chain stages without the user's "proceed" — authoring quality drifts without the gate.
 - Never fabricate source citations. If materials don't cover a topic claim, output "— source not found in materials" and surface it to the user rather than invent.
 - Never patch around audit criticals. Fix the underlying content.
-- If `COMP{id}/generated/exam-study/research-*.md` exists, consult it before drafting — those are often the densest starting points for `explanation` / `example` fields on cards and for pitfall content on dives.
+- If `courses/COMP{id}/generated/exam-study/research-*.md` exists, consult it before drafting — those are often the densest starting points for `explanation` / `example` fields on cards and for pitfall content on dives.
 - Respect the topic-map Stage-1 priority order in Stage 3. Don't author low-priority modules before high-priority ones.
 - Keep the `_scratch/` directory out of the audit (it's ephemeral). Do not reference `_scratch/topic-map.md` from any committed content file.
 

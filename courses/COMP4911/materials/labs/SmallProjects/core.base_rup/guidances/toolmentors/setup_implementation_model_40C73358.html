@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Setting Up the Implementation Model Using Rational ClearCase</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="setup_implementation_model">
+<meta name="uma.presentationName" content="Setting Up the Implementation Model Using Rational ClearCase">
+<meta name="uma.category" content="Tool:rup_clearcase:Rational ClearCase">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational ClearCase">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_qS-iwAIOEdqTna4sZVFRow", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{FEEAA9AD-2CEE-41C6-BD6C-BBF14CA205A5}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_U5tiUAISEdqTna4sZVFRow", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{FEEAA9AD-2CEE-41C6-BD6C-BBF14CA205A5}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_LWLSQDIEEdqwaNnSEheSAg", "_85i-sDIFEdqwaNnSEheSAg", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{FEEAA9AD-2CEE-41C6-BD6C-BBF14CA205A5}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_4U33kAILEdq-_NKqZM1EhA", "_XxCC0AIUEdqEutyfYo0quQ", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{FEEAA9AD-2CEE-41C6-BD6C-BBF14CA205A5}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{FEEAA9AD-2CEE-41C6-BD6C-BBF14CA205A5}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_9U7IkDIEEdqwaNnSEheSAg", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{FEEAA9AD-2CEE-41C6-BD6C-BBF14CA205A5}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{FEEAA9AD-2CEE-41C6-BD6C-BBF14CA205A5}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{FEEAA9AD-2CEE-41C6-BD6C-BBF14CA205A5}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Setting Up the Implementation Model Using Rational ClearCase</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor explains how to set up the Implementation Model directory using Rational ClearCase.</td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_clearcase_9665C.html" guid="{B2D1373B-A826-4169-A38A-B53B2122DC7C}">Rational ClearCase</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/setup_cm_environment_78ABEDF9.html" guid="{FC91D0C9-759E-4D3D-86D8-22D7B26AA0F6}">Set Up Configuration Management (CM) Environment</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/tasks/structure_implementation_model_E0E0DEF9.html" guid="{35272424-8A0A-4DDD-BA74-C91B80A8D046}">Structure the Implementation Model</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    Terminology
+</h3>
+<p>
+    There are some differences between RUP terminology and&nbsp; that used by ClearCase. The following definitions of
+    tool-specific terminology should help clarify the differences.
+</p>
+<ul>
+    <li>
+        <b>Configuration Management</b>: In the context of ClearCase, use of the term Configuration Management refers to
+        Version Control and Build Management. RUP uses the IEEE and ISO definitions of <a class="elementLink" href="./../../../core.base_rup/guidances/termdefinitions/configuration_management_ECFE6290.html" guid="_yEPD19nmEdmO6L4XMImrsA">configuration management</a> (CM), which also includes Change Management as part of
+        CM.
+    </li>
+    <li>
+        <b>Configuration and Change Management</b>: Both ClearCase and Rational ClearQuest refer to Configuration and
+        Change Management, which is synonymous with the RUP definition of Configuration Management. RUP uses these terms
+        synonymously.
+    </li>
+    <li>
+        <b>Project</b>: A ClearCase project maps to the RUP <a class="elementLink" href="./../../../core.base_rup/workproducts/rup_project_repository_E3932821.html" guid="{A99B1686-7BD7-43B3-9A7F-7DB18A10F4B2}">Project Repository</a>.
+    </li>
+</ul>
+<h3>
+    Overview
+</h3>
+<p>
+    This tool mentor describes how to create a framework in the development environment for organizing and storing
+    configuration item work products related to the implementation and delivery of the software product. The physical
+    representation of subsystems in the development environment defines the "product directory structure" and is, in
+    effect, the software Implementation Model.
+</p>
+<p>
+    Before beginning to use ClearCase, it's important to know whether you'll use ClearCase Unified Change Management (UCM),
+    an out-of-the-box usage model, or base ClearCase, which provides a set of tools that can be used to construct other
+    usage models.
+</p>
+<p>
+    This tool mentor is applicable to both ClearCase UCM and base ClearCase tasks, whereas all of the other ClearCase tool
+    mentors presented in the RUP use the UCM model.
+</p>
+<p>
+    This tool mentor is applicable when running Microsoft Windows.
+</p>
+<h4>
+    <a id="ToolSteps" name="ToolSteps">Tool Steps</a>
+</h4>
+<p>
+    To set up the implementation model with Rational ClearCase:
+</p>
+<ol>
+    <li>
+        <a href="#CreateClearcaseVOBs">Create the Configuration Management (CM) repositories (ClearCase VOBs)</a>.
+    </li>
+    <li>
+        <a href="#ImportExistingAssetsIntoVOBs">Import existing files and directories into the VOBs</a>.
+    </li>
+    <li>
+        <a href="#CreateAdminVOBForGlobalTypes">(Optional) Create an administrative VOB to contain definitions of global
+        type objects</a>.
+    </li>
+</ol>
+<h3>
+    1.&nbsp;<a id="CreateClearcaseVOBs" name="CreateClearcaseVOBs">Create the Configuration Management (CM) repositories
+    (ClearCase VOBs)</a> <a href="#ToolSteps"><img height="20" alt="To Tool Steps" src="./../../../core.base_rup/resources/top.gif" width="26"     border="0" /></a>
+</h3>
+<p>
+    Versioned Object Bases (VOBs) store versions of files, directories, and other objects. They serve as repositories for
+    configuration management information. It is common to create your VOBs to be representative of the subsystems defined
+    by your architecture.
+</p>
+<p>
+    To start the VOB Creation Wizard (Context-sensitive help is available at each step of the wizard.):
+</p>
+<ol>
+    <li>
+        On the <b>Windows</b> task bar, click <b>Start &gt; Programs &gt; Rational Software &gt; Rational ClearCase &gt;
+        Administration &gt; Create VOB</b>.
+    </li>
+    <li>
+        The <b>VOB Creation Wizard</b> starts. Follow the steps that are presented to create a ClearCase VOB. Before
+        beginning, it is helpful to know VOB naming conventions used by your site or project, and where to place the VOB
+        storage.
+    </li>
+    <li>
+        In the remaining steps in the Wizard, do the following:
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        <ul>
+            <li>
+                Name the VOB and indicate whether it should be a UCM component or Project VOB (PVOB).
+            </li>
+            <li>
+                Specify a VOB storage location.
+            </li>
+            <li>
+                Choose <b>Options</b>.
+            </li>
+        </ul>
+    </li>
+</ol>
+<p>
+    &nbsp;<img height="16" alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;For details about
+    creating VOBs, see the online help for the ClearCase VOB Creation Wizard.
+</p>
+<p>
+    &nbsp;<img height="15" alt="book icon" src="./../../../core.base_rup/resources/book.gif" width="16" />&nbsp;For an overview of setting up
+    VOBs, see the chapter "Setting Up ClearCase VOBs" in the ClearCase manual <i>Administrator's Guide</i>.
+</p>
+<h3>
+    2.&nbsp;<a id="ImportExistingAssetsIntoVOBs" name="ImportExistingAssetsIntoVOBs">Import existing files and directories
+    into the VOBs</a> <a href="#ToolSteps"><img height="20" alt="To Tool Steps" src="./../../../core.base_rup/resources/top.gif" width="26"     border="0" /></a>
+</h3>
+<p>
+    Working within a ClearCase view produced for your project, create the desired top-level directory structure within your
+    VOBs, and copy existing files and directories into each VOB to create an initial set of development configuration
+    items&nbsp;(Rational ClearCase elements).
+</p>
+<ol>
+    <li>
+        From ClearCase Explorer, select the directories and files you want to import.&nbsp;
+    </li>
+    <li>
+        Right-click to display a menu of commands and select <b>Add to Source Control</b>. This creates a ClearCase element
+        for each of the highlighted objects.
+    </li>
+</ol>
+<p>
+    &nbsp;<img height="15" alt="book icon" src="./../../../core.base_rup/resources/book.gif" width="16" />&nbsp;For information on importing
+    large volumes of files, see the <b>clearimport</b> command in the ClearCase manual <i>Command Reference</i>.
+</p>
+<h3>
+    3.&nbsp;<a id="CreateAdminVOBForGlobalTypes" name="CreateAdminVOBForGlobalTypes">(Optional) Create an administrative
+    VOB to contain definitions of global type objects</a> <a href="#ToolSteps"><img height="20" alt="To Tool Steps"     src="./../../../core.base_rup/resources/top.gif" width="26" border="0" /></a>
+</h3>
+<p>
+    Optionally, you may want to create an Administrative VOB to contain definitions of global type objects. Create an
+    administrative VOB to contain definitions of global type objects used in defining baselines in your subsystems.
+</p>
+<p>
+    To create an administrative VOB, start the VOB Creation Wizard previously described in <a href="#CreateClearcaseVOBs">Step 1</a> and follow the prompts.
+</p>
+<p>
+    &nbsp;<img height="15" alt="book icon" src="./../../../core.base_rup/resources/book.gif" width="16" />&nbsp; For more information about
+    working with administrative VOBs, see "Using Administrative VOBs and Global Types" in the ClearCase manual titled
+    <i>Administrator's Guide</i>.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

@@ -1,0 +1,273 @@
+Comp 4915 - Lab 7: Sendmail and Samba
+======================================
+
+Student: A01353636
+
+
+Part 1: Setting up Sendmail
+----------------------------
+
+Step 1: Install sendmail packages
+
+  $ sudo dnf install sendmail sendmail-cf mailx
+
+  Dependencies resolved. Installing:
+    sendmail           x86_64    8.17.1-...
+    sendmail-cf        noarch    8.17.1-...
+    mailx              x86_64    12.5-...
+  Complete!
+
+  Enable and start the service:
+
+  $ sudo systemctl enable sendmail
+  $ sudo systemctl start sendmail
+  $ sudo systemctl status sendmail
+  sendmail.service - Sendmail Mail Transport Agent
+     Active: active (running) since ...
+
+  Open the firewall for SMTP (port 25):
+
+  $ sudo firewall-cmd --add-service=smtp
+  $ sudo firewall-cmd --permanent --add-service=smtp
+  $ sudo firewall-cmd --reload
+
+
+Step 2: Send email from Linux to an external system
+
+  Using the mail command (from mailx package):
+
+  $ echo "Test email from Lab 7 - Kevin Liang A01353636" | mail -s "Lab 7 Test" kevinliang@my.bcit.ca
+
+  Alternatively, using sendmail directly:
+
+  $ sendmail kevinliang@my.bcit.ca << EOF
+  Subject: Lab 7 Sendmail Test
+  From: root@L327S06A.infosec.bcit.ca
+  To: kevinliang@my.bcit.ca
+
+  This is a test email sent from the Linux server using the sendmail
+  command line utility. Sent by Kevin Liang, A01353636.
+  EOF
+
+  Check the mail queue to verify it was sent:
+
+  $ mailq
+  /var/spool/mqueue is empty
+                  Total requests: 0
+
+  (Empty queue means the message was delivered to the next hop.)
+
+  Check the mail log for delivery confirmation:
+
+  $ sudo tail -5 /var/log/maillog
+  ... sendmail[12345]: ... to=<kevinliang@my.bcit.ca>, stat=Sent
+
+
+Step 3: Configure to receive email from external systems
+
+  By default, sendmail only listens on localhost (127.0.0.1). To receive
+  mail from external systems, we need to configure it to listen on all
+  interfaces.
+
+  Edit /etc/mail/sendmail.mc:
+
+  Find the line:
+    DAEMON_OPTIONS(`Port=smtp,Addr=127.0.0.1, Name=MTA')dnl
+
+  Change to:
+    DAEMON_OPTIONS(`Port=smtp, Name=MTA')dnl
+
+  (Removing Addr=127.0.0.1 makes sendmail listen on all interfaces.)
+
+  Rebuild sendmail.cf from the modified .mc file:
+
+  $ cd /etc/mail
+  $ sudo make -C /etc/mail
+
+  This runs the m4 macro processor to generate sendmail.cf from
+  sendmail.mc.
+
+  Also ensure the server accepts mail for its hostname. Edit
+  /etc/mail/local-host-names and add:
+
+    L327S06A.infosec.bcit.ca
+
+  Restart sendmail:
+
+  $ sudo systemctl restart sendmail
+
+  Verify sendmail is listening on port 25 on all interfaces:
+
+  $ ss -tlnp | grep :25
+  LISTEN  0  128  0.0.0.0:25  0.0.0.0:*  users:(("sendmail",pid=...))
+
+  Test receiving mail:
+  - From gmail or my.bcit.ca, send an email to root@142.232.18.196
+    (or to root@L327S06A.infosec.bcit.ca if DNS is set up from Lab 3)
+  - On the Linux server, check for received mail:
+
+  $ mail
+  Mail version 12.5.  Type ? for help.
+  "/var/spool/mail/root": 1 message 1 new
+  >N  1 kevinliang@my.bci  Tue ...  15/601   "Test from BCIT"
+  & 1
+  (displays the received email)
+  & q
+
+  Note: External mail delivery may be blocked by BCIT's network
+  firewall or by the sending provider's spam filters. If mail does not
+  arrive, check /var/log/maillog for connection attempts and verify
+  that port 25 is not blocked at the network level.
+
+
+Step 4: (Optional) Set up a webmail server
+
+  Install Roundcube webmail (requires httpd, PHP, and a database):
+
+  $ sudo dnf install httpd php php-mysqlnd mariadb-server roundcubemail
+
+  This provides a browser-based email interface at
+  http://localhost/roundcubemail. Configuration involves setting up the
+  database, editing /etc/roundcubemail/config.inc.php, and connecting it
+  to the local sendmail/dovecot services. This step is optional.
+
+
+Part 2: Setting up Samba
+-------------------------
+
+Step 1: Install Samba packages
+
+  $ sudo dnf install samba samba-client samba-common cifs-utils
+
+  Enable and start the services:
+
+  $ sudo systemctl enable smb nmb
+  $ sudo systemctl start smb nmb
+  $ sudo systemctl status smb
+  smb.service - Samba SMB Daemon
+     Active: active (running) since ...
+
+  Open the firewall for Samba:
+
+  $ sudo firewall-cmd --add-service=samba
+  $ sudo firewall-cmd --permanent --add-service=samba
+  $ sudo firewall-cmd --reload
+
+
+Step 2: Configure workgroup and user fred with a shared directory
+
+  First, create the Linux user and Samba password:
+
+  $ sudo useradd fred
+  $ sudo smbpasswd -a fred
+  New SMB password: fredpass
+  Retype new SMB password: fredpass
+  Added user fred.
+
+  Create the shared directory with a text file:
+
+  $ sudo mkdir -p /srv/samba/shared
+  $ sudo chown fred:fred /srv/samba/shared
+  $ echo "Workstation 6 - A01353636" | sudo tee /srv/samba/shared/info.txt
+
+  Edit /etc/samba/smb.conf:
+
+  --- /etc/samba/smb.conf ---
+
+  [global]
+     workgroup = WORKGROUP
+     server string = Lab 7 Samba Server
+     security = user
+     passdb backend = tdbsam
+     map to guest = Bad User
+
+  [shared]
+     comment = Lab 7 Shared Directory
+     path = /srv/samba/shared
+     browseable = yes
+     read only = no
+     valid users = fred
+     create mask = 0664
+     directory mask = 0775
+
+  Test the configuration:
+
+  $ testparm
+  Load smb config files from /etc/samba/smb.conf
+  Loaded services file OK.
+  Server role: ROLE_STANDALONE
+  ...
+
+  Restart Samba:
+
+  $ sudo systemctl restart smb nmb
+
+  Set SELinux context for the shared directory:
+
+  $ sudo chcon -t samba_share_t /srv/samba/shared -R
+  $ sudo setsebool -P samba_enable_home_dirs on
+
+  Test from Linux locally:
+
+  $ smbclient //localhost/shared -U fred
+  Enter WORKGROUP\fred's password: fredpass
+  smb: \> ls
+    .                  D        0  ...
+    ..                 D        0  ...
+    info.txt                   26  ...
+  smb: \> get info.txt -
+  Workstation 6 - A01353636
+  smb: \> quit
+
+
+Step 3: Test from a Windows system
+
+  On the Windows machine:
+  1. Create a local user named "fred" with password "fredpass"
+     - Settings > Accounts > Other users > Add someone else
+     - Or: net user fred fredpass /add (in cmd as administrator)
+
+  2. Log in as fred on Windows
+
+  3. Open File Explorer and type in the address bar:
+     \\142.232.18.196\shared
+
+  4. When prompted for credentials, enter:
+     Username: fred
+     Password: fredpass
+
+  Expected result: The shared folder opens showing info.txt containing
+  "Workstation 6 - A01353636".
+
+  Alternatively from command prompt:
+  > net use Z: \\142.232.18.196\shared /user:fred fredpass
+  > type Z:\info.txt
+  Workstation 6 - A01353636
+
+
+Step 4: Test from another Linux system
+
+  On the second Linux system:
+
+  $ sudo useradd fred
+  $ sudo dnf install samba-client cifs-utils
+
+  Test with smbclient:
+
+  $ smbclient //142.232.18.196/shared -U fred
+  Enter WORKGROUP\fred's password: fredpass
+  smb: \> ls
+    info.txt                   26  ...
+  smb: \> get info.txt -
+  Workstation 6 - A01353636
+  smb: \> quit
+
+  Or mount the share:
+
+  $ sudo mkdir /mnt/samba
+  $ sudo mount -t cifs //142.232.18.196/shared /mnt/samba -o username=fred,password=fredpass
+  $ cat /mnt/samba/info.txt
+  Workstation 6 - A01353636
+
+  Both methods confirm the Samba share is accessible from another Linux
+  system with the fred user credentials.

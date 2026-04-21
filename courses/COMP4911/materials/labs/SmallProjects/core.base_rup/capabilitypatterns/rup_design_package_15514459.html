@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Work Product Descriptor (Artifact): Design Package</title>
+<meta name="uma.type" content="WorkProductDescriptor">
+<meta name="uma.name" content="rup_design_package">
+<meta name="uma.presentationName" content="Design Package">
+<meta name="element_type" content="WorkProductDescriptor">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../css/default.css" type="text/css">
+<script src="./../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ActivityTreeTable.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ProcessElementPage.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/processElementData.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var defaultQueryStr = '?proc={002674F9-6511-4D15-8623-B761D8C48986}&path={002674F9-6511-4D15-8623-B761D8C48986},{F2160C54-F666-4736-9982-FC7F58F15FAD},_sfI7UfRSEdyv-tm4a00cLg';
+					var backPath = './../../';
+					var imgPath = './../../images/';
+					var nodeInfo=null;
+					contentPage.preload(imgPath, backPath, nodeInfo, defaultQueryStr, false, true, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="_sfI7UfRSEdyv-tm4a00cLg"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Work Product Descriptor (Artifact): Design Package</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../images/workdes_lg_dgm32.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This work product is a collection of classes, relationships, design use-case realizations, diagrams, and other packages. It is used to structure the design model by dividing it into smaller parts. </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Purpose</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="XE_design_package__as_artifact" name="XE_design_package__as_artifact"></a><a id="Top" name="Top"></a><a id="XE_design_package__purpose_of" name="XE_design_package__purpose_of"></a><a id="Purpose" name="Purpose"></a> 
+<p>
+    Design packages are used to group related Design Model elements together for organizational purposes, and often for
+    configuration management. Unlike the <a class="elementLinkWithType" href="./../../core.base_rup/workproducts/rup_design_subsystem_1A8D169B.html" guid="{A3C60B25-9780-4BFA-81AF-C1AD40D8A833}">Artifact: Design Subsystem</a>, a design package does not offer a formal
+    interface, though it may expose some of its contents (marked as 'public') which offer behavior. Design packages should
+    be used primarily as a model organizational tool, to group related things together; if behavioral semantics are needed,
+    use Design Subsystems.
+</p>
+<p>
+    A design package and its contents are the responsibility of a single <a class="elementLinkWithType" href="./../../core.base_rup/roles/rup_designer_BA8DE74E.html" guid="{DB21F5EF-810B-4994-B120-79FA8774FA9D}">Role: Designer</a>.
+    Elements within the package may be dependent on the elements contained by other packages; this gives rise to
+    dependencies between packages. Package dependencies can be used as a tool to analyze the resiliency of the design
+    model: a model with cross-dependent packages is less resilient to change.
+</p></td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Container Artifact</th><td class="sectionTableCell" colspan="2">
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_design_model_84A35167.html" guid="_COWYtxi2Edq_uI8xTPML6g">Design Model</a>
+</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Roles</th><td class="sectionTableCell" width="30%"><span class="sectionTableCellHeading">Responsible:
+								</span>
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_designer_27C26C75.html" guid="_sqbq4EaBEdqUkdzVfCuHXg">Designer</a>
+</li>
+</ul>
+</td><td class="sectionTableCell" colspan="2"><span class="sectionTableCellHeading">Modified By:
+								</span>
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/rup_software_architect_8B6C5D41.html" guid="_COWYtRi2Edq_uI8xTPML6g">Software Architect</a>
+</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Output From</th><td class="sectionTableCell" colspan="3">
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/identify_design_elements_6B9768F0.html" guid="_TBDzkEocEdqrjq4i3fchvA">Identify Design Elements</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/identify_design_mechanisms_51666B49.html" guid="_SLk9EUocEdqrjq4i3fchvA">Identify Design Mechanisms</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/incorporate_design_elements_68070FFD.html" guid="_XcbLoEocEdqrjq4i3fchvA">Incorporate Existing Design Elements</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Properties</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Optional" abbr="Optional">Optional</th><td class="sectionTableCell" align="left" headers="property_Optional"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Planned" abbr="Planned">Planned</th><td class="sectionTableCell" align="left" headers="property_Planned"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Tailoring</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Representation Options</th><td class="sectionTableCell">UML Representation: Package in the design model.&nbsp; 
+<p>
+    <a id="Tailoring" name="Tailoring"></a>
+</p>
+<p>
+    Packages are used in the models to group similar model elements, improving the organization of the model and making it
+    easier to understand. Packaging in large models is essential. Even in smaller models, appropriate packaging can
+    dramatically improve the comprehensibility of the model. Some packaging is almost always useful. For more information,
+    see <a class="elementLinkWithType" href="./../../core.base_rup/guidances/guidelines/design_package_8CF100B8.html" guid="3.3691722315666536E-305">Guideline: Design Package</a>.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">More Information</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Checklists</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/guidances/checklists/design_package_A6ADC74E.html" guid="4.0129693828082837E-305">Design Package</a>
+</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Guidelines</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/guidances/guidelines/design_package_8CF100B8.html" guid="3.3691722315666536E-305">Design Package</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script language="JavaScript" type="text/javascript">
+					contentPage.onload();
+					contentPage.processPage.fixDescriptorLinks();
+				</script>
+</html>

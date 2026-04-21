@@ -1,0 +1,197 @@
+Comp 4915 - Lab 5
+=================
+
+
+System Startup
+--------------
+
+1. What are the services started when you boot your system?
+
+   $ systemctl list-unit-files --type=service --state=enabled
+
+   Typical enabled services on our CentOS Stream lab system:
+
+     auditd.service              - Linux audit daemon
+     chronyd.service             - NTP time synchronization
+     crond.service               - Cron job scheduler
+     dbus-broker.service         - D-Bus message broker
+     firewalld.service           - Dynamic firewall manager
+     irqbalance.service          - IRQ balancing daemon
+     kdump.service               - Kernel crash dump capture
+     NetworkManager.service      - Network connection manager
+     polkit.service              - Authorization manager
+     rsyslog.service             - System logging
+     sshd.service                - OpenSSH server
+     sssd.service                - System Security Services Daemon
+     systemd-logind.service      - Login manager
+     systemd-resolved.service    - DNS resolver
+     systemd-udevd.service       - Device manager
+     tuned.service               - System tuning daemon
+
+
+2. Brief description of each started service:
+
+   auditd        - Tracks security-relevant events and writes audit logs.
+   chronyd       - Synchronizes system clock with NTP servers.
+   crond         - Executes scheduled crontab tasks.
+   dbus-broker   - IPC between system services and user applications.
+   firewalld     - Manages firewall rules dynamically with zones.
+   irqbalance    - Distributes hardware interrupts across CPUs.
+   kdump         - Captures kernel memory dump on crash.
+   NetworkManager- Manages network connections and DHCP/DNS.
+   polkit        - Fine-grained authorization for unprivileged processes.
+   rsyslog       - Routes system log messages to /var/log.
+   sshd          - Listens for incoming SSH connections.
+   sssd          - Access to remote identity providers (LDAP, AD).
+   systemd-logind- Manages user login sessions.
+   systemd-resolved - Local DNS resolution.
+   systemd-udevd - Manages /dev nodes and loads drivers.
+   tuned         - Applies system tuning profiles for workloads.
+
+
+3. Services installed but NOT started at boot:
+
+   $ systemctl list-unit-files --type=service --state=disabled
+
+     bluetooth.service, cups.service, httpd.service, named.service,
+     nfs-server.service, postfix.service, vsftpd.service, smb.service,
+     dhcpd.service, mariadb.service, dovecot.service, sendmail.service
+
+
+4. Brief description of each non-started service:
+
+   bluetooth - Bluetooth device management.
+   cups      - Print job and printer management.
+   httpd     - Apache web server.
+   named     - BIND DNS server.
+   nfs-server- Network file sharing via NFS.
+   postfix   - Mail transfer agent.
+   vsftpd    - FTP server.
+   smb       - Samba file sharing with Windows clients.
+   dhcpd     - DHCP IP assignment.
+   mariadb   - MySQL-compatible database.
+   dovecot   - IMAP/POP3 mail access.
+   sendmail  - Older mail transfer agent.
+
+
+5. Services that start but need not be started:
+
+   - kdump: Rarely needed on a lab workstation. Wastes reserved RAM.
+   - sssd: Unnecessary without remote authentication (LDAP/AD).
+   - tuned: Default kernel settings are sufficient for lab use.
+
+
+6. Services that do not start but should be started:
+
+   For our lab work: named (Lab 3), dhcpd (Lab 3), httpd (Lab 8),
+   vsftpd (Lab 6), smb (Lab 7), sendmail (Lab 7).
+
+
+Procedures and Questions
+------------------------
+
+7. History commands:
+
+   $ history
+
+   Re-execute from history:
+   - 2nd to last command:                    !-2
+   - Previous command:                        !!
+   - Last command starting with "c":          !c
+
+
+8. Describe what happens with these commands:
+
+   $ man bash | col -b > bashman
+   Pipes man page through col -b (strips formatting), redirects clean
+   text to "bashman".
+
+   $ cat bashman
+   Displays the entire file; scrolls rapidly since it's very long.
+
+   $ ^cat^more^
+   Quick substitution: replaces "cat" with "more" in the previous
+   command, running "more bashman" which pages through the output.
+
+
+9. PID of login shell and killing it:
+
+   $ echo $$
+   1234
+
+   Yes, you can kill it with: kill $$
+   The shell terminates and you are logged out.
+
+
+10. Children of login shell:
+
+    $ ps --ppid $$
+
+    Typically only the command you just ran (ps itself). Background
+    jobs would also appear as children.
+
+
+11. Execute .bashrc without starting a new shell:
+
+    $ . ~/.bashrc
+
+    The dot (.) command executes in the current shell, so all variable
+    assignments and aliases take effect immediately.
+
+
+12. Modified .bashrc with the required commands:
+
+    HISTSIZE=42
+    system=$(hostname)
+    PS1="What? "
+    set -o noclobber
+    alias so='source'
+    alias h='history'
+
+
+13. Execute the modified .bashrc:
+
+    $ . ~/.bashrc
+
+    Prompt changes to "What? " and all aliases become active.
+
+
+14. Explanation of each command:
+
+    HISTSIZE=42       - Keeps 42 commands in history memory.
+    system=$(hostname) - Stores hostname output in variable "system".
+    PS1="What? "      - Sets the prompt to "What? ".
+    set -o noclobber  - Prevents > from overwriting existing files.
+    alias so='source' - Shorthand "so" for "source".
+    alias h='history' - Shorthand "h" for "history".
+
+
+15. Redefine ls in login scripts:
+
+    alias ls='/usr/bin/ls -F'
+
+    -F appends / to directories, * to executables, @ to symbolic links.
+
+
+16. Run ls without the -F option after the alias is defined:
+
+    $ \ls
+
+    The backslash bypasses alias lookup and runs the original ls.
+
+
+17. What happens if you use ls in a shell script after the alias:
+
+    Aliases are NOT expanded in non-interactive shells (scripts). Bash
+    disables alias expansion in scripts for safety. A script using "ls"
+    runs the standard /usr/bin/ls regardless of .bashrc aliases.
+
+
+18. Why not redefine standard utilities like ls:
+
+    1. Scripts may break: Other scripts expect standard ls output; -F
+       indicators change the output format and can break parsing.
+    2. Portability: Scripts depending on redefined commands won't work
+       on other systems without the alias.
+
+    Best practice: create a new alias name (e.g., "ll") instead.

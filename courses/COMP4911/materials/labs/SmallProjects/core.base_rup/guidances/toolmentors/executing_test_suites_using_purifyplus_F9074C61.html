@@ -1,0 +1,380 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Executing Test Suites Using the Rational PurifyPlus Tools (Windows and UNIX)</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="executing_test_suites_using_purifyplus">
+<meta name="uma.presentationName" content="Executing Test Suites Using the Rational PurifyPlus Tools (Windows and UNIX)">
+<meta name="uma.category" content="Tool:rup_purifyplus:Rational PurifyPlus">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational PurifyPlus">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_U5tiUAISEdqTna4sZVFRow", "{F86573D5-C2E6-4E4F-9B29-23CC99B2BB8D}", "{0FBC2989-4BF7-4161-86A4-760F327D0E04}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{F86573D5-C2E6-4E4F-9B29-23CC99B2BB8D}", "{0FBC2989-4BF7-4161-86A4-760F327D0E04}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_9U7IkDIEEdqwaNnSEheSAg", "{F86573D5-C2E6-4E4F-9B29-23CC99B2BB8D}", "{0FBC2989-4BF7-4161-86A4-760F327D0E04}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{F86573D5-C2E6-4E4F-9B29-23CC99B2BB8D}", "{0FBC2989-4BF7-4161-86A4-760F327D0E04}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{0FBC2989-4BF7-4161-86A4-760F327D0E04}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Executing Test Suites Using the Rational PurifyPlus Tools (Windows and UNIX)</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes the use of the Rational PurifyPlus tools in test suites to detect potentially harmful memory errors and leaks, to ensure that your tests are achieving an acceptable level of code coverage, and to bring performance problems to your attention.</td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_purifyplus_CABB5CD4.html" guid="{F86573D5-C2E6-4E4F-9B29-23CC99B2BB8D}">Rational PurifyPlus</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/perform_developer_test_512B18D9.html" guid="{55EAEE66-A254-457F-BCC3-D1C21ED88134}">Execute Developer Tests</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/tasks/execute_test_suite_492795DE.html" guid="{6B420194-5EB7-4A12-A061-09FAA5DC18DE}">Execute Test Suite</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<p>
+    This tool mentor is applicable for use both with Microsoft Windows systems and with UNIX systems.
+</p>
+<p>
+    The PurifyPlus tools include Rational Purify, Rational PureCoverage, and Rational Quantify.
+</p>
+<p>
+    <img height="15" alt="Book icon" hspace="0" src="./../../../core.base_rup/resources/book.gif" width="16" border="0" /> To learn more about
+    PurifyPlus tools, read the <i>Getting Started</i> manual for PurifyPlus (Windows version or UNIX version).
+</p>
+<p>
+    <img height="16" alt="helpbook icon" hspace="0" src="./../../../core.base_rup/resources/helpbook.gif" width="16" border="0" /> For
+    step-by-step information about using PurifyPlus tools, see the online Help for the tool.
+</p>
+<p>
+    You can use PurifyPlus tools to do the following:
+</p>
+<ul>
+    <li>
+        <b>Detect memory errors and leaks (C/C++ programs on Windows and UNIX).</b> Use Purify to pinpoint errors and leaks
+        in the application under test.
+    </li>
+    <li>
+        <b>Monitor code coverage (Windows and UNIX).</b> Use PureCoverage to show you gaps in your testing and alert you to
+        regressions.
+    </li>
+    <li>
+        <b>Profile performance (Windows and UNIX).</b> Use Quantify to warn you if new check-ins degrade performance.
+    </li>
+</ul>
+<p>
+    Executing test suites with PurifyPlus tools results in reliable, error-free code that runs at maximum efficiency.
+</p><br />
+<h4>
+    Tool Steps
+</h4>
+<p>
+    To implement tests using the PurifyPlus tools:
+</p>
+<div style="MARGIN-LEFT: 2em">
+    <ol>
+        <li>
+            <a href="#Step1">Run the program under Purify to collect error and leak data (C/C++ programs only)</a>
+        </li>
+        <li>
+            <a href="#Step2">Run the program under PureCoverage to monitor code coverage</a>
+        </li>
+        <li>
+            <a href="#Step3">Run the program under Quantify to profile performance</a>
+        </li>
+    </ol>
+</div>
+<h3>
+    1. <a id="Step1" name="Step1"></a><b>Run the program under Purify to collect error and leak data (C/C++ programs
+    only)&nbsp;</b>
+</h3>
+<p>
+    Purify detects runtime errors, including memory leaks, in the application under test and in the components it uses. It
+    reports memory errors such as array bounds errors, access through dangling pointers, uninitialized memory reads, memory
+    allocation errors, and memory leaks, so that they can be resolved before they do any damage. &nbsp;
+</p>
+<p>
+    Begin by incorporating Purify into your existing Perl scripts, batch files, and makefiles.
+</p>
+<ul>
+    <li>
+        <b>On Windows</b> , modify the command lines that run your program <font         face="courier">&lt;ProgramName&gt;.exe</font><br />
+         &nbsp;<br />
+         <font face="courier">Purify /SaveTextData &lt;ProgramName&gt;.exe</font><br />
+         &nbsp;
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        <br />
+         &nbsp;
+    </li>
+    <li>
+        <b>On UNIX</b> , modify the compilation and link line:<br />
+         &nbsp;<br />
+         <font face="courier">% purify -logfile=&lt;filename&gt; cc -g &lt;program_name&gt;.c</font>
+    </li>
+</ul>
+<p>
+    Using the <font face="courier">/SaveTextData</font> <font face="courier">-logfile</font> option on UNIX, causes Purify
+    to run without the user interface, and, when you run the program from your script, sends the error and leak data to a
+    text output file when your program terminates.
+</p>
+<p>
+    Examine this output file yourself, or write scripts to analyze it. You can use the error and warning messages in the
+    file as additional criteria for your test results.
+</p>
+<p>
+    You can collect coverage data for the same runs, if you have PureCoverage installed, by adding the option <font     face="courier">/Coverage</font> (Windows) or by adding <font face="courier">purecov</font> <font     face="courier">purify</font> (UNIX). Using the coverage data, you can also find the parts of your code that you have
+    not checked for errors. For more information about using coverage data, see Step 2 of this Tool Mentor.
+</p>
+<p>
+    <b>Notes</b> :
+</p>
+<ul>
+    <li>
+        Use the Purify API to control data collection from within your program.
+    </li>
+    <li>
+        Purify also has command-line options that allow you to save test data as binary files that you can examine using
+        the Purify graphical user interface; this is discussed in the Tool Mentor "Analyzing Runtime Performance Using the
+        Rational PurifyPlus Tools."
+    </li>
+</ul>
+<p>
+    <b><img height="16" alt="helpbook icon" hspace="0" src="./../../../core.base_rup/resources/helpbook.gif" width="16" border="0" /></b> For
+    more information, look up the following topics in the Purify online Help index:
+</p>
+<ul>
+    <li>
+        <i>running programs</i>
+    </li>
+    <li>
+        <i>error messages</i>
+    </li>
+    <li>
+        <i>options</i>
+    </li>
+    <li>
+        <i>API functions</i>
+    </li>
+    <li>
+        <i>saving data</i>
+    </li>
+</ul>
+<h3>
+    2. <a id="Step2" name="Step2"></a><b>Run the program under PureCoverage to monitor code coverage.&nbsp;</b>
+</h3>
+<p>
+    PureCoverage provides accurate line-level and function-level code coverage information. Use PureCoverage with your
+    nightly tests to ensure that the tests are keeping pace with your code development.
+</p>
+<p>
+    Begin by incorporating PureCoverage into your existing Perl scripts, batch files, and makefiles.
+</p>
+<ul>
+    <li>
+        <b>On Windows</b> , modify the command lines that run your program, or Java class file, .jar file, or applet, to
+        include PureCoverage:<br />
+         &nbsp;<br />
+         For C/C++ programs: <font face="courier">Coverage /SaveTextData &lt;ProgramName&gt;.exe</font><br />
+         For Java class files: <font face="courier">Coverage /SaveTextData /Java Java.exe
+        &lt;ClassName&gt;.class</font><br />
+         For .NET managed code programs: <font face="courier">Coverage /SaveTextData /Net
+        &lt;ProgramName&gt;.exe</font><br />
+         &nbsp;<br />
+         Using the <font face="courier">/SaveTextData</font> option causes PureCoverage to run without the user interface,
+        and, when you run the program from your script, sends the data to a text output file when your program terminates.
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        <br />
+         &nbsp;
+    </li>
+    <li>
+        <b>On UNIX</b> , modify the compile and link line:<br />
+         &nbsp;<br />
+         For C/C++ programs: <font face="courier">% purecov cc -g &lt;program_name&gt;.c</font><br />
+         For Java class files: <font face="courier">% purecov -java java &lt;class_name&gt;</font><br />
+         &nbsp;<br />
+         Use the PureCoverage <font face="courier">-export</font> option after the program exits to write the coverage data
+        to a text output file.
+    </li>
+</ul>
+<p>
+    As you exercise your code, PureCoverage records data about the lines and functions that are used. You can call
+    PureCoverage API functions from your program to save data at specific points in your code, or to collect data only for
+    certain routines. When you exit the program, you have an accurate set of data indicating which lines and which
+    functions have, and have not, been covered by your test.
+</p>
+<p>
+    You can merge coverage data from multiple runs, or keep it in separate files to analyze changes in coverage.
+</p>
+<p>
+    Use scripts to compare the current data with data you collected from previous runs. If coverage drops, Your tests may
+    not be exercising new code, or the new code may have introduced a defect that is causing a large section of code not to
+    be tested. Use a testing tool such as Rational Robot or Rational Visual Test to write test cases that exercise the new
+    code.
+</p>
+<p>
+    <b>Note:</b> You can examine binary coverage data files using the PureCoverage graphical user interface.
+</p>
+<p>
+    <img height="15" alt="helpbook icon" hspace="0" src="./../../../core.base_rup/resources/helpbook.gif" width="16" border="0" /> For more
+    information, look up the following topics in the PureCoverage online Help index:
+</p>
+<ul>
+    <li class="mvd-P">
+        <i>running programs</i>
+    </li>
+    <li>
+        <i>options</i>
+    </li>
+    <li class="mvd-P">
+        <i>API functions</i>
+    </li>
+    <li class="mvd-P">
+        <i>saving data</i>
+    </li>
+    <li class="mvd-P">
+        <i>comparing data</i>
+    </li>
+</ul>
+<h3>
+    3. <a id="Step3" name="Step3"></a><b>Run the program under Quantify to profile performance &nbsp;</b>
+</h3>Quantify provides a complete and accurate set of performance data for your program and its components, so that you can
+monitor performance and identify regressions early in the development and testing cycle.&nbsp; 
+<p>
+    Begin by incorporating Quantify into your existing Perl scripts, batch files, and makefiles.
+</p>
+<ul>
+    <li>
+        <b>On Windows</b> , modify the command lines that run your program, or class file, .jar file, or applet, to include
+        Quantify:<br />
+         &nbsp;<br />
+         For C/C++ programs: <font face="courier">Quantify /SaveTextData &lt;ProgramName&gt;.exe</font><br />
+         For Java class files: <font face="courier">Quantify /SaveTextData /Java Java.exe
+        &lt;ClassName&gt;.class</font><br />
+         For .NET managed code programs: <font face="courier">Quantify /SaveTextData /Net
+        &lt;ProgramName&gt;.exe</font><br />
+         &nbsp;<br />
+         Using the <font face="courier">/SaveTextData</font> option causes Quantify to run without the user interface, and,
+        when you run the program from your script, sends the data to a text output file when your program terminates.
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        <br />
+         &nbsp;
+    </li>
+    <li>
+        <b>On UNIX</b> , modify the compile and link line:<br />
+         &nbsp;<br />
+         For C/C++ programs: <font face="courier">% quantify cc -g &lt;program_name&gt;.c</font><br />
+         For Java class files: <font face="courier">% quantify -java java &lt;class_name&gt;</font><br />
+         &nbsp;<br />
+         Use the Quantify <font face="courier">-export</font> option after the program exits to write the performance data
+        to a text output file.
+    </li>
+</ul>
+<p>
+    As you exercise your code, Quantify records data about your program's performance. You can use API functions to pause
+    and resume data recording at any time, and so limit profiling to specific portions of code. You can also save data at
+    specific points in your code's execution, or collect performance data only for specific routines. When you exit your
+    program, Quantify has an accurate profile of its performance.
+</p>
+<p>
+    You can write scripts that compare datasets and report changes in performance:
+</p>
+<ul>
+    <li>
+        Degradations in performance may indicate that the most recently checked-in code has slowed down the program.
+        Analyze the data you have collected to find the sections of the program that have unacceptable performance.
+    </li>
+    <li>
+        Marked improvements may indicate that the developers have improved their code, or that your tests for some reason
+        have stopped exercising large sections of the code. Check your coverage data to see whether you are still achieving
+        your previous levels of coverage.
+    </li>
+</ul>
+<p>
+    <b>Note:</b>Quantify can also save test data as binary files that you can examine using the Quantify graphical user
+    interface; this is discussed in the Tool Mentor "Analyzing Runtime Performance Using the Rational PurifyPlus Tools."
+</p>
+<p>
+    For more information, look up the following topics in the Quantify online Help index:
+</p>
+<ul>
+    <li>
+        <i>running programs</i>
+    </li>
+    <li>
+        <i>options</i>
+    </li>
+    <li>
+        <i>API functions</i>
+    </li>
+    <li>
+        <i>saving data</i>
+    </li>
+    <li>
+        <i>comparing data</i>
+    </li>
+</ul><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

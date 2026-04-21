@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html><head>
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+
+<body>
+<div class="container">
+<h3>Testing JWT authentication</h3>
+<form id="frmRegister" style="float: left;"><input type="text" id="first_name" placeholder="First Name"><br><input type="text" id="last_name" placeholder="Last Name"><br><input type="text" id="email" placeholder="Email" value="john@doe.com"><br><input type="password" id="password" placeholder="Password" value="P@$$w0rd"><br><button type="button" id="btnRegister" onclick="handleRegister()">Register</button> <button type="button" id="btnLogin" onclick="handleLogin()">Login</button></form><form id="frmAddStudent" style="float: right;"><input type="text" id="FirstName" placeholder="First Name"><br><input type="text" id="LastName" placeholder="Last Name"><br><input type="text" id="School" placeholder="School"><br><button type="button" id="btnAddStudent" onclick="handleAddStudent()">Add Student</button></form>
+<p style="clear: both;">Note: password is defaulted to P@$$w0rd</p>
+<button type="button" id="btnGetData" onclick="getData()">Get Data</button>
+<table class="table">
+<thead>
+<tr><!--th>ID</th-->
+<th>Name</th>
+<th>School</th>
+<th>Started</th>
+<th></th>
+</tr>
+</thead>
+<tbody id="data"></tbody>
+</table>
+<pre id="preOutput"></pre>
+<script>
+
+         var baseUrl = 'http://localhost:3000';
+         var accessToken = "";
+
+         var handleRegister = async function () {
+            // var registerData = {
+            //    first_name: $("#first_name").val(),
+            //    last_name: $("#last_name").val(),
+            //    email: $("#email").val(),
+            //    password: $("#password").val()
+            // }
+
+            var registerData = {
+               first_name: document.getElementById('first_name').value,
+               last_name: document.getElementById('last_name').value,
+               email: document.getElementById('email').value,
+               password: document.getElementById('password').value
+            }
+
+            fetch(`${baseUrl}/users/register`, {
+               method: 'post',
+               body: JSON.stringify(registerData),
+               headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  "x-access-token": accessToken
+               },
+            }).then(function (response) {
+               return response.json();
+            }).then(function (data) {
+               showResponse(data);
+            });
+         }
+
+         var handleLogin = async function () {
+            var loginData = {
+                  email: document.getElementById('email').value,
+                  password: document.getElementById('password').value
+            }
+
+            fetch(`${baseUrl}/users/login`, {
+               method: 'post',
+               body: JSON.stringify(loginData),
+               headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+               },
+            }).then(function (response) {
+               return response.json();
+            }).then(function (data) {
+               saveAccessToken(data);
+               showResponse(data);
+            });
+         }
+
+         var handleAddStudent = async function () {
+            var studentData = {
+               FirstName: document.getElementById('FirstName').value,
+               LastName: document.getElementById('LastName').value,
+               School: document.getElementById('School').value
+            }
+
+            fetch(`${baseUrl}/api/students`, {
+               method: 'post',
+               body: JSON.stringify(studentData),
+               headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  "x-access-token": accessToken
+               },
+            }).then(function (response) {
+               return response.json();
+            }).then(function (data) {
+               //showResponse(data);
+               getData();
+            });
+         }
+
+         var handleDelete = async function (id) {
+            var url = baseUrl + '/api/students';
+            //console.log(`ID = ${id}`);
+            fetch(`${url}/${id}`, {
+               method: 'DELETE',
+               headers: {
+                  "x-access-token": accessToken
+               },
+            })
+               .then(res => res.json()) // or res.text()
+               //.then(res => console.log(res))
+               .then(getData())
+         }
+
+         var getData = async function () {
+            var url = baseUrl + '/api/students';
+
+            await fetch(url, {
+               headers: {
+                  "x-access-token": accessToken
+               }
+            })
+               .then((response) => {
+                  return response.json();
+               })
+               .then(data => {
+                  displayInTable(data);
+               });
+
+            return false
+         }
+
+         var displayInTable = function (data) {
+            //document.getElementById('preOutput').innerText = JSON.stringify(data, null, 4);
+
+            if (data.length > 0) {
+               var html = "";
+               data.forEach((item) => {
+                  html += `<tr>`;
+                  //html += `<td> ${item._id} </td>`;
+                  html += `<td> ${item.FirstName} ${item.LastName} </td>`;
+                  html += `<td> ${item.School} </td>`;
+                  html += `<td> ${item.StartDate} </td>`;
+                  html += `<td> <button type="button" id="${item._id}" onClick="handleDelete('${item._id}')">Delete</button> </td>`;
+                  html += `</tr>`;
+               });
+               document.getElementById('data').innerHTML = html;
+            }
+         }
+
+         var showResponse = async function(data) {
+            //console.log(JSON.stringify(data, null, 4));
+            document.getElementById('preOutput').innerHTML = JSON.stringify(data, null, 4);
+         }
+
+         var saveAccessToken = function (data) {
+            accessToken = data.token;
+         };
+      </script>
+</div>
+</body></html>

@@ -1,0 +1,14 @@
+@HealthAPI_HostAddress = http://localhost:5170
+
+GET {{HealthAPI_HostAddress}}/api/patients/2/medication
+Accept: application/json
+
+###
+## post to /api/patients to create a new patient
+POST {{HealthAPI_HostAddress}}/api/patients/
+
+Accept: application/json 
+Content-Type: application/json
+{
+    "name": "John Doe"
+}

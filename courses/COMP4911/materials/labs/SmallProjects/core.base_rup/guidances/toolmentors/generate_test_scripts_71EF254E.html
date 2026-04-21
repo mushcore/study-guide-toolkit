@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Implementing Generated Test Scripts Using Rational TestFactory</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="generate_test_scripts">
+<meta name="uma.presentationName" content="Implementing Generated Test Scripts Using Rational TestFactory">
+<meta name="uma.category" content="Tool:rup_test_factory:Rational TestFactory">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational TestFactory">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{19F8AE86-E40A-42F5-8B81-673C306F5C35}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_9U7IkDIEEdqwaNnSEheSAg", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{19F8AE86-E40A-42F5-8B81-673C306F5C35}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{19F8AE86-E40A-42F5-8B81-673C306F5C35}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{19F8AE86-E40A-42F5-8B81-673C306F5C35}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Implementing Generated Test Scripts Using Rational TestFactory</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to use Rational TestFactory to automatically generate Test Scripts that test specific areas of the application-under-test. </td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_test_factory_3EDA2115.html" guid="{FBA5098E-2CA8-483D-814D-DE3E876426B1}">Rational TestFactory</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/implement_test_suite_94F58DEC.html" guid="{1C759E0D-B364-4095-A7CF-CD9E39301689}">Implement Test Suite</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    Overview
+</h3>
+<p>
+    A "Pilot" is the Rational TestFactory tool that you can use to generate test scripts. A Pilot generates scripts that
+    test the functionality of the controls in the application-under-test (AUT) that are represented by UI objects in an
+    area of the application map. For information about developing the application map, see <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/toolmentors/setup_testfactory_C77C34F4.html" guid="{FAC387D8-BA1A-4056-A53B-E1C43571D1DC}">Tool Mentor: Setting Up the Test Environment in Rational TestFactory</a>.
+</p>
+<p>
+    This tool mentor is applicable when running Windows 98/2000/NT 4.0.
+</p>
+<p>
+    To use Rational TestFactory to generate test scripts automatically:
+</p>
+<ol>
+    <li>
+        <a href="#Add Pilot">Add a Pilot to the application map</a>
+    </li>
+    <li>
+        <a href="#Set up run Pilot">Set up and run the Pilot</a>
+    </li>
+</ol>
+<h3>
+    1. <a id="Add Pilot" name="Add Pilot">Add a Pilot to the application map</a>
+</h3>
+<p>
+    You can add a Pilot object at any location in the application map. From there, the Pilot automatically generates test
+    scripts that focus on the specific functional area of the AUT corresponding to that portion of the application map.
+</p>
+<p>
+    To determine a part of the application that you want to test, see the first task in <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/toolmentors/structure_test_implementation_3CC01B9C.html" guid="{AD403709-9F1A-496A-B5F7-F7CF823F8BDD}">Tool Mentor: Capturing the Results of Test Design for Automated
+    Testing</a>.
+</p>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;&nbsp; Refer to the following
+    topics in Rational TestFactory online Help:
+</p>
+<ul>
+    <li>
+        <i>Pilots: What they are and how they work</i>
+    </li>
+    <li>
+        <i>Effective Pilot placement</i>
+    </li>
+    <li>
+        <i>Add a Pilot</i>
+    </li>
+</ul>
+<h3>
+    2. <a id="Set up run Pilot" name="Set up run Pilot">Set up and run the Pilot</a>
+</h3>
+<p>
+    When you set up the Pilot, you indicate the values and options that control how the Pilot runs. The setup information
+    that you can specify includes:
+</p>
+<ul>
+    <li>
+        The depth in the application map to which the Pilot must test.
+    </li>
+    <li>
+        The criteria that Rational TestFactory uses to stop the Pilot run.
+    </li>
+    <li>
+        Additional UI objects in the application map that you want to include in the test.
+    </li>
+    <li>
+        UI objects under the Pilot's control that you want to exclude from testing.
+    </li>
+</ul>
+<p>
+    During a Pilot run, a Pilot builds an optimized "best script" that provides extensive code-based test coverage and
+    contains no redundant script code.
+</p>
+<p>
+    A Pilot also generates a "UI script" that is optimized for UI-based test coverage. In successive builds of the AUT, you
+    can run UI scripts as a simple smoke test to check controls in the user interface.
+</p>
+<p>
+    Every time you run a Pilot, Rational TestFactory adds a new "run" folder under the Pilot in the application map. The
+    run folder contains the test scripts that the Pilot generates. If the Pilot encounters defects during its run,
+    TestFactory places the defect test scripts in a "defects" subfolder under the run folder.
+</p>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;&nbsp; Refer to the following
+    topics in Rational TestFactory online Help:
+</p>
+<ul>
+    <li>
+        <i>Pilot view</i>
+    </li>
+    <li>
+        <i>Set up a Pilot run</i>
+    </li>
+    <li>
+        <i>Run a single Pilot</i>
+    </li>
+</ul></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

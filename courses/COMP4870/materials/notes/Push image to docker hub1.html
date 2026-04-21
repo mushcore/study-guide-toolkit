@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html><head>
+</head><body><p>In the following instructions assume that username on Docker Hub is <em>snoopy</em> and that you are creating a repository in Docker Hub named <em>toon</em>.</p>
+<p>Replace <em>snoopy</em> with your Docker Hub username.</p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">dotnet publish -o distrib</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif;">Create <em>Dockerfile</em> with the following content:</span></p>
+<div style="background-color: wheat; padding: 10px; width: 50%;">
+<pre>FROM mcr.microsoft.com/dotnet/aspnet:8.0
+COPY distrib /app
+WORKDIR /app
+ENV ASPNETCORE_URLS http://+:80
+EXPOSE 80/tcp
+EXPOSE 443/tcp
+ENTRYPOINT ["dotnet", "MyDotnetWebApp.dll"]    </pre>
+</div>
+<p><span style="font-family: 'courier new', courier, sans-serif;">docker build --tag snoopy/toon:1.0.0 .</span></p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">docker run -d -p 8888:80 snoopy/toon:1.0.0</span></p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; http://localhost:8888</p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">docker login --username=snoopy</span></p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">docker push snoopy/toon:1.0.0</span></p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">docker run -d -p 8888:80 snoopy/toon:1.0.0</span></p>
+<p></p></body></html>

@@ -1,21 +1,21 @@
 ---
 name: add-course
-description: Register a new course in the study-guidev2 app. Compiles the content/{id}/ tree to a bundle, wires the three hardcoded touchpoints (build-content.js, _aggregator.js, main.jsx), handles the annotation-variant dispatch in App.jsx if needed, and verifies the React build succeeds. Use when the user says "add course {id}", "register course {id}", "wire up course {id}", or invokes /add-course.
+description: Register a new course in the app. Compiles the content/{id}/ tree to a bundle, wires the three hardcoded touchpoints (build-content.js, _aggregator.js, main.jsx), handles the annotation-variant dispatch in App.jsx if needed, and verifies the React build succeeds. Use when the user says "add course {id}", "register course {id}", "wire up course {id}", or invokes /add-course.
 argument-hint: <course-id>
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob
 disable-model-invocation: false
 ---
 
-You are registering a new course into the `study-guidev2/` React+Vite app. The canonical content tree already exists at `content/{id}/` — your job is Phase B from `ADD-NEW-COURSE.md`: compile, wire, verify. Do not author content; if the tree is missing or incomplete, stop and tell the user to run authoring first.
+You are registering a new course into the `app/` React+Vite app. The canonical content tree already exists at `content/{id}/` — your job is Phase B from `ADD-NEW-COURSE.md`: compile, wire, verify. Do not author content; if the tree is missing or incomplete, stop and tell the user to run authoring first.
 
 ## Repo layout (working tree)
 
-- Root: `/Users/kevinliang/BCIT/CST/TERM4/` — monorepo root. `content/`, `scripts/`, `study-guidev2/` all live here.
+- Root: `/Users/kevinliang/BCIT/CST/TERM4/` — monorepo root. `content/`, `scripts/`, `app/` all live here.
 - Canonical content: `content/{id}/` with seven files (see `content/SCHEMA.md`).
 - Compiler: `scripts/build-content.js`. Reads `COURSES` array and compiles each to `content/_dist/{id}.js`.
 - Aggregator: `content/_dist/_aggregator.js`. Has its own `ids` array for flattening into window globals.
-- App entry: `study-guidev2/src/main.jsx`. Side-effect-imports each bundle before `_aggregator.js`, then mounts React.
-- Code-practice dispatch: `study-guidev2/src/App.jsx`. Hard-coded `route.courseId === '4911'` for annotation variant.
+- App entry: `app/src/main.jsx`. Side-effect-imports each bundle before `_aggregator.js`, then mounts React.
+- Code-practice dispatch: `app/src/App.jsx`. Hard-coded `route.courseId === '4911'` for annotation variant.
 
 ## Inputs
 
@@ -65,11 +65,11 @@ Read the file. Find the `const COURSES = [...]` line (near the top, around line 
 
 Read the file. Find the `const ids = [...]` line (top of the IIFE, around line 6). If `{id}` is already in the array, skip. Otherwise add it at the end. Keep style consistent with the existing entries.
 
-### Step 5 — Touchpoint: `study-guidev2/src/main.jsx`
+### Step 5 — Touchpoint: `app/src/main.jsx`
 
 Read the file. Find the block of `import '../../content/_dist/NNNN.js';` lines. If an import for `{id}` already exists, skip. Otherwise add a new line **before** the `_aggregator.js` import — aggregator must run last. Match the existing indentation and quoting.
 
-### Step 6 — Dispatch: `study-guidev2/src/App.jsx` (annotation variant only)
+### Step 6 — Dispatch: `app/src/App.jsx` (annotation variant only)
 
 If Step 1 flagged the annotation variant, find the line in `App.jsx`:
 
@@ -96,7 +96,7 @@ Confirm `content/_dist/{id}.js` was produced and `content/_dist/manifest.json` n
 ### Step 8 — Verify the React build
 
 ```
-cd study-guidev2 && npm run build
+cd app && npm run build
 ```
 
 If build succeeds, Phase B is done. If it fails, read the error — most likely a typo in one of the touchpoints from steps 3–5.
@@ -111,7 +111,7 @@ Report:
 - Audit status: critical = 0 (required to have reached this step), warning count, advisory count. Include a one-line pointer to the audit report for the user.
 - Bundle counts from the manifest (modules, topics, cards, lessons, codePractice, topicDives, cheatBlocks, mockQuestions).
 - Three-to-four touchpoints touched (build-content.js, _aggregator.js, main.jsx, optionally App.jsx).
-- Next steps for the user: `cd study-guidev2 && npm run dev`, verify dashboard shows the course card, every subview renders, `./deploy.sh` once smoke-tested. If warnings exist, suggest running `/enrich-course {id}` to address them before shipping.
+- Next steps for the user: `cd app && npm run dev`, verify dashboard shows the course card, every subview renders, `./deploy.sh` once smoke-tested. If warnings exist, suggest running `/enrich-course {id}` to address them before shipping.
 
 ## Non-goals
 

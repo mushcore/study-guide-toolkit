@@ -1,0 +1,349 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Designing Classes Using Rational XDE Developer</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="class_design">
+<meta name="uma.presentationName" content="Designing Classes Using Rational XDE Developer">
+<meta name="uma.category" content="Tool:rup_xde:Rational XDE Developer">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational XDE Developer">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_qS-iwAIOEdqTna4sZVFRow", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{D1C3F9B8-8EE3-4AF6-8E7B-0653AF1F2936}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_U5tiUAISEdqTna4sZVFRow", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{D1C3F9B8-8EE3-4AF6-8E7B-0653AF1F2936}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{D1C3F9B8-8EE3-4AF6-8E7B-0653AF1F2936}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{D1C3F9B8-8EE3-4AF6-8E7B-0653AF1F2936}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{D1C3F9B8-8EE3-4AF6-8E7B-0653AF1F2936}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Designing Classes Using Rational XDE Developer</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to perform Class Design with Rational XDE Developer.</td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_xde_D81FFA70.html" guid="{303A82D2-E3AB-4501-8563-0D4D43782AF9}">Rational XDE Developer</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/class_design_98F20FF9.html" guid="{27AE0601-2E95-4A6A-8EB3-0A4BA8E5626B}">Class Design</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    Overview
+</h3>
+<p>
+    This tool mentor supports performing Class Design with Rational XDE Developer - Java Platform Edition.
+</p>
+<p>
+    This tool mentor assumes that a structured <a class="elementLink" href="./../../../core.base_rup/workproducts/rup_design_model_2830034D.html" guid="{8CDAEAD4-5E84-4F50-87FD-3240ED047DE7}">Design Model</a> has been created as part of <a class="elementLinkWithType" href="./../../../core.base_rup/tasks/architectural_analysis_2B9BE03.html" guid="{8CB48402-D4C5-4E17-BB33-507315CB1BBF}">Task: Architectural Analysis</a> following the steps outlined in <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/toolmentors/performing_architectural_analysis_65CE30FC.html" guid="{08B5477D-97F9-4EEB-AA59-A109128B5CA1}">Tool Mentor: Performing Architectural Analysis Using Rational XDE</a>.
+</p>
+<ul>
+    <li>
+        The steps in this tool mentor match those in the corresponding task.
+    </li>
+    <li>
+        Links to topics in XDE online Help are marked with <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" />.
+    </li>
+    <li>
+        The following steps are performed in this tool mentor:
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        <ul>
+            <li>
+                <a href="#Use Design Patterns and Mechanisms">Use Design Patterns and Mechanisms</a>
+            </li>
+            <li>
+                <a href="#Create Initial Design Classes">Create Initial Design Classes</a>
+            </li>
+            <li>
+                <a href="#Define Persistent Classes">Identify Persistent Classes</a>
+            </li>
+            <li>
+                <a href="#Define Class Visibility">Define Class Visibility</a>
+            </li>
+            <li>
+                <a href="#Define Operations">Define Operations</a>
+            </li>
+            <li>
+                <a href="#Define Methods">Define Methods</a>
+            </li>
+            <li>
+                <a href="#Define States">Define States</a>
+            </li>
+            <li>
+                <a href="#Define Attributes">Define Attributes</a>
+            </li>
+            <li>
+                <a href="#Define Dependencies">Define Dependencies</a>
+            </li>
+            <li>
+                <a href="#Define Associations">Define Associations</a>
+            </li>
+            <li>
+                <a href="#Define Generalizations">Define Generalizations</a>
+            </li>
+            <li>
+                <a href="#Resolve Use-Case Collisions">Resolve Use-Case Collisions</a>
+            </li>
+            <li>
+                <a href="#Handle Non-Functional Requirements">Handle Nonfunctional Requirements in General</a>
+            </li>
+            <li>
+                <a href="#Evaluate Your Results">Evaluate the Results</a>
+            </li>
+        </ul>
+    </li>
+</ul>
+<h3>
+    <a id="Use Design Patterns and Mechanisms" name="Use Design Patterns and Mechanisms">Use Design Patterns and
+    Mechanisms</a>
+</h3>
+<p>
+    Incorporating a pattern and/or mechanism is effectively performing many of the subsequent steps in this tool mentor
+    (adding new classes, operations, attributes, and relationships), but in accordance with the rules defined by the
+    pattern or mechanism.
+</p>
+<p>
+    Additional information on using patterns: <!-- end - wsw -->
+</p>
+<ul>
+    <li>
+        <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Applying Patterns</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"ea","ea_o_apply_pttrn"); -->
+    </li>
+</ul>
+<h3>
+    <a id="Create Initial Design Classes" name="Create Initial Design Classes"></a>Create Initial Design Classes
+</h3>
+<ol>
+    <li>
+        Add a class diagram to the model. See <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Adding
+        Diagrams</i> <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_add_dgm"); -->.
+    </li>
+    <li>
+        Add design classes to the class diagram. See <img alt="helpbook icon"         src="./../../../core.base_rup/resources/helpbook.gif" /><i>Adding Shapes to Diagrams</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_add_shp_dgm"); -->.
+    </li>
+    <li>
+        Document each class. See <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Documenting Model
+        Elements</i> <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_doc_model_elem"); -->.
+    </li>
+</ol>
+<p>
+    Reference: <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Working with Class Diagrams</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_o_work_w_class_dgms"); -->.
+</p>
+<h3>
+    <a id="Define Persistent Classes" name="Define Persistent Classes">Identify Persistent Classes</a>
+</h3>
+<p>
+    A class can be marked as persistent. Reference: <img alt="helpbook icon"     src="./../../../core.base_rup/resources/helpbook.gif" /><i>Specifying Persistence</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_spec_persistence"); -->.
+</p><!-- begin - wsw -->
+<p>
+    In J2EE development, persistency is commonly implemented using entity EJBs. See <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/toolmentors/identifying_design_elements_F8D68BA1.html" guid="{E6727D13-BE7B-4025-AD39-ECD6FA074D73}">Tool Mentor: Identifying Design Elements using Rational XDE</a> for
+    details.
+</p>
+<h3>
+    D<a id="Define Class Visibility" name="Define Class Visibility">efine Class Visibility</a>
+</h3>
+<p>
+    For each class, determine the class visibility within the package where it resides.
+</p>
+<p>
+    Reference: <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Specifying Visibility</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_spec_visibility"); -->.
+</p>
+<h3>
+    <a id="Define Operations" name="Define Operations">Define Operations</a>
+</h3>
+<ol>
+    <li>
+        Add operations to each class. See <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Adding
+        Operations to Classifiers</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_add_oper_clssfr"); -->.
+    </li>
+    <li>
+        Add parameters to operations. See <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Adding
+        Parameters to Operations</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_add_param_op"); -->.
+    </li>
+    <li>
+        Specify visibility of operations. See <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Specifying
+        Visibility</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_spec_visibility"); -->.
+    </li>
+</ol>
+<p>
+    Reference: <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Adding and Modifying Attributes and
+    Operations in Classifiers</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_o_add_mod_atts_ops"); -->.
+</p>
+<h3>
+    <a id="Define Methods" name="Define Methods"></a>Define Methods
+</h3>
+<p>
+    A description of how an operation is to be implemented might be added to the operation description.
+</p>
+<p>
+    A sequence diagram might optionally be used to describe a method. See the XDE online Help topic <img     alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Documenting Model Elements</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_doc_model_elem"); -->.
+</p>
+<p>
+    Reference: <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Working with Interaction (Sequence)
+    Diagrams</i> <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_o_work_inter_dgm"); -->.
+</p>
+<h3>
+    Define States<a id="Define States" name="Define States"></a>
+</h3>
+<p>
+    A state machine might optionally be used.
+</p>
+<p>
+    Reference: <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Working with Statechart Diagrams</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_o_work_statechart_dgms"); -->.
+</p>
+<h3>
+    <a id="Define Attributes" name="Define Attributes">Define Attributes</a><a id="Define Attributes and Relationships" name="Define Attributes and Relationships"></a>
+</h3>
+<ol>
+    <li>
+        Define attributes. See <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Attributes</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_c_attibutes"); -->.
+    </li>
+    <li>
+        Add attributes to classifiers. See <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Adding
+        Attributes to Classifiers</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_add_attributes_clssfr"); -->.
+    </li>
+    <li>
+        Specify visibility. See <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Specifying Visibility</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_spec_visibility"); -->.
+    </li>
+</ol>
+<h3>
+    <a id="Define Dependencies" name="Define Dependencies">Define Dependencies</a>
+</h3>
+<p>
+    Reference: <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Adding Dependency Relationships</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_add_depend_relshp"); -->.
+</p>
+<h3>
+    <a id="Define Associations" name="Define Associations">Define Associations</a>
+</h3>
+<ol>
+    <li>
+        Add association relationships. See <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Adding
+        Association Relationships</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_add_assoc_rels"); -->.
+    </li>
+    <li>
+        Specify the kind of each association. See <img alt="helpbook icon"         src="./../../../core.base_rup/resources/helpbook.gif" /><i>Specifying Kinds of Association Relationships</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_spec_kinds_assoc"); -->.
+    </li>
+</ol>
+<h3>
+    <a id="Define Generalizations" name="Define Generalizations">Define Generalizations</a>
+</h3>
+<p>
+    Reference: <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Adding Generalization Relationships</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_add_genrlztn_relshp"); -->.
+</p>
+<h3>
+    <a id="Resolve Use-Case Collisions" name="Resolve Use-Case Collisions">Resolve Use-Case Collisions</a>
+</h3>
+<p>
+    Reference: <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Specifying the Type of Concurrency for
+    Operations</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"rs","rs_t_spec_type_cncrrncy_op"); -->.
+</p>
+<h3>
+    <a id="Handle Non-Functional Requirements" name="Handle Non-Functional Requirements">Handle Nonfunctional
+    Requirements</a> in General
+</h3>
+<p>
+    Nonfunctional requirements often drive a class to incorporate specific design mechanisms using collaborations and
+    patterns. Often the use of a framework component is sufficient to satisfy a nonfunctional requirement. (See <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/toolmentors/identifying_design_elements_F8D68BA1.html" guid="{E6727D13-BE7B-4025-AD39-ECD6FA074D73}">Tool Mentor: Identifying Design Elements Using Rational XDE</a>.)
+</p>
+<p>
+    Reference:
+</p>
+<ul>
+    <li>
+        <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>J2EE Pattern-Driven Development</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"j","jee_c_j2ee_pattrns"); -->
+    </li>
+    <li>
+        <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Applying Patterns</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"ea","ea_o_apply_pttrn"); -->
+    </li>
+</ul>
+<h3>
+    <a id="Evaluate Your Results" name="Evaluate Your Results"></a>Evaluate the Results
+</h3>
+<p>
+    There is no Rational XDE specific guidance for this step.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

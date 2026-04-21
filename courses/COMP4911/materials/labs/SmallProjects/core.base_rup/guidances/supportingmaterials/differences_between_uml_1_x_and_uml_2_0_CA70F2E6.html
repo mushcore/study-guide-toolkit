@@ -1,0 +1,435 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Differences Between UML 1.x and UML 2.0 </title>
+<meta name="uma.type" content="SupportingMaterial">
+<meta name="uma.name" content="differences_between_uml_1_x_and_uml_2_0">
+<meta name="uma.presentationName" content="Differences Between UML 1.x and UML 2.0 ">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:3.2329841703462285E-305", path: ["3.2329841703462285E-305", "1.9677894927771484E-305", "4.792914878943572E-306"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "3.2329841703462285E-305", "1.9677894927771484E-305", "4.792914878943572E-306"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "__yoNMDIcEdqDs_9ORT1Rig", "4.792914878943572E-306"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="4.792914878943572E-306"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Differences Between UML 1.x and UML 2.0 </td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/supportingmaterial.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This page describes some differences from UML 1.x and UML 2.0 that are relevant to RUP context.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a><a id="XE_UML_2_._0__whats_new" name="XE_UML_2_._0__whats_new"></a> 
+<h2 align="justify">
+    Topics
+</h2>
+<ul>
+    <li>
+        <a href="#overview">Overview</a>
+    </li>
+    <li>
+        <a href="#activitydiagram">Activity Diagram</a>
+    </li>
+    <li>
+        <a href="#communicationdiagram">Communication Diagram</a>
+    </li>
+    <li>
+        <a href="#component">Component</a>
+    </li>
+    <li>
+        <a href="#compositestructurediagram">Composite Structure Diagram</a>
+    </li>
+    <li>
+        <a href="#sequencediagram">Sequence Diagram</a>
+    </li>
+</ul>
+<h2>
+    <a id="overview" name="overview">Overview</a>
+</h2>
+<p align="justify">
+    This page describes some differences from UML 1.x and UML 2.0 that are relevant to RUP context. It is not intended to
+    cover all UML ([<a class="elementLinkWithUserText" href="./../../../core.base_rup/customcategories/references_56F06DFD.html#UML04" guid="7.755968586980351E-308">UML04</a>])
+    Infrastructure and Superstructure Specifications, but to give an overview of relevant UML capabilities instead. Also,
+    refer to [<a class="elementLinkWithUserText" href="./../../../core.base_rup/customcategories/references_56F06DFD.html#RUM05" guid="7.755968586980351E-308">RUM05</a>] and [<a class="elementLinkWithUserText" href="./../../../core.base_rup/customcategories/references_56F06DFD.html#ERI04" guid="7.755968586980351E-308">ERI04</a>] for more
+    information.
+</p>
+<p align="justify">
+    Note that "UML 1.x" refers to UML 1.0 to UML 1.5 versions.
+</p>
+<p align="justify">
+    The most significant diagrammatical changes in the UML 2.0 feature set are in the behavioral diagrams, specifically the
+    activity diagram and the set of interaction diagrams (see <a href="#activitydiagram">Activity Diagram</a>, <a href="#sequencediagram">Sequence Diagram</a> and <a href="#communicationdiagram">Communication Diagram</a> below).
+</p>
+<p align="justify">
+    Composite Structure Diagram and Structured Class are also new UML 2.0 features (see <a href="#compositestructurediagram">Composite Structure Diagram</a> below).
+</p>
+<h2>
+    <a id="activitydiagram" name="activitydiagram">Activity Diagram</a>
+</h2>
+<h3>
+    <strong>Introduction</strong>
+</h3>
+<p>
+    The modeling of activities has undergone a complete revision in UML 2.0. It is fair to say that, at least for casual
+    use, the effect and appearance might be very similar, although depending on the formality of modeling in UML 1.5 (and
+    earlier versions), it is possible that the strict interpretation and the execution result of a model constructed
+    according to UML 1.x rules would not be the same in UML 2.0. Therefore we caution the modeler that even when a UML 1.x
+    activity model appears to be acceptable to UML 2.0 without change, it might not execute in the same way - particularly
+    in the case of more complex models involving concurrency. Refer to [<a class="elementLinkWithUserText" href="./../../../core.base_rup/customcategories/references_56F06DFD.html#UML04" guid="7.755968586980351E-308">UML04</a>] for more
+    information.
+</p>
+<p>
+    As [<a class="elementLinkWithUserText" href="./../../../core.base_rup/customcategories/references_56F06DFD.html#UML04" guid="7.755968586980351E-308">UML04</a>] defines it, an <em>activity</em> (which will be shown in an <em>activity
+    diagram</em>) is the specification of behavior as the coordinated sequencing of subordinate units whose individual
+    elements are <em>actions</em>. We may have informally referred to the individual executable steps in a UML 1.x activity
+    diagram as activities or activity states or, correctly, as action states: now these steps in a UML 2.0 activity are
+    called actions - and these actions are not decomposed further within the activity. The connotation of state has
+    disappeared in UML 2.0 because an activity is no longer a kind of state machine, as it was in UML 1.x. In UML 2.0,
+    activities are composed of <em>nodes,</em> of which actions are one kind; others, described further below, are
+    <em>control</em> nodes and <em>object</em> nodes.
+</p>
+<p>
+    <strong>Flow Semantics</strong>
+</p>
+<p>
+    Activities now have Petri Net-like semantics, based on <em>token flow,</em> where the execution of one node affects the
+    execution of another through directed connections called flows. Tokens, containing objects or a locus of control, flow
+    between nodes across these connections. A node is allowed to begin execution when specified conditions on its input
+    tokens are met, and when it completes execution, it offers tokens on its output flows, so that downstream nodes may
+    begin execution. The flows connecting nodes are further refined into control and data or object flows and, as you might
+    expect, control tokens move across control flows and object or data tokens pass across object flows.
+</p>
+<p>
+    This contrasts with UML 1.x, where the nodes were states (or pseudo states) with transitions between them, which
+    limited the modeling of flows.
+</p>
+<p>
+    <strong>Concurrency Modeling</strong>
+</p>
+<p>
+    The modeling capability of UML 2.0 allows unrestricted parallelism: whereas in UML 1.x, the entire state machine
+    (activity) performed a run-to-completion step, the UML 2.0 capability, in its most complete form, permits multiple
+    invocations of an activity to be handled by a single execution with multiple streams of tokens moving through the nodes
+    and flow connectors of the activity. This puts the onus on the modeler to be aware of race conditions and interactions.
+    Also, see the section <strong>Semantic Differences</strong> below for another example of the effect on concurrency
+    modeling of token flow semantics.
+</p>
+<h3>
+    <strong>Notation</strong>
+</h3>
+<p>
+    <strong>Action and Control Nodes</strong>
+</p>
+<p>
+    The diagram below illustrates many of the UML 2.0 elements, and is presented in the usual way for UML 2.0, with a
+    rectangular frame and a name in a compartment at the upper left. Compare this diagram with the UML 1.x version shown
+    below it. They are similar in appearance (allowing for the differing orientation and color conventions used-these have
+    no semantic significance), and this model has the same execution result in UML 1.x and UML 2.0. Note that the control
+    nodes - decision, merge, fork, join, initial and final - look like their UML 1.x equivalents, and the control flows are
+    shown with an arrowed line, a visual analog to the UML 1.x transition arrow.
+</p>
+<p align="center">
+    <img height="404"     alt="An activity diagram with various node types: initial, action, decision, fork, join, merge and activity final. It also shows control flow."      src="./../../../core.base_rup/guidances/supportingmaterials/resources/activity20.gif" width="630" />
+</p>
+<p class="picturetext">
+    Example UML 2.0 activity diagram
+</p>
+<p align="center">
+    <img height="505" alt="This diagram shows the equivalent UML 1.x version." src="./../../../core.base_rup/guidances/supportingmaterials/resources/activity1x.gif"     width="474" />
+</p>
+<p class="picturetext">
+    Example UML 1.x activity diagram
+</p>
+<p>
+    UML 2.0 has an additional control node type called <em>Flow Final</em> (shown below in a diagram taken from [<a class="elementLinkWithUserText" href="./../../../core.base_rup/customcategories/references_56F06DFD.html#UML04" guid="7.755968586980351E-308">UML04</a>]) that is used as an alternative to the Activity Final node to terminate a
+    flow. It is needed because in UML 2.0, when control reaches any instance of Activity Final node, the entire activity
+    (including all flows) is terminated. Flow Final simply terminates the flow to which it is attached. This was not an
+    issue in UML 1.5 because of the run-to-completion semantics, but with the unrestricted parallelism of UML 2.0, you
+    might not want all flows stopped and all tokens destroyed.
+</p>
+<p align="center">
+    <img height="123" alt="This diagram illustrates the flow final control node." src="./../../../core.base_rup/guidances/supportingmaterials/resources/flowfinal.gif"     width="314" />
+</p>
+<p class="picturetext">
+    Flow final control node
+</p>
+<p>
+    <strong>Object Nodes</strong>
+</p>
+<p>
+    UML 2.0 activity modeling also supports object nodes. An object node is an activity node that indicates that an
+    instance of a particular classifier, possibly in a particular state, might be available at a particular point in the
+    activity (for example, as output from, or input to an action). Object nodes act as containers to and from which objects
+    of a particular type (and possibly in a particular state) might flow. New notation, called a <em>pin</em>, has been
+    introduced for object nodes in UML 2.0. Pins represent inputs to an action or outputs from an action and are drawn as
+    small rectangles that are attached to the action rectangles, as shown below.
+</p>
+<p align="center">
+    <img height="114"     alt="This diagram shows the pin notation for object nodes, with an output pin connected to an input pin by an object flow."      src="./../../../core.base_rup/guidances/supportingmaterials/resources/pins.gif" width="262" />
+</p>
+<p class="picturetext" align="center">
+    Pin notation
+</p>
+<p>
+    The arrows represent object flows. These are solid lines, unlike the dashed lines used for transitions to and from
+    object flow states in UML 1.x. When the output pin on an action has the same name as the input pin on the connected
+    action, the output and input pins may be merged to give a standalone pin. This again gives a visual analog to object
+    flow in UML 1.x.
+</p>
+<p align="center">
+    <img height="127" alt="This diagram shows the alternative standalone pin notation." src="./../../../core.base_rup/guidances/supportingmaterials/resources/standalonepin.gif"     width="267" />
+</p>
+<p class="picturetext" align="center">
+    Standalone pin notation
+</p>
+<p>
+    <strong>Structured Activity Nodes</strong>
+</p>
+<p>
+    A structured activity node is an executable activity node that may have an expansion into subordinate activity nodes.
+    The subordinate nodes belong to only one structured activity node, but they may be nested. It may have control flows
+    connected to it and pins attached to it. A structured activity node is drawn as a dashed round cornered rectangle
+    enclosing its nodes and flows, with the keyword &lt;&lt;structured&gt;&gt; at the top.
+</p>
+<p>
+    <strong>Activity Partitions</strong>
+</p>
+<p>
+    An <em>activity partition</em> is a way of grouping the nodes and flows of an activity according to some shared
+    characteristic. In UML 1.x, the idea of swimlanes (which were regarded as partitions) was used in activity diagrams to
+    group actions according to some criterion - for example, in business modeling, by performing organization. UML 2.0
+    extends this partitioning capability to multiple dimensions for activity diagrams and provides additional notation so
+    that, for example, individual actions can be labeled with the name of the partition to which they belong. The diagram
+    below shows an example of multidimensional swimlanes as they would appear according to UML 2.0, where actions are
+    grouped according to location and responsibility.
+</p>
+<p align="center">
+    <img height="328" alt="An illustration of the UML 2.0 style of activity partitions, with two dimensional swimlanes."     src="./../../../core.base_rup/guidances/supportingmaterials/resources/partitions.gif" width="627" />
+</p>
+<p class="picturetext">
+    Activity partitions example using two-dimensional swimlane
+</p>
+<p>
+    <strong>Semantic Differences</strong>
+</p>
+<p>
+    The token flow semantics and the unrestricted parallelism of UML 2.0 activity models require the modeler accustomed to
+    UML 1.x to exercise caution when constructing new models or converting existing models, to ensure the execution result
+    is that intended. For example, in the processPassenger example above, the passenger checking in might be a frequent
+    flyer member, in which case, the agent needs to award the passenger frequent flyer miles, as shown below in a UML 1.x
+    model fragment.
+</p>
+<p align="center">
+    <img height="256" alt="This diagram shows a UML 1.x model fragment with a guarded concurrent transition."     src="./../../../core.base_rup/guidances/supportingmaterials/resources/concurguard1.gif" width="333" />
+</p>
+<p class="picturetext">
+    Using guarded concurrent transition
+</p>
+<p>
+    Placing the guard on the optional concurrent transition means that, in UML 1.x, the transition never starts, and the
+    behavior is as if the transition were not shown in the model; accordingly, when the other two transitions complete,
+    execution continues after the join. In UML 2.0, if the passenger is not a frequent flyer, no token will ever reach the
+    join along that flow and the model will stall because the join waits for tokens on all its flows before continuing. The
+    model should be constructed as shown below, with the condition treated in the same way as the baggage handling flow. It
+    is permissible to place guards directly on concurrent flows as long as you are sure no downstream join depends on them.
+</p>
+<p align="center">
+    <img height="307"     alt="A UML 2.0 version of the previous diagram, using decision and merge nodes instead of the guarded concurrent flow."     src="./../../../core.base_rup/guidances/supportingmaterials/resources/concurguard2.gif" width="333" />
+</p>
+<p class="picturetext">
+    Using decision and merge nodes instead of the guarded concurrent flow
+</p>
+<h2>
+    <a id="communicationdiagram" name="communicationdiagram">Communication Diagram</a>
+</h2>
+<p>
+    The UML 1.x collaboration diagram has been renamed to <em>communication diagram</em> in UML 2.0. There are no semantic
+    differences from previous versions. The communication diagram is based on the former collaboration diagram and still is
+    one type of interaction diagram.
+</p>
+<h3>
+    <strong>Notation</strong>
+</h3>
+<p>
+    A communication diagram focuses on the interaction between lifelines. It is shown as a graph whose nodes are rectangles
+    representing parts of a structured class or roles of a collaboration. A rectangular frame around the diagram with a
+    name in a compartment in the upper left corner is used, which is a notational change from previous UML versions.
+</p>
+<ul>
+    <li style="LIST-STYLE-TYPE: none">
+        The nodes correspond to the lifelines in an interaction.
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        Lines between parts represent connectors that form communication paths.
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        Multiplicities may be shown on connectors.
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        Messages between parts are shown by labeled arrows near connector lines.
+    </li>
+</ul>A communication diagram is used to model interactions that represent the implementation of an operation or usecase. 
+<p>
+    Example of a communication diagram:
+</p>
+<p align="center">
+    <img alt="Example of Communication Diagram for an Ordering system." src="./../../../core.base_rup/guidances/supportingmaterials/resources/communicdiag.jpg" />
+</p>
+<p class="picturetext">
+    Example of Communication Diagram for an Ordering system
+</p>
+<h2>
+    <a id="component" name="component">Component</a>
+</h2>
+<p>
+    In UML 2.0, a component is notated by a class symbol without the two protruding rectangles, as defined in UML 1.4. A
+    &lt;&lt;component&gt;&gt; stereotype is used instead. Optionally, a component icon that is similar to the UML 1.4 icon
+    can still be used in the upper-right corner of the component symbol.
+</p>
+<p>
+    UML 2.0 defines a component as being a structured class, which means that the collaboration between elements in its
+    internal structure (parts) can be modeled to better describe its behavior. Parts are connected through connectors.
+    Ports can be used to increase encapsulation level of a component through its provided and required interfaces. Refer to
+    <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/concepts/component_A2E2B3B1.html" guid="3.524150980437479E-305">Concept: Component</a> and <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/concepts/structured_class_FF8DB16F.html" guid="1.1994826813129747E-304">Concept: Structured Class</a> for more information.
+</p>
+<p>
+    Earlier versions of UML defined a special modeling element called <em>subsystem</em>, which was modeled as a package
+    with interface. Also, components were used to structure the model in the physical architecture. In UML 2.0, components
+    are used in a broad sense, across all parts of the model. Thus, there is no need for a special element to model
+    subsystems anymore. Separate compartments for subsystem realization and subsystem specification in UML 1.x have become
+    separate stereotypes (&lt;&lt;realization&gt;&gt; and &lt;&lt;specification&gt;&gt;, respectively) applied to
+    components in UML 2.0. Another new component stereotype is &lt;&lt;subsystem&gt;&gt;, indicated to model large-scale
+    components.
+</p>
+<p>
+    RUP suggests using components to model subsystems (refer to <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/design_subsystem_B26FD609.html" guid="1.2314266786534317E-305">Guideline: Design Subsystem</a> for more information).
+</p>
+<h2>
+    <a id="compositestructurediagram" name="compositestructurediagram">Composite Structure Diagram</a>
+</h2>
+<p>
+    Architectures can have specific collaboration between its elements, with parts and connectors not necessarily known at
+    design time. A typical class diagram (as well as other static diagrams) wouldn't be sufficient to clearly represent the
+    roles, responsibilities, relationships and rules that apply on those elements.
+</p>
+<p>
+    To address these issues, UML 2.0 has added the composite structure diagram. It can depict the internal structure of a
+    structured class (for example, component or class), including the interaction points of the structured class to other
+    parts of the system. It shows the configuration of parts that jointly perform the behavior of the containing structured
+    class.
+</p>
+<p>
+    Composite Structure Diagrams are used to draw internal content of Structured Classes (refer to <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/concepts/structured_class_FF8DB16F.html" guid="1.1994826813129747E-304">Concept: Structured Class</a> for details and examples of Composite Structure Diagrams).
+</p>
+<h2>
+    <a id="sequencediagram" name="sequencediagram">Sequence Diagram</a>
+</h2>
+<p>
+    UML 2.0 has several new features for sequence diagrams:
+</p>
+<ul>
+    <li style="LIST-STYLE-TYPE: none">
+        Fragments provide clearer semantics for how the behavior occurs within a sequence diagram. A combined fragment
+        encapsulates portions of a sequence diagram, where separate flows can be modeled, showing how conditions lead to
+        alternative paths of execution.<br />
+        <br />
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        Interaction occurrences enable decomposition of interactions into reusable chunks. It is a useful way to share
+        portions of an interaction between several other interactions.<br />
+        <br />
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        In UML 1.x, one possible representation for loops was to use the loop condition written inside a Note. The Note was
+        attached to the message or set of messages to be executed while the loop condition was true. In UML 2.0, there is a
+        specific representation for loops.<br />
+        <br />
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        In UML 2.0, sequence diagrams can show how objects are created and destroyed.<br />
+        <br />
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        Execution of Occurrence shows the focus of control which an object executes at some point in time, when it receives
+        a message.
+    </li>
+</ul>
+<p>
+    With the new capabilities to represent fragments, interaction occurrences and loops, sequence diagrams can be used in
+    two forms:
+</p>
+<ul>
+    <li style="LIST-STYLE-TYPE: none">
+        Instance form: describes a specific scenario in detail, documenting one possible interaction, without conditions,
+        branches, or loops. This form is used to represent one use case scenario. Different scenarios of the same use-case
+        are represented in different sequence diagrams. Modeling tools that support UML 1.x semantics only allow this form
+        of representation.<br />
+        <br />
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        Generic form: describes all possible alternatives in a scenario, taking advantage of new UML 2.0 capabilities like
+        conditions, branches, and loops. This form can be used to represent several scenarios of the same use case in a
+        unique sequence diagram, where it makes sense.
+    </li>
+</ul>
+<p>
+    The figure below shows an example of a sequence diagram modeling different scenarios. The <strong>alt</strong> fragment
+    shows two possible alternatives of message sequencing depending on if a condition is satisfied or not:
+</p>
+<p align="center">
+    <img alt="Sequence diagram showing branches, loops and conditions" src="./../../../core.base_rup/guidances/supportingmaterials/resources/seqdiag.jpg" />
+</p>
+<p class="picturetext">
+    Example: Sequence diagram showing branches, loops and conditions
+</p></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

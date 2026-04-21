@@ -1,0 +1,768 @@
+# B1 draft — Memory module enrichment (staging)
+# All cards carry: explanation, example, source, bloom.
+# Source tags cite slide part + topic-dive used for verification.
+# SuperMemo violations in the original bank are rewritten below:
+#   - Original "5 fields of a page table entry?" (list-recall) → split into 5 atomic cards.
+#   - Original "Memory list entry fields?" (list-recall) → split into 4 atomic cards.
+# All other cards preserved verbatim in prompt/answer and enriched.
+
+modules:
+  - id: memory
+    name: Memory & Paging
+    topics:
+      - id: 4736-memory-paging
+        name: Memory/Paging
+        tags:
+          - paging
+          - memory
+        prose: >-
+          Virtual memory via paging — fixed-size pages mapped to frames through page tables. Drill address-translation
+          math: page size → offset bits, number of pages/frames, and multi-level page-table sizing.
+        cards:
+          - type: name
+            prompt: Virtual page vs page frame?
+            answer: >-
+              Virtual page = chunk of virtual address space. Page frame = same-size unit in physical memory. Page table
+              maps the two.
+            explanation: >-
+              Pages and frames are always the **same size** so the low-order bits (the offset) survive translation
+              unchanged. Translation only rewrites the upper bits — virtual page number → page frame number.
+            example: |-
+              4 KB pages. Virtual addr 8300 = (VP 2, offset 108).
+              Page table: VP 2 → frame 6.
+              Physical = frame 6 base (24576) + 108 = 24684.
+            source: "Part 10, Slides 47-72; topic-dive: paging-core-formulas.md"
+            bloom: understand
+          - type: name
+            prompt: 48-bit VA, 32-bit PA, 8 KB pages. Number of pages?
+            answer: 8 KB = 2^13. Pages = 2^(48−13) = **2^35**.
+            explanation: >-
+              Number of virtual pages is always 2^(VA_bits − offset_bits). The offset fills log₂(page_size) bits; what
+              remains of the virtual address selects the page.
+            example: |-
+              Same problem, 4 KB pages instead: offset = 12 bits,
+              pages = 2^(48−12) = 2^36.
+            source: "Part 10, Slides 47-72; past-exam Q1; topic-dive: paging-core-formulas.md"
+            bloom: apply
+          - type: name
+            prompt: 48-bit VA, 32-bit PA, 8 KB pages. Number of page frames?
+            answer: 2^(32−13) = **2^19**.
+            explanation: >-
+              Frame count depends on **physical** address width, not virtual. Same offset bits (13) come off the top;
+              the remaining physical bits select the frame.
+            example: |-
+              If PA were 34-bit instead of 32-bit (same 8 KB pages):
+              frames = 2^(34−13) = 2^21 = 4× as much physical memory.
+            source: "Part 10, Slides 47-72; past-exam Q1; topic-dive: paging-core-formulas.md"
+            bloom: apply
+          - type: name
+            prompt: Entries in single-level linear page table with 48-bit VA, 8 KB pages?
+            answer: One entry per virtual page = **2^35 entries**.
+            explanation: >-
+              A linear page table holds one PTE per virtual page — even for unmapped pages. This is why 64-bit
+              single-level tables are infeasible and multi-level / inverted tables exist.
+            example: |-
+              2^35 entries × 8 B per entry = 2^38 B = 256 GiB
+              just for the page table of ONE process.
+            source: "Part 10, Slides 47-72; topic-dive: paging-core-formulas.md"
+            bloom: apply
+          - type: name
+            prompt: Formula for offset bits given page size?
+            answer: offset\_bits = log2(page\_size).
+            explanation: >-
+              The offset is a byte address *within* the page, so its width has to span the whole page size. A
+              page-size that isn't a power of 2 would waste offset bits and make page-number extraction require
+              division instead of a bit-shift, which is why real hardware insists on powers of 2.
+            example: |-
+              4 KB page = 2^12 B → offset = 12 bits.
+              8 KB page = 2^13 B → offset = 13 bits.
+              1 MB page = 2^20 B → offset = 20 bits.
+            source: "Part 10, Slides 47-72; topic-dive: paging-core-formulas.md"
+            bloom: remember
+          - type: name
+            prompt: Physical address formula from virtual address, given frame number and page size?
+            answer: physical = frame# × page\_size + offset. Offset = virtual\_addr − (page# × page\_size).
+            explanation: >-
+              Treat VA as (page#, offset) and PA as (frame#, offset). Only the high-order index changes during
+              translation — the offset is a pure passthrough.
+            example: |-
+              VA 4100, 4 KB pages: page# = 4100 / 4096 = 1, offset = 4.
+              If VP 1 → frame 1: PA = 1 × 4096 + 4 = 4100.
+            source: "Part 10, Slides 47-72; topic-dive: address-translation-worked-examples.md"
+            bloom: apply
+
+          # ---- Former list-recall card "5 fields of a PTE?" split into 5 atomic cards ----
+          - type: name
+            prompt: Which PTE field triggers a page fault when accessed with value 0?
+            answer: The **present/absent bit** (Pr).
+            explanation: >-
+              When Pr = 0 the frame# field is meaningless — the page isn't in memory. The MMU traps to the OS, which
+              either loads the page from disk (hard miss) or terminates the process (invalid VA).
+            example: |-
+              Past-exam Q3: VA 53448 lands on a PTE marked "X" (Pr=0)
+              → page fault; OS reads the page from disk into a free frame.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          - type: name
+            prompt: Which PTE field holds the physical mapping the MMU uses to build the physical address?
+            answer: The **page frame number** (PFN).
+            explanation: >-
+              On a hit, the MMU concatenates the PFN with the unchanged offset to form the physical address. For a
+              32-bit system with 4 KB pages, this field is typically 20 bits wide (32 − 12).
+            example: |-
+              PFN = 0x1A3, offset = 0x4B0, 4 KB pages:
+              PA = (0x1A3 << 12) | 0x4B0 = 0x1A34B0.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: apply
+          - type: name
+            prompt: Which PTE field enforces read-only, write, or execute rules on a page?
+            answer: The **protection bits** (R / W / X).
+            explanation: >-
+              Access violating the protection bits traps to the OS. This is how text pages are kept read-only and
+              stacks are kept non-executable.
+            example: |-
+              Text page PTE: protection = R | X, write = 0.
+              A write to this page → protection trap.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          - type: name
+            prompt: Which PTE field lets the OS skip writing a page to disk on eviction?
+            answer: The **modified (dirty) bit**, when it is 0.
+            explanation: >-
+              Hardware sets this bit on the first write after the page was loaded. Clean pages (dirty = 0) are backed
+              identically on disk, so eviction is just "drop the frame" — no write-back.
+            example: |-
+              Code page, never written → dirty = 0 → evict = free the frame.
+              Heap page that was written → dirty = 1 → must write-back first.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          - type: name
+            prompt: Which PTE field is used by clock / LRU-approximation page-replacement algorithms?
+            answer: The **referenced bit** (R).
+            explanation: >-
+              Hardware sets R on any access. The OS periodically clears it and uses the pattern of "was it set again?"
+              to approximate recency for eviction. Clock algorithm uses R directly to give pages a second chance.
+            example: |-
+              Clock eviction: hand lands on a frame with R = 1
+              → clear R to 0 and advance. If R = 0, evict that page.
+            source: "Part 10 page-replacement section; topic-dive: page-replacement-algorithms.md"
+            bloom: understand
+          - type: name
+            prompt: Which PTE field tells the MMU to skip the CPU cache when accessing this page?
+            answer: The **caching-disabled bit** (Ca).
+            explanation: >-
+              Set Ca = 1 for pages backing memory-mapped device registers: caching them would hide updates that the
+              device makes outside CPU visibility. For ordinary RAM-backed pages Ca = 0 so hardware caches are used.
+            example: |-
+              MMIO page (e.g. NIC control registers) → Ca = 1.
+              Every load hits the device directly, never stale cache data.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          # ---- end PTE-fields split ----
+
+          - type: name
+            prompt: Present/absent bit = 0 means what?
+            answer: Page is NOT currently in physical memory. Accessing it causes a page fault.
+            explanation: >-
+              The MMU checks Pr on every translation. If 0, the PTE's frame# field is ignored and the hardware raises
+              a fault; the OS page-fault handler then fetches the page.
+            example: |-
+              Past-exam Q4: VA 0x61B4 → VP 6. PTE[6] has Pr = 0 →
+              page fault; process blocks while OS reads the page from disk.
+            source: "Part 10, Slides 47-72; topic-dive: address-translation-worked-examples.md"
+            bloom: understand
+          - type: name
+            prompt: Purpose of the **modified (dirty) bit**?
+            answer: If set, page has been written to → must flush to disk on eviction. If clear, can just discard.
+            explanation: >-
+              Dirty = 1 means the RAM copy differs from the disk copy, so eviction must write back. Dirty = 0 means
+              the on-disk copy is already correct, so the frame can be reclaimed for free.
+            example: |-
+              Binary text page (read-only) → dirty stays 0 → discard on eviction.
+              Updated heap page → dirty = 1 → write to swap before reuse.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          - type: name
+            prompt: What is a TLB?
+            answer: >-
+              Translation Lookaside Buffer. Small associative cache in MMU that stores recent virtual→physical
+              translations to skip the page table walk.
+            explanation: >-
+              Walking a multi-level page table is slow (multiple memory reads). The TLB caches recent translations so
+              repeat addresses translate in one cycle and skip the walk.
+            example: |-
+              Illustrative EAT arithmetic (numbers picked for demo):
+              1 ns TLB, 100 ns RAM, hit rate h.
+              EAT = h·(1 + 100) + (1−h)·(1 + 200).
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          - type: name
+            prompt: TLB soft miss vs hard miss?
+            answer: >-
+              Soft: not in TLB but page is in memory — just refill TLB. Hard: not in TLB AND not in memory → page fault
+              → disk I/O.
+            explanation: >-
+              Both miss the TLB, but the recovery cost is orders of magnitude different. Soft miss is microseconds
+              (page-table walk); hard miss is milliseconds (disk I/O) — 1000× slower.
+            example: |-
+              Soft miss: walk PT → Pr = 1 → install TLB entry, continue.
+              Hard miss: walk PT → Pr = 0 → trap → disk read → update PT → restart instruction.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          - type: name
+            prompt: "Page size 4 K, page table: VP 0→frame 2, VP 1→frame 1. Virtual address 20 gives what physical address?"
+            answer: Page 0 → frame 2 (base 8K = 8192). Offset 20. Physical = 8192 + 20 = **8212**.
+            explanation: >-
+              VA 20 is below 4096 so it sits in VP 0. PT maps VP 0 → frame 2. Frame 2 base = 2 × 4096 = 8192; add the
+              offset of 20 that passes through untouched.
+            example: |-
+              Same table, VA 50: also VP 0, offset 50.
+              PA = 8192 + 50 = 8242.
+            source: "Past-exam Q3; topic-dive: address-translation-worked-examples.md"
+            bloom: apply
+          - type: name
+            prompt: Page size 4 K, VP 1 → frame 1. Virtual addr 4100 → physical?
+            answer: Page 1, offset = 4100 − 4096 = 4. Frame 1 base = 4096. Physical = 4096 + 4 = **4100**.
+            explanation: >-
+              PA = VA *only within this page* because VP 1 maps to frame 1 — their base addresses are equal, so the
+              addition of offset gives an identical result. Translation still runs; the equality is a lucky artifact,
+              not a general rule.
+            example: |-
+              Same table, VA 4200 → VP 1, offset 104.
+              PA = 4096 + 104 = 4200 (still identity for VP 1).
+            source: "Past-exam Q3; topic-dive: address-translation-worked-examples.md"
+            bloom: apply
+          - type: name
+            prompt: Page size 4 K, VP 2 → frame 6. Virtual addr 8300 → physical?
+            answer: Page 2, offset = 8300 − 8192 = 108. Frame 6 base = 24K = 24576. Physical = 24576 + 108 = **24684**.
+            explanation: >-
+              Pick off VP: 8300 ÷ 4096 = 2 r 108. PT maps VP 2 → frame 6. PA = 6 × 4096 + 108 = 24684. The offset never
+              changes during translation.
+            example: |-
+              Same table, VA 10000 → VP 2, offset 1808.
+              PA = 24576 + 1808 = 26384.
+            source: "Past-exam Q3; topic-dive: address-translation-worked-examples.md"
+            bloom: apply
+          - type: name
+            prompt: Virtual addr 53448 falls in a page marked "X" in page table. What happens?
+            answer: "**Page fault.** Page is not in memory; OS must load it."
+            explanation: >-
+              "X" in the PT column means Pr = 0 for that PTE. The MMU traps; the OS either brings the page in from disk
+              (if it was just swapped) or kills the process (if VA is invalid for this address space).
+            example: |-
+              VA 53448, 4 KB pages → VP = 53448 / 4096 = 13.
+              PTE[13] present = 0 → trap → disk read → retry instruction.
+            source: "Past-exam Q3; topic-dive: address-translation-worked-examples.md"
+            bloom: understand
+          - type: name
+            prompt: Why multi-level page tables?
+            answer: >-
+              Single-level for 64-bit VA with 4 KB pages = 2^52 entries — infeasible. Multi-level lets unused regions
+              have no second-level table.
+            explanation: >-
+              Most of a 64-bit address space is never touched. Multi-level PTs allocate inner tables only for regions
+              in use, so the memory cost scales with mapped regions, not total VA size.
+            example: |-
+              Process using 1 MB of code + 1 MB of heap (2^21 B):
+              two-level PT allocates 1 outer + 2 inner tables,
+              not 2^52 PTEs.
+            source: "Part 10, Slides 90-97; topic-dive: two-level-page-tables.md"
+            bloom: understand
+          - type: name
+            prompt: 2-level PT, 6-bit VA, 2-bit offset, 2-bit top, 2-bit second. Address 37 (100101) — top/second/offset?
+            answer: top=10=2, second=01=1, offset=01=1.
+            explanation: >-
+              Split 6 bits from MSB as 2/2/2: bits 5-4 = top, bits 3-2 = second, bits 1-0 = offset. 37 = 100101₂ splits
+              to 10 | 01 | 01.
+            example: |-
+              Same split, address 62 (111110):
+              top = 11 = 3, second = 11 = 3, offset = 10 = 2.
+            source: "Past-exam Q7; topic-dive: two-level-page-tables.md"
+            bloom: apply
+          - type: name
+            prompt: What is Belady's anomaly?
+            answer: "FIFO page replacement: increasing # frames can INCREASE page faults. Does not occur with optimal or LRU."
+            explanation: >-
+              FIFO's eviction order depends only on arrival, not on usefulness, so adding a frame can push out a page
+              that would have stayed under a smaller-frame schedule. LRU and OPT cannot exhibit Belady's anomaly.
+            example: |-
+              Reference string 1,2,3,4,1,2,5,1,2,3,4,5:
+              3 frames → 9 FIFO faults.
+              4 frames → 10 FIFO faults. Extra frame hurts.
+            source: "Part 10 page-replacement section; topic-dive: page-replacement-algorithms.md"
+            bloom: understand
+          - type: name
+            prompt: Optimal page replacement algorithm?
+            answer: >-
+              Replace the page that will not be used for the longest time in the future. Unimplementable (future
+              unknown). Benchmark only.
+            explanation: >-
+              OPT minimizes page faults mathematically but requires clairvoyance — you must know all future accesses.
+              Real systems approximate it with LRU (past as predictor of future).
+            example: |-
+              Frames [A,B,C], next access is A, then D.
+              On miss for D: evict the page whose next use is farthest.
+              Future: A in 1 step, B in 5, C in 4 → evict B.
+            source: "Part 10 page-replacement section; topic-dive: page-replacement-algorithms.md"
+            bloom: understand
+          - type: name
+            prompt: Clock algorithm — brief description?
+            answer: >-
+              Circular list of page frames + hand pointer. At eviction, if referenced bit = 1, clear it and advance. If
+              0, evict that page.
+            explanation: >-
+              Clock is an LRU approximation. The referenced bit gives a rough "recently used?" signal; clearing it
+              ages the page. Pages that survive a full clock rotation without being re-referenced get evicted.
+            example: |-
+              Hand at frame 3, R=1 → clear to 0, advance to 4.
+              Frame 4, R=0 → evict, place new page, advance to 5.
+            source: "Part 10 page-replacement section; topic-dive: page-replacement-algorithms.md"
+            bloom: understand
+          - type: name
+            prompt: LRU — what gets evicted?
+            answer: The page that has been unused for the longest time.
+            explanation: >-
+              LRU assumes past access patterns predict near-future ones. It's provably immune to Belady's anomaly but
+              exact LRU needs a timestamp or list update on every reference — too expensive in hardware. Clock
+              approximates it.
+            example: |-
+              Access order A, B, C, A, D (3 frames):
+              load A, B, C. Access A → A is MRU. Miss D:
+              evict B (least recently used).
+            source: "Part 10 page-replacement section; topic-dive: page-replacement-algorithms.md"
+            bloom: understand
+          - type: name
+            prompt: What does an **inverted page table** index by?
+            answer: Physical frame number. One entry per frame (not per virtual page). Lookup requires hashing.
+            explanation: >-
+              Size scales with physical memory instead of virtual address space — critical for 64-bit machines. The
+              cost is slower lookup: VA → hash → chain search, versus direct indexing in a linear PT.
+            example: |-
+              4 GB RAM, 4 KB frames → 1 M IPT entries (fixed).
+              Regardless of VA size (48-bit, 64-bit), IPT stays the same size.
+            source: "Part 10, Slides 83-88 (inverted page tables)"
+            bloom: understand
+          - type: name
+            prompt: Optimal page size formula given process size s and PT entry size e?
+            answer: p\* = √(2se). Overhead at p\* also equals √(2se).
+            explanation: >-
+              Overhead(p) = s·e/p (PT size) + p/2 (avg last-page waste). Differentiate wrt p, set to 0:
+              −s·e/p² + 1/2 = 0 → p² = 2se → p* = √(2se). At this p*, both terms are equal so overhead = √(2se).
+            example: |-
+              s = 1 MB, e = 8 B:
+              p* = √(2 × 2^20 × 2^3) = √(2^24) = 2^12 = 4 KB.
+            source: "Part 10, Slides 57-58; past-exam Q6; topic-dive: memory-overhead-optimal-page-size-q6.md"
+            bloom: apply
+          - type: name
+            prompt: Compute p\* for s = 1 MB, e = 8 bytes.
+            answer: p\* = √(2 × 2^20 × 2^3) = √(2^24) = **2^12 = 4 KB**.
+            explanation: >-
+              Plug into p* = √(2se). Keep everything as powers of 2 so the square root is trivial: 2 × 2^20 × 2^3 = 2^24;
+              √(2^24) = 2^12 = 4096.
+            example: |-
+              Same formula, s = 1 MB, e = 16 B:
+              p* = √(2 × 2^20 × 2^4) = √(2^25) ≈ 2^12.5 ≈ 5.8 KB.
+              Round up to the nearest page-size-of-2 → 8 KB.
+            source: "Past-exam Q6; topic-dive: memory-overhead-optimal-page-size-q6.md"
+            bloom: apply
+          # ---- Analyze-level cards (added pass 2 to close Bloom gap) ----
+          - type: name
+            prompt: Derive `p* = √(2se)` starting from `Overhead(p) = s·e/p + p/2`.
+            answer: >-
+              dOverhead/dp = −s·e/p² + 1/2. Set = 0 → p² = 2se → p* = √(2se). At this p*: se/p* = √(2se)/2 and
+              p*/2 = √(2se)/2, so Overhead(p*) = √(2se) = p*.
+            explanation: >-
+              This is the classic minimization pattern: sum of a decreasing term (PT cost falls as pages grow) and an
+              increasing term (internal fragmentation grows as pages grow). The minimum sits where their slopes
+              cancel; at that minimum the two terms are equal and each equals half the total.
+            example: |-
+              s = 1 MB, e = 8 B → p* = √(2·2^20·2^3) = √(2^24) = 4 KB.
+              Both overhead terms at p*: se/p* = 2^23/2^12 = 2 KB;
+              p*/2 = 2 KB. Total = 4 KB = p*.
+            source: "Part 10, Slides 57-58; past-exam Q6; topic-dive: memory-overhead-optimal-page-size-q6.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              Why can LRU never exhibit Belady's anomaly while FIFO can?
+            answer: >-
+              LRU's resident set with k+1 frames is always a superset of its resident set with k frames on the same
+              reference string. Any page resident under k frames stays resident under k+1. FIFO evicts by arrival
+              order, so adding a frame can reorder evictions and push out a page that smaller-frame FIFO kept.
+            explanation: >-
+              The inclusion property (k frames ⊆ k+1 frames at every step) is the reason. LRU preserves it because
+              eviction depends only on access recency, independent of frame count. FIFO's queue order depends on
+              count, so the invariant breaks.
+            example: |-
+              Reference string 1,2,3,4,1,2,5,1,2,3,4,5:
+              LRU 3 frames = 10 faults, 4 frames = 8 faults (strictly improves).
+              FIFO 3 frames = 9 faults, 4 frames = 10 faults (anomaly).
+            source: "Part 10 page-replacement section; topic-dive: page-replacement-algorithms.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              Buddy arena (1024 KB, min 32 KB) has free entries of sizes 512, 256, 128, 64, 32 — but cannot satisfy
+              a 1024 KB request. What does that tell you about the arena state?
+            answer: >-
+              The free 512's buddy (the other 512-level block) is not wholly free — a busy leaf somewhere in its
+              subtree blocks the merge. Only freeing those busy leaves can restore a 1024 KB block; the buddy system
+              has no compaction pass.
+            explanation: >-
+              A 1024 KB block forms only when both top-level 512s are simultaneously wholly free. Even one busy leaf
+              anywhere in the other 512's subtree blocks the merge path to the root, no matter how many smaller free
+              blocks exist. This is the buddy system's fundamental weakness.
+            example: |-
+              Tree state: left 512 wholly free; right 512 split into
+              [256(free), 128(free), 64(free), 32(busy), 32(free)].
+              Free-list shows {512, 256, 128, 64, 32} — yet the root
+              1024 cannot coalesce because that one busy 32 in the right
+              subtree keeps the right 512 from being wholly free.
+            source: "Part 10, Slides 34-36; topic-dive: buddy-system-past-exam-q8.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              Given holes [10, 4, 20, 18, 7, 9, 12, 15] and successive requests 12, 10, 9 — which fit algorithm leaves
+              the **smallest sum of leftover fragments**?
+            answer: >-
+              **Best fit** — leaves 0 total (each request takes a hole of exactly its size). Worst-fit leaves 8+8+6=22.
+              First-fit leaves 8+0+9=17. Next-fit leaves 8+8+0=16.
+            explanation: >-
+              Best-fit's tiny-fragment pathology fails to appear when the hole list happens to contain exact matches
+              for each request. This exercise is a counter-example to the generalization "best-fit always leaves many
+              tiny fragments" — it only does so on average over many request distributions.
+            example: |-
+              Best fit: pick 12 (→ 0), 10 (→ 0), 9 (→ 0). Total = 0.
+              First fit: pick 20 (→ 8), 10 (→ 0), 18 (→ 9). Total = 17.
+              Worst fit: pick 20, 18, 15 (→ 8, 8, 6). Total = 22.
+            source: "Part 10, Slides 19-36; past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              A process with working set 400 MB runs on 300 MB of RAM. Page faults climb, CPU utilization drops.
+              Which two remedies, drawn from Part 10 material, will reduce fault rate and why?
+            answer: >-
+              (1) Reduce degree of multiprogramming — suspend a process so the remaining working sets fit in RAM
+              (directly addresses thrashing). (2) Increase page size — fewer PTEs per process and better spatial
+              locality per fault, at the cost of more internal fragmentation.
+            explanation: >-
+              The root cause is working-set pressure, not replacement algorithm. Swapping out a whole process breaks
+              the fault feedback loop instantly; changing replacement (FIFO → LRU) only helps when eviction choices
+              are the problem, which they aren't when the set simply doesn't fit.
+            example: |-
+              400 MB working set on 300 MB RAM, 4 KB pages:
+              fault rate → near 100%. Suspend one of two such processes
+              → remaining process holds its set → fault rate → near 0%.
+            source: "Part 10 working-set section; topic-dive: page-replacement-algorithms.md"
+            bloom: analyze
+          # ---- end Analyze cards ----
+          - type: name
+            prompt: What is **thrashing**?
+            answer: >-
+              System spends more time paging than executing because working sets exceed physical memory. Remedy: reduce
+              degree of multiprogramming.
+            explanation: >-
+              When combined working sets don't fit, each process evicts pages others need, so every access faults. CPU
+              utilization drops even as run queue grows. Fix = swap a whole process out to let others finish.
+            example: |-
+              4 processes, each needs 300 MB working set, RAM = 1 GB:
+              every context switch faults. Suspend one → other three fit → paging stops.
+            source: "Part 10 working-set section"
+            bloom: understand
+
+      - id: 4736-memory-alloc
+        name: Memory/Alloc
+        tags:
+          - memory
+        prose: >-
+          Physical-memory management — base/limit relocation, swapping whole processes, and tracking free space with
+          bitmaps or linked lists. Placement algorithms (first/best/worst/next fit) pick which hole to use.
+        cards:
+          - type: name
+            prompt: Base and limit registers — what do they do?
+            answer: >-
+              Every memory reference: check against limit (protection), then add base (relocation). Simple hardware
+              segmentation.
+            explanation: >-
+              Limit guards the upper bound (fault if address ≥ limit); base offsets every reference so a process can be
+              loaded anywhere in physical RAM without relinking. Predecessor of the MMU.
+            example: |-
+              base = 0x10000, limit = 0x2000.
+              Program issues addr 0x500 → check 0x500 < 0x2000 ✓ →
+              physical = 0x10500.
+            source: "Part 10, Slides 4-21; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: understand
+          - type: name
+            prompt: What is **swapping**?
+            answer: Bring entire process into memory, run, swap whole process back to disk. Alternative to virtual memory.
+            explanation: >-
+              Whole-process swap trades time (disk I/O on every swap) for simplicity (no paging hardware). It's a
+              coarser predecessor to virtual memory; modern systems still use it as the last-resort memory pressure
+              release valve.
+            example: |-
+              RAM = 1 GB, 5 processes × 300 MB each:
+              only 3 fit. OS rotates: run P1-P3, swap P1 out,
+              swap P4 in, continue. Pre-VM design.
+            source: "Part 10, Slides 4-21; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: remember
+          - type: name
+            prompt: "Memory management with bitmaps: tradeoff?"
+            answer: Small unit → larger bitmap + slow search. Large unit → wasted space (internal fragmentation).
+            explanation: >-
+              The bitmap needs 1 bit per allocation unit. Finer granularity tracks memory precisely but inflates the
+              bitmap and makes "find N free bits in a row" slower. Coarser units waste memory inside each allocation.
+            example: |-
+              1 GB RAM, 1-byte units: bitmap = 128 MB (12.5% overhead).
+              1 GB RAM, 4 KB units: bitmap = 32 KB (trivial) but 4 KB internal frag per alloc.
+            source: "Part 10, Slides 4-21; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: understand
+
+          # ---- Former list-recall "Memory list entry fields?" split into 4 atomic cards ----
+          - type: name
+            prompt: In a memory linked-list, which field distinguishes a hole from an allocated block?
+            answer: The **type/status** tag — H (hole) or P (process).
+            explanation: >-
+              The allocator scans the list looking for H entries that fit the request. On free, adjacent H entries get
+              coalesced; P entries are skipped during placement.
+            example: |-
+              List: [P:0-10][H:10-14][P:14-20]
+              Free P:0-10 → [H:0-14][P:14-20] (coalesced with neighbor H).
+            source: "Part 10, Slides 4-21; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: understand
+          - type: name
+            prompt: In a memory linked-list entry, what does the "address" field store?
+            answer: Starting address of the region this entry describes.
+            explanation: >-
+              The address + length pair identifies exactly one contiguous region. Entries are kept sorted by address so
+              that coalescing (merging adjacent holes) is a single adjacency check with neighbors.
+            example: |-
+              Entry: { type=H, address=0x2000, length=0x400, next=... }
+              describes a 1 KB hole starting at 0x2000.
+            source: "Part 10, Slides 4-21; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: remember
+          - type: name
+            prompt: In a memory linked-list, which field does first-fit compare against the allocation request?
+            answer: The **length** field.
+            explanation: >-
+              Placement walks the list; for each H entry, check length ≥ requested size. First-fit stops on the first
+              match, best-fit continues to find the smallest suitable match.
+            example: |-
+              Request 12 MB. List: H:10, H:4, H:20, H:18...
+              First fit: 10<12 ✗, 4<12 ✗, 20≥12 ✓ → take 20 MB hole.
+            source: "Part 10, Slides 19-36; past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: Why must memory-list entries include a pointer to the next entry?
+            answer: So placement and coalescing can splice and merge neighbors in O(1) edits (traversal is still O(n)).
+            explanation: >-
+              Pointers let you remove an entry and merge it with a neighbor in constant time. An array-backed
+              structure would require O(n) shifts on every allocation. Walking the list to find the target is still
+              O(n) in either representation.
+            example: |-
+              Coalesce on free: find freed block's entry → if prev is H,
+              merge; if next is H, merge. Each merge = two pointer rewrites.
+            source: "Part 10, Slides 19-36; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: understand
+          # ---- end memory-list-entry split ----
+
+          - type: name
+            prompt: Define **First fit**.
+            answer: Scan the hole list from the beginning; take the first hole ≥ requested size.
+            explanation: >-
+              First-fit is fastest on average because it short-circuits — once a suitable hole is found, no further
+              scan. Its structural weakness is that repeat small requests tend to chop the first few holes into
+              slivers, so the early list fills with tiny residuals that every future scan must skip past.
+            example: |-
+              Holes [10, 4, 20, 18, 7, 9, 12, 15] MB. Request 12:
+              scan → 10, 4 too small → 20 ≥ 12 → **take 20**.
+            source: "Part 10, Slides 19-36; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: remember
+          - type: name
+            prompt: Define **Best fit**.
+            answer: Scan the entire list; take the smallest hole ≥ requested size.
+            explanation: >-
+              Minimizes waste per allocation but creates many tiny leftover holes (fragments) that are often too small
+              to reuse. Slower than first-fit because it never short-circuits.
+            example: |-
+              Holes [10, 4, 20, 18, 7, 9, 12, 15]. Request 12:
+              candidates ≥ 12: {20, 18, 12, 15} → smallest = **12**.
+            source: "Part 10, Slides 19-36; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: remember
+          - type: name
+            prompt: Define **Worst fit**.
+            answer: Scan the entire list; take the largest hole (to leave a usable remainder).
+            explanation: >-
+              The design goal is to keep leftover holes big enough to be useful, unlike best-fit's slivers. In
+              practice worst-fit exhausts the arena's large holes early, so late-arriving big requests fail — which
+              is why it performs worst on average despite the appealing intuition.
+            example: |-
+              Holes [10, 4, 20, 18, 7, 9, 12, 15]. Request 12:
+              largest ≥ 12 = **20**. Leaves 8 MB leftover.
+            source: "Part 10, Slides 19-36; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: remember
+          - type: name
+            prompt: Define **Next fit**.
+            answer: Like first fit but starts scanning from the position of the last allocation.
+            explanation: >-
+              Avoids crowding small holes at the head (first-fit's pathology) by spreading allocations around the list.
+              Cost: one extra piece of state — the rover pointer — carried across allocations.
+            example: |-
+              Rover at index 3 (hole 18), request 10 MB:
+              scan from index 3 → 18 ≥ 10 ✓ → take 18. Rover moves to index 4.
+            source: "Part 10, Slides 19-36; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: remember
+          - type: name
+            prompt: "Holes \\[10,4,20,18,7,9,12,15\\]. Request 12 MB: first fit picks?"
+            answer: "**20** (first hole ≥ 12 is at index 2)."
+            explanation: >-
+              First-fit stops on the first success. Scan: 10 < 12, 4 < 12, 20 ≥ 12 → take. Indexes 3+ not examined.
+            example: |-
+              Same list, request 5 MB → first fit takes **10**
+              (first hole ≥ 5).
+            source: "Past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: "Holes \\[10,4,20,18,7,9,12,15\\]. Request 12 MB: best fit picks?"
+            answer: "**12** (smallest hole ≥ 12)."
+            explanation: >-
+              Best-fit examines every hole. Candidates ≥ 12: {20, 18, 12, 15}. The smallest is 12 → pick that. Leaves 0
+              fragment for this slot.
+            example: |-
+              Same list, request 8 MB → candidates {10, 20, 18, 9, 12, 15}.
+              Smallest ≥ 8 = **9** → best fit picks 9.
+            source: "Past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: "Holes \\[10,4,20,18,7,9,12,15\\]. Request 12 MB: worst fit picks?"
+            answer: "**20** (largest hole)."
+            explanation: >-
+              Worst-fit picks the largest hole regardless of how close it is to the request. Intent: leave a big-enough
+              leftover for a future allocation. 20 is the unambiguous max.
+            example: |-
+              Same list, request 5 MB → still **20** (largest hole
+              irrespective of request size).
+            source: "Past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: "Past-exam Q2: worst fit picks which hole for requests 12, 10, 9?"
+            answer: 20, 18, 15 (always the largest remaining hole).
+            explanation: >-
+              After each allocation the selected hole shrinks by the request size; worst-fit then picks the new max.
+              Start {10,4,20,18,7,9,12,15}: pick 20 (→ 8). Then max = 18 → pick 18 (→ 8). Then max = 15 → pick 15.
+            example: |-
+              Sequence of leftovers:
+              20 − 12 = 8; 18 − 10 = 8; 15 − 9 = 6.
+              Three medium holes become three small ones.
+            source: "Past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: "Past-exam Q2: next fit picks which holes for requests 12, 10, 9?"
+            answer: 20, 18, 9 (rover advances after each allocation).
+            explanation: >-
+              Start with rover at the head. Request 12 → first ≥ 12 from rover = 20 (index 2); rover advances to
+              index 3. Request 10 → first ≥ 10 from index 3 = 18. Rover advances to index 4. Request 9 → scan 7 (fail)
+              then 9 ≥ 9 → take 9.
+            example: |-
+              Holes [10, 4, 20, 18, 7, 9, 12, 15]:
+              rover at 0 → pick 20 (idx 2) → rover→3;
+              from idx 3 → pick 18 (idx 3) → rover→4;
+              from idx 4 → 7<9, then 9≥9 → pick 9 (idx 5).
+            source: "Part 10, Slides 19-36; past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: "Past-exam Q2: best fit picks which hole for requests 12, 10, 9?"
+            answer: 12, 10, 9 (smallest that fits each time).
+            explanation: >-
+              Best-fit leaves zero leftover in each case because the request exactly equals the chosen hole. Perfect
+              packing on this list — but in general best-fit generates many tiny fragments.
+            example: |-
+              After allocations: holes [10, 4, 20, 18, 7, 9, 15]
+              (12, 10, 9 are gone). No fragments introduced.
+            source: "Past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: Internal vs external fragmentation?
+            answer: >-
+              Internal: wasted space WITHIN an allocated block (request smaller than block). External: usable memory
+              scattered between allocations, too small in any one piece.
+            explanation: >-
+              Paging and buddy cause internal fragmentation (fixed block sizes don't match requests). Variable-size
+              placement (first/best/next) causes external fragmentation (holes between allocations). Compaction fixes
+              external but is expensive.
+            example: |-
+              Internal: 200 KB request in 256 KB buddy block → 56 KB internal.
+              External: holes 2, 3, 7 KB scattered = 12 KB free,
+              but can't satisfy a 10 KB request.
+            source: "Part 10, Slides 4-21; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: understand
+          - type: name
+            prompt: Buddy system — block sizes?
+            answer: >-
+              All powers of 2. Split larger blocks in half to reach a block ≥ request; coalesce with buddy on free if
+              buddy is free.
+            explanation: >-
+              Power-of-2 sizing makes buddy computation a single bit flip (XOR with block size) and keeps splits
+              symmetric — every block has exactly one buddy at each level. The cost is up to 50% internal frag
+              (request of size 2^k + 1 takes a 2^(k+1) block).
+            example: |-
+              1024 → [512, 512] → [256, 256, 512] → [128, 128, 256, 512]...
+              Each split halves the block; each block has a buddy at the same level.
+            source: "Part 10, Slides 34-36; topic-dive: buddy-system-past-exam-q8.md"
+            bloom: understand
+          - type: name
+            prompt: Buddy, 1024 KB, min 32 KB. Process A requests 200 KB → block size?
+            answer: "200 rounds up to 256 KB. Splits: 1024→512,512 → 512→256,256. A gets a 256 KB block."
+            explanation: >-
+              Round up the request to the next power of 2 ≥ request ≥ min. 200 KB → 256 KB (since 128 < 200 ≤ 256).
+              Then split the smallest available block that can contain it; here we split 1024 twice to get a free 256.
+            example: |-
+              Same arena, A' requests 100 KB:
+              round up to 128. Split one 256 → [128, 128]; take one 128.
+            source: "Past-exam Q8; topic-dive: buddy-system-past-exam-q8.md"
+            bloom: apply
+          - type: name
+            prompt: Buddy, after A holds 256 KB, B requests 50 KB → block size + subtree?
+            answer: 50 rounds up to 64. Take free 256 → split to 128,128 → split to 64,64. B gets one 64.
+            explanation: >-
+              50 rounds up to 64 (since 32 < 50 ≤ 64 given min = 32). No 64 or 128 is free, so split a free 256 twice:
+              256 → 128+128 → 64+64. Allocate the first leaf 64 to B.
+            example: |-
+              Resulting layout:
+              [A:256][B:64][free:64][free:128][free:512]
+              (B's 128-level sibling is free; A's 256-level sibling is not).
+            source: "Past-exam Q8; topic-dive: buddy-system-past-exam-q8.md"
+            bloom: apply
+          - type: name
+            prompt: "Buddy: when does coalescing happen on free?"
+            answer: "Recursively: when a block is freed, if its buddy is also free, merge them. Repeat up the tree."
+            explanation: >-
+              A block's buddy is the sibling it was split from (address XOR block_size). Coalescing requires the buddy
+              to be **wholly free** — any busy descendant in the buddy's subtree blocks the merge. Merges propagate as
+              long as the condition holds.
+            example: |-
+              Free two sibling 64s → merge to 128.
+              If that 128's buddy is also free → merge to 256.
+              Stop when buddy is busy or has busy descendants.
+            source: "Past-exam Q8; topic-dive: buddy-system-past-exam-q8.md"
+            bloom: understand
+          - type: name
+            prompt: Which placement algorithm keeps separate free-lists per common request size?
+            answer: "**Quick fit** — one free-list per size bucket, so allocation is a direct list pop (no scan)."
+            explanation: >-
+              Bucketing by size removes the search step entirely: request → bucket → pop head. The tradeoff is that
+              coalescing becomes harder — adjacency between buckets is not tracked, so merging free neighbors on free
+              requires extra bookkeeping.
+            example: |-
+              Buckets: [4K list], [8K list], [16K list].
+              Request 4K → pop head of 4K list.
+            source: "Part 10, Slides 19-36"
+            bloom: remember
+          - type: name
+            prompt: Buddy allocation of 200 KB in 256 KB block — how much internal fragmentation?
+            answer: 256 − 200 = **56 KB** wasted inside the block.
+            explanation: >-
+              Internal frag = (block size) − (request). Worst case for buddy is request = 2^k + 1, which takes block
+              2^(k+1) for ~50% waste. Tradeoff for O(log n) alloc/free and clean coalescing.
+            example: |-
+              Request 129 KB → takes 256 KB block → 127 KB waste (~49.6%).
+              Request 128 KB → takes 128 KB block → 0 waste.
+            source: "Past-exam Q8; topic-dive: buddy-system-past-exam-q8.md"
+            bloom: apply

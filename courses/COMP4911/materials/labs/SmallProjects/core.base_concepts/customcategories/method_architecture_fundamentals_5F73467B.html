@@ -1,0 +1,296 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Method Architecture Fundamentals</title>
+<meta name="uma.type" content="CustomCategory">
+<meta name="uma.name" content="method_architecture_fundamentals">
+<meta name="uma.presentationName" content="Method Architecture Fundamentals">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<link rel="StyleSheet" href="./../../css/default.css" type="text/css">
+<script src="./../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../';
+					var imgPath = './../../images/';
+					var nodeInfo=[{view: "view:3.2329841703462285E-305", path: ["3.2329841703462285E-305", "_uDU1oASEEdq61bDkWg1SXw"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "3.2329841703462285E-305", "_uDU1oASEEdq61bDkWg1SXw"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo, '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="_uDU1oASEEdq61bDkWg1SXw"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Method Architecture Fundamentals</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../core.base_concepts/customcategories/resources/concept_dgm32.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">Introduces fundamental UMA principles, concepts, abstractions.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Contents</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_concepts/guidances/concepts/introduction_to_uma_931F5B93.html" guid="_94_eoO8LEdmKSqa_gSYthg">Key Capabilities of the Unified Method Architecture (UMA)</a>
+</li>
+<li>
+<a href="./../../core.base_concepts/guidances/concepts/uma_vs_rup_45521141.html" guid="_SZDtIEdjEdqBmOmOgjH2IQ">UMA versus RUP 2003 meta-model</a>
+</li>
+<li>
+<a href="./../../core.base_concepts/customcategories/method_concepts_179C5639.html" guid="_WfL28BTMEdqrUt4zetC1gg">Method Content Concepts</a>
+</li>
+<li>
+<a href="./../../core.base_concepts/customcategories/guidance_BE65A47D.html" guid="_xy2SAAIsEdqEutyfYo0quQ">Guidance</a>
+</li>
+<li>
+<a href="./../../core.base_concepts/customcategories/process_concepts_2FEF92F.html" guid="_AtM0gBTQEdqrUt4zetC1gg">Process Concepts</a>
+</li>
+<li>
+<a href="./../../core.base_concepts/customcategories/organizational_concepts_290C000C.html" guid="_Tp3S0BTQEdqrUt4zetC1gg">Organizational Concepts</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><h3>
+    What is UMA?
+</h3>
+<p>
+    The Unified Method Architecture (UMA) is a process engineering meta-model that defines schema and terminology for
+    representing methods consisting of method content and processes. Also see <a class="elementLinkWithType" href="./../../core.base_concepts/guidances/concepts/introduction_to_uma_931F5B93.html" guid="_94_eoO8LEdmKSqa_gSYthg">Concept: Key Capabilities of the Unified Method Architecture (UMA)</a>&nbsp;for more
+    details.
+</p>
+<h3>
+    Fundamental principle within UMA
+</h3>
+<p>
+    UMA is based&nbsp;on the following fundamental&nbsp;separations of concern:
+</p>
+<ul>
+    <li>
+        The separation of core method content versus the application of method content in processes
+    </li>
+    <li>
+        The definition of an optional extensibility mechanism in the method for large scale management of method and
+        process repositories
+    </li>
+    <li>
+        Packaging and configuration of method content, processes, and plugins in method libraries
+    </li>
+    <li>
+        A separation of recommended method and guidance description fields
+    </li>
+    <li>
+        A separation of semantic elements from their notation in process diagrams
+    </li>
+</ul>
+<h3>
+    The Basic Elements of UMA
+</h3>
+<p>
+    The most fundamental principle of the Unified Method Architecture (UMA) is the separation of&nbsp;reusable core method
+    content from its application in processes and almost all of UMA's elements are categorized along this separations.
+</p>
+<p>
+    The Unified Method Architecture separates reusable core method content from its application in processes.&nbsp; Method
+    content describes what is to be produced, the necessary skills required and the step-by-step explanation describing how
+    specific development goals are achieved, independently of the placement of these items within a development
+    lifecycle.&nbsp; Processes take these method elements and relate them into semi-ordered sequences that are customized
+    to specific types of projects. For example, a software development project that develops an application from scratch
+    performs development tasks such as "Develop Vision" or "Use Case Design" similar to a project that extends an existing
+    software system.&nbsp; However, the two projects will perform the Tasks at different points in time with a different
+    emphasis, i.e. they will perform the steps of these tasks at different point of time and perhaps apply individual
+    variations and additions.
+</p>
+<p>
+    The figure below shows the difference between method content and process by representing them as two different
+    dimensions:
+</p>
+<ul>
+    <li>
+        Method content describing how development work is being performed is categorized by disciplines.&nbsp; Each
+        discipline is comprised of tasks (not visible in the figure) that provide step-by-step descriptions of how specific
+        development goals are achieved.&nbsp;
+    </li>
+    <li>
+        For a process, tasks have been referenced by the process from the method content and placed into breakdown
+        structures and workflows ready for instantiation by allocating resources to perform the work and having real work
+        products as the inputs and outputs of the tasks.<br />
+    </li>
+</ul>
+<p align="center">
+    <img alt="Diagram illustrating the separation of Method and Process content within the UMA Meta-Model"     src="./../../core.base_concepts/guidances/concepts/resources/uma_hump.jpg" border="0" />
+</p>
+<p class="picturetext" align="center">
+    Method Content definition versus<br />
+     the application of Method Content in a Process.
+</p>
+<p>
+    UMA's key concepts reflect this separation of method content from process as shown in the figure below.&nbsp; It show
+    that a Method (also refered to as a Method Framework) comprises on method content described with concepts such Work
+    Products, Roles, Task and Categories as well as Processes described with Activities, Capability Patterns, or Delivery
+    Processes.
+</p>
+<p align="center">
+    <img alt="Diagram illustrating that the intersection between Method and Process content is guidance"     src="./../../core.base_concepts/guidances/concepts/resources/uma_m_vs_p.gif" />
+</p>
+<p align="center">
+    Overview of how the key UMA concepts are positioned based on whether they represent method content or process
+</p>
+<p class="picturetext" align="left">
+    Key <a class="elementLinkWithUserText" href="./../../core.base_concepts/customcategories/method_concepts_179C5639.html" guid="_WfL28BTMEdqrUt4zetC1gg">Method Content Elements</a> &nbsp;are:
+</p>
+<div style="MARGIN-LEFT: 2em">
+    <ul>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/work_product_18CEEF8D.html" guid="4.804531471620803E-306">Work Product</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/role_BBD6A3E6.html" guid="1.1609745730665898E-304">Role</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/task_86A4917F.html" guid="7.624729048911575E-305">Task</a>
+            </div>
+        </li>
+    </ul>
+</div>
+<p class="picturetext" align="left">
+    Key <a class="elementLinkWithUserText" href="./../../core.base_concepts/customcategories/process_concepts_2FEF92F.html" guid="_AtM0gBTQEdqrUt4zetC1gg">Process Elements</a> &nbsp;are:
+</p>
+<div style="MARGIN-LEFT: 2em">
+    <ul>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/activity_417F8F65.html" guid="3.132140065969088E-305">Activity</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/capability_pattern_ECA78A86.html" guid="1.7072348895114264E-305">Capability Pattern</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/delivery_process_CFEBBC78.html" guid="_EhgqwO8MEdmKSqa_gSYthg">Delivery Process</a>
+            </div>
+        </li>
+    </ul>
+</div>
+<p class="picturetext" align="left">
+    <a class="elementLinkWithUserText" href="./../../core.base_concepts/customcategories/guidance_BE65A47D.html" guid="_xy2SAAIsEdqEutyfYo0quQ">Guidance</a> &nbsp;comes in many types:
+</p>
+<div style="MARGIN-LEFT: 2em">
+    <ul>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/checklist_8F23FAF6.html" guid="_2vVuUBT9EdqrUt4zetC1gg">Checklist</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/concept_730F83A0.html" guid="_8wobABUAEdqrUt4zetC1gg">Concept</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/example_F2AB11A0.html" guid="_dCG-UBUBEdqrUt4zetC1gg">Example</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/guideline_AB6E733A.html" guid="_IAwkEBUEEdqrUt4zetC1gg">Guideline</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/practice_F5A1093C.html" guid="_szl6EBUBEdqrUt4zetC1gg">Practice</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/report_5257BA11.html" guid="_x2sAgBUBEdqrUt4zetC1gg">Report</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/reusable_asset_110C96CB.html" guid="_20bs4BUBEdqrUt4zetC1gg">Reusable Asset</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/roadmap_CBF52CCA.html" guid="_JCQbIBnXEdqYreeU3jqaDQ">Roadmap</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/supporting_material_8F9B4FF.html" guid="_80XPABUBEdqrUt4zetC1gg">Supporting Material</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/template_1C6123B9.html" guid="_G_UnIBUCEdqrUt4zetC1gg">Template</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/term_definition_4520F2C6.html" guid="_Z45fwBUDEdqrUt4zetC1gg">Term Definition</a>
+            </div>
+        </li>
+        <li>
+            <div class="picturetext" align="left">
+                <a class="elementLink" href="./../../core.base_concepts/guidances/concepts/tool_mentor_10D3617F.html" guid="1.0762105093945226E-304">Tool Mentor</a>
+            </div>
+        </li>
+    </ul>
+</div></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2005&nbsp;All Rights Reserved
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

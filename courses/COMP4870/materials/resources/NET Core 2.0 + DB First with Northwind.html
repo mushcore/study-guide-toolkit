@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<p>Make sure you add the following to your .csproj file:</p>
+<div><span style="font-family: 'courier new', courier, sans-serif; font-size: 10pt;">&lt;ItemGroup&gt;</span><br /><span style="font-family: 'courier new', courier, sans-serif; font-size: 10pt;"> &lt;PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" PrivateAssets="All" /&gt;</span><br /><span style="font-family: 'courier new', courier, sans-serif; font-size: 10pt;">&nbsp; &lt;PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" PrivateAssets="All" /&gt;</span><br /><span style="font-family: 'courier new', courier, sans-serif; font-size: 10pt;">&lt;/ItemGroup&gt;</span><br /><span style="font-family: 'courier new', courier, sans-serif; font-size: 10pt;">&lt;ItemGroup&gt;</span><br /><span style="font-family: 'courier new', courier, sans-serif; font-size: 10pt;">&nbsp; &lt;DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" /&gt;</span><br /><span style="font-family: 'courier new', courier, sans-serif; font-size: 10pt;">&lt;/ItemGroup&gt;</span></div>
+<p>Execute the following command from the terminal window:</p>
+<p><span style="font-family: 'courier new', courier, sans-serif; font-size: 10pt;">dotnet ef dbcontext scaffold "Server=SERVER_URL;Initial Catalog=DATABASE_NAME;Persist Security Info=False;User ID=USERNAME;Password=PASSWORD;" Microsoft.EntityFrameworkCore.SqlServer --output-dir Models\DB</span></p>
+<p>The above will save the model of your database into the Models\DB directory in your project.</p>
+</body>
+</html>

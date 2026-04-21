@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:fo="http://www.w3.org/1999/XSL/Format" lang="en" xml:lang="en">
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>RUP for Small Projects</title>
+
+<meta name="meta_tagged" content="true">
+<meta name="rmc" content="7.0.1">
+<link type="text/css" href="skin/main.css" rel="StyleSheet">
+<link type="text/css" href="skin/treeNodesIcons.css" rel="StyleSheet">
+<script type="text/javascript">
+					var djConfig = {
+					//preventBackButtonFix: false,
+					isDebug: false,
+					debugAtAllCosts: false
+					};
+				</script><script type="text/javascript" src="dojo/dojo.js"></script><script language="JavaScript" type="text/javascript">
+					dojo.hostenv.writeIncludes();
+				</script><script type="text/javascript" src="theme/appResource.js"></script><script type="text/javascript" src="theme/appBrowser.js"></script><script type="text/javascript" src="theme/appNav.js"></script><script type="text/javascript" src="theme/app.js"></script><script type="text/javascript" src="theme/appSettings.js"></script><script type="text/javascript" src="theme/treeNodes.js"></script>
+</head>
+<body>
+<div dojoType="LayoutContainer" id="mainWindow" layoutChildPriority="top-bottom">
+<div dojoType="rmc:BannerWidget" id="BannerWidget" layoutAlign="top"></div>
+<div dojoType="LayoutContainer" id="contentTopPane" layoutAlign="top" layoutChildPriority="left-right" class="contentTopPane">
+<div dojoType="rmc:ToolbarWidget" id="appToolbar" layoutAlign="left"></div>
+<div dojoType="rmc:SearchWidget" id="SearchWidget" layoutAlign="right"></div>
+</div>
+<div id="splitContainer" dojoType="rmc:SplitContainerEx" orientation="horizontal" layoutAlign="client">
+<div id="navigationContainer" dojoType="rmc:AccordionContainerEx" sizeShare="10"></div>
+<div dojoType="rmc:IFrameContentPane" id="contentContainer" sizeShare="30" class="dojoContentPane" layoutAlign="client"></div>
+</div>
+</div>
+<div dojoType="rmc:ModalFloatingPaneEx" id="ModalFloatingPane" title="" class="floatingPane" bgColor="white" bgOpacity="0"></div>
+</body>
+</html>

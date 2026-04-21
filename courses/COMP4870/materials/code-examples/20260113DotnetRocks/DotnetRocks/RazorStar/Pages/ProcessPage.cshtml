@@ -1,0 +1,16 @@
+﻿@page
+
+@model RazorStar.Pages.ProcessPageModel
+@{
+    Process[] procs = (Process[])ViewData["Procs"]!;
+}
+
+<div>
+    <h2>Process Page</h2>
+    @foreach (var item in procs)
+    {
+        <div>
+            <a asp-page="/ProcessDetailPage" asp-route-id="@item.Id">@item.ProcessName</a>
+        </div>
+    }
+</div>

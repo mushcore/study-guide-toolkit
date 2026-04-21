@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Analyzing Runtime Behavior Using Rational XDE Developer</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="analyzing_runtime_behaviour">
+<meta name="uma.presentationName" content="Analyzing Runtime Behavior Using Rational XDE Developer">
+<meta name="uma.category" content="Tool:rup_xde:Rational XDE Developer">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational XDE Developer">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_qS-iwAIOEdqTna4sZVFRow", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{A332EA83-E8A5-4C58-AC64-2D7DEBBF36CE}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_U5tiUAISEdqTna4sZVFRow", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{A332EA83-E8A5-4C58-AC64-2D7DEBBF36CE}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{A332EA83-E8A5-4C58-AC64-2D7DEBBF36CE}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{A332EA83-E8A5-4C58-AC64-2D7DEBBF36CE}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{A332EA83-E8A5-4C58-AC64-2D7DEBBF36CE}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Analyzing Runtime Behavior Using Rational XDE Developer</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to use Rational XDE Developer to analyze runtime behavior. </td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_xde_D81FFA70.html" guid="{303A82D2-E3AB-4501-8563-0D4D43782AF9}">Rational XDE Developer</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/analyze_runtime_behavior_B2DD7652.html" guid="{5131A5BB-5B95-499E-A68B-788A2F0957C3}">Analyze Runtime Behavior</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    Overview
+</h3>
+<p>
+    The steps in this tool mentor match those in the task. Links to topics in the Rational XDE&trade; online Help are marked with
+    <img height="16" alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />.
+</p>
+<p>
+    This tool mentor currently only covers how the Visual Trace capability, integrated with Rational XDE, can help a
+    developer analyze run-time behavior. Note that Visual Trace is not available in all Rational XDE configurations.
+</p>
+<p>
+    Visual Trace dynamically records the execution of an application to a trace sequence diagram. A trace sequence diagram
+    displays the flow of control of an application in a sequence diagram format. A trace sequence diagram also provides
+    information on timing, threading, code coverage, and memory usage of the traced application.
+</p>
+<p>
+    The following steps are performed in this tool mentor:
+</p>
+<ul>
+    <li>
+        <a href="#DetermineScenario">Determine required execution scenario</a>
+    </li>
+    <li>
+        <a href="#PrepareComponent">Prepare implementation component for runtime observation</a>
+    </li>
+    <li>
+        <a href="#PrepareEnvironment">Prepare environment for execution</a>
+    </li>
+    <li>
+        <a href="#ObserveBehavior">Execute the component and capture behavioral observations</a>
+    </li>
+    <li>
+        <a href="#ReviewObservations">Review behavioral observations and isolate initial findings</a>
+    </li>
+    <li>
+        <a href="#AnalyzeFindings">Analyze findings to understand root causes</a>
+    </li>
+    <li>
+        <a href="#CommunicateActions">Identify and communicate follow-up actions</a>
+    </li>
+    <li>
+        <a href="#EvaluateResults">Evaluate your results</a>
+    </li>
+</ul>
+<h3>
+    <a id="DetermineScenario" name="DetermineScenario">Determine required execution scenario</a>
+</h3>
+<p>
+    There is no Rational XDE specific guidance for this step.
+</p>
+<h3>
+    <a id="PrepareComponent" name="PrepareComponent">Prepare implementation component for runtime observation</a>
+</h3>
+<p>
+    The application you wish to trace must be built and executable
+</p>
+<div align="left">
+    <ul>
+        <li>
+            Launch the Visual Trace Settings Wizard.&nbsp; See <img alt="helpbook icon"             src="./../../../core.base_rup/resources/helpbook.gif" /> <i>Tracing an Application</i>. 
+            <!--ReferenceHelpTopic(topicTitle,"tr","tr_o_tracing_an_app");   -->
+        </li>
+        <li>
+            Select the classes in your application that you wish to include in the trace
+        </li>
+        <li>
+            Select whether you want to record from the beginning of the application or manually control recording during
+            the execution.
+        </li>
+    </ul>
+</div>
+<h3>
+    <a id="PrepareEnvironment" name="PrepareEnvironment">Prepare environment for execution</a>
+</h3>
+<div align="left">
+    <p>
+        There is no Rational XDE specific guidance for this step.
+    </p>
+</div>
+<h3>
+    <a id="ObserveBehavior" name="ObserveBehavior">Execute the component and capture behavioral observations</a>
+</h3>
+<div align="left">
+    <p>
+        Launch the application in either run or debug mode.&nbsp;
+    </p>
+</div>
+<div align="left">
+    <ul>
+        <li>
+            <p>
+                If you have selected to start recording from the beginning of the application, a trace sequence diagram
+                will be created and your application will be traced.
+            </p>
+        </li>
+        <li>
+            <p>
+                If you selected manual control of recording, run the application to an appropriate point (i.e. a pause
+                waiting for user input, a breakpoint you set previously), start Visual Trace recording,&nbsp; and a trace
+                sequence diagram will be recorded from that point.
+            </p>
+        </li>
+    </ul>
+</div>
+<h3>
+    <a id="ReviewObservations" name="ReviewObservations">Review behavioral observations and isolate initial findings</a>
+</h3>
+<div align="left">
+    <p>
+        The trace sequence diagram captures important run-time behavior that will help you understand and debug your
+        application.
+    </p>
+</div>
+<div align="left">
+    <ul>
+        <li>
+            <p>
+                The trace sequence diagram accurately captures the flow of control and helps you understand the application
+                and identify potential problems.
+            </p>
+        </li>
+        <li>
+            <p>
+                To further assist in debugging the application, the thread status bar indicates the active threads during
+                the run, timing information is displayed on the diagram, function level code coverage is displayed, and
+                optionally memory usage is displayed.
+            </p>
+        </li>
+    </ul>
+</div>
+<ul>
+    <li>
+        Trace sequence diagrams can be filtered and collapsed to include only relevant information. See <img         alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /> <i>Navigating Through Trace Sequence Diagrams</i>. 
+        <!--ReferenceHelpTopic(topicTitle,"tr","tr_t_nav_trace_tsd");  -->
+    </li>
+</ul>
+<h3>
+    <a id="AnalyzeFindings" name="AnalyzeFindings">Analyze findings to understand root causes</a>
+</h3>
+<div align="left">
+    <p>
+        There is no Rational XDE specific guidance for this step.
+    </p>
+</div>
+<h3>
+    <a id="CommunicateActions" name="CommunicateActions">Identify and communicate follow-up actions</a>
+</h3>
+<div align="left">
+    <p>
+        There is no Rational XDE specific guidance for this step.
+    </p>
+</div>
+<h3>
+    <a id="EvaluateResults" name="EvaluateResults">Evaluate your results</a>
+</h3>
+<p>
+    Trace sequence diagrams can be converted into XDE Sequence Diagrams and stored within XDE models. See <img     alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /> <i>Reusing a Trace Sequence Diagram</i>. 
+    <!--ReferenceHelpTopic(topicTitle,"tr","tr_t_reusing_tsd");   -->Diagrams in XDE models can be published&nbsp; to html
+    format. Also note that diagrams can be copied from the Rational XDE software tool to Microsoft Word and other programs.
+</p></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

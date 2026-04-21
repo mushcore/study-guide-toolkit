@@ -1,0 +1,167 @@
+Comp 4915 - Lab 6: FTP, SSH Tunneling, and Java EE
+===================================================
+
+Student: A01353636
+Server IP: 142.232.18.196
+
+
+Part 1: Setting up FTP
+-----------------------
+
+Step 1: Install vsftpd
+
+  $ sudo dnf install vsftpd ftp
+  $ sudo systemctl enable vsftpd
+  $ sudo systemctl start vsftpd
+
+  Open firewall:
+  $ sudo firewall-cmd --add-service=ftp
+  $ sudo firewall-cmd --permanent --add-service=ftp
+
+
+Step 2: Configure for user login, restricted to home directories
+
+  Key settings in /etc/vsftpd/vsftpd.conf:
+
+  local_enable=YES
+  write_enable=YES
+  chroot_local_user=YES
+  allow_writeable_chroot=YES
+  local_umask=022
+  xferlog_enable=YES
+  pasv_min_port=30000
+  pasv_max_port=31000
+
+  $ sudo systemctl restart vsftpd
+
+  Test:
+  $ ftp localhost
+  Name: kevinliang
+  230 Login successful.
+  ftp> pwd
+  257 "/" is the current directory
+
+  User sees "/" but is actually jailed in /home/kevinliang.
+
+
+Step 3: Create welcome file
+
+  $ echo "Welcome to Kevin Liang's FTP server (A01353636)" > ~/welcome.txt
+
+
+Step 4: Set up anonymous FTP with read-only access to /pub
+
+  Add to /etc/vsftpd/vsftpd.conf:
+  anonymous_enable=YES
+  anon_upload_enable=NO
+  anon_mkdir_write_enable=NO
+  anon_other_write_enable=NO
+
+  Create welcome in /var/ftp/pub:
+  $ sudo bash -c 'echo "Welcome! Kevin Liang A01353636" > /var/ftp/pub/welcome.txt'
+  $ sudo systemctl restart vsftpd
+
+  Test:
+  $ ftp localhost
+  Name: anonymous
+  230 Login successful.
+  ftp> cd pub
+  ftp> get welcome.txt -
+  Welcome! Kevin Liang A01353636
+  ftp> put testfile
+  550 Permission denied.
+
+  Anonymous users can read from /pub but cannot upload.
+  /pub as seen by FTP is physically /var/ftp/pub on the server.
+
+
+Part 2: Setting up SSH Tunneling (X11 Forwarding)
+---------------------------------------------------
+
+Step 1: Configure SSH for X11 forwarding
+
+  In /etc/ssh/sshd_config:
+  X11Forwarding yes
+  X11DisplayOffset 10
+  X11UseLocalhost yes
+
+  $ sudo systemctl restart sshd
+
+Step 2: Install X11 dependencies
+
+  $ sudo dnf install xorg-x11-xauth xorg-x11-apps
+
+Step 3: Connect with X11 forwarding
+
+  $ ssh -X kevinliang@142.232.18.196
+  $ echo $DISPLAY
+  localhost:10.0
+
+Step 4: Run graphical applications
+
+  $ xclock &
+  $ xeyes &
+
+  Both display on the local machine, tunneled through the encrypted
+  SSH connection.
+
+
+Part 2 (alternate): Setting up a Java EE Server on Linux
+---------------------------------------------------------
+
+Step 1: Install Java SDK
+
+  $ sudo dnf install java-17-openjdk java-17-openjdk-devel
+
+  Add to /etc/profile:
+    export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+    export PATH=$JAVA_HOME/bin:$PATH
+
+  $ source /etc/profile
+
+Step 2: Install WildFly 21
+
+  $ cd /opt
+  $ sudo wget https://github.com/wildfly/wildfly/releases/download/21.0.0.Final/wildfly-21.0.0.Final.tar.gz
+  $ sudo tar xzf wildfly-21.0.0.Final.tar.gz
+  $ sudo ln -s wildfly-21.0.0.Final wildfly
+
+  Create wildfly user:
+  $ sudo groupadd -r wildfly
+  $ sudo useradd -r -g wildfly -d /opt/wildfly -s /sbin/nologin wildfly
+  $ sudo chown -R wildfly:wildfly /opt/wildfly-21.0.0.Final
+
+  Install as systemd service:
+  $ sudo cp /opt/wildfly/docs/contrib/scripts/systemd/wildfly.conf /etc/wildfly/
+  $ sudo cp /opt/wildfly/docs/contrib/scripts/systemd/wildfly.service /etc/systemd/system/
+  $ sudo cp /opt/wildfly/docs/contrib/scripts/systemd/launch.sh /opt/wildfly/bin/
+  $ sudo chmod +x /opt/wildfly/bin/launch.sh
+  $ sudo systemctl daemon-reload
+  $ sudo systemctl enable wildfly
+  $ sudo systemctl start wildfly
+
+Step 3: Open firewall and test
+
+  $ sudo firewall-cmd --add-port=8080/tcp --permanent
+  $ sudo firewall-cmd --reload
+
+  Browse to http://localhost:8080 -- WildFly welcome page.
+
+Step 4: Install Eclipse EE with JBoss Tools
+
+  $ sudo dnf install eclipse-jee
+  Within Eclipse: Help > Marketplace > "JBoss Tools" > Install
+
+Step 5: Deploy HelloWorld application
+
+  In Eclipse: New > Dynamic Web Project > "HelloWorld", target WildFly 21.
+
+  index.jsp:
+    <%@ page language="java" contentType="text/html" %>
+    <html><body>
+      <h1>Hello from Kevin Liang - A01353636</h1>
+      <p>Running on WildFly 21 on CentOS</p>
+    </body></html>
+
+  Run As > Run on Server > WildFly 21
+  Browse: http://localhost:8080/HelloWorld/

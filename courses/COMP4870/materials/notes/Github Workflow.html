@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body style="color: #494c4e;">
+<p># Docs for the Azure Web Apps Deploy action: <a href="https://github.com/Azure/webapps-deploy">https://github.com/Azure/webapps-deploy</a><br># More GitHub Actions for Azure: <a href="https://github.com/Azure/actions">https://github.com/Azure/actions</a></p>
+<p>name: Build and deploy ASP.Net Core app to Azure Web App - fizzbuzzmze</p>
+<p>on:<br>&nbsp; push:<br>&nbsp; &nbsp; branches:<br>&nbsp; &nbsp; &nbsp; - main<br>&nbsp; workflow_dispatch:</p>
+<p>jobs:<br>&nbsp; build:<br>&nbsp; &nbsp; runs-on: windows-latest</p>
+<p>&nbsp; &nbsp; steps:<br>&nbsp; &nbsp; &nbsp; - uses: actions/checkout@v2</p>
+<p>&nbsp; &nbsp; &nbsp; - name: Set up .NET Core<br>&nbsp; &nbsp; &nbsp; &nbsp; uses: actions/setup-dotnet@v1<br>&nbsp; &nbsp; &nbsp; &nbsp; with:<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; dotnet-version: '6.0.x'<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; include-prerelease: true</p>
+<p>&nbsp; &nbsp; &nbsp; - name: Build with dotnet<br>&nbsp; &nbsp; &nbsp; &nbsp; run: dotnet build --configuration Release</p>
+<p>&nbsp; &nbsp; &nbsp; - name: Test<br>&nbsp; &nbsp; &nbsp; &nbsp; run: dotnet test --no-restore --verbosity normal</p>
+<p>&nbsp; &nbsp; &nbsp; - name: dotnet publish<br>&nbsp; &nbsp; &nbsp; &nbsp; run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp</p>
+<p>&nbsp; &nbsp; &nbsp; - name: Upload artifact for deployment job<br>&nbsp; &nbsp; &nbsp; &nbsp; uses: actions/upload-artifact@v2<br>&nbsp; &nbsp; &nbsp; &nbsp; with:<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; name: .net-app<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; path: ${{env.DOTNET_ROOT}}/myapp</p>
+</body>
+</html>

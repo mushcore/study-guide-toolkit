@@ -1,6 +1,6 @@
 # Adding a New Course to the Study-Guide System
 
-End-to-end recipe for turning a folder of raw course materials (slides, past exams, notes, labs) into a new course live in the `study-guidev2/` web app.
+End-to-end recipe for turning a folder of raw course materials (slides, past exams, notes, labs) into a new course live in the `app/` web app.
 
 > **Current flow is direct: raw materials → canonical `content/{id}/` tree → build → register.**
 > There used to be two upstream phases — a personal-study scaffold (skills, graphify, `generated/`) and a per-course v1 HTML study guide — but the React+Vite app made both obsolete. See §Legacy at the bottom for what to ignore.
@@ -24,8 +24,8 @@ content/{id}/
   ├── topic-dives/<slug>.md
   └── cheat-sheet.md
    │
-   ▼   Phase B — compile + register in study-guidev2
-content/_dist/{id}.js           ← consumed by study-guidev2
+   ▼   Phase B — compile + register in app
+content/_dist/{id}.js           ← consumed by app
 ```
 
 Two phases. Canonical spec lives in `content/SCHEMA.md` — that's the source of truth; this doc is the pipeline wrapper + the teaching standards that govern *what* you write, not just *where*.
@@ -34,10 +34,10 @@ Two phases. Canonical spec lives in `content/SCHEMA.md` — that's the source of
 
 ## Prereq — make the materials readable
 
-Put raw materials somewhere Claude can read. Any path works; convention is `~/BCIT/CST/TERM4/COMP{ID}/materials/` with sub-folders so the author can Glob them cleanly:
+Put raw materials somewhere Claude can read. Any path works; convention is `~/BCIT/CST/TERM4/courses/COMP{ID}/materials/` with sub-folders so the author can Glob them cleanly:
 
 ```
-COMP{ID}/materials/
+courses/COMP{ID}/materials/
 ├── slides/          # lecture slides — PDF preferred; PPTX/DOCX also fine
 ├── past-exams/      # practice finals + midterms + solutions (ground truth for mock exam + common-mistake callouts)
 ├── syllabus/        # course outline — exam format, room, date, weighting
@@ -52,8 +52,8 @@ If materials are `.zip`, unpack them. If PPTX, PDF export is usually cleaner for
 No `.claude/skills/` or per-course `CLAUDE.md` — those were for a personal-study workflow we no longer use (archived to `.archive/`).
 
 **Secondary sources also worth reading** when authoring (for existing courses 4736/4870/4911/4915):
-- `COMP{ID}/generated/` — diagnosis reports, the densely-sourced `generated/exam-study/research-*.md` topic notes from the old workflow, past mock exams, and explanation drafts. These are often the best starting point for writing a new lesson or topic-dive since they've already chewed through the slides.
-- `COMP{ID}/graphify-out/GRAPH_REPORT.md` — god nodes, communities, and surprising cross-topic connections. Useful for deciding which topics deserve the most ink and for spotting synthesis questions the slides don't make explicit.
+- `courses/COMP{ID}/generated/` — diagnosis reports, the densely-sourced `generated/exam-study/research-*.md` topic notes from the old workflow, past mock exams, and explanation drafts. These are often the best starting point for writing a new lesson or topic-dive since they've already chewed through the slides.
+- `courses/COMP{ID}/graphify-out/GRAPH_REPORT.md` — god nodes, communities, and surprising cross-topic connections. Useful for deciding which topics deserve the most ink and for spotting synthesis questions the slides don't make explicit.
 
 For a brand-new course with no prior scaffolding, skip those — just work from `materials/`.
 
@@ -69,7 +69,7 @@ Phase A is five stages with a quality gate after each. **Do not advance past a g
 
 ### Stage 1 — Triage
 
-**Inputs read:** every file under `COMP{id}/materials/` (slides, past exams, syllabus, notes, labs). Also read `COMP{id}/generated/exam-study/research-*.md` and `COMP{id}/graphify-out/GRAPH_REPORT.md` if present — these are the densest topic summaries the old workflow produced and the best map of cross-topic structure.
+**Inputs read:** every file under `courses/COMP{id}/materials/` (slides, past exams, syllabus, notes, labs). Also read `courses/COMP{id}/generated/exam-study/research-*.md` and `courses/COMP{id}/graphify-out/GRAPH_REPORT.md` if present — these are the densest topic summaries the old workflow produced and the best map of cross-topic structure.
 
 **Produces:** `content/{id}/_scratch/topic-map.md` with:
 - Modules (4–8) and topics under each, kebab-case ids globally unique across all courses.
@@ -124,7 +124,7 @@ Do NOT reuse past-exam questions verbatim (they stay in `materials/`). Generate 
 1. Full `/audit-content {id}`. Close every remaining critical. Warnings are ship-blocking; advisories are polish and can defer.
 2. Fill any remaining `##` blocks in `cheat-sheet.md` from the Stage 3 topic content.
 3. `/add-course {id}` — re-runs audit preflight, compiles, wires the three touchpoints, verifies `npm run build`.
-4. `cd study-guidev2 && npm run dev` — smoke-test every subview.
+4. `cd app && npm run dev` — smoke-test every subview.
 5. `./deploy.sh` — ship.
 
 ### Exit criteria
@@ -173,17 +173,17 @@ The app loads bundles via side-effect imports in a fixed order. Miss one of thes
    ```js
    const ids = ['4736', '4870', '4911', '4915', '{NEW_ID}'];
    ```
-3. `study-guidev2/src/main.jsx` — add the side-effect import **before** `_aggregator.js`:
+3. `app/src/main.jsx` — add the side-effect import **before** `_aggregator.js`:
    ```js
    import '../../content/_dist/{NEW_ID}.js';
    ```
 
-If the new course uses `annotation` code-practice, the `code` subview dispatch in `study-guidev2/src/App.jsx` currently hard-codes `route.courseId === '4911'`. Extend that check (or, better, replace it with a `codeVariant` field read from `course.yaml`).
+If the new course uses `annotation` code-practice, the `code` subview dispatch in `app/src/App.jsx` currently hard-codes `route.courseId === '4911'`. Extend that check (or, better, replace it with a `codeVariant` field read from `course.yaml`).
 
 ### B3. Verify
 
 ```
-cd study-guidev2 && npm run dev
+cd app && npm run dev
 ```
 
 - Dashboard shows the new course card with correct exam countdown.
@@ -318,8 +318,8 @@ Full spec: `content/SCHEMA.md`. This is the short version for authoring time.
 All retired workflow docs, extractor scripts, v1 HTML guides, and per-course scaffolding have been moved to `.archive/`. See `.archive/README.md` for the manifest. Nothing in the live pipeline reads from there — if you find yourself following an instruction from `.archive/`, stop: it's describing a retired workflow and will not work against the current React+Vite stack.
 
 **Preserved at original paths** (not archived):
-- `COMP{ID}/materials/` — raw source materials, still the ground truth for authoring and updates.
+- `courses/COMP{ID}/materials/` — raw source materials, still the ground truth for authoring and updates.
 - `scripts/build-content.js` — live compiler.
 - `content/` and `content/_dist/` — canonical tree + compiled bundles.
-- `study-guidev2/` — the app.
-- `study-guides-deploy/` — GitHub Pages deploy target.
+- `app/` — the app.
+- `deploy/` — GitHub Pages deploy target.

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<p>First create publish artifacts with: dotnet publish -o dist</p>
+<div>
+<div style="padding-left: 30px;">FROM&nbsp;nginx:1.19.8</div>
+<div style="padding-left: 30px;">COPY&nbsp;dist/wwwroot&nbsp;/usr/share/nginx/html</div>
+<br />
+<div style="padding-left: 30px;">#&nbsp;docker&nbsp;build&nbsp;-t&nbsp;snoopy/wasm:1.0.0&nbsp;.</div>
+<div style="padding-left: 30px;">#&nbsp;docker&nbsp;run&nbsp;-p&nbsp;8888:80&nbsp;-d&nbsp;snoopy/wasm:1.0.0</div>
+<div style="padding-left: 30px;"></div>
+<div>NOTE: This was tested with .NET 5.0.</div>
+</div>
+</body>
+</html>

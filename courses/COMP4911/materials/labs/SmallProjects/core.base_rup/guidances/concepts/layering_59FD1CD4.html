@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Concept: Layering</title>
+<meta name="uma.type" content="Concept">
+<meta name="uma.name" content="layering">
+<meta name="uma.presentationName" content="Layering">
+<meta name="element_type" content="concept">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_qwxC8N7YEdmjRZts2c4ZjQ", "{4AC346F0-E6FC-4D2C-8410-2EDF8DDDC91D}", "3.801315327549898E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_f6_YwN7DEdmsEI4YDGX2ag", "_qwxC8N7YEdmjRZts2c4ZjQ", "{4AC346F0-E6FC-4D2C-8410-2EDF8DDDC91D}", "3.801315327549898E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_vzRNgDIcEdqDs_9ORT1Rig", "3.801315327549898E-305"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="3.801315327549898E-305"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Concept: Layering</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/concept.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">Layering represents an ordered grouping of functionality, with the application-specific functionality located in the upper layers, functionality that spans application domains in the middle layers, and functionality specific to the deployment environment at the lower layers. </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/architectural_analysis_2B9BE03.html" guid="{8CB48402-D4C5-4E17-BB33-507315CB1BBF}">Architectural Analysis</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/roles/rup_software_architect_DB0BF177.html" guid="{4AC346F0-E6FC-4D2C-8410-2EDF8DDDC91D}">Software Architect</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<p>
+    Layering represents an ordered grouping of functionality, with the application-specific functionality located in the
+    upper layers, functionality that spans application domains in the middle layers, and functionality specific to the
+    deployment environment at the lower layers.
+</p>
+<p>
+    The number and composition of layers is dependent upon the complexity of both the problem domain and the solution
+    space:
+</p>
+<ul>
+    <li>
+        There is generally only a single application-specific layer.
+    </li>
+    <li>
+        Domains in which previous systems have been built, or in which large systems are composed in turn of
+        inter-operating smaller systems, there is a strong need to share information between design teams. As a result, the
+        Business-specific layer is likely to partially exist and may be structured into several layers for clarity.
+    </li>
+    <li>
+        Solution spaces that are well-supported by middleware products and in which complex system software plays a greater
+        part will have well-developed lower layers, with perhaps several layers of middleware and system software.
+    </li>
+</ul>
+<p>
+    Subsystems should be organized into layers with application-specific subsystems located in the upper layers of the
+    architecture, hardware and operating-specific subsystems located in the lower layers of the architecture, and
+    general-purpose services occupying the middleware layers.
+</p>
+<p>
+    The following is a sample architecture with four layers:
+</p>
+<ul>
+    <li>
+        The top layer, <b>application layer</b>, contains the application specific services.
+    </li>
+    <li>
+        The next layer, <b>business-specific layer</b>, contains business specific components, used in several
+        applications.
+    </li>
+    <li>
+        The <b>middleware layer</b> contains components such as GUI-builders, interfaces to database management systems,
+        platform-independent operating system services, and OLE-components such as spreadsheets and diagram editors.
+    </li>
+    <li>
+        The bottom layer, <b>system software layer</b>, contains components such as operating systems, databases,
+        interfaces to specific hardware and so on.
+    </li>
+</ul>
+<p align="center">
+    <img src="./../../../core.base_rup/guidances/concepts/resources/md_dsub.gif" alt="Diagram described in accompanying content." width="547" height="283" />
+</p>
+<p class="picturetext">
+    A layered structure starting at the most general level of functionality and growing towards more specific levels of
+    functionality.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

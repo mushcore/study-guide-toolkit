@@ -1,0 +1,414 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Work Product Descriptor (Artifact): Data Model</title>
+<meta name="uma.type" content="WorkProductDescriptor">
+<meta name="uma.name" content="rup_data_model">
+<meta name="uma.presentationName" content="Data Model">
+<meta name="element_type" content="WorkProductDescriptor">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../css/default.css" type="text/css">
+<script src="./../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ActivityTreeTable.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ProcessElementPage.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/processElementData.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var defaultQueryStr = '?proc={35359DDF-6361-43E5-8B1B-18D204DA8CFF}&path={35359DDF-6361-43E5-8B1B-18D204DA8CFF},{CD77CBDA-CC13-4593-BB81-41AF3FF7A84C},_vxfDQkoiEdqrjq4i3fchvA';
+					var backPath = './../../';
+					var imgPath = './../../images/';
+					var nodeInfo=null;
+					contentPage.preload(imgPath, backPath, nodeInfo, defaultQueryStr, false, true, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="_vxfDQkoiEdqrjq4i3fchvA"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Work Product Descriptor (Artifact): Data Model</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../images/workdes_lg_dgm32.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This artifact describes the logical and physical representations of persistent data used by the application. In cases where the application will utilize a relational database management system (RDBMS), the data model may also include model elements for stored procedures, triggers, constraints, etc. that define the interaction of the application components with the RDBMS.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Purpose</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="XE_data_model__as_artifact" name="XE_data_model__as_artifact"></a><a id="Top" name="Top"></a><a id="XE_data_model__purpose_of" name="XE_data_model__purpose_of"></a><a id="Purpose" name="Purpose"></a> 
+<p>
+    The Data Model is used to describe the logical and physical structure of the persistent information managed by the
+    system. The data model may be initially created through reverse engineering of existing persistent data stores
+    (databases) or may be initially created from a set of persistent <a class="elementLinkWithUserText" href="./../../core.base_rup/workproducts/rup_design_class_B33BD5E5.html" guid="{952A9CE9-D5A3-43AC-980D-0B9298F3872E}">Design
+    Classes</a> in the <a class="elementLink" href="./../../core.base_rup/workproducts/rup_design_model_2830034D.html" guid="{8CDAEAD4-5E84-4F50-87FD-3240ED047DE7}">Design Model</a>.
+</p>
+<p>
+    The data model is needed whenever the persistent storage mechanism is based upon some non-object-oriented
+    technology.&nbsp; The data model is specifically needed where the persistent data structure cannot be automatically and
+    mechanically derived from the structure of persistent classes in the design model. It is used to define the mapping
+    between persistent design classes and persistent data structures, and to define the persistent data structures
+    themselves.
+</p>
+<p>
+    The properties table below describes the elements of the data model.&nbsp; The definitions of the model properties
+    included in this table are consistent with the Data Modeling profile for version 1.3 of Unified Modeling Language (UML)
+    specification.&nbsp; The data modeling profile elements for UML version 1.4 have not yet been defined.
+</p></td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Input To</th><td class="sectionTableCell" width="30%"><span class="sectionTableCellHeading">Mandatory:
+								</span>
+<ul>
+<li>None</li>
+</ul>
+</td><td class="sectionTableCell" width="30%"><span class="sectionTableCellHeading">Optional:
+								</span>
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/identify_test_ideas_876370FD.html" guid="_vxS2AEoiEdqrjq4i3fchvA">Identify Test Ideas</a>
+</li>
+</ul>
+</td><td class="sectionTableCell"><span class="sectionTableCellHeading">External:
+								</span>
+<ul>
+<li>None</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Properties</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Optional" abbr="Optional">Optional</th><td class="sectionTableCell" align="left" headers="property_Optional"><img width="20" height="15" alt="" title="" src="./../../images/indent.gif"></td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row" id="property_Planned" abbr="Planned">Planned</th><td class="sectionTableCell" align="left" headers="property_Planned"><img width="20" height="15" alt="Yes" title="Yes" src="./../../images/true.gif"></td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Tailoring</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Representation Options</th><td class="sectionTableCell"><p>
+    UML Representation: A package stereotyped as &lt;&lt;model&gt;&gt;.
+</p>
+<p>
+    The <strong>data model</strong> may have the following <strong>properties</strong>:&nbsp;
+</p>
+<div align="left">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody valign="top">
+            <tr>
+                <td width="20%">
+                    <p class="tableheading">
+                        <b>Property Name</b>
+                    </p>
+                </td>
+                <td width="40%">
+                    <p class="tableheading">
+                        <b>Brief Description</b>
+                    </p>
+                </td>
+                <td width="40%">
+                    <p class="tableheading">
+                        <b>UML Representation</b>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Introduction
+                </td>
+                <td width="40%">
+                    A textual description that serves as a brief introduction to the model.
+                </td>
+                <td width="40%">
+                    Tagged value, of type "short text".
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Packages
+                </td>
+                <td width="40%">
+                    The packages used for organizational grouping purposes.
+                </td>
+                <td width="40%">
+                    Owned via the association "represents", or recursively via the aggregation "owns".
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Tables
+                </td>
+                <td width="40%">
+                    The tables in the data model, owned by the packages.
+                </td>
+                <td width="40%">
+                    Classes, stereotyped as «Table».
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Relationship
+                </td>
+                <td width="40%">
+                    Simple association between tables in the model.
+                </td>
+                <td width="40%">
+                    Association, stereotyped as «Non-Identifying»
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Strong Relationship
+                </td>
+                <td width="40%">
+                    Composite Aggregation relationship between tables in the model.
+                </td>
+                <td width="40%">
+                    Association, stereotyped as «Identifying»
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Dependency (View to Table)
+                </td>
+                <td width="40%">
+                    Dependency between Tables, Views and other model elements
+                </td>
+                <td width="40%">
+                    Dependency, stereotyped as «Derive» for dependency relationships between Table and View
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Column
+                </td>
+                <td width="40%">
+                    The data values of the tables.
+                </td>
+                <td width="40%">
+                    Attribute, stereotyped as «Column».
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Domain
+                </td>
+                <td width="40%">
+                    A user-defined data type.
+                </td>
+                <td width="40%">
+                    Class, stereotyped as «Domain».
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    View
+                </td>
+                <td width="40%">
+                    A virtual table, composed of columns from one or more tables.
+                </td>
+                <td width="40%">
+                    Class, stereotyped as «View».
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Diagrams
+                </td>
+                <td width="40%">
+                    The diagrams in the model, owned by the packages.
+                </td>
+                <td width="40%">
+                    Class Diagrams that depict Tables and their relationships and Component Diagrams that depict the
+                    realization of the Tables in the model to Tablespaces components and Database components.
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Index
+                </td>
+                <td width="40%">
+                    Data access structures used to speed access along specified paths.
+                </td>
+                <td width="40%">
+                    Operation, stereotyped as «Index».
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Trigger
+                </td>
+                <td width="40%">
+                    Event-activated behavior associated with tables.
+                </td>
+                <td width="40%">
+                    Operation, stereotyped as «Trigger».
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Check constraint
+                </td>
+                <td width="40%">
+                    A validation rule on a column or table. It can consist of a range of valid values or calculations.
+                </td>
+                <td width="40%">
+                    Operation, stereotyped as «Check».
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Unique constraint
+                </td>
+                <td width="40%">
+                    Designates that the data in a column or set of columns must be unique.
+                </td>
+                <td width="40%">
+                    Operation, stereotyped as «Unique».
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Stored Procedure Package
+                </td>
+                <td width="40%">
+                    A Class that is used as a "container" for Stored Procedure operations
+                </td>
+                <td width="40%">
+                    Class, stereotyped as «SP_Container»
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Stored Procedure&nbsp;
+                </td>
+                <td width="40%">
+                    Explicitly invoked behavior, associated with tables or with the model as a whole.
+                </td>
+                <td width="40%">
+                    Operation, stereotyped as «SP».
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Schema&nbsp;
+                </td>
+                <td width="40%">
+                    Container for elements of the data model that represents the overall structure of the database. Used
+                    for managing security and ownership of tables.
+                </td>
+                <td width="40%">
+                    Package stereotyped as «Schema».
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Database
+                </td>
+                <td width="40%">
+                    Model element that represents the physical database
+                </td>
+                <td width="40%">
+                    Component, stereotyped as «Database»
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    Tablespace
+                </td>
+                <td width="40%">
+                    Units of physical storage in a database
+                </td>
+                <td width="40%">
+                    Component, stereotyped as «Tablespace»
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    <a id="Tailoring" name="Tailoring"></a>
+</p>
+<p>
+    For projects which have little persistent data, or have a straightforward transformation from design classes to the
+    persistency mechanism, a separate data model may not be needed.&nbsp; For projects utilizing a RDBMS for persistence,
+    the data model will need to be tailored to the specifics semantics of the underlying database, which may vary slightly
+    between RDMBSes.
+</p></td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">More Information</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Checklists</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/guidances/checklists/data_model_D22985A5.html" guid="2.800761632096845E-305">Data Model</a>
+</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Guidelines</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/guidances/guidelines/data_model_80FB2539.html" guid="3.4196799396281445E-306">Data Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/guidances/guidelines/forward-engineering_relational_databases_53C0441E.html" guid="5.250868507423771E-305">Forward-Engineering Relational Databases</a>
+</li>
+<li>
+<a href="./../../core.base_rup/guidances/guidelines/reverse-engineering_relational_databases_902803B8.html" guid="1.338740134620651E-305">Reverse-engineering Relational Databases</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script language="JavaScript" type="text/javascript">
+					contentPage.onload();
+					contentPage.processPage.fixDescriptorLinks();
+				</script>
+</html>

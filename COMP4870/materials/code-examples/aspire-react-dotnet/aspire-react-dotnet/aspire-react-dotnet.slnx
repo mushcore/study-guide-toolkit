@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="ReactDotNet.AppHost/ReactDotNet.AppHost.csproj" />
-  <Project Path="ReactDotNet.ServiceDefaults/ReactDotNet.ServiceDefaults.csproj" />
-  <Project Path="StudentsMinimalApi/StudentsMinimalApi.csproj" />
-</Solution>

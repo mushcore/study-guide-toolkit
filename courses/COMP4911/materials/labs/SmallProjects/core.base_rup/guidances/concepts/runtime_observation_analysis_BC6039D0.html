@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Concept: Runtime Observation &amp; Analysis</title>
+<meta name="uma.type" content="Concept">
+<meta name="uma.name" content="runtime_observation_analysis">
+<meta name="uma.presentationName" content="Runtime Observation &amp; Analysis">
+<meta name="element_type" content="concept">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_qwxC8N7YEdmjRZts2c4ZjQ", "{75501BAA-0CCE-4852-A7B2-B10CA71C002A}", "6.56167289202945E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_f6_YwN7DEdmsEI4YDGX2ag", "_qwxC8N7YEdmjRZts2c4ZjQ", "{75501BAA-0CCE-4852-A7B2-B10CA71C002A}", "6.56167289202945E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_vzRNgDIcEdqDs_9ORT1Rig", "6.56167289202945E-305"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="6.56167289202945E-305"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Concept: Runtime Observation &amp; Analysis</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/concept.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This guideline discusses Runtime Observation and Analysis. This is the observation of the software during runtime execution and analysis of the captured observations where paths are traced through software components and then aggregated to understand global system behavior via statistical inference. </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/roles/rup_implementer_D145E819.html" guid="{75501BAA-0CCE-4852-A7B2-B10CA71C002A}">Implementer</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a><a id="XE_runtime_observation_amp;_analysis__concept" name="XE_runtime_observation_&_analysis__concept"></a> 
+<h3>
+    <a id="Introduction" name="Introduction">Introduction</a>
+</h3>
+<p>
+    The observation and subsequent analysis of the runtime behavior of a software component is an important practice in the
+    successful debugging of software. Understanding the runtime behavior of software involves two key practices:
+</p>
+<ul>
+    <li>
+        Observation of the software during runtime execution.
+    </li>
+    <li>
+        Analysis of the captured observations.
+    </li>
+</ul>
+<p>
+    Runtime observation and analysis techniques are themselves not dependent on testing in so far as runtime behavior can
+    be observed and analyzed without the requirement for predefined test inputs or the use of testing techniques to
+    stimulate the application behavior. However, testing can be successfully combined with runtime observation techniques
+    and tools: for example, tools that automate runtime observation can be executed during test execution, improving the
+    visibility into the runtime behavior of the component that occurs in response to the test.
+</p>
+<h3>
+    <a id="RuntimeObservation" name="RuntimeObservation">Observing runtime behavior</a>
+</h3>
+<p>
+    While it is important to carefully observe all of the behavior that occurs during runtime execution of the software,
+    there are usually significant observation points that are useful to specifically monitor. These significant observation
+    points are often:
+</p>
+<ul>
+    <li>
+        Decision points at which the software logic path is about to or has just branched.
+    </li>
+    <li>
+        Completion points at which an important logic path has completed, typically resulting in a state change within the
+        software environment.
+    </li>
+    <li>
+        An interface point between two separate application components.
+    </li>
+    <li>
+        An interface point between the software and it's execution environment, including any interfaces to hardware
+        components.
+    </li>
+</ul>
+<p>
+    These observation points may also align with control points at which it may be desirable to alter either the
+    application state or the flow of control through the logic paths. These concerns are often referred to as Points of
+    Control and Observation (PCO).
+</p>
+<p>
+    Runtime observation excludes static observation methods as a primary approach, such as review of the static software
+    source code or of the relationships between the software building blocks captured in visual models and so forth.
+    Rather, it requires an executable software component and offers valuable information not available through other
+    debugging techniques about how the developed component behaves when it runs, either in the test environment, or in the
+    final deployment environment. The observations captured from the runtime behavior may subsequently be related to static
+    elements to provide additional insight.
+</p>
+<h3>
+    <a id="RuntimeAnalysis" name="RuntimeAnalysis">Analyzing runtime observations</a>
+</h3>
+<p>
+    Software runtime analysis is simply the practice of understanding the behavior of a software component by analyzing
+    data collected during runtime execution of the component. During the development of the component by the Implementer,
+    runtime observation and analysis is one aspect of the debugging activities the Implementer undertakes.
+</p>
+<h3>
+    <a id="AutomatedToolSupport" name="AutomatedToolSupport">Automated tool support</a>
+</h3>
+<p>
+    Because of the potential volume of low-level information that can be captured from runtime behavior, the speed at which
+    that information is generated, and the subsequent difficulty in understanding the potentially vast amount of
+    information, automated tool support is a key factor in making this practice feasible. There are various approaches that
+    can be taken to provide tool support yourself, and a wealth of tools available commercially that will save you the
+    time, effort and cost of creating your own.
+</p>
+<p>
+    See <a class="elementLinkWithUserText" href="./../../../core.base_rup/tools/rup_purifyplus_CABB5CD4.html" guid="{F86573D5-C2E6-4E4F-9B29-23CC99B2BB8D}">PurifyPlus</a> for more information about runtime observation and
+    analysis tools.<br />
+    <br />
+</p><br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

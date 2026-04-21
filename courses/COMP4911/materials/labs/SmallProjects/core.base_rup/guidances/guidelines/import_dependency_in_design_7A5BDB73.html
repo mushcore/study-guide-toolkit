@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Guideline: Import Dependency in Design</title>
+<meta name="uma.type" content="Guideline">
+<meta name="uma.name" content="import_dependency_in_design">
+<meta name="uma.presentationName" content="Import Dependency in Design">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_QV4x0AISEdqTna4sZVFRow", "_kjFBYN7HEdm8G6yT7-Wdqw", "{8CDAEAD4-5E84-4F50-87FD-3240ED047DE7}", "5.099920218485599E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_EOvXUN7HEdm8G6yT7-Wdqw", "_kjFBYN7HEdm8G6yT7-Wdqw", "{8CDAEAD4-5E84-4F50-87FD-3240ED047DE7}", "5.099920218485599E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_jijhYAIaEdqEutyfYo0quQ", "_mTMIkN7REdmjRZts2c4ZjQ", "{8CDAEAD4-5E84-4F50-87FD-3240ED047DE7}", "5.099920218485599E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_2ClPcDIcEdqDs_9ORT1Rig", "5.099920218485599E-305"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="5.099920218485599E-305"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Guideline: Import Dependency in Design</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/guidance.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">Import Dependency is an inter-package relationship. This guideline introduces this relationship.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/workproducts/rup_design_model_2830034D.html" guid="{8CDAEAD4-5E84-4F50-87FD-3240ED047DE7}">Design Model</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a><a id="XE_import-dependency_in_design__guidelines_for" name="XE_import-dependency_in_design__guidelines_for"></a><a id="XE_design_package__organizing_using_import-dependency" name="XE_design_package__organizing_using_import-dependency"></a> 
+<h3>
+    <a id="Explanation" name="Explanation">Explanation</a>
+</h3>
+<p>
+    Handling import dependencies between packages is an important aspect of structuring an object model. A package depends
+    on another if any of its classes have relationships that are navigable to classes in the other package. To express such
+    dependencies you use the import dependency from one package to the package on which it depends.
+</p>
+<p class="picturecenter" align="center">
+    <img height="284"     alt="Diagram showing relationships between a component and an operator, an alarm and printer, a customer, and a deposit item."      src="./../../../core.base_rup/guidances/guidelines/resources/md_andi2.gif" width="385" />
+</p>
+<p class="picturetext">
+    Dependencies between packages are expressed by import dependencies.
+</p>
+<h3>
+    <a id="XE_layering__organizing_design_packages_using_import_dependency" name="XE_layering__organizing_design_packages_using_import_dependency"></a><a id="XE_import-dependency_in_design__organizing_packages_with" name="XE_import-dependency_in_design__organizing_packages_with"></a><a id="Use" name="Use">Use</a>
+</h3>
+<p>
+    You evolve import dependencies in the following manner:
+</p>
+<ul>
+    <li>
+        Before you start working with the object model, make outlines of dependencies for use as guidelines during the
+        work.
+    </li>
+    <li>
+        When the model is completed, use it to show the dependencies actually there. This entails updating the import
+        dependencies in the object model.
+    </li>
+    <li>
+        If you divided the model into packages early on, use the import dependencies to show where dependencies are
+        allowed.
+    </li>
+    <li>
+        How packages depend on one another affects a system's tolerance to change. An object model will be easier to change
+        if you:
+    </li>
+    <li>
+        Reference a minimum number of contained classes from outside each package. If you reference many classes, the
+        package may have too many different responsibilities and should be divided into two.
+    </li>
+    <li>
+        Make each package depend on few other packages.
+    </li>
+    <li>
+        Test each package separately. This means that you should be able to test a package by simulating the package on
+        which it depends. You should not require other packages to be completely or almost completely implemented. If you
+        can test a package separately, system development and maintenance for each package will be easier.
+    </li>
+    <li>
+        Place general parts of the object model in separate packages on which other packages depend. If there is such a
+        package, pay strict attention to release handling, since several parts of the system may be affected by changes to
+        the package.
+    </li>
+</ul>
+<p class="exampleheading">
+    Example
+</p>
+<p class="example">
+    Suppose you find something in common for the classes <b>Customer Panel</b> and <b>Operator Panel</b> in the recycling
+    machine. You assign these general services to a new class, <b>Panel</b> that you place in a new package, <b>Panels</b>.
+    The other two classes may then refer to this class to use the general services. Because the classes belong to two
+    separate packages, the two packages will depend on the new package. This elimination of redundancy implies that changes
+    to the common functionality only needs to be done in one place.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

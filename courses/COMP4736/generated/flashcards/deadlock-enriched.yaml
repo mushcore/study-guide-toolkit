@@ -1,0 +1,572 @@
+# B2 draft — Deadlock module enrichment (staging)
+# All cards carry: explanation, example, source, bloom.
+# Source tags cite Part 9 slide ranges + topic-dive / research-deadlock.md.
+# SuperMemo violations in the original bank are rewritten below:
+#   - "Four Coffman conditions?" (list of 4) → 4 atomic cards + 1 cloze
+#   - "Deadlock vs starvation vs livelock?" (list of 3) → 3 atomic cards
+#   - "Three methods of deadlock recovery?" (list of 3) → 3 atomic cards
+#   - "Two phases of two-phase locking?" (list of 2) → 2 atomic cards
+# All other cards preserved verbatim in prompt/answer and enriched.
+
+modules:
+  - id: deadlock
+    name: Deadlock
+    topics:
+      - id: 4736-deadlock
+        name: Deadlock
+        tags:
+          - deadlock
+        prose: Coffman conditions, resource graphs, detection matrices, and recovery strategies.
+        cards:
+
+          # ---- Former list-recall "Four Coffman conditions?" → 4 atomic cards + 1 overlapping cloze ----
+          - type: name
+            prompt: Which Coffman condition requires that a resource be assigned to at most one process at a time?
+            answer: "**Mutual exclusion**."
+            explanation: >-
+              Sharable resources (read-only data, spooled output) don't induce deadlock because multiple processes can
+              use them concurrently. Mutual exclusion — exclusive ownership — is what creates the possibility of one
+              process blocking another on that resource.
+            example: |-
+              Printer: exclusive → mutex condition holds.
+              Read-only config file: shareable → mutex does NOT hold for it.
+            source: "Part 9, Slide 19; topic-dive: coffman-conditions-strategies.md"
+            bloom: remember
+          - type: name
+            prompt: Which Coffman condition requires a process to hold at least one resource while waiting for others?
+            answer: "**Hold and wait**."
+            explanation: >-
+              A process that owns nothing cannot be part of a wait chain. The hold-and-wait condition is what lets
+              each link of the chain own the resource the next link wants — it is the glue of a deadlock cycle.
+            example: |-
+              P1 holds the printer, now blocks requesting the tape drive.
+              P1 is holding + waiting → condition present.
+            source: "Part 9, Slide 19; topic-dive: coffman-conditions-strategies.md"
+            bloom: remember
+          - type: name
+            prompt: Which Coffman condition forbids the OS from forcibly reclaiming a held resource?
+            answer: "**No preemption**."
+            explanation: >-
+              If the OS could always rip a resource out of a process's hand, no wait would ever become permanent. The
+              no-preemption condition is what makes a wait chain stick long enough to become deadlock rather than
+              transient contention.
+            example: |-
+              Tape drive mid-write — OS cannot preempt without corruption.
+              Printer output via spool — OS CAN preempt (redirect spool).
+            source: "Part 9, Slide 19; topic-dive: coffman-conditions-strategies.md"
+            bloom: remember
+          - type: name
+            prompt: Which Coffman condition requires a cycle in the process-resource wait chain?
+            answer: "**Circular wait**."
+            explanation: >-
+              Linear wait chains eventually terminate (the last process will finish and release). A cycle is what
+              makes every process depend transitively on itself, so no progress can occur without external intervention.
+            example: |-
+              P1 waits on R2 (held by P2); P2 waits on R1 (held by P1).
+              P1 → R2 → P2 → R1 → P1: closed cycle.
+            source: "Part 9, Slide 19; topic-dive: coffman-conditions-strategies.md"
+            bloom: remember
+          - type: cloze
+            prompt: >-
+              Deadlock requires all four Coffman conditions simultaneously: {{mutual exclusion}}, {{hold and wait}},
+              {{no preemption}}, and {{circular wait}}.
+            answer: mutual exclusion, hold and wait, no preemption, circular wait
+            explanation: >-
+              The four conditions are necessary AND sufficient: remove any one and deadlock becomes impossible.
+              Prevention strategies each attack exactly one of these, which is why they are listed together.
+            example: |-
+              Remove mutual exclusion → spooling; remove hold-and-wait → request-all;
+              remove no-preemption → preempt; remove circular wait → resource ordering.
+            source: "Part 9, Slide 19; topic-dive: coffman-conditions-strategies.md"
+            bloom: understand
+          # ---- end Coffman split ----
+
+          # ---- Former list-recall "Deadlock vs starvation vs livelock?" → 3 atomic cards ----
+          - type: name
+            prompt: A process is blocked waiting on a resource held by another blocked process. What is this called?
+            answer: "**Deadlock**."
+            explanation: >-
+              Deadlock is a circular-wait condition where every participant is blocked. No process in the cycle can
+              resume without external intervention (preemption, rollback, or kill). Distinct from starvation and
+              livelock because every participant is in the **blocked** state.
+            example: |-
+              P1 blocked on R2 (held by P2); P2 blocked on R1 (held by P1).
+              Both in Blocked state → classic 2-cycle deadlock.
+            source: "Part 9, Slides 97-106; research-deadlock.md §8"
+            bloom: understand
+          - type: name
+            prompt: A ready process is never scheduled / never granted its requested resource. What is this called?
+            answer: "**Starvation**."
+            explanation: >-
+              Unlike deadlock, the starved process is **not blocked** — it could run if given the resource, but the
+              scheduler or allocation policy keeps choosing others. Fix: aging, FIFO scheduling, or fair allocation.
+            example: |-
+              Priority scheduler always picks high-priority jobs.
+              Low-priority batch job in ready queue for days → starving.
+            source: "Part 9, Slides 97-106; research-deadlock.md §8"
+            bloom: understand
+          - type: name
+            prompt: Processes keep changing state but none make progress toward their goal. What is this called?
+            answer: "**Livelock**."
+            explanation: >-
+              Participants are not blocked — they execute and react — but their reactions keep cancelling each other
+              out. Detection is harder than deadlock because the process-state field doesn't say "blocked".
+            example: |-
+              Two people stepping aside to let the other pass — both step
+              the same way repeatedly. Busy, active, but no progress.
+            source: "Part 9, Slides 97-106; research-deadlock.md §8"
+            bloom: understand
+          # ---- end deadlock/starvation/livelock split ----
+
+          - type: name
+            prompt: In a resource allocation graph, what does an arrow R→P mean vs P→R?
+            answer: R→P = resource R is allocated to process P. P→R = process P is requesting resource R.
+            explanation: >-
+              Direction encodes assignment vs request. Swapping the direction inverts the meaning, so a mis-drawn
+              arrow in a RAG can flip a deadlock analysis from "safe" to "deadlocked". Always read arrowhead.
+            example: |-
+              Past-exam Q5 graph: R₁ → P₁ means P₁ holds one instance of R₁.
+              P₁ → R₂ means P₁ is requesting R₂.
+            source: "Part 9 RAG section; past-exam Q5; research-deadlock.md §2"
+            bloom: remember
+          - type: name
+            prompt: In a single-instance-resource graph, when does deadlock exist?
+            answer: Whenever there is a **cycle** in the graph.
+            explanation: >-
+              With one instance per resource, the only way every process in a chain can be blocked is for the chain
+              to close on itself. With multiple instances per resource, a cycle is necessary but no longer sufficient
+              — the matrix algorithm replaces cycle detection.
+            example: |-
+              P1 → R2 → P2 → R1 → P1: cycle of length 2 → deadlock.
+              Same graph with R2 having 2 instances and one free → no deadlock.
+            source: "Part 9 single-instance detection; research-deadlock.md §3"
+            bloom: understand
+          - type: name
+            prompt: Matrix detection — what does the vector `E` represent?
+            answer: "Existing resources: total number of instances of each resource type in the system."
+            explanation: >-
+              E is a constant of the system (what exists physically). It never changes during the algorithm — only C,
+              R, and A change as allocation decisions are simulated.
+            example: |-
+              4 tape drives, 2 plotters, 3 scanners, 1 Blu-ray drive
+              → E = [4, 2, 3, 1].
+            source: "Part 9 matrix detection; research-deadlock.md §3; topic-dive: matrix-detection-algorithm-c-r-e-a.md"
+            bloom: remember
+          - type: name
+            prompt: Matrix detection — what does matrix `C[i][j]` represent?
+            answer: "Current allocation: number of instances of resource j currently held by process i."
+            explanation: >-
+              C is a snapshot — each row is one process's current holdings across all resource types. Column sums of
+              C tell you total holdings per resource type, which combined with A equals E.
+            example: |-
+              C[P2][Blu-ray] = 1 means P2 holds one Blu-ray drive right now.
+              C row 2: [2, 0, 0, 1] → P2 holds 2 tapes + 1 Blu-ray.
+            source: "Part 9 matrix detection; topic-dive: matrix-detection-algorithm-c-r-e-a.md"
+            bloom: remember
+          - type: name
+            prompt: Matrix detection — what does matrix `R[i][j]` represent?
+            answer: "Request: number of instances of resource j that process i is currently waiting for."
+            explanation: >-
+              R captures unmet demand only — already-granted resources live in C, not R. A process with R row all
+              zero has no outstanding requests and can finish immediately. That's the base case of the algorithm's
+              termination.
+            example: |-
+              R[P1] = [2, 0, 0, 1] means P1 is waiting for 2 tapes + 1 Blu-ray.
+              If any of those arrived in C, R decrements correspondingly.
+            source: "Part 9 matrix detection; topic-dive: matrix-detection-algorithm-c-r-e-a.md"
+            bloom: remember
+          - type: name
+            prompt: Formula for `A` (available) given `E` and `C`?
+            answer: A\[j\] = E\[j\] − Σ\_i C\[i\]\[j\] (subtract column sums of C from E).
+            explanation: >-
+              Available = total existing − total allocated. This invariant (`Σᵢ C[i][j] + A[j] = E[j]`) is the
+              sanity check on any problem input: if column sums plus A don't equal E, the problem is malformed.
+            example: |-
+              E = [3, 2, 2]. C column sums = [2, 2, 1].
+              A = [3−2, 2−2, 2−1] = [1, 0, 1].
+            source: "Part 9 matrix detection; past-exam Q5; research-deadlock.md §3"
+            bloom: apply
+          - type: name
+            prompt: Detection algorithm — what condition makes process i satisfiable?
+            answer: "R\\[i\\] ≤ A (component-wise): its request vector fits in current available."
+            explanation: >-
+              Component-wise ≤ means every resource type's request must fit. If even one component exceeds A, the
+              process is not satisfiable in this iteration — but it may become satisfiable after another process
+              releases resources.
+            example: |-
+              R[P2] = [1, 0, 1, 0], A = [2, 1, 0, 0] → NO (scanner: 1 > 0).
+              After P3 releases: A = [2, 2, 2, 0] → YES for P2.
+            source: "Part 9 matrix detection; topic-dive: matrix-detection-algorithm-c-r-e-a.md"
+            bloom: apply
+          - type: name
+            prompt: When a process is marked satisfiable, what happens to A?
+            answer: A ← A + C\[i\] (its held resources return to the pool).
+            explanation: >-
+              We simulate the process running to completion and releasing everything it held. The released holdings
+              (C[i]) become available for other processes, which may now satisfy their R[i] ≤ A check.
+            example: |-
+              Mark P3. C[P3] = [0, 1, 2, 0], A was [2, 1, 0, 0].
+              A ← [2, 1, 0, 0] + [0, 1, 2, 0] = [2, 2, 2, 0].
+            source: "Part 9 matrix detection; topic-dive: matrix-detection-algorithm-c-r-e-a.md"
+            bloom: apply
+          - type: name
+            prompt: Prevention strategy for **hold and wait**?
+            answer: Require each process to request ALL resources at once, OR release all before requesting more.
+            explanation: >-
+              The attack removes the glue of the wait chain: a process that holds zero resources cannot be a link.
+              Tradeoff: "request all upfront" over-reserves resources (they sit idle if not yet needed);
+              "release-then-reacquire" requires the process to plan for a possibly-denied reacquisition.
+            example: |-
+              Compile job: declare "I need tape + printer" at start.
+              OS grants both or blocks until both free. Never holds one
+              while waiting on the other.
+            source: "Part 9, Slides 89-95; topic-dive: coffman-conditions-strategies.md"
+            bloom: understand
+          - type: name
+            prompt: Prevention strategy for **circular wait**?
+            answer: Global numbering of resources. Processes must request in increasing order only.
+            explanation: >-
+              If A holds resource i and requests resource j with i<j, any process B holding j cannot ask for i
+              without violating the order. This breaks the closure property required for a cycle. Proof sketch: any
+              cycle would require at least one edge going from high → low in numbering, which the rule forbids.
+            example: |-
+              Imagesetter=1, Printer=2, Plotter=3, Tape=4, CD-ROM=5.
+              Any process grabs them in numeric order only → no cycle.
+            source: "Part 9, Slides 89-95; topic-dive: coffman-conditions-strategies.md"
+            bloom: understand
+          - type: name
+            prompt: Prevention strategy for **no preemption**?
+            answer: "Allow preemption: if a process requesting is blocked, forcibly take its current resources away."
+            explanation: >-
+              Works cleanly for virtualizable resources (printers via spool, CPU via context switch). Fails for
+              stateful hardware mid-operation (tape drive writing) where preemption corrupts output. Limited
+              applicability.
+            example: |-
+              Process mid-print → spooled → safe to redirect (preemptable).
+              Process mid-tape-write → physical drive busy → not safely preemptable.
+            source: "Part 9, Slides 89-95; topic-dive: coffman-conditions-strategies.md"
+            bloom: understand
+          - type: name
+            prompt: Prevention strategy for **mutual exclusion**?
+            answer: >-
+              Spooling (virtualize the resource). E.g. printer spooler — all processes "write" but only the spooler
+              daemon accesses the device.
+            explanation: >-
+              Only one process actually touches the physical device; every other process sees a spooled queue that
+              behaves as if it had its own private copy. Cannot work for all resources — notably mutable shared
+              state (a file being written concurrently) can't be spooled without serialization.
+            example: |-
+              LPR command: each user app "prints" to a spool file.
+              Spooler daemon is the single process accessing the printer.
+            source: "Part 9, Slides 89-95; topic-dive: coffman-conditions-strategies.md"
+            bloom: understand
+          - type: name
+            prompt: Banker's algorithm — purpose?
+            answer: >-
+              Deadlock **avoidance**: grant a resource request only if the resulting state is SAFE (i.e., a safe
+              sequence exists).
+            explanation: >-
+              Avoidance sits between prevention (structurally block a condition) and detection (wait for deadlock
+              and recover). Banker's simulates each request and refuses any that leaves the system without a proof
+              of completion.
+            example: |-
+              P1 requests 1 unit. Banker: if I grant this, can I still
+              sequence all processes to completion? If YES → grant.
+              If NO → deny, make P1 wait.
+            source: "Part 9, Slides 72-87; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: understand
+          - type: name
+            prompt: >-
+              Total = 10 units. Has: A=3, B=2, C=2 (Available = 3). Max: A=9, B=4, C=7. Give a safe sequence (or show
+              none exists).
+            answer: >-
+              Need = \[6, 2, 5\]. B fits (2 ≤ 3) → Available = 5. C fits (5 ≤ 5) → Available = 7. A fits (6 ≤ 7) →
+              Available = 10. Safe sequence: **B, C, A**.
+            explanation: >-
+              Safe-state check: find ANY process whose Need ≤ Available, run it, reclaim its Has, repeat. Order
+              matters only in that each step must advance; any found process works. B → C → A is the unique fit here
+              (A cannot go first because Need 6 > Available 3).
+            example: |-
+              If instead A had Has=4 (Need=5) and Available=2:
+              check B: Need 2 ≤ 2 ✓; Available = 4; A: Need 5 ≤ 4 NO;
+              C: Need 5 ≤ 4 NO → UNSAFE.
+            source: "Part 9, Slides 72-87; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: apply
+          - type: name
+            prompt: Why does Banker's refuse a grant that produces an unsafe state, even though unsafe ≠ deadlocked?
+            answer: >-
+              Unsafe means no ordering guarantees completion under worst-case future requests. Deadlock is *possible*.
+              Banker's is conservative: it preserves a safety proof at every step rather than gambling that future
+              requests behave.
+            explanation: >-
+              Safety is monotonic under Banker's — if every granted state is safe, the system can never enter a
+              state where deadlock is possible. An unsafe state isn't deadlocked yet, but the OS has no evidence
+              that future requests won't push it over the edge.
+            example: |-
+              Grant request → state passes column sums but fails safety check.
+              Banker refuses; requester blocks. No deadlock risk from this grant.
+            source: "Part 9, Slides 72-87; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: understand
+          - type: name
+            prompt: Safe state definition?
+            answer: >-
+              A state where the OS can sequence all processes such that each can eventually obtain its max resources
+              without deadlock.
+            explanation: >-
+              "Safe" is about the existence of at least one completion order, not about any particular one. Even if
+              scheduling picks a different order, the existence proof says completion is reachable.
+            example: |-
+              Has/Max/Need: A 3/9/6, B 2/4/2, C 2/7/5; Available = 3.
+              Safe sequences exist (B→C→A) → state is safe.
+            source: "Part 9, Slides 72-87; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: remember
+
+          # ---- Former list-recall "Three methods of deadlock recovery?" → 3 atomic cards ----
+          - type: name
+            prompt: Which recovery method takes a resource from its current owner and hands it to a blocked process?
+            answer: "**Preemption**."
+            explanation: >-
+              The feasibility depends on resource type: a printer can be preempted (reassign the spool) but an
+              in-progress tape write cannot. Also creates correctness concerns — the previous owner may need
+              compensating state reset.
+            example: |-
+              Blocked P wants the printer held by Q.
+              OS redirects Q's spool to a holding file, grants printer to P.
+            source: "Part 9 recovery section; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: understand
+          - type: name
+            prompt: Which recovery method restores a process to a prior checkpoint to release resources?
+            answer: "**Rollback**."
+            explanation: >-
+              Requires periodic checkpointing — memory state + resource state — saved to a distinct file (not
+              overwriting prior checkpoints). Rolls the deadlocked process back to before it acquired the contested
+              resource, then restarts from there.
+            example: |-
+              Process at cycle: checkpoint at t₀, deadlock at t₁.
+              Rollback to t₀ image → process restarts, picks different
+              order on retry → cycle broken.
+            source: "Part 9 recovery section; research-deadlock.md §6"
+            bloom: understand
+          - type: name
+            prompt: Which recovery method is the crudest but simplest?
+            answer: "**Killing** one or more processes in (or near) the cycle."
+            explanation: >-
+              Choose a victim whose work can be restarted safely — classic example: compilation (idempotent, re-runs
+              cleanly) vs. database update (side-effecting, cannot be blindly re-run). Repeat if one kill doesn't
+              clear the cycle.
+            example: |-
+              Compile process + DB-update process + file-copy in a cycle.
+              Kill the compile: safe to rerun; other two continue.
+            source: "Part 9 recovery section; research-deadlock.md §6"
+            bloom: understand
+          # ---- end recovery split ----
+
+          - type: name
+            prompt: What is the **Ostrich algorithm**?
+            answer: >-
+              Ignore the deadlock problem. Viable if deadlocks are rare and recovery cost exceeds prevention cost. Used
+              by UNIX/Windows.
+            explanation: >-
+              A cost-benefit argument, not a technical one: prevention and avoidance impose overhead on every
+              allocation. If deadlocks hit once every 5 years, reboot is cheaper than paying that overhead
+              continuously. General-purpose OSes adopt this pragmatically.
+            example: |-
+              Desktop Linux: fork/exec, malloc, file I/O — no Banker's.
+              If a user triggers a 4-process deadlock once a year, reboot.
+            source: "Part 9, Slide 106; research-deadlock.md §11"
+            bloom: remember
+
+          # ---- Former list-recall "Two phases of two-phase locking?" → 2 atomic cards ----
+          - type: name
+            prompt: In two-phase locking, what does the **growing phase** allow?
+            answer: Acquiring locks. No releasing during this phase.
+            explanation: >-
+              The transaction collects every lock it will ever need before entering the shrinking phase. If any lock
+              fails, release all acquired so far and retry — this is the escape valve that prevents hold-and-wait
+              deadlock across transactions following the same protocol.
+            example: |-
+              T1 growing: lock(A) ✓, lock(B) ✓, lock(C) blocked.
+              T1 releases A, B; retries from scratch.
+            source: "Part 9 two-phase section; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: remember
+          - type: name
+            prompt: In two-phase locking, what does the **shrinking phase** allow?
+            answer: Releasing locks. No new locks may be acquired during this phase.
+            explanation: >-
+              Once the transaction starts releasing, it commits to the locks it holds — no more acquisition. This is
+              what enforces serializability: no transaction can sneak a late lock acquisition that would reorder
+              operations with respect to other transactions.
+            example: |-
+              T1 after growing: holds A, B, C.
+              Phase 2: release C, release B, release A. No new locks allowed.
+            source: "Part 9 two-phase section; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: remember
+          # ---- end two-phase split ----
+
+          - type: name
+            prompt: >-
+              In past-exam Q5, for 3 processes and 3 resource types with given graph, what is the column-sum formula
+              used to check `E`?
+            answer: "Σi C\\[i\\]\\[j\\] = allocated count per resource. E must be ≥ this sum. Given answer: E=\\[3, 2, 2\\]."
+            explanation: >-
+              The column-sum formula is the sanity check that a problem-stated E matches the graph: if column sums
+              exceed E, the graph is malformed. In Q5, column sums of C = [2, 2, 1] ≤ E = [3, 2, 2] → valid.
+            example: |-
+              Q5 C matrix column sums = [0+2+0, 1+1+0, 0+0+1] = [2, 2, 1].
+              Stated E = [3, 2, 2]. A = E − col sums = [1, 0, 1].
+            source: "Past-exam Q5; research-deadlock.md §3"
+            bloom: apply
+
+          # ---- Additional Apply-level drills (added pass 2 to close Apply gap) ----
+          - type: name
+            prompt: >-
+              System has E = [4, 2, 3, 1], A = [2, 1, 0, 0]. C rows: P1=[0,0,1,0], P2=[2,0,0,1], P3=[0,1,2,0].
+              R rows: P1=[2,0,0,1], P2=[1,0,1,0], P3=[2,1,0,0]. Is the system deadlocked? Trace.
+            answer: >-
+              P1 R ≤ A? [2,0,0,1]≤[2,1,0,0] NO (BR: 1>0). P2 R ≤ A? [1,0,1,0]≤[2,1,0,0] NO (S: 1>0).
+              P3 R ≤ A? [2,1,0,0]≤[2,1,0,0] YES → mark P3, A += C[P3] = [2,2,2,0]. P2: [1,0,1,0]≤[2,2,2,0] YES →
+              mark, A = [4,2,2,1]. P1: [2,0,0,1]≤[4,2,2,1] YES → mark. **No deadlock** (all marked; order P3, P2, P1).
+            explanation: >-
+              Fresh scenario (not Q5). The algorithm succeeds because the first satisfiable process (P3) returns
+              exactly the scanner P2 was blocked on, which in turn returns the Blu-ray P1 was blocked on. The
+              unlock chain is the point: one release cascades into the next.
+            example: |-
+              Change P3's request to [2,2,0,0]. Then P3 also fails (1<2 in P-col).
+              With nobody satisfiable on the first pass → all three deadlocked.
+            source: "Part 9 matrix detection; research-deadlock.md §3"
+            bloom: apply
+          - type: name
+            prompt: >-
+              Banker's multi-resource. E = (6,3,4,2), A = (1,0,2,0). Allocations: A=[3,0,1,1], B=[0,1,0,0],
+              C=[1,1,1,0], D=[1,1,0,1], E=[0,0,0,0]. Still-need: A=[0,1,0,0], B=[0,1,1,2], C=[3,1,0,0],
+              D=[0,0,1,0], E=[2,1,1,0]. Find one safe process to run first.
+            answer: >-
+              Scan rows: A [0,1,0,0] ≤ [1,0,2,0]? NO (1>0 on col 2). B NO (1>0). C NO (3>1). D [0,0,1,0] ≤
+              [1,0,2,0]? YES. **D can run first.** Release D: A ← [1,0,2,0] + [1,1,0,1] = [2,1,2,1]. Continue from
+              there.
+            explanation: >-
+              Same ≤-scan pattern as detection, but here Max−Has replaces R. Any satisfiable process becomes the
+              first step of the safe sequence. If no such process exists on the initial scan, the state is unsafe
+              and Banker's would deny whatever request produced it.
+            example: |-
+              After marking D, re-scan with A=[2,1,2,1]:
+              B [0,1,1,2] ≤ [2,1,2,1]? NO (2>1 on col 4).
+              A [0,1,0,0] ≤ [2,1,2,1] YES → A next. Continue until all marked
+              or a scan fails (unsafe).
+            source: "Part 9, Slides 84-87; research-deadlock.md §4"
+            bloom: apply
+          - type: name
+            prompt: >-
+              Scenario: processes must request multiple tape drives and scanners, often in different orders.
+              Deadlocks have been observed. Which Coffman condition is easiest to attack here, and how?
+            answer: >-
+              Attack **circular wait** via global resource numbering — e.g. tape=1, scanner=2. Every process must
+              request in increasing order. Removes the cyclic dependency without over-reserving resources
+              (unlike request-all-upfront).
+            explanation: >-
+              Ranking Coffman attacks by overhead in this scenario: mutex (spooling tape drives is awkward, they
+              are stateful hardware); hold-and-wait (request-all wastes expensive devices); no-preemption (mid-tape
+              preemption corrupts); circular-wait (cheap protocol change, no resource waste). Numbering wins.
+            example: |-
+              Global order: tape=1, scanner=2, plotter=3.
+              Process wanting tape + scanner: requests tape first, then scanner.
+              Another process wanting scanner + tape: must also request tape first,
+              cannot form a cycle.
+            source: "Part 9, Slides 89-95; research-deadlock.md §5, §12"
+            bloom: apply
+          # ---- end Apply drills ----
+
+          # ---- Analyze-level cards (for Bloom mix) ----
+          - type: name
+            prompt: >-
+              Past-exam Q5: C = [[0,1,0],[2,1,0],[0,0,1]], R = [[2,0,0],[0,0,2],[3,0,0]], E = [3,2,2]. Is the system
+              deadlocked? Show the trace.
+            answer: >-
+              A = E − col(C) = [1, 0, 1]. Check R[i] ≤ A: P1 [2,0,0] NO; P2 [0,0,2] NO; P3 [3,0,0] NO. No process
+              can proceed → **DEADLOCK** on all three processes.
+            explanation: >-
+              The algorithm terminates as soon as an iteration finds no satisfiable process. When that happens on
+              the very first iteration — as here — every process is part of the deadlock set. No kills, no releases
+              can help without external intervention (preemption or rollback).
+            example: |-
+              Same C but R[P3] changed to [4,0,0], E = [5, 2, 2]:
+              A = [3, 0, 1]. P1 [2,0,0] ≤ [3,0,1] YES → mark, release [0,1,0]
+              → A = [3,1,1] → P2 [0,0,2] NO (2>1) → P3 [4,0,0] NO (4>3).
+              P2 and P3 are deadlocked; P1 escapes.
+            source: "Past-exam Q5; research-deadlock.md §3; topic-dive: matrix-detection-algorithm-c-r-e-a.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              A Banker's system has processes A (Has=3, Max=9), B (Has=2, Max=4), C (Has=4, Max=7). Total = 10.
+              B now requests 2 more units. Grant or deny? Justify.
+            answer: >-
+              Available = 10 − Σ Has = 10 − (3+2+4) = 1. B requests 2 but only 1 is free. The request fails
+              Banker's **first gate** (sufficient free resources) and never reaches the safety check.
+              **Deny / postpone.**
+            explanation: >-
+              Banker's has two gates: (1) enough free resources to satisfy the request at all, then (2) does the
+              resulting state stay safe. This request fails gate (1); gate (2) never runs.
+            example: |-
+              Change A's Has to 2 (so Available = 2). B requests 2.
+              Grant → B Has=4, Available=0. Safety check with Need=[7,2,3]:
+              A Need 7 ≤ 0? NO. B Need 2 ≤ 0? NO. C Need 3 ≤ 0? NO.
+              → UNSAFE → deny.
+            source: "Part 9, Slides 72-87; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              Given holders P1 (Printer), P2 (Tape), waits P1→Tape, P2→Printer — name the exact Coffman condition
+              each structural element corresponds to.
+            answer: >-
+              **Mutual exclusion** — both resources are held exclusively (only one holder each). **Hold and wait** —
+              P1 holds Printer while waiting; P2 holds Tape while waiting. **No preemption** — OS lets each keep its
+              held resource. **Circular wait** — P1→Tape→P2→Printer→P1 closes the cycle.
+            explanation: >-
+              This is the canonical exam diagnostic: given a deadlock, identify which structural features of the
+              scenario instantiate which of the four conditions. Removing any single element breaks deadlock —
+              which is also the map to the four prevention strategies.
+            example: |-
+              Break circular wait: number Printer=1, Tape=2.
+              P1 must take Printer before Tape — OK.
+              P2 must take Printer before Tape too — but P1 already holds it,
+              so P2 blocks before grabbing Tape → cycle impossible.
+            source: "Part 9, Slide 19; research-deadlock.md §1, §5"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              Why does two-phase locking prevent circular-wait deadlock between transactions that follow the
+              protocol, even without explicit resource numbering?
+            answer: >-
+              It doesn't — 2PL by itself can still deadlock if T1 locks A then B while T2 locks B then A. The
+              "retry" behavior (release all, retry) is what breaks wait chains, not 2PL's phase structure.
+            explanation: >-
+              Common misconception: two-phase locking guarantees serializability, not deadlock-freedom. Deadlock
+              prevention via 2PL requires an additional protocol — typically global resource ordering — or a
+              deadlock-detection backstop that aborts one of the transactions.
+            example: |-
+              T1: lock(A), lock(B); T2: lock(B), lock(A).
+              T1 holds A, waits on B; T2 holds B, waits on A.
+              Circular wait → deadlock, despite both being 2PL.
+            source: "Part 9 two-phase section; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              A system runs daily at 99.9% utilization. Deadlocks occur once every 3 years. The alternative
+              (avoidance via Banker's) would impose 2% overhead on every resource request. Which strategy is
+              justified and why?
+            answer: >-
+              **Ostrich** (ignore + reboot on rare deadlock). 2% continuous overhead on every request vastly exceeds
+              the cost of a once-in-3-years outage — especially on a general-purpose system where safety-critical
+              real-time guarantees are absent.
+            explanation: >-
+              Engineers weigh expected cost (probability × impact × continuity) against overhead. If deadlocks are
+              rare and the overhead to prevent them is continuous, ignore-and-recover usually wins. If they are
+              frequent or impact is catastrophic (avionics, medical), prevention or avoidance wins even at high
+              overhead.
+            example: |-
+              Same system but deadlocks hit weekly → Banker's worth it.
+              Safety-critical real-time controller → prevention regardless
+              of overhead; no room for ignore.
+            source: "Part 9, Slide 106; research-deadlock.md §7, §11"
+            bloom: analyze
+          # ---- end Analyze cards ----

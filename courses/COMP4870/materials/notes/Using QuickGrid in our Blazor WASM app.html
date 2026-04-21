@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html><head></head><body style="color: rgb(32, 33, 34); font-family: undefined;"><p>QuickGrid documentation:</p>
+<p><a href="https://aspnet.github.io/quickgridsamples/">https://aspnet.github.io/quickgridsamples/</a></p>
+<p>1) Add this package to your Blazor app:</p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">Microsoft.AspNetCore.Components.QuickGrid</span></p>
+<p>2) Add this to your _imports.razor</p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">@using Microsoft.AspNetCore.Components.QuickGrid</span></p>
+<p>3) Change <span style="font-family: 'courier new', courier, sans-serif;">Students[] students</span> declaration in Students.razor file to:</p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">IQueryable&lt;Student&gt;? students;</span></p>
+<p>What we have done here is convert the students object into an <em>IQueryable</em> object</p>
+<p>4) In your Students.razor components page, replace the current <em>load() </em>method with this:</p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">protected async Task load() {</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; var studentArray = await httpClient.GetFromJsonAsync&lt;Student[]&gt;($"{Constants.BASE_URL}api/students");</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; students = studentArray?.AsQueryable();</span><br><span style="font-family: 'courier new', courier, sans-serif;">}</span></p>
+<p>5) Replace the entire table with this QuickGrid component:</p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">&lt;QuickGrid Items="@(students)"&gt;</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &lt;PropertyColumn Property="@(p =&gt; p.StudentId)" Sortable="true" /&gt;</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &lt;PropertyColumn Property="@(p =&gt; p.FirstName)" Sortable="true" /&gt;</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &lt;PropertyColumn Property="@(p =&gt; p.LastName)" Sortable="true" /&gt;</span><br><span style="font-family: 'courier new', courier, sans-serif;">&lt;/QuickGrid&gt;</span></p>
+<p></p></body></html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Eliciting Stakeholder Requests Using Rational ClearQuest</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="eliciting_stakeholder_requests">
+<meta name="uma.presentationName" content="Eliciting Stakeholder Requests Using Rational ClearQuest">
+<meta name="uma.category" content="Tool:rup_suite_analyst_studio:Rational Suite AnalystStudio">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational Suite AnalystStudio">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_qS-iwAIOEdqTna4sZVFRow", "{F6A36701-8189-4691-86CB-1DE7140E9C0B}", "{73B617C8-1E9A-4262-975F-8D097B771BD9}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{F6A36701-8189-4691-86CB-1DE7140E9C0B}", "{73B617C8-1E9A-4262-975F-8D097B771BD9}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{F6A36701-8189-4691-86CB-1DE7140E9C0B}", "{73B617C8-1E9A-4262-975F-8D097B771BD9}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{73B617C8-1E9A-4262-975F-8D097B771BD9}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Eliciting Stakeholder Requests Using Rational ClearQuest</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to capture and manage stakeholder requests using the various features provided by Rational ClearQuest. </td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_suite_analyst_studio_B0237242.html" guid="{F6A36701-8189-4691-86CB-1DE7140E9C0B}">Rational Suite AnalystStudio</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><h3>
+    Overview
+</h3>
+<p>
+    Rational ClearQuest helps the analyst effectively gather stakeholder requests by providing a complete and consistent
+    enhancement request form. This form can be customized as needed for your development workplace. All requests are logged
+    in a single central change request database. Internal stakeholders (team members) use the ClearQuest Windows or Web
+    application to submit enhancement requests; external stakeholders can use the ClearQuest Web application. After
+    enhancement requests have been submitted, the analyst can further qualify these requests by adding information to each
+    request.
+</p>
+<h4>
+    <b>Tool Steps</b>
+</h4>
+<p>
+    This document contains the following steps:
+</p>
+<ol>
+    <li>
+        <a href="#Logging">Log enhancement requests using ClearQuest Web</a>
+    </li>
+    <li>
+        <a href="#Organizing">Organize enhancement requests in</a> <a href="#Organizing">ClearQuest Windows</a>
+    </li>
+    <li>
+        <a href="#Run queries">Run queries</a>
+    </li>
+</ol>
+<p>
+    <img height="16" alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" /> For detailed information
+    regarding configuring and customizing ClearQuest forms, see the ClearQuest online help and the <i>Rational ClearQuest
+    Administrator's Guide</i>.
+</p>
+<h3>
+    <font face="Arial">1. <b><a id="Logging" name="Logging">Log</a> enhancement requests using ClearQuest Web</b></font>
+</h3>
+<p>
+    ClearQuest provides a Web application that can be configured to provide restricted functionality to non-ClearQuest
+    licensees. With restricted access, a ClearQuest Web user can submit change requests and is provided access to a single
+    administrator-defined ClearQuest query. This unique feature allows key stakeholders who do not belong to the software
+    team building the system to use the Web to provide feedback. Additionally, these stakeholders remain informed of the
+    progress of the request and retrieve updated status by running the limited access query.
+</p>
+<p>
+    To file an enhancement request using ClearQuest Web:
+</p>
+<ol>
+    <li>
+        Start your browser and type the ClearQuest Web URL. The <b>ClearQuest Logon</b> page appears.
+    </li>
+    <li>
+        Type your user name and password, and then click the <b>Logon</b> button. You are now connected to the ClearQuest
+        database on the Web.
+    </li>
+    <li>
+        From the Table of Contents list on the left-hand side of the screen, locate the <b>Operations</b> heading and click
+        the subheading <b>Submit a Record</b>. The <b>Select record type</b> page appears.
+    </li>
+    <li>
+        In the record type list, select <b>Enhance Request</b> and click the <b>Submit</b> button. The <b>Submit Enhance
+        Request</b> form appears; it consists of three sections.
+    </li>
+    <li>
+        In the <b>Main</b> section, type information in the <b>Headline</b>, <b>Origin</b>, <b>Customer Priority</b>, and
+        <b>Description</b> boxes.
+    </li>
+    <li>
+        In the <b>Attachment</b> section of the record, attach any available supporting information for the enhancement
+        request by clicking the <b>ADD</b> button and linking to the external file.
+    </li>
+    <li>
+        In the third section of <b>Contact Information</b>, enter all applicable customer and submitter information (name,
+        company, e-mail address).
+    </li>
+    <li>
+        Click <b>OK</b>. The enhancement request is created and added to the central database.
+    </li>
+</ol>
+<p>
+    <img height="16" alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" /> For detailed information
+    regarding configuring ClearQuest Web to provide restricted functionality to non-ClearQuest licensees, see <i>Editing
+    Web Settings</i> in the ClearQuest Web online Help.
+</p>
+<h3>
+    <font face="Arial">2. <b><a id="Organizing" name="Organizing">Organize</a> enhancement requests in ClearQuest
+    Windows</b></font>
+</h3>
+<p>
+    After the enhancement request is submitted, ClearQuest provides additional fields organized by tabs to complement the
+    originally submitted information on the record form. The <b>Analysis</b> tab, the <b>Resolution</b> tab, and the
+    <b>Notes</b> tab allow the analyst to balance the submitter information with team-specific information, such as
+    marketing priority and target release, for organizational purposes. The analyst uses this information to query the
+    enhancement request database to determine which requests to implement in each release.
+</p>
+<p>
+    To organize enhancement requests using ClearQuest Windows:
+</p>
+<ol>
+    <li>
+        Select the enhancement request and click <b>Action</b> &gt; <b>Modify</b> on the right side of the Enhancement
+        Request form. This activates the request and allows you to edit the record.
+    </li>
+    <li>
+        Click the <b>Analysis</b> tab to activate it.
+    </li>
+    <li>
+        Set values for each of the related fields by clicking the arrow in each box (<b>Marketing Priority, Request Type,
+        Product, Product Area, Target Release, and Owner</b>) and selecting the required values. <b>Note</b>: These fields
+        can be customized as needed.
+    </li>
+    <li>
+        When you have finished editing, click <b>Apply</b> to save the changes.
+    </li>
+</ol>
+<p>
+    The enhancement requests can now be queried based on the set values.
+</p>
+<p>
+    <img height="15" alt="Book icon" hspace="0" src="./../../../core.base_rup/resources/book.gif" width="16" border="0" /> To view additional
+    information on organizing your enhancement requests, see the white paper <i>Using Rational ClearQuest and Rational
+    RequisitePro for Analysts</i>, which is available in Let's Go AnalystStudio.
+</p>
+<p>
+    <img height="16" alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" /> For information regarding queries
+    and customizing fields, see the ClearQuest online Help.
+</p>
+<h3>
+    <font face="Arial">3. <b><a id="Run queries" name="Run queries">Run queries</a></b></font>
+</h3>
+<p>
+    ClearQuest provides a powerful query interface that allows the analyst to query all defects and enhancement requests in
+    the connected project. The following are queries that the analyst might find helpful in managing enhancement requests.
+    The analyst might run the following queries:
+</p>
+<ol>
+    <li>
+        Isolate those enhancement requests that are targeted for the specific release being addressed. Because not all
+        enhancement requests received can be implemented in the current release, it is helpful to query all enhancement
+        requests using the "Targeted Release" field. This query returns a working list of all enhancement requests that
+        have been triaged and designated for the release indicated in the query.
+    </li>
+    <li>
+        List all enhancement requests that have not been associated with a requirement. This query aids the analyst in
+        viewing those enhancement requests that are still under consideration, or in the queue, but have not yet been
+        assigned to a specific software iteration.
+    </li>
+    <li>
+        Locate the number of occurrences or instances of the same enhancement request. This query assists the analyst in
+        determining how many times an enhancement request has been submitted by stakeholders. This adds to the weighting
+        process to determine the importance of the request to the stakeholders and the priority level.
+    </li>
+    <li>
+        Distinguish between true enhancement requests and requests for new functionality. This query shows the progress of
+        the software development. Here the analyst can discern whether the majority of the enhancement requests are to fix
+        existing functionality or if they require the addition of new features to the current product.
+    </li>
+</ol>
+<p>
+    The analyst can easily link approved current version enhancement requests with valid requirements in the requirement
+    database using the ClearQuest and RequisitePro integration.
+</p>
+<p>
+    <img height="16" alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" /> For more information on creating
+    queries in ClearQuest, see the ClearQuest online Help.
+</p>
+<h3>
+    For More Information
+</h3>
+<p>
+    For information regarding ClearQuest and RequisitePro integration, see the tool mentor <a class="elementLink" href="./../../../core.base_rup/guidances/toolmentors/manage_stakeholder_requests_A93893E6.html" guid="{7FA7141F-FF45-4DB9-9853-C6221A2D67FF}">Managing Stakeholder Requests Using Rational ClearQuest and Rational RequisitePro</a> and the manual titled <i>Getting Started: Rational Suite AnalystStudio.</i>
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

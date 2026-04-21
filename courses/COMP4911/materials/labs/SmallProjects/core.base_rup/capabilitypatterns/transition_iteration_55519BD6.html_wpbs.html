@@ -1,0 +1,523 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Capability Pattern: Transition Iteration</title>
+<meta name="uma.type" content="CapabilityPattern">
+<meta name="uma.name" content="transition_iteration">
+<meta name="uma.presentationName" content="Transition Iteration">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../css/default.css" type="text/css">
+<script src="./../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ActivityTreeTable.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ProcessElementPage.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/processElementData.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var defaultQueryStr = '?proc=_zUDkgSGFEdqMcovRzkCQow&path=_zUDkgSGFEdqMcovRzkCQow';
+					var backPath = './../../';
+					var imgPath = './../../images/';
+					var nodeInfo=null;
+					contentPage.preload(imgPath, backPath, nodeInfo, defaultQueryStr, false, true, true);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top">
+<div autoWrap="true">
+<div id="page-guid" value="_zUDkgSGFEdqMcovRzkCQow"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Capability Pattern: Transition Iteration</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../images/capabilitypattern.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This is an example Transition Phase iteration. It includes the activities typically performed during a single iteration in the transition phase. The focus of the transition phase is to ensure that software is available for its end users. The transition phase can span several iterations, and includes testing the product in preparation for release, and making minor adjustments based on user feedback. At this point in the lifecycle, user feedback should focus mainly on fine tuning the product, configuring, installing and usability issues, all the major structural issues should have been worked out much earlier in the project lifecycle. </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr valign="middle">
+<td width="10" class="tab"><img src="./../../images/shim.gif" width="10" height="17" alt="" title=""></td><td nowrap class="tab"><a class="tab" id="TAB_Description" href="./../../core.base_rup/capabilitypatterns/transition_iteration_55519BD6.html_desc.html">Description</a></td><td width="21"><img src="./../../images/tab_middle-i_i.gif" width="21" height="17" align="absmiddle" alt="" title=""></td><td nowrap class="tab"><a class="tab" id="TAB_WBS" href="./../../core.base_rup/capabilitypatterns/transition_iteration_55519BD6.html_wbs.html"><span style="white-space:nowrap;">Work Breakdown Structure</span></a></td><td width="1"><img src="./../../images/tab_middle-i_i.gif" width="21" height="17" align="absmiddle" alt="" title=""></td><td nowrap class="tab"><a class="tab" id="TAB_TBS" href="./../../core.base_rup/capabilitypatterns/transition_iteration_55519BD6.html_tbs.html"><span style="white-space:nowrap;">Team Allocation</span></a></td><td width="21"><img src="./../../images/tab_middle-i_a.gif" width="21" height="17" align="absmiddle" alt="" title=""></td><td nowrap class="activeTab"><span style="white-space:nowrap;">Work Product Usage</span></td><td width="21"><img src="./../../images/tab_end-a.gif" width="21" height="17" alt="" title=""></td><td width="50%"><img src="./../../images/shim.gif" width="10" height="17" alt="" title=""></td>
+</tr>
+<tr>
+<td colspan="6"><img src="./../../images/shim.gif" height="2" alt="" title=""></td><td><img src="./../../images/tab_space_middle.gif" width="21" height="2" alt="" title=""></td><td class="activeTab"><img src="./../../images/shim.gif" width="10" height="2" alt="" title=""></td><td><img src="./../../images/tab_space.gif" width="21" height="2" alt="" title=""></td><td colspan="1"><img src="./../../images/shim.gif" height="2" alt="" title=""></td>
+</tr>
+<tr>
+<td colspan="10" class="activeTab"><img src="./../../images/shim.gif" height="5" alt="" title=""></td>
+</tr>
+</table>
+<div class="sectionHeading">Work Product Breakdown</div>
+<div class="sectionContent">
+<div id="treeContent"></div>
+<script language="JavaScript">
+contentPage.processPage.treeTable.data = {
+title: "Work Product Breakdown", summary: "Work Product Breakdown", 
+columns: [
+["presentation_name", "Breakdown Element"],
+["model_info", "Model Info"],
+["entry_state", "Entry State"],
+["exit_state", "Exit State"],
+["deliverable", "Deliverable"],
+["type", "Type"],
+["is_planned", "Planned"],
+["has_multiple_occurrences", "Multiple Occurrences"],
+["is_optional", "Optional"]],
+rows: [
+			
+{id: "9e06aaa6", parentId: "", relPath: ",_JvNBEDneEdqxANP9kNH4WA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_actor", title: "Actor", url: "./../../core.base_rup/capabilitypatterns/rup_actor_43455CA.html", 
+	predecessors: "", info: "Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "e1afdfc0", parentId: "", relPath: ",_lH9e0L9dEdqBwpaAk4N49g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_analysis_class", title: "Analysis Class", url: "./../../core.base_rup/capabilitypatterns/rup_analysis_class_70D9E1D4.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "5170a29c", parentId: "", relPath: ",_CQXK5Bi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:true, 
+	index: "", prefix: "", name: "rup_analysis_model", title: "Analysis Model", url: "./../../core.base_rup/capabilitypatterns/rup_analysis_model_E26A4063.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "e5431216", parentId: "5170a29c", relPath: ",_CQXK5Bi2Edq_uI8xTPML6g,_lH9e0L9dEdqBwpaAk4N49g", isSuppressed: "", indentSize: 1, hasChildren:false, 
+	index: "", prefix: "", name: "rup_analysis_class", title: "Analysis Class", url: "./../../core.base_rup/capabilitypatterns/rup_analysis_class_70D9E1D4.html", 
+	predecessors: "", info: "", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "d6f71be3", parentId: "5170a29c", relPath: ",_CQXK5Bi2Edq_uI8xTPML6g,_kYZqIL9dEdqBwpaAk4N49g", isSuppressed: "", indentSize: 1, hasChildren:false, 
+	index: "", prefix: "", name: "rup_analysis_class", title: "Analysis Class", url: "./../../core.base_rup/capabilitypatterns/rup_analysis_class_7294C118.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "2a397d11", parentId: "", relPath: ",_Pxo0wEodEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_build", title: "Build", url: "./../../core.base_rup/capabilitypatterns/rup_build_FF650B8A.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "6468d2a3", parentId: "", relPath: ",_Ntkj4UogEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_business_case", title: "Business Case", url: "./../../core.base_rup/capabilitypatterns/rup_business_case_600A7D3C.html", 
+	predecessors: "", info: "Optional Input, Mandatory Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "7a3789bb", parentId: "", relPath: ",_uFD6gEoeEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_change_request", title: "Change Request", url: "./../../core.base_rup/capabilitypatterns/rup_change_request_F565A235.html", 
+	predecessors: "", info: "Output, Optional Input, Mandatory Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "f8482c9f", parentId: "", relPath: ",_FVsIYUofEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_data_model", title: "Data Model", url: "./../../core.base_rup/capabilitypatterns/rup_data_model_7B424077.html", 
+	predecessors: "", info: "Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "665416bd", parentId: "", relPath: ",_b2jYIkodEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_deployment_model", title: "Deployment Model", url: "./../../core.base_rup/capabilitypatterns/rup_deployment_model_1419D414.html", 
+	predecessors: "", info: "Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "9c9cfb71", parentId: "", relPath: ",_CRyuQRi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:true, 
+	index: "", prefix: "", name: "rup_design_model", title: "Design Model", url: "./../../core.base_rup/capabilitypatterns/rup_design_model_13667D41.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "a08cf155", parentId: "9c9cfb71", relPath: ",_CRyuQRi2Edq_uI8xTPML6g,_CRyuUBi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 1, hasChildren:false, 
+	index: "", prefix: "", name: "rup_use_case_realization", title: "Use-Case Realization", url: "./../../core.base_rup/capabilitypatterns/rup_use_case_realization_1B1025AD.html", 
+	predecessors: "", info: "Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "28d591d7", parentId: "", relPath: ",_CRyuTBi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_developer_test", title: "Developer Test", url: "./../../core.base_rup/capabilitypatterns/rup_developer_test_567E438E.html", 
+	predecessors: "", info: "Mandatory Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "5b69904", parentId: "", relPath: ",_wHaz0EoeEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_development_infrastructure", title: "Development Infrastructure", url: "./../../core.base_rup/capabilitypatterns/rup_development_infrastructure_BEE2ADD3.html", 
+	predecessors: "", info: "Mandatory Input, Output, Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "aba6e6ee", parentId: "", relPath: ",_CZ6IdBi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_development_process", title: "Development Process", url: "./../../core.base_rup/capabilitypatterns/rup_development_process_BC0297D.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "82d099c8", parentId: "", relPath: ",_CM61Yhi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_glossary", title: "Glossary", url: "./../../core.base_rup/capabilitypatterns/rup_glossary_A6F4C4A9.html", 
+	predecessors: "", info: "Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "13935e7e", parentId: "", relPath: ",_OzjMIb9eEdqBwpaAk4N49g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_implementation_element", title: "Implementation Element", url: "./../../core.base_rup/capabilitypatterns/rup_implementation_element_32482278.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "ca5f971a", parentId: "", relPath: ",_CRyuURi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:true, 
+	index: "", prefix: "", name: "rup_implementation_model", title: "Implementation Model", url: "./../../core.base_rup/capabilitypatterns/rup_implementation_model_25AE05BD.html", 
+	predecessors: "", info: "Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "b49aaad8", parentId: "ca5f971a", relPath: ",_CRyuURi2Edq_uI8xTPML6g,_OzjMIb9eEdqBwpaAk4N49g", isSuppressed: "", indentSize: 1, hasChildren:false, 
+	index: "", prefix: "", name: "rup_implementation_element", title: "Implementation Element", url: "./../../core.base_rup/capabilitypatterns/rup_implementation_element_32482278.html", 
+	predecessors: "", info: "", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "2358afba", parentId: "ca5f971a", relPath: ",_CRyuURi2Edq_uI8xTPML6g,_OzjMIL9eEdqBwpaAk4N49g", isSuppressed: "", indentSize: 1, hasChildren:false, 
+	index: "", prefix: "", name: "rup_implementation_subsystem", title: "Implementation Subsystem", url: "./../../core.base_rup/capabilitypatterns/rup_implementation_subsystem_43AF0E62.html", 
+	predecessors: "", info: "", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "b508473c", parentId: "ca5f971a", relPath: ",_CRyuURi2Edq_uI8xTPML6g,_Ok328b9eEdqBwpaAk4N49g", isSuppressed: "", indentSize: 1, hasChildren:false, 
+	index: "", prefix: "", name: "rup_implementation_element", title: "Implementation Element", url: "./../../core.base_rup/capabilitypatterns/rup_implementation_element_F2E45E16.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "684217ac", parentId: "ca5f971a", relPath: ",_CRyuURi2Edq_uI8xTPML6g,_Ok328L9eEdqBwpaAk4N49g", isSuppressed: "", indentSize: 1, hasChildren:false, 
+	index: "", prefix: "", name: "rup_implementation_subsystem", title: "Implementation Subsystem", url: "./../../core.base_rup/capabilitypatterns/rup_implementation_subsystem_44B4A00.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "ce85f85a", parentId: "", relPath: ",_OzjMIL9eEdqBwpaAk4N49g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_implementation_subsystem", title: "Implementation Subsystem", url: "./../../core.base_rup/capabilitypatterns/rup_implementation_subsystem_43AF0E62.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "9244cde", parentId: "", relPath: ",_Eern4UofEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_integration_build_plan", title: "Integration Build Plan", url: "./../../core.base_rup/capabilitypatterns/rup_integration_build_plan_1A9B8472.html", 
+	predecessors: "", info: "Optional Input, Output, Mandatory Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "cebc7c45", parentId: "", relPath: ",_CZht8xi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_iteration_assessment", title: "Iteration Assessment", url: "./../../core.base_rup/capabilitypatterns/rup_iteration_assessment_FBC6A58.html", 
+	predecessors: "", info: "Mandatory Input, Output, Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "623dc42f", parentId: "", relPath: ",_CZht8hi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_iteration_plan", title: "Iteration Plan", url: "./../../core.base_rup/capabilitypatterns/rup_iteration_plan_51E8A48.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "30741a73", parentId: "", relPath: ",_CQjYIhi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_navmap", title: "Navigation Map", url: "./../../core.base_rup/capabilitypatterns/rup_navmap_BFB94A31.html", 
+	predecessors: "", info: "Mandatory Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "e8aeb643", parentId: "", relPath: ",_CaYplBi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_project_repository", title: "Project Repository", url: "./../../core.base_rup/capabilitypatterns/rup_project_repository_88932460.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "a38132c7", parentId: "", relPath: ",_CZht9Bi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_review_record", title: "Review Record", url: "./../../core.base_rup/capabilitypatterns/rup_review_record_D0797841.html", 
+	predecessors: "", info: "Output, Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "4b9b793", parentId: "", relPath: ",_M_c5oEogEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_risk_list", title: "Risk List", url: "./../../core.base_rup/capabilitypatterns/rup_risk_list_42A4EC30.html", 
+	predecessors: "", info: "Output, Mandatory Input, Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "301c6dbb", parentId: "", relPath: ",_FVsIYEofEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_software_architecture_document", title: "Software Architecture Document", url: "./../../core.base_rup/capabilitypatterns/rup_software_architecture_document_70A46067.html", 
+	predecessors: "", info: "Optional Input, Mandatory Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "349437dd", parentId: "", relPath: ",_CZ6Icxi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_project_plan", title: "Software Development Plan", url: "./../../core.base_rup/capabilitypatterns/rup_project_plan_4B031B94.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "e1f8022b", parentId: "", relPath: ",_J3kGMkohEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_software_requirement", title: "Software Requirement", url: "./../../core.base_rup/capabilitypatterns/rup_software_requirement_6F8572FA.html", 
+	predecessors: "", info: "Mandatory Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "62a5e268", parentId: "", relPath: ",_J3kGM0ohEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_software_requirements_specification", title: "Software Requirements Specification", url: "./../../core.base_rup/capabilitypatterns/rup_software_requirements_specification_D85F48BF.html", 
+	predecessors: "", info: "Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "461693da", parentId: "", relPath: ",_KkylQTneEdqxANP9kNH4WA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_stakeholder_requests", title: "Stakeholder Requests", url: "./../../core.base_rup/capabilitypatterns/rup_stakeholder_requests_E7BF0901.html", 
+	predecessors: "", info: "Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "ca1f656c", parentId: "", relPath: ",_Ntkj4kogEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_status_assessment", title: "Status Assessment", url: "./../../core.base_rup/capabilitypatterns/rup_status_assessment_4EA39152.html", 
+	predecessors: "", info: "Optional Input, Mandatory Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "ae63777c", parentId: "", relPath: ",_J3kGNEohEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_storyboard", title: "Storyboard", url: "./../../core.base_rup/capabilitypatterns/rup_storyboard_3AE060F3.html", 
+	predecessors: "", info: "Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "3192a49a", parentId: "", relPath: ",_CM61aRi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_supplementary_specification", title: "Supplementary Specifications", url: "./../../core.base_rup/capabilitypatterns/rup_supplementary_specification_DCEAC18B.html", 
+	predecessors: "", info: "Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "4799b9ba", parentId: "", relPath: ",_Ntkj4EogEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_test_evaluation_summary", title: "Test Evaluation Summary", url: "./../../core.base_rup/capabilitypatterns/rup_test_evaluation_summary_556C9D2C.html", 
+	predecessors: "", info: "Mandatory Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "f69353e5", parentId: "", relPath: ",_CT5AAhi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_test_ideas_list", title: "Test-Ideas List", url: "./../../core.base_rup/capabilitypatterns/rup_test_ideas_list_847A8DF9.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "fe4b5328", parentId: "", relPath: ",_Pxo0wUodEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_test_log", title: "Test Log", url: "./../../core.base_rup/capabilitypatterns/rup_test_log_A02EB9A.html", 
+	predecessors: "", info: "Optional Input, Output, Mandatory Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "663b0be8", parentId: "", relPath: ",_Pxo0wkodEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_test_results", title: "Test Results", url: "./../../core.base_rup/capabilitypatterns/rup_test_results_F89BFFB0.html", 
+	predecessors: "", info: "Output, Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "7684c2ea", parentId: "", relPath: ",_r5gT0EocEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_test_strategy", title: "Test Strategy", url: "./../../core.base_rup/capabilitypatterns/rup_test_strategy_61B57F37.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "21e9e537", parentId: "", relPath: ",_q5LtAEohEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_test_suite", title: "Test Suite", url: "./../../core.base_rup/capabilitypatterns/rup_test_suite_F1637807.html", 
+	predecessors: "", info: "Optional Input, Output, Mandatory Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "4658bcb7", parentId: "", relPath: ",_CM61Zxi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_usecase", title: "Use Case", url: "./../../core.base_rup/capabilitypatterns/rup_usecase_762486D8.html", 
+	predecessors: "", info: "Optional Input, Mandatory Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "b49d04dd", parentId: "", relPath: ",_CM61Zhi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:true, 
+	index: "", prefix: "", name: "rup_usecase_model", title: "Use-Case Model", url: "./../../core.base_rup/capabilitypatterns/rup_usecase_model_6B86A6C8.html", 
+	predecessors: "", info: "Mandatory Input, Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "48a44b5f", parentId: "b49d04dd", relPath: ",_CM61Zhi2Edq_uI8xTPML6g,_JvNBEDneEdqxANP9kNH4WA", isSuppressed: "", indentSize: 1, hasChildren:false, 
+	index: "", prefix: "", name: "rup_actor", title: "Actor", url: "./../../core.base_rup/capabilitypatterns/rup_actor_43455CA.html", 
+	predecessors: "", info: "Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "51b3f87d", parentId: "b49d04dd", relPath: ",_CM61Zhi2Edq_uI8xTPML6g,_CM61axi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 1, hasChildren:false, 
+	index: "", prefix: "", name: "rup_usecase_package", title: "Use-Case Package", url: "./../../core.base_rup/capabilitypatterns/rup_usecase_package_D621B5B1.html", 
+	predecessors: "", info: "Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "980c2679", parentId: "b49d04dd", relPath: ",_CM61Zhi2Edq_uI8xTPML6g,_CM61Zxi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 1, hasChildren:false, 
+	index: "", prefix: "", name: "rup_usecase", title: "Use Case", url: "./../../core.base_rup/capabilitypatterns/rup_usecase_762486D8.html", 
+	predecessors: "", info: "Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "f30362bf", parentId: "", relPath: ",_CM61axi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_usecase_package", title: "Use-Case Package", url: "./../../core.base_rup/capabilitypatterns/rup_usecase_package_D621B5B1.html", 
+	predecessors: "", info: "Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "9096cff1", parentId: "", relPath: ",_CQjYJBi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_user_interface_prototype", title: "User-Interface Prototype", url: "./../../core.base_rup/capabilitypatterns/rup_user_interface_prototype_8B14382A.html", 
+	predecessors: "", info: "Optional Input, Output", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "68219783", parentId: "", relPath: ",_CZhuABi2Edq_uI8xTPML6g", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_vision", title: "Vision", url: "./../../core.base_rup/capabilitypatterns/rup_vision_C2B2EAFA.html", 
+	predecessors: "", info: "Optional Input, Output, Mandatory Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+			
+{id: "658da0a4", parentId: "", relPath: ",_KodNEUogEdqrjq4i3fchvA", isSuppressed: "", indentSize: 0, hasChildren:false, 
+	index: "", prefix: "", name: "rup_work_order", title: "Work Order", url: "./../../core.base_rup/capabilitypatterns/rup_work_order_C71CF834.html", 
+	predecessors: "", info: "Output, Optional Input", type: "Artifact", 
+	repeatable: "", multiOccurences: "false", optional: "false", planned: "true",  ongoing: "", eventDriven: "", 
+	team: "", entryState: "", exitState: "", deliverable: "", variabilityType: ""},
+
+		
+]};
+				</script>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script language="JavaScript" type="text/javascript">
+				contentPage.onload();
+			</script>
+</html>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Sports" xml:space="preserve">
+    <value>&#x4F53;&#x80B2;</value>
+    <comment/>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>&#x5BB6;</value>
+    <comment/>
+  </data>
+  <data name="Privacy" xml:space="preserve">
+    <value>&#x9690;&#x79C1;</value>
+    <comment/>
+  </data>
+  <data name="Teams" xml:space="preserve">
+    <value>&#x56E2;&#x961F;</value>
+    <comment/>
+  </data>
+  <data name="Players" xml:space="preserve">
+    <value>&#x7403;&#x5458;</value>
+    <comment/>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>&#x521B;&#x5EFA;</value>
+    <comment/>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>&#x7F16;&#x8F91;</value>
+    <comment/>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>&#x5220;&#x9664;</value>
+    <comment/>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>&#x8BE6;&#x60C5;</value>
+    <comment/>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>&#x4FDD;&#x5B58;</value>
+    <comment/>
+  </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>&#x8FD4;&#x56DE;&#x5217;&#x8868;</value>
+    <comment/>
+  </data>
+  <data name="CreateNew" xml:space="preserve">
+    <value>&#x65B0;&#x5EFA;</value>
+    <comment/>
+  </data>
+  <data name="DeleteConfirm" xml:space="preserve">
+    <value>&#x60A8;&#x786E;&#x5B9A;&#x8981;&#x5220;&#x9664;&#x5417;&#xFF1F;</value>
+    <comment/>
+  </data>
+  <data name="Index" xml:space="preserve">
+    <value>&#x7D22;&#x5F15;</value>
+    <comment/>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>&#x56E2;&#x961F;</value>
+    <comment/>
+  </data>
+  <data name="Player" xml:space="preserve">
+    <value>&#x7403;&#x5458;</value>
+    <comment/>
+  </data>
+  <data name="TeamName" xml:space="preserve">
+    <value>&#x56E2;&#x961F;&#x540D;&#x79F0;</value>
+    <comment/>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>&#x57CE;&#x5E02;</value>
+    <comment/>
+  </data>
+  <data name="Province" xml:space="preserve">
+    <value>&#x7701;&#x4EFD;</value>
+    <comment/>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>&#x56FD;&#x5BB6;</value>
+    <comment/>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>&#x540D;</value>
+    <comment/>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>&#x59D3;</value>
+    <comment/>
+  </data>
+  <data name="Gender" xml:space="preserve">
+    <value>&#x6027;&#x522B;</value>
+    <comment/>
+  </data>
+  <data name="DateOfBirth" xml:space="preserve">
+    <value>&#x51FA;&#x751F;&#x65E5;&#x671F;</value>
+    <comment/>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>&#x9690;&#x79C1;&#x653F;&#x7B56;</value>
+    <comment/>
+  </data>
+  <data name="PrivacyText" xml:space="preserve">
+    <value>&#x4F7F;&#x7528;&#x6B64;&#x9875;&#x9762;&#x8BE6;&#x7EC6;&#x8BF4;&#x660E;&#x60A8;&#x7F51;&#x7AD9;&#x7684;&#x9690;&#x79C1;&#x653F;&#x7B56;&#x3002;</value>
+    <comment/>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>&#x4F4D;&#x7F6E;</value>
+    <comment/>
+  </data>
+  <data name="PlayerId" xml:space="preserve">
+    <value>&#x7403;&#x5458;ID</value>
+    <comment/>
+  </data>
+  <data name="WithId" xml:space="preserve">
+    <value>ID&#x4E3A;</value>
+    <comment/>
+  </data>
+</root>

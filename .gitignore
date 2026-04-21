@@ -1,5 +1,6 @@
 **/node_modules/
 .archive/
+deploy/
 .DS_Store
 dist/
 .env

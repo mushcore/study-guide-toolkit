@@ -1,0 +1,30 @@
+@API_HostAddress = http://localhost:8888
+
+GET {{API_HostAddress}}/api/students/
+Accept: application/json
+
+### Get by ID
+GET {{API_HostAddress}}/api/students/3
+
+### CREATE
+POST {{API_HostAddress}}/api/students
+Content-Type: application/json
+
+{
+  "FirstName": "XXX",
+  "LastName": "YYY",
+  "School": "ZZZ"
+}
+
+### UPDATE
+PUT {{API_HostAddress}}/api/students/4
+Content-Type: application/json
+
+{
+  "FirstName": "George",
+  "LastName": "Smith",
+  "School": "New School"
+}
+
+### DELETE
+DELETE {{API_HostAddress}}/api/students/4

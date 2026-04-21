@@ -1,0 +1,311 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Artifact: Implementation Model</title>
+<meta name="uma.type" content="Artifact">
+<meta name="uma.name" content="rup_implementation_model">
+<meta name="uma.presentationName" content="Implementation Model">
+<meta name="uma.category" content="@Type:@Name:@DisplayName">
+<meta name="uma.category" content="WorkProductType:model:Model">
+<meta name="element_type" content="Artifact">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../css/default.css" type="text/css">
+<script src="./../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../';
+					var imgPath = './../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_qwxC8N7YEdmjRZts2c4ZjQ", "{4AC346F0-E6FC-4D2C-8410-2EDF8DDDC91D}", "{157E9B67-C619-410D-A927-F2CD217BF8FE}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_QV4x0AISEdqTna4sZVFRow", "_M6RHkN7IEdm8G6yT7-Wdqw", "{157E9B67-C619-410D-A927-F2CD217BF8FE}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_f6_YwN7DEdmsEI4YDGX2ag", "_qwxC8N7YEdmjRZts2c4ZjQ", "{4AC346F0-E6FC-4D2C-8410-2EDF8DDDC91D}", "{157E9B67-C619-410D-A927-F2CD217BF8FE}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_EOvXUN7HEdm8G6yT7-Wdqw", "_M6RHkN7IEdm8G6yT7-Wdqw", "{157E9B67-C619-410D-A927-F2CD217BF8FE}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_jijhYAIaEdqEutyfYo0quQ", "_mTMIkN7REdmjRZts2c4ZjQ", "{157E9B67-C619-410D-A927-F2CD217BF8FE}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo, '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{157E9B67-C619-410D-A927-F2CD217BF8FE}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Artifact: Implementation Model</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../core.base_rup/workproducts/resources/implmod.jpg" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">The Implementation Model represents the physical composition of the implementation in terms of Implementation Subsystems, and Implementation Elements (directories and files, including source code, data, and executable files).</td>
+</tr>
+<tr>
+<td>Domains: <a href="./../../core.base_rup/domains/implementation_442FA5B0.html" guid="_M6RHkN7IEdm8G6yT7-Wdqw">Implementation</a>
+<br>Work Product Kinds: <a href="./../../core.base_rup/workproducttypes/model_C75A0621.html" guid="_mTMIkN7REdmjRZts2c4ZjQ">Model</a></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Purpose</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a><a id="XE_implementation_model__as_artifact" name="XE_implementation_model__as_artifact"></a><a id="XE_implementation_model__purpose_of" name="XE_implementation_model__purpose_of"></a><a id="Purpose" name="Purpose"></a>
+
+<p>
+    The Implementation Model identifies the physical parts of the implementation so that they can be better understood and
+    managed. The Implementation Model defines the major units of integration around which teams are organized, as well as
+    the units that can be separately versioned, deployed, and replaced.
+</p>
+<p>
+    A more detailed Implementation Model may also include low level source code and derived files, and their relationship
+    to the Design Model. Such detail is recommended only if you have automated synchronization between the model and the
+    files.
+</p></td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Contained Artifacts</th><td class="sectionTableCell" colspan="2">
+<ul>
+<li>
+<a href="./../../core.base_rup/workproducts/rup_implementation_element_49BB163E.html" guid="{E1E0DDA3-914F-4CC1-9D0A-ED4B8E8BBA89}">Implementation Element</a>
+</li>
+<li>
+<a href="./../../core.base_rup/workproducts/rup_implementation_subsystem_118747E9.html" guid="{0F629848-C19E-49AB-A6C1-C8D6A094898A}">Implementation Subsystem</a>
+</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Roles</th><td class="sectionTableCell" width="42%"><span class="sectionTableCellHeading">Responsible:
+								</span>
+<ul>
+<li>
+<a href="./../../core.base_rup/roles/rup_software_architect_DB0BF177.html" guid="{4AC346F0-E6FC-4D2C-8410-2EDF8DDDC91D}">Software Architect</a>
+</li>
+</ul>
+</td><td class="sectionTableCell"><span class="sectionTableCellHeading">Modified By:
+								</span>
+<ul>
+<li>
+<a href="./../../core.base_rup/roles/rup_software_architect_DB0BF177.html" guid="{4AC346F0-E6FC-4D2C-8410-2EDF8DDDC91D}">Software Architect</a>
+</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Tasks</th><td class="sectionTableCell" width="42%"><span class="sectionTableCellHeading">Input To:
+								</span>
+<ul>
+<li>
+<a href="./../../core.base_rup/tasks/describe_distribution_9BA1477C.html" guid="{6A112808-0A90-427A-BAB9-E14F3FBF72B5}">Describe Distribution</a>
+</li>
+<li>
+<a href="./../../core.base_rup/tasks/identify_test_ideas_395DAB3B.html" guid="{6FAD9DF9-DE4E-4BA5-9B9B-482A2366D1B9}">Identify Test Ideas</a>
+</li>
+<li>
+<a href="./../../core.base_rup/tasks/implement_test_suite_94F58DEC.html" guid="{1C759E0D-B364-4095-A7CF-CD9E39301689}">Implement Test Suite</a>
+</li>
+<li>
+<a href="./../../core.base_rup/tasks/plan_subsystem_integration_9CF14B68.html" guid="{197B2D0F-6B49-4998-8A71-0799BC29D13F}">Plan Subsystem Integration</a>
+</li>
+<li>
+<a href="./../../core.base_rup/tasks/plan_system_integration_2B706402.html" guid="{11538D9A-7439-4FDD-8333-9E2E47E5E173}">Plan System Integration</a>
+</li>
+<li>
+<a href="./../../core.base_rup/tasks/setup_cm_environment_78ABEDF9.html" guid="{FC91D0C9-759E-4D3D-86D8-22D7B26AA0F6}">Set Up Configuration Management (CM) Environment</a>
+</li>
+<li>
+<a href="./../../core.base_rup/tasks/structure_implementation_model_E0E0DEF9.html" guid="{35272424-8A0A-4DDD-BA74-C91B80A8D046}">Structure the Implementation Model</a>
+</li>
+</ul>
+</td><td class="sectionTableCell"><span class="sectionTableCellHeading">Output From:
+								</span>
+<ul>
+<li>
+<a href="./../../core.base_rup/tasks/structure_implementation_model_E0E0DEF9.html" guid="{35272424-8A0A-4DDD-BA74-C91B80A8D046}">Structure the Implementation Model</a>
+</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Process Usage</th><td class="sectionTableCell" colspan="2">
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/analysis_design_49725AC4.html" guid="{002674F9-6511-4D15-8623-B761D8C48986}">Analysis & Design</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/refine_the_architecture_F40FA195.html" guid="{F2160C54-F666-4736-9982-FC7F58F15FAD}">Refine the Architecture</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/rup_implementation_model_3E975376.html" guid="_COWYuhi2Edq_uI8xTPML6g">Implementation Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/analysis_design_49725AC4.html" guid="{002674F9-6511-4D15-8623-B761D8C48986}">Analysis & Design</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/design_components_13B33BFC.html" guid="{9C683674-97C1-4AEE-8DB0-9514AEFF698E}">Design Components</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/rup_implementation_model_D5DD19E0.html" guid="_RZQGNDnfEdqxANP9kNH4WA">Implementation Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/configuration_change_management_5C81A290.html" guid="{C85C9CC0-AD92-46C9-85BA-4C0672D6571E}">Configuration & Change Management</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/create_project_configuration_management_cm_environments_9299BD99.html" guid="{C241B2F9-AA48-45E6-89F0-F0A3DC2496DA}">Create Project Configuration Management (CM) Environments</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/rup_implementation_model_CA11A0C.html" guid="_UliookodEdqrjq4i3fchvA">Implementation Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/implementation_8FF0AAD4.html" guid="{F2AD342D-0F3B-4E19-A351-75ECDCB806F5}">Implementation</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/implement_components_AFD1799D.html" guid="{4DC6F53E-1FE1-44EE-812B-003D3BD1ACEA}">Implement Components</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/rup_implementation_model_25AE05BD.html" guid="_CRyuURi2Edq_uI8xTPML6g">Implementation Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/implementation_8FF0AAD4.html" guid="{F2AD342D-0F3B-4E19-A351-75ECDCB806F5}">Implementation</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/plan_the_integration_30EC233.html" guid="{3CBDBBD0-6482-4FA2-820B-F6711E0BD84B}">Plan the Integration</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/rup_implementation_model_64DF973A.html" guid="_CSFCJBi2Edq_uI8xTPML6g">Implementation Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/implementation_8FF0AAD4.html" guid="{F2AD342D-0F3B-4E19-A351-75ECDCB806F5}">Implementation</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/structure_the_implementation_model_505A84E.html" guid="{4C4FF747-885B-4569-A462-756C8ADD79AB}">Structure the Implementation Model</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/rup_implementation_model_2D464D8F.html" guid="_CSFCKxi2Edq_uI8xTPML6g">Implementation Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/test_7EF99F54.html" guid="{35359DDF-6361-43E5-8B1B-18D204DA8CFF}">Test</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/verify_test_approach_A743008A.html" guid="{7BD514AF-19F9-408F-8279-309BD153C157}">Verify Test Approach</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/rup_implementation_model_D80B21D8.html" guid="_CTmsLxi2Edq_uI8xTPML6g">Implementation Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/test_7EF99F54.html" guid="{35359DDF-6361-43E5-8B1B-18D204DA8CFF}">Test</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/improve_test_assets_1C99FFB9.html" guid="{CD77CBDA-CC13-4593-BB81-41AF3FF7A84C}">Improve Test Assets</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/rup_implementation_model_33866BF.html" guid="_CUdnzhi2Edq_uI8xTPML6g">Implementation Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/test_7EF99F54.html" guid="{35359DDF-6361-43E5-8B1B-18D204DA8CFF}">Test</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/define_evaluation_mission_611C79D9.html" guid="{10C2C34C-BF5E-4825-A7DC-5E106EFAA4C5}">Define Evaluation Mission</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/rup_implementation_model_98FAB94A.html" guid="_CWXsRxi2Edq_uI8xTPML6g">Implementation Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/test_7EF99F54.html" guid="{35359DDF-6361-43E5-8B1B-18D204DA8CFF}">Test</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/test_and_evaluate_4D17BD6A.html" guid="{93B7D625-C83A-4EFB-9772-B88F2EB02CE2}">Test and Evaluate</a>
+									&nbsp;&gt;&nbsp;
+								<a href="./../../core.base_rup/capabilitypatterns/rup_implementation_model_BAF7164C.html" guid="_CWqAOBi2Edq_uI8xTPML6g">Implementation Model</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Tailoring</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Representation Options</th><td class="sectionTableCell"><p>
+    UML Representation: Model, stereotyped as &lt;&lt;implementation model&gt;&gt;.&nbsp;
+</p>
+<p>
+    The <strong>Implementation Model</strong> may have the following <strong>properties</strong>:
+</p>
+<ul>
+    <li>
+        <strong>Introduction:</strong> A textual description that serves as a brief introduction to the model.
+    </li>
+    <li>
+        <strong>Implementation Subsystems:</strong> The subsystems in the model, representing a hierarchy.
+    </li>
+    <li>
+        <strong>Implementation Elements:</strong> The elements in the model, owned by the subsystems.
+    </li>
+    <li>
+        <strong>Relationships:</strong> The relationships in the model, owned by the Implementation
+        Subsystems.<strong>&nbsp;</strong>
+    </li>
+    <li>
+        <strong>Diagrams:</strong> The diagrams in the model, owned by the Implementation Subsystems.
+    </li>
+    <li>
+        <strong>Implementation View:</strong> The implementation view of the model, which is an architectural view showing
+        the Implementation Subsystems and layers.&nbsp;&nbsp;&nbsp;
+    </li>
+</ul>
+<p>
+    <a id="Tailoring" name="Tailoring"></a>
+</p>
+<p>
+    An Implementation Model is optional. If you choose to create an Implementation Model, the key tailoring decisions are
+    how to relate between the Implementation Model and Design Model, and which Implementation Elements are important enough
+    to model. Guidance on how to make these decisions is covered in <a class="elementLinkWithType" href="./../../core.base_rup/guidances/guidelines/implementation_model_5A4A2E5F.html" guid="2.012199185622896E-305">Guideline: Implementation Model</a>. Also see <a class="elementLinkWithType" href="./../../core.base_rup/guidances/concepts/mapping_from_design_to_code_D1454680.html" guid="1.424219730601675E-305">Concept: Mapping from Design to Code</a>.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">More Information</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Checklists</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/guidances/checklists/implementation_model_DD65F54E.html" guid="2.400665964241535E-305">Implementation Model</a>
+</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Guidelines</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/guidances/guidelines/component_diagram_CC93D7B3.html" guid="2.2530407104352316E-306">Component Diagram</a>
+</li>
+<li>
+<a href="./../../core.base_rup/guidances/guidelines/implementation_model_5A4A2E5F.html" guid="2.012199185622896E-305">Implementation Model</a>
+</li>
+<li>
+<a href="./../../core.base_rup/guidances/guidelines/import_dependency_in_implementation_20C8C9DC.html" guid="2.390918925290993E-305">Import Dependency in Implementation</a>
+</li>
+<li>
+<a href="./../../core.base_rup/guidances/guidelines/manifest_dependency_5790834E.html" guid="7.405934676741527E-306">Manifest Dependency</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

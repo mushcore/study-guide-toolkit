@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html><head>
+</head><body><table style="width: 100%; font-family: arial; height: 253px;" border="1">
+<tbody>
+<tr style="height: 55px;">
+<td style="height: 55px;">Scaffold Northwind database</td>
+<td style="height: 55px;">dotnet ef dbcontext scaffold "Data Source=max.bcit.ca;Initial Catalog=Northwind;Persist Security Info=True;User ID=bcitnw;Password=Bc1tN0rth" Microsoft.EntityFrameworkCore.SqlServer --output-dir Models\Northwind --verbose</td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;List SDKs</td>
+<td style="height: 18px;">&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet --list-sdks</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;Create .gitignore</td>
+<td style="height: 18px;">&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet new gitignore</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;create global.json for a specific version of .NET Core</td>
+<td style="height: 18px;">&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet new globaljson --sdk-version 3.0.101</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;Dealing with solution files</td>
+<td style="height: 18px;">
+<p>&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet new sln</span></p>
+<p>&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet sln add Bingo.csproj</span></p>
+</td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">create an ASP.NET MVC app that uses SQLite</td>
+<td style="height: 18px;">&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet new mvc --auth individual</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">create an ASP.NET MVC app that uses SQL Server</td>
+<td style="height: 18px;">&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet new mvc --auth individual --use-local-db</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;Code Generation</td>
+<td style="height: 18px;">1) Make sure you install the code generator tool globally with:<br><span style="font-family: 'courier new', courier, sans-serif;">dotnet tool install -g dotnet-aspnet-codegenerator</span><br>2) Add the following package to your app<br><span style="font-family: 'courier new', courier, sans-serif;">dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design</span><br>3) Repurpose the following command to suit your needs<br><span style="font-family: 'courier new', courier, sans-serif;">dotnet aspnet-codegenerator controller -name ProvincesController -outDir Controllers -m Province -dc ApplicationDbContext -udl -scripts</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;Publish</td>
+<td style="height: 18px;">&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet publish -c Debug -o dist</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;Create an app using a specific version of .NET Core</td>
+<td style="height: 18px;">&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet new mvc --auth individual -f netcoreapp3.1 -o IdentityCore</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;Install dotnet-ef tool</td>
+<td style="height: 18px;"><span style="font-family: 'courier new', courier, sans-serif;">&nbsp;dotnet tool install –g dotnet-ef</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;Run app in release mode using specific version of .NET</td>
+<td style="height: 18px;">&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet run -c Release -f net5.0</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;Run app is production environment</td>
+<td style="height: 18px;">&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet run --environment Production</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">Inspecting project packages</td>
+<td style="height: 18px;">
+<p><span style="font-family: 'courier new', courier, sans-serif;">dotnet list package</span><br><span style="font-family: 'courier new', courier, sans-serif;">dotnet list package --outdated</span><br><span style="font-family: 'courier new', courier, sans-serif;">dotnet list package --include-transitive</span><br><span style="font-family: 'courier new', courier, sans-serif;">dotnet list package --include-transitive --vulnerable</span></p>
+</td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">Tool for maintaining packages</td>
+<td style="height: 18px;">&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet tool install --global dotnet-outdated-tool</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;update all workloads</td>
+<td style="height: 18px;">&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet workload update</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;SSL</td>
+<td style="height: 18px;"><span style="font-family: 'courier new', courier, sans-serif;">&nbsp;dotnet dev-certs https --clean</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp;dotnet dev-certs https</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp;dotnet dev-certs https --trust</span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;Run a web app and have it listen on a specific port.</td>
+<td style="height: 18px;">&nbsp;<span style="font-family: 'courier new', courier, sans-serif;">dotnet watch run --urls <a href="http://localhost:5000">http://localhost:5000</a></span></td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;</td>
+<td style="height: 18px;">&nbsp;</td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;</td>
+<td style="height: 18px;">&nbsp;</td>
+</tr>
+<tr style="height: 18px;">
+<td style="height: 18px;">&nbsp;</td>
+<td style="height: 18px;">&nbsp;</td>
+</tr>
+</tbody>
+</table></body></html>

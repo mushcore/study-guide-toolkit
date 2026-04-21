@@ -1,0 +1,422 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Implementing Test Scripts Using Rational Robot</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="record_test_scripts">
+<meta name="uma.presentationName" content="Implementing Test Scripts Using Rational Robot">
+<meta name="uma.category" content="Tool:rup_robot:Rational Robot">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational Robot">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{1A26E508-8140-4241-865E-0A2A5BCAEFFF}", "{279B8DDC-F3D9-4087-87CE-AC8D718D8C8E}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_9U7IkDIEEdqwaNnSEheSAg", "{1A26E508-8140-4241-865E-0A2A5BCAEFFF}", "{279B8DDC-F3D9-4087-87CE-AC8D718D8C8E}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{1A26E508-8140-4241-865E-0A2A5BCAEFFF}", "{279B8DDC-F3D9-4087-87CE-AC8D718D8C8E}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{279B8DDC-F3D9-4087-87CE-AC8D718D8C8E}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Implementing Test Scripts Using Rational Robot</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to use Rational Robot to record or program Test Scripts, and how to subsequently extend them by editing the Test Scripts. </td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_robot_26C85D92.html" guid="{1A26E508-8140-4241-865E-0A2A5BCAEFFF}">Rational Robot</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/implement_developer_test_66FE6BEE.html" guid="{862F3EC5-70C3-4D9C-BF0E-EF93AE1BF936}">Implement Developer Test</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/tasks/implement_test_suite_94F58DEC.html" guid="{1C759E0D-B364-4095-A7CF-CD9E39301689}">Implement Test Suite</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    Overview
+</h3>
+<p>
+    This tool mentor is applicable when running Microsoft Windows 98/2000/NT 4.0.
+</p>
+<p>
+    To record and extend a script using Rational Robot:
+</p>
+<ol>
+    <li>
+        <a href="#heading of tool step one">Record the Test Script in Rational Robot</a>
+    </li>
+    <li>
+        <a href="#heading of tool step two">Insert a verification point</a>
+    </li>
+    <li>
+        <a href="#step three">Edit the test script if necessary</a>
+    </li>
+</ol>
+<h3>
+    1. <a id="heading of tool step one" name="heading of tool step one">Record the Test Script in Rational Robot</a>
+</h3>
+<p>
+    When you record a Test Script, Rational Robot records:
+</p>
+<ul>
+    <li>
+        Your actions as you interact with the application-under-test. These user actions include keystrokes and mouse
+        clicks that help you navigate around the application.
+    </li>
+    <li>
+        Verification points that you create to capture and compare information about the state of specific system
+        components. A verification point is a point in a Test Script at which you determine you should confirm the state or
+        behavior of an element of the Target Test Items across Builds. During Test Script recording, the verification point
+        captures information about the system state and stores it as a baseline of expected results. During Test Script
+        playback, the verification point recaptures the same system state information and compares it to the information
+        stored in the baseline.
+    </li>
+</ul>
+<p>
+    The recorded Test Script establishes the baseline of expected behavior for the Target Test Items. When revised builds
+    of the Target Test Items become available, you can execute the Test Script against the subsequent Builds and the
+    comparison of system state information in the verification point usually occurs in a fraction of the time it would take
+    to perform the comparison manually.
+</p>
+<p>
+    The Rational Robot Object-Oriented Recording technology examines system state information at the Windows layer during
+    initial Test Script recording and subsequent playback. As a result, successful Test Script playback does not usually
+    need to rely on absolute screen coordinates. Object-Oriented Recording insulates the Test Script from minor user
+    interface changes and simplifies Test Script maintenance.
+</p>
+<p>
+    To record a new Test Script:
+</p>
+<div align="center">
+    <center>
+        <table height="1063" cellpadding="5" width="85%" summary="layout table" border="0">
+            <tbody>
+                <tr>
+                    <td valign="top" align="right" width="45" height="40">
+                        1.
+                    </td>
+                    <td width="729" height="40">
+                        Prepare the test environment by setting the record options. See <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/toolmentors/setup_robot_3E2B9427.html" guid="{E717F672-A182-4A7C-85A6-51A86EB8A57F}">Tool Mentor: Setting Up the Test Environment in Rational Robot</a>.
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="59">
+                    </td>
+                    <td width="729" height="59">
+                        Start your application-under-test. (Optionally, you can start the application-under-test after you
+                        start recording by clicking <b>Insert &gt; Start Application</b> in Robot.)
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="21">
+                        2.
+                    </td>
+                    <td width="729" height="21">
+                        Click the <b>Record GUI Script</b> button on the Robot toolbar.
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="21">
+                        3.
+                    </td>
+                    <td width="729" height="21">
+                        Type a name (40 characters maximum) or select it from the list.
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="21">
+                        4.
+                    </td>
+                    <td width="729" height="21">
+                        To change the recording options, click <b>Options</b>. When finished, click <b>OK</b>.
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="40">
+                        5.
+                    </td>
+                    <td width="729" height="40">
+                        If you selected a previously defined or recorded script, you can change the properties by clicking
+                        <b>Properties</b>. When finished, click <b>OK</b>.
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="21">
+                        6.
+                    </td>
+                    <td width="729" height="21">
+                        Click <b>OK</b> to start recording. The following events occur:
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="97">
+                    </td>
+                    <td width="729" height="97">
+                        <ul>
+                            <li>
+                                If you selected a script that has already been recorded, Robot asks if you want to
+                                overwrite it. Click <b>Yes</b>. (If you record over an existing GUI script, you overwrite
+                                the script file but any existing properties are applied to the new script.)
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="40">
+                    </td>
+                    <td width="729" height="40">
+                        <ul>
+                            <li>
+                                Robot is minimized (default behavior).
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="59">
+                    </td>
+                    <td width="729" height="59">
+                        <ul>
+                            <li>
+                                The floating GUI Record toolbar appears. You can use this toolbar to pause or stop
+                                recording, redisplay Robot, and insert features into a script.
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="60">
+                        7.
+                    </td>
+                    <td width="729" height="60">
+                        Execute the test by performing the actions identified in the test and insert the necessary features
+                        (such as verification points, comments, and timers). For details, <img height="16"                         alt="helpbook icon" hspace="0" src="./../../../core.base_rup/resources/helpbook.gif" width="16" border="0" /> see the
+                        Robot online Help.
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="21">
+                        8.
+                    </td>
+                    <td width="729" height="21">
+                        If necessary, switch from Object-Oriented Recording to low-level recording.
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="78">
+                    </td>
+                    <td width="729" height="78">
+                        Object-Oriented Recording examines Windows GUI objects and other objects in the
+                        application-under-test without depending on precise timing or screen coordinates. Low-level
+                        recording tracks detailed mouse movements and keyboard actions by screen coordinates and exact
+                        timing.
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="40">
+                        9.
+                    </td>
+                    <td width="729" height="40">
+                        When finished, click the <b>Stop Recording</b> button on the GUI Record toolbar. The following
+                        events occur:
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45">
+                    </td>
+                    <td width="729">
+                        <ul>
+                            <li>
+                                The script you recorded appears in a Script window within the Robot main window.
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="59">
+                    </td>
+                    <td width="729" height="59">
+                        <ul>
+                            <li>
+                                The verification points in the script (if any) appear in the Asset pane on the left.
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="40">
+                    </td>
+                    <td width="729" height="40">
+                        <ul>
+                            <li>
+                                The text of the script appears in the Script pane on the right.
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="59">
+                    </td>
+                    <td width="729" height="59">
+                        <ul>
+                            <li>
+                                When you compile or play back the script, the compilation results appear in the Build tab
+                                of the Output window.
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top" align="right" width="45" height="21">
+                        10.
+                    </td>
+                    <td width="729" height="21">
+                        Optionally, set the properties for the script by clicking <b>File &gt; Properties</b>.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </center><br />
+</div>
+<h3>
+    2. <a id="heading of tool step two" name="heading of tool step two">Insert a verification point</a>
+</h3>
+<p>
+    To insert a verification point while recording or editing a Test Script:
+</p>
+<ol>
+    <li>
+        Do one of the following:
+    </li>
+</ol>
+<blockquote>
+    <ul>
+        <li>
+            If recording, click the <b>Display GUI Insert Toolbar</b> button on the GUI Record toolbar.
+        </li>
+        <li>
+            If editing, position the pointer in the script and click the <b>Display GUI Insert Toolbar</b> button on the
+            Standard toolbar.
+        </li>
+    </ul>
+</blockquote>
+<ol start="2">
+    <li>
+        Click a verification point button on the GUI Insert toolbar.
+    </li>
+    <li style="LIST-STYLE-TYPE: none">
+        <p>
+            The verification point is named with the verification point type (and a number if there is more than one of the
+            same type in the script).
+        </p>
+    </li>
+    <li>
+        Edit the name as appropriate.
+    </li>
+    <li>
+        Optionally, set the wait state options.
+    </li>
+    <li>
+        Optionally, set the expected results option.
+    </li>
+    <li>
+        Click <b>OK</b>.
+    </li>
+    <li>
+        If prompted to select an object, drag the object finder tool over the desired object and release the left mouse
+        button to select the object. Optionally, the object may be selected from a list of objects by clicking on the
+        <b>Browse</b> button. When the desired object is selected, click <b>OK</b>.
+    </li>
+</ol>
+<p>
+    For further details, <img height="16" alt="helpbook icon" hspace="0" src="./../../../core.base_rup/resources/helpbook.gif" width="16"     border="0" /> see the Robot online Help. <img height="15" alt="book icon" hspace="0" src="./../../../core.base_rup/resources/book.gif"     width="16" border="0" /> See also the chapter titled "Creating Verification Points in GUI Scripts" in the <i>Using
+    Rational Robot</i> manual.
+</p>
+<h3>
+    3. <a id="step three" name="step three">Edit the Test Script if necessary</a>
+</h3>
+<p>
+    You can edit existing Test Scripts by manually editing the source code of a Test Script or by inserting new partial
+    recordings. For example, you can:
+</p>
+<ul>
+    <li>
+        Edit the text of a Test Script (delete a line, move text, and so forth)
+    </li>
+    <li>
+        Insert a new sequence of user action into an existing Test Script (select a menu command, click a button, and so
+        on)
+    </li>
+    <li>
+        Add a new feature to an existing Test Script (add verification points, comments, and the like)
+    </li>
+    <li>
+        Go to a line with a compiler error (go to a specific line number, find the next error, and so forth)
+    </li>
+</ul>
+<p>
+    For details, <img height="16" alt="helpbook icon" hspace="0" src="./../../../core.base_rup/resources/helpbook.gif" width="16"     border="0" /> see the Rational Robot online Help. <img height="15" alt="Book icon" hspace="0"     src="./../../../core.base_rup/resources/book.gif" width="16" border="0" /> See also the chapter titled "Editing, Compiling, and Debugging
+    Scripts" in the <i>Using Rational Robot</i> manual.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

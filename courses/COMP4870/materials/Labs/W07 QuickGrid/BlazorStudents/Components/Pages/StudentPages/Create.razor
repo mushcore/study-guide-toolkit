@@ -1,0 +1,71 @@
+@page "/students/create"
+@using Microsoft.EntityFrameworkCore
+@using BlazorStudents.Models
+@inject IDbContextFactory<BlazorStudents.Data.ApplicationDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Student</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Student" OnValidSubmit="AddStudent" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <span class="text-danger">*</span>
+                <label for="firstname" class="form-label">FirstName:</label> 
+                <InputText id="firstname" @bind-Value="Student.FirstName" class="form-control" aria-required="true"/> 
+                <ValidationMessage For="() => Student.FirstName" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <span class="text-danger">*</span>
+                <label for="lastname" class="form-label">LastName:</label> 
+                <InputText id="lastname" @bind-Value="Student.LastName" class="form-control" aria-required="true"/> 
+                <ValidationMessage For="() => Student.LastName" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <span class="text-danger">*</span>
+                <label for="school" class="form-label">School:</label> 
+                <InputText id="school" @bind-Value="Student.School" class="form-control" aria-required="true"/> 
+                <ValidationMessage For="() => Student.School" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <span class="text-danger">*</span>
+                <label for="gender" class="form-label">Gender:</label> 
+                <InputText id="gender" @bind-Value="Student.Gender" class="form-control" aria-required="true"/> 
+                <ValidationMessage For="() => Student.Gender" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <span class="text-danger">*</span>
+                <label for="dateofbirth" class="form-label">DateOfBirth:</label> 
+                <InputDate id="dateofbirth" @bind-Value="Student.DateOfBirth" class="form-control" aria-required="true"/> 
+                <ValidationMessage For="() => Student.DateOfBirth" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/students">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Student Student { get; set; } = default!;
+
+    protected override void OnInitialized() => Student ??= new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddStudent()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Students.Add(Student);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/students");
+    }
+}

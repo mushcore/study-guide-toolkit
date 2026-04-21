@@ -1,0 +1,1756 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Guideline: Test Ideas for Booleans and Boundaries</title>
+<meta name="uma.type" content="Guideline">
+<meta name="uma.name" content="test_ideas_for_booleans_and_boundaries">
+<meta name="uma.presentationName" content="Test Ideas for Booleans and Boundaries">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_4EQgMDIEEdqwaNnSEheSAg", "_SPvXcN7IEdm8G6yT7-Wdqw", "{45219F27-0F84-4FD5-A7BC-73C19226303B}", "1.8659406802663404E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_EOvXUN7HEdm8G6yT7-Wdqw", "_SPvXcN7IEdm8G6yT7-Wdqw", "{45219F27-0F84-4FD5-A7BC-73C19226303B}", "1.8659406802663404E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_jijhYAIaEdqEutyfYo0quQ", "_3lZjkCxqEdqYV4MWf8PiCw", "{45219F27-0F84-4FD5-A7BC-73C19226303B}", "1.8659406802663404E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_2ClPcDIcEdqDs_9ORT1Rig", "1.8659406802663404E-305"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="1.8659406802663404E-305"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Guideline: Test Ideas for Booleans and Boundaries</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/guidance.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">Test ideas are based on plausible software faults and how these faults can best be uncovered. This guideline explains how to develop Test Ideas for boolean expressions and boundary conditions.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/workproducts/rup_test_ideas_list_2A0F8E03.html" guid="{45219F27-0F84-4FD5-A7BC-73C19226303B}">Test-Ideas List</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a><a id="XE_test__developer_testing__test_ideas__for_booleans_and_boundaries" name="XE_test__developer_testing__test_ideas__for_booleans_and_boundaries"></a><a id="XE_test-ideas__for_booleans_and_boundaries" name="XE_test-ideas__for_booleans_and_boundaries"></a><a id="XE_design__developer_testing__test_ideas__for_booleans_and_boundaries" name="XE_design__developer_testing__test_ideas__for_booleans_and_boundaries"></a> 
+<h3>
+    <a id="Introduction" name="Introduction"></a>Introduction
+</h3>
+<p>
+    Test ideas are based on <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/termdefinitions/fault_model_C99EBECA.html" target="_blank" guid="_yJJZCdnmEdmO6L4XMImrsA">fault models</a>, notions of which faults are plausible in software and how those faults
+    can best be uncovered. This guideline shows how to create test ideas from boolean and relational expressions. It first
+    motivates the techniques by looking at code, then describes how to apply them if the code hasn't been written yet or is
+    otherwise unavailable.
+</p>
+<h3>
+    <a id="BooleanExpressions" name="BooleanExpressions"></a><b>Boolean Expressions</b>
+</h3>
+<p>
+    Consider the following code snippet, taken from an (imaginary) system for managing bomb detonation. It's part of the
+    safety system and controls whether the "detonate bomb" button push is obeyed.
+</p>
+<blockquote>
+<pre>
+ if (publicIsClear || technicianClear) {     
+   bomb.detonate(); }
+</pre>
+</blockquote>
+<p>
+    The code is wrong. <font size="+0">||</font> should be an <font size="+0">&&</font>. That mistake will have bad
+    effects. Instead of detonating the bomb when both the bomb technician and public are clear, the system will detonate
+    when <i>either</i> is clear.
+</p>
+<p>
+    What test would find this bug?
+</p>
+<p>
+    Consider a test in which the button is pushed when both the technician and public are clear. The code will allow the
+    bomb to be detonated. But - and this is important - the <i>correct</i> code (the one that uses an <font     size="+0">&&</font>) would do the same. So the test is useless at finding this fault.
+</p>
+<p>
+    Similarly, this incorrect code behaves correctly when both the technician and public are next to the bomb: the bomb is
+    not detonated.
+</p>
+<p>
+    To find the bug, you have to have a case in which the code as written evaluates differently than the code that should
+    have been written. For example, the public must be clear, but the bomb technician is still next to the bomb. Here are
+    all the tests in table form:
+</p>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="100%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <th scope="col" width="20%">
+                    <p align="center">
+                        publicIsClear
+                    </p>
+                </th>
+                <th scope="col" width="20%">
+                    <p align="center">
+                        technicianClear
+                    </p>
+                </th>
+                <th scope="col" width="20%">
+                    <p align="center">
+                        Code as written...
+                    </p>
+                </th>
+                <th scope="col" width="20%">
+                    <p align="center">
+                        Correct code would have...
+                    </p>
+                </th>
+                <th width="20%">
+                    &nbsp;
+                </th>
+            </tr>
+            <tr>
+                <td width="20%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        <font color="#008000">detonates</font>
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        <font color="#008000">detonated</font>
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        test is useless (for this fault)
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        <font color="#ff0000">detonates</font>
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        <font color="#ff0000">not detonated</font>
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        useful test
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        <font color="#ff0000">detonates</font>
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        <font color="#ff0000">not detonated</font>
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        useful test
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        <font color="#008000">does not detonate</font>
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        <font color="#008000">not detonated</font>
+                    </p>
+                </td>
+                <td width="20%">
+                    <p align="center">
+                        test is useless (for this fault)
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    The two middle tests are both useful for finding this particular fault. Note, however, that they're redundant: since
+    either will find the fault, you needn't run both.
+</p>
+<p>
+    There are other ways in which the expression might be wrong. Here are two lists of common mistakes in boolean
+    expressions. The faults on the left are all caught by the technique discussed here. The faults on the right might not
+    be. So this technique doesn't catch all the faults we might like, but it's still useful.
+</p>
+<div align="right">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="100%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <th scope="col" width="50%">
+                    <p align="center">
+                        <b>Faults detected</b>
+                    </p>
+                </th>
+                <th scope="col" width="50%">
+                    <p align="center">
+                        <b>Faults possibly not detected</b>
+                    </p>
+                </th>
+            </tr>
+            <tr>
+                <td width="50%">
+                    Using wrong operator: a <font color="#ff0000"><b>||</b></font> b should be a<font                     color="#ff0000"><b>&&</b></font>b
+                </td>
+                <td width="50%">
+                    Wrong variable used: a&&<font color="#ff0000"><b>b</b></font>&&c should be a&&
+                    <font color="#ff0000"><b>x</b></font>&&d
+                </td>
+            </tr>
+            <tr>
+                <td width="50%">
+                    Negation is omitted or incorrect: a||b should be <font color="#ff0000"><b>!</b></font>a||b, or <font                     color="#ff0000"><b>!</b></font> a||b should be a||b
+                </td>
+                <td width="50%">
+                    Expression is too simple: a&&b should be a&&b<font                     color="#ff0000"><b>&&c</b></font>
+                </td>
+            </tr>
+            <tr>
+                <td width="50%">
+                    The expression is parenthese are incorrectly configured: a&&b||c should be a&&<font                     color="#ff0000"><b>(</b></font>b||c<font color="#ff0000"><b>)</b></font>
+                </td>
+                <td width="50%">
+                    Expressions with more than one of the faults in the left column
+                </td>
+            </tr>
+            <tr>
+                <td width="50%">
+                    The expression is overly complex: a&&b<b>&&c</b> should be <font                     size="+0">a&&b<br />
+                    </font> (This fault is not so likely, but is easy to find with tests useful for other reasons.)
+                </td>
+                <td width="50%">
+                    &nbsp;
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    How are these ideas used? Suppose you're given a boolean expression like <font size="+0">a&&!b</font>. You
+    could construct a truth table like this one:
+</p>
+<div align="right">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="100%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <th scope="col" width="14%">
+                    <p align="center">
+                        a
+                    </p>
+                </th>
+                <th scope="col" width="14%">
+                    <p align="center">
+                        b
+                    </p>
+                </th>
+                <th scope="col" width="14%">
+                    <p align="center">
+                        a&&!b<br />
+                         (code as written)
+                    </p>
+                </th>
+                <th scope="col" width="14%">
+                    <p align="center">
+                        maybe it should be<br />
+                         a<font color="#ff0000"><b>||</b></font>!b
+                    </p>
+                </th>
+                <th scope="col" width="14%">
+                    <p align="center">
+                        maybe it should be<br />
+                         <font color="#ff0000"><b>!</b></font>a&&!b
+                    </p>
+                </th>
+                <th scope="col" width="15%">
+                    <p align="center">
+                        maybe it should be<br />
+                         a&&b
+                    </p>
+                </th>
+                <th scope="col" width="15%">
+                    <p align="center">
+                        ...
+                    </p>
+                </th>
+            </tr>
+            <tr>
+                <td width="14%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        <font color="#ff0000">true</font>
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="15%">
+                    <p align="center">
+                        <font color="#ff0000">true</font>
+                    </p>
+                </td>
+                <td width="15%">
+                    <p align="center">
+                        ...
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="14%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        <font color="#ff0000">false</font>
+                    </p>
+                </td>
+                <td width="15%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="15%">
+                    <p align="center">
+                        ...
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="14%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="15%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="15%">
+                    <p align="center">
+                        ...
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="14%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        <font color="#ff0000">true</font>
+                    </p>
+                </td>
+                <td width="14%">
+                    <p align="center">
+                        <font color="#ff0000">true</font>
+                    </p>
+                </td>
+                <td width="15%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="15%">
+                    <p align="center">
+                        ...
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    If you crunched through all the possibilities, you'd find that the first, second, and fourth possibilities are all
+    that's needed. The third expression will find no faults that won't be found by one of the others, so you needn't try
+    it. (As the expressions grow more complicated, the savings due to unneeded cases grow quickly.)
+</p>
+<p>
+    Of course, no one sane would build such a table. Fortunately, you don't have to. It's easy to memorize the required
+    cases for simple expressions. (See the next section.) For more complex expressions, such as <font     size="+0">A&&B||C</font>, see <a class="elementLink" href="./../../../core.base_rup/guidances/guidelines/test_ideas_for_booleans_ands_and_ors_BB81527B.html" target="_blank" guid="9.407283892342409E-306">Test Ideas for Mixtures of ANDs and ORs</a>, which lists test ideas for expressions with
+    two or three operators. For even more complex expressions, a <a href="http://www.testing.com/tools/multi/README.html" target="_blank">program</a> can be used to generate test ideas.
+</p>
+<h3>
+    <a id="SimpleExpressionTables" name="SimpleExpressionTables"></a><b>Tables for Simple Boolean Expressions</b>
+</h3>
+<p>
+    If the expression is <font size="+0">A&&B</font>, test with:
+</p>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <th scope="col" width="50%">
+                    <p align="center">
+                        A
+                    </p>
+                </th>
+                <th scope="col" width="50%">
+                    <p align="center">
+                        B
+                    </p>
+                </th>
+            </tr>
+            <tr>
+                <td width="50%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="50%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td>
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="50%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="50%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    If the expression is <font size="+0">A||B</font>, test with:
+</p>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <th scope="col" width="50%">
+                    <p align="center">
+                        A
+                    </p>
+                </th>
+                <th scope="col" width="50%">
+                    <p align="center">
+                        B
+                    </p>
+                </th>
+            </tr>
+            <tr>
+                <td width="50%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="50%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td>
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="50%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="50%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    If the expression is <font size="+0">A<sub>1</sub> && A<sub>2</sub> && ... &&
+    A<sub>n</sub></font>, test with:
+</p>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        A<sub>1,</sub> A<sub>2</sub>, ..., and A<sub>n</sub> are all true
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        A<sub>1</sub> is false, all the rest are true
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        A<sub>2</sub> is false, all the rest are true
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        ...
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        A<sub>n</sub> is false, all the rest are true
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p align="left">
+    If the expression is <font size="+0">A<sub>1</sub> || A<sub>2</sub> || ... || A<sub>n</sub></font>, test with:
+</p>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        A<sub>1,</sub> A<sub>2</sub>, ..., and A<sub>n</sub> are all false
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        A<sub>1</sub> is true, all the rest are false
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        A<sub>2</sub> is true, all the rest are false
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        ...
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        A<sub>n</sub> is true, all the rest are false
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    If the expression is <font size="+0">A</font>, test with:
+</p>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        A
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    So, when you need to test <font size="+0">a&&!b</font>, you can apply the first table above, invert the sense
+    of b (because it's negated), and get this list of <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/concepts/test-ideas_list_A6CEF011.html" guid="6.149711039531016E-305">Test Ideas</a>:
+</p>
+<ul>
+    <li>
+        A true, B false
+    </li>
+    <li>
+        A true, B true
+    </li>
+    <li>
+        A false, B false
+    </li>
+</ul>
+<h3>
+    <a id="RelationalExpressions" name="RelationalExpressions"></a><b>Relational Expressions</b>
+</h3>
+<p align="left">
+    Here's another example of code with a fault:
+</p>
+<blockquote>
+<pre>
+ if (finished &lt; required) {     
+   siren.sound(); }
+</pre>
+</blockquote>
+<p align="left">
+    <font size="+0">&lt;</font> should be a <font size="+0">&lt;=</font>. Such mistakes are fairly common. As with boolean
+    expressions, you can construct a table of test values and see which ones detect the fault:
+</p>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        finished
+                    </p>
+                </th>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        required
+                    </p>
+                </th>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        code as written...
+                    </p>
+                </th>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        the correct code would have...
+                    </p>
+                </th>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        1
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        5
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        sounds the siren
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        sounded the siren
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        5
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        5
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        <font color="#ff0000">does not sound the siren</font>
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        <font color="#ff0000">sounded the siren</font>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        5
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        1
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        does not sound the siren
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        not sounded the siren
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    More generally, the fault can be detected whenever <font size="+0">finished=required</font>. From analyses of plausible
+    faults, we can get these rules for test ideas:
+</p>
+<p>
+    If the expression is A&lt;B or A&gt;=B, test with the following:
+</p>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        A=B
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        A slightly less than B
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    If the expression is A&gt;B or A&lt;=B, test with the following:
+</p>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        A=B
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <p align="center">
+                        A slightly larger than B
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    What does "slightly" mean? If A and B are integers, A should be one less than or larger than B. If they are floating
+    point numbers, A should be a number quite close to B. (It's probably not necessary that it be the the closest floating
+    point number to B.)
+</p>
+<h3>
+    <a id="CombinedExpressions" name="CombinedExpressions"></a><b>Rules for Combined Boolean and Relational Expressions</b>
+</h3>
+<p>
+    Most relational operators occur within boolean expressions, as in this example:
+</p>
+<blockquote>
+<pre>
+ if (finished &lt; required) {     
+   siren.sound(); }
+</pre>
+</blockquote>
+<p>
+    The rules for relational expressions would lead to these test ideas:
+</p>
+<ol>
+    <li>
+        <font size="+0">finished</font> is equal to required
+    </li>
+    <li>
+        <font size="+0">finished</font> is slightly less than this expression: <font size="+0">required</font>
+    </li>
+</ol>
+<p>
+    The rules for boolean expressions would lead to these:
+</p>
+<ol>
+    <li>
+        <font size="+0">finished &lt; required</font> should be true
+    </li>
+    <li>
+        <font size="+0">finished &lt; required</font> should be false
+    </li>
+</ol>
+<p>
+    It may be that this expression: <font size="+0">finished</font> is slightly less than this expression: <font     size="+0">required</font>, <font size="+0">finished &lt; required</font> is true, so there's no point in writing down
+    the latter.
+</p>
+<p>
+    If this expression is false there is no point in writing it down: <font size="+0">finished</font> equals <font     size="+0">required</font>, <font size="+0">, finished &lt; required</font> .
+</p>
+<p>
+    If a relational expression contains no boolean operators (<font size="+0">&&</font> and <font     size="+0">||</font>), ignore the fact that it's also a boolean expression.
+</p>
+<p>
+    Things are a bit more complicated with combinations of boolean and relational operators, like this one:
+</p>
+<blockquote>
+<pre>
+ if (count&lt;5 || always) {    
+   siren.sound(); }
+</pre>
+</blockquote>
+<p>
+    From the relational expression, you get:
+</p>
+<ul>
+    <li>
+        <font size="+0">count</font> slightly less than 5
+    </li>
+    <li>
+        <font size="+0">count</font> equal to 5
+    </li>
+</ul>
+<p>
+    From the boolean expression, you get:
+</p>
+<ul>
+    <li>
+        <font size="+0">count&lt;5</font> true, always false
+    </li>
+    <li>
+        <font size="+0">count&lt;5</font> false, always true
+    </li>
+    <li>
+        <font size="+0">count&lt;5</font> false, always false
+    </li>
+</ul>
+<p>
+    These can be combined into three more specific test ideas. (Here, note that <font size="+0">count</font> is an
+    integer.)
+</p>
+<ol>
+    <li>
+        <font size="+0">count=4</font>, always false
+    </li>
+    <li>
+        <font size="+0">count=5</font>, always true
+    </li>
+    <li>
+        <font size="+0">count=5</font>, always false
+    </li>
+</ol>
+<p>
+    Notice that <font size="+0">count=5</font> is used twice. It might seem better to use it only once, to allow the use of
+    some other value-after all, why test this expression with 5 twice: <font size="+0">count</font> ? Wouldn't it be better
+    to try it once with 5 and another time with some other value so the result is false? (Example: <font     size="+0">count&lt;5</font> It would be, but it's dangerous to try. That's because it's easy to make a mistake. Suppose
+    you tried the following:
+</p>
+<ol>
+    <li>
+        <font size="+0">count=4</font>, always false
+    </li>
+    <li>
+        <font size="+0">count=5</font>, always true
+    </li>
+    <li>
+        <font size="+0"><b>count&lt;5</b></font> <b>false</b>, always false
+    </li>
+</ol>
+<p>
+    Suppose that there's a fault that can only be caught with the following value: <font size="+0">count=5</font>. That
+    means the value 5 will produce "false" in the expression <font size="+0">count&lt;5</font>, when the correct code would
+    have produced true. However, that false value is immediately OR'd with the value of always, which is true. That means
+    the value of the whole expression is correct, even though the value of the relational subexpression was wrong. The
+    fault will go undiscovered.
+</p>
+<p>
+    The fault doesn't go undiscovered if it's the <i>other</i> count=5 that is left less specific.
+</p>
+<p>
+    Similar problems happen when the relational expression is on the right-hand side of the boolean operator.
+</p>
+<p>
+    Because it's hard to know which subexpressions have to be exact and which can be general, it's best to make them all
+    exact. The alternative is to use the <a href="http://www.testing.com/tools/multi/README.html" target="_blank">boolean
+    expression program</a> mentioned above. It produces correct test ideas for arbitrary mixed boolean-and-relational
+    expressions.
+</p>
+<h3>
+    <a id="TestIdeasWithoutCode" name="TestIdeasWithoutCode"></a><b>Test ideas without Code</b>
+</h3>
+<p>
+    As explained in <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/concepts/test-first_design_6124EA6D.html" guid="2.5962561793181055E-305">Concept: Test-first Design</a>, it's usually preferable to design tests before
+    implementing code. So, although the techniques are motivated by code examples, they'll usually be applied without code.
+    How?
+</p>
+<p>
+    Certain design artifacts, such as statecharts and sequence diagrams, use boolean expressions as guards. Those cases are
+    straightforward-simply add the test ideas from the boolean expressions to the artifact's test idea checklist. See <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/guidelines/test_ideas_for_statechart_and_flow_diagrams_B881354C.html" guid="3.794638918140148E-305">Work Product Guideline: Test Ideas for Statechart and Activity Diagrams</a>.
+</p>
+<p>
+    The trickier case is when boolean expressions are implicit rather than explicit. That's often the case in descriptions
+    of APIs. Here's an example. Consider this method:
+</p>
+<blockquote>
+<pre>
+ List matchList(Directory d1, Directory d1,        
+                FilenameFilter excluder);
+</pre>
+</blockquote>
+<p>
+    The description of this method's behavior might read like this:
+</p>
+<blockquote>
+    <p>
+        Returns a List of the absolute pathnames of all files that appear in both Directories. Subdirectories are
+        descended. [...] Filenames that match the <font size="+0">excluder</font> are excluded from the returned list. The
+        excluder only applies to the top-level directories, not to filenames in subdirectories.
+    </p>
+</blockquote>
+<p>
+    The words "and" , "or" do not appear. But when is a filename included in the return list? When it appears in the first
+    directory <b>and</b> it appears in the second directory <b>and</b> it's either in a lower level directory <b>or</b>
+    it's not specifically excluded. In code:
+</p>
+<blockquote>
+<pre>
+ if (appearsInFirst && appearsInSecond && (inLowerLevel || !excluded)) {   
+   add to list }
+</pre>
+</blockquote>
+<p>
+    Here are the test ideas for that expression, given in tabular form:
+</p>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        appearsInFirst
+                    </p>
+                </th>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        appearsInSecond
+                    </p>
+                </th>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        inLower
+                    </p>
+                </th>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        excluded
+                    </p>
+                </th>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<p>
+    <br />
+     The general approach for discovering implicit boolean expressions from text is to first list the actions described
+    (such as "returns a matching name"). Then write a boolean expression that describes the cases in which an action is
+    taken. Derive test ideas from all the expressions.
+</p>
+<p>
+    There's room for disagreement in that process. For example, one person might write down the boolean expression used
+    above. Another might say that there are really two distinct actions: first, the program discovers matching names, then
+    it filters them out. So, instead of one expression, there are two:
+</p>
+<dl>
+    <dt>
+        discover a match:
+    </dt>
+    <dd>
+        happens when a file is in the first directory <b>and</b> a file with the same name is in the second directory
+    </dd>
+    <dt>
+        filter a match:
+    </dt>
+    <dd>
+        happens when the matching files are in the top level <b>and</b> the name matches the <font         size="+0">excluder</font>
+    </dd>
+</dl>
+<p>
+    These different approaches can lead to different test ideas and thus different tests. But the differences are most
+    likely not particularly important. That is, the time spent worrying about which expression is right, and trying
+    alternatives, would be better spent on other techniques and producing more tests. If you're curious about what the
+    sorts of differences might be, read on.
+</p>
+<p>
+    The second person would get two sets of test ideas.
+</p>
+<blockquote>
+    <p>
+        test ideas about discovering a match:
+    </p>
+    <ul>
+        <li>
+            file in first directory, file in second directory (true, true)
+        </li>
+        <li>
+            file in first directory, file not in second directory (true, false)
+        </li>
+        <li>
+            file not in first directory, file in second directory (false, true)
+        </li>
+    </ul>
+    <p>
+        test ideas about filtering a match (once one has been discovered):
+    </p>
+    <ul>
+        <li>
+            matching files are in the top level, the name matches the <font size="+0">excluder</font> (true, true)
+        </li>
+        <li>
+            matching files are in the top level, the name doesn't match the <font size="+0">excluder</font> (true, false)
+        </li>
+        <li>
+            matching files are in some lower level, the name matches the <font size="+0">excluder</font> (false, true)
+        </li>
+    </ul>
+</blockquote>
+<p>
+    Suppose those two sets of test ideas are combined. The ones in the second set only matter when the file is in both
+    directories, so they can only be combined with the first idea in the first set. That gives us the following:
+</p>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        file in first directory
+                    </p>
+                </th>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        file in second directory
+                    </p>
+                </th>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        top level
+                    </p>
+                </th>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        matches excluder
+                    </p>
+                </th>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    Two of the test ideas about discovering a match do not appear in that table. We can add them like this:
+</p>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        file in first directory
+                    </p>
+                </th>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        file in second directory
+                    </p>
+                </th>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        top level
+                    </p>
+                </th>
+                <th scope="col" width="25%">
+                    <p align="center">
+                        matches excluder
+                    </p>
+                </th>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        -
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        -
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        -
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        -
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    The blank cells indicate that the columns are irrelevant.
+</p>
+<p>
+    This table now looks rather similar to the first person's table. The similarity can be emphasized by using the same
+    terminology. The first person's table has a column called "inLower", and the second person's has one called "in top
+    level". They can be converted by flipping the sense of the values. Doing that, we get this version of the second table:
+</p>
+<div align="center">
+    <table     style="BORDER-RIGHT: rgb(128,128,128) 1px solid; BORDER-TOP: rgb(128,128,128) 1px solid; BORDER-LEFT: rgb(128,128,128) 1px solid; BORDER-BOTTOM: rgb(128,128,128) 1px solid"      cellspacing="0" bordercolordark="#808080" cellpadding="4" width="85%" bordercolorlight="#808080" border="1">
+        <tbody>
+            <tr>
+                <th width="25%">
+                    <p align="center">
+                        appearsInFirst
+                    </p>
+                </th>
+                <th width="25%">
+                    <p align="center">
+                        appearsInSecond
+                    </p>
+                </th>
+                <th width="25%">
+                    <p align="center">
+                        inLower
+                    </p>
+                </th>
+                <th width="25%">
+                    <p align="center">
+                        excluded
+                    </p>
+                </th>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td width="25%">
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td>
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td>
+                    <p align="center">
+                        -
+                    </p>
+                </td>
+                <td>
+                    <p align="center">
+                        -
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p align="center">
+                        false
+                    </p>
+                </td>
+                <td>
+                    <p align="center">
+                        true
+                    </p>
+                </td>
+                <td>
+                    <p align="center">
+                        -
+                    </p>
+                </td>
+                <td>
+                    <p align="center">
+                        -
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table><br />
+</div>
+<p>
+    The first three rows are identical to the first person's table. The last two differ only in that this version doesn't
+    specify values that the first does. This amounts to an assumption about the way the code was written. The first assumed
+    a complicated boolean expression:
+</p>
+<blockquote>
+<pre>
+ if (appearsInFirst && appearsInSecond &&  (inLowerLevel || !excluded)) {   
+   add to list }
+</pre>
+</blockquote>
+<p>
+    The second assumes nested boolean expressions:
+</p>
+<blockquote>
+<pre>
+ if (appearsInFirst && appearsInSecond) {     
+   // found match.    
+   if (inTopLevel && excluded) { 
+     // filter it     
+   } 
+ }     
+</pre>
+</blockquote>
+<p>
+    The difference between the two is that the test ideas for the first detect two faults that the ideas for the second do
+    not, because those faults don't apply.
+</p>
+<ol>
+    <li>
+        In the first implementation, there can be a fault in the parentheses. Are the parentheses around the <font         size="+0">||</font> correct or incorrect? Since the second implementation has no parentheses and no <font         size="+0">||</font>, the fault cannot exist.
+    </li>
+    <li>
+        The test requirements for the first implementation check to see if the second expression, <font         size="+0">&&</font>, should be an <font size="+0">||</font>. In the second implementation, that explicit
+        <font size="+0">&&</font> is replaced by the implicit <font size="+0">&&</font>. There's no <font         size="+0">||</font>-for-<font size="+0">&&</font> fault, per se. (It might be the case that the nesting is
+        incorrect, but this technique does not address that.)
+    </li>
+</ol><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

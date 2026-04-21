@@ -1,8 +1,0 @@
-<!DOCTYPE html>
-<html><head></head><body style="color: rgb(32, 33, 34); font-family: undefined;"><p>Add this to the ApplicationDbContext class:</p>
-<div>
-<div><span style="font-family: 'courier new', courier, sans-serif;">protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)</span></div>
-<div><span style="font-family: 'courier new', courier, sans-serif;">{</span></div>
-<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; optionsBuilder.ConfigureWarnings(warnings =&gt; warnings.Ignore(RelationalEventId.PendingModelChangesWarning));</span></div>
-<div><span style="font-family: 'courier new', courier, sans-serif;">}</span></div>
-</div></body></html>

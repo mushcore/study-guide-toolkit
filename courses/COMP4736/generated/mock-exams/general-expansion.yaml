@@ -1,0 +1,267 @@
+# B4 draft — 17 new mock exam questions (q36-q52)
+# Append to existing content/4736/mock-exam.yaml.
+# Zero schema change: follows existing MCQ pattern. T/F-style questions use
+# MCQ with choices: ["True", "False"] — same convention as q1-q35.
+# Coverage gaps closed: page replacement, TLB/EAT, two-level PT overhead,
+# buddy fragmentation, deadlock recovery, semaphore ordering, IPC 1/2.
+# Every MCQ rationale includes distractor analysis.
+# Suggested duration bump on merge: 7200s → 9600s (17 new × ~1.4 min avg).
+
+questions:
+
+  # ---- Memory / Paging (6) ----
+  - id: q36
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    question: FIFO page replacement can produce more faults with 4 frames than with 3 frames on the same reference string.
+    correct: 0
+    rationale: >-
+      True. This is Belady's anomaly — FIFO's eviction depends on arrival order, not recency, so adding a frame can
+      reorder evictions and push out a page the smaller-frame run would have kept. LRU and OPT are immune.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q37
+    type: MCQ
+    topic: Memory/Paging
+    marks: 2
+    question: >-
+      TLB lookup takes 1 ns; a main-memory access takes 100 ns; PT walk adds one memory access. With a TLB hit rate
+      of 0.90, what is the effective access time (EAT)?
+    correct: 1
+    rationale: >-
+      EAT = 0.90 × (1 + 100) + 0.10 × (1 + 200) = 90.9 + 20.1 = 111 ns. A — forgets PT-walk cost. C — uses miss
+      rate where hit rate belongs. D — double-counts the TLB lookup on a miss.
+    choices:
+      - "101 ns"
+      - "111 ns"
+      - "191 ns"
+      - "201 ns"
+
+  - id: q38
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    question: Which page replacement algorithm is provably optimal (minimum page faults)?
+    correct: 2
+    rationale: >-
+      OPT (replace the page not used for longest time in the future) minimizes faults but is unimplementable.
+      FIFO — simple, suffers Belady. LRU — approximates OPT. Second Chance — FIFO variant. None match OPT's bound.
+    choices:
+      - "FIFO"
+      - "LRU"
+      - "OPT (furthest-future)"
+      - "Second Chance"
+
+  - id: q39
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    question: A two-level page table's primary advantage over a single-level linear page table is reduced PT memory when the address space is sparsely used.
+    correct: 0
+    rationale: >-
+      True. Multi-level only allocates second-level tables for regions in use, so total PT memory scales with mapped
+      regions, not total VA size. False would imply no advantage — but the 2^52-entry infeasibility of 64-bit linear
+      PTs is exactly what multi-level solves.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q40
+    type: MCQ
+    topic: Memory/Alloc
+    marks: 2
+    question: >-
+      In a buddy system with smallest block 32 KB, which request size causes the **most KB wasted** inside the
+      allocated block?
+    correct: 1
+    rationale: >-
+      A: 129 KB rounds to 256 KB → **127 KB wasted**. B: 257 KB rounds to 512 KB → **255 KB wasted**.
+      C: 192 KB rounds to 256 KB → **64 KB wasted**. D: 128 KB rounds to 128 KB → **0 wasted**. Worst case is
+      `2^k + 1` for the largest k that still fits — B wastes 128 KB more than A in absolute terms.
+    choices:
+      - "129 KB"
+      - "257 KB"
+      - "192 KB"
+      - "128 KB"
+
+  - id: q41
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    question: The dirty (modified) bit being clear means the OS can skip writing the page to disk when evicting it.
+    correct: 0
+    rationale: >-
+      True. Clean pages are byte-identical to the disk copy, so eviction = "drop the frame". Dirty = 1 means RAM differs
+      from disk and a write-back is required before reuse. This is a hot MCQ target per Part 10 PTE-fields emphasis.
+    choices:
+      - "True"
+      - "False"
+
+  # ---- Deadlock (3) ----
+  - id: q42
+    type: MCQ
+    topic: Deadlock
+    marks: 1
+    question: Which recovery mechanism uses periodic checkpoints to restore a process to a pre-deadlock state?
+    correct: 1
+    rationale: >-
+      Rollback — checkpoint memory + resource state, restore on deadlock. A (preemption) takes a resource without
+      restarting the process. C (killing) discards the process entirely. D (Banker's) is avoidance, not recovery.
+    choices:
+      - "Preemption"
+      - "Rollback"
+      - "Process killing"
+      - "Banker's algorithm"
+
+  - id: q43
+    type: MCQ
+    topic: Deadlock
+    marks: 1
+    question: Global resource numbering attacks which Coffman condition?
+    correct: 3
+    rationale: >-
+      Circular wait — forcing increasing-order requests makes cycles impossible. A (mutex) is attacked by spooling.
+      B (hold-and-wait) by request-all-upfront or release-before-reacquire. C (no-preemption) by allowing preemption.
+    choices:
+      - "Mutual exclusion"
+      - "Hold and wait"
+      - "No preemption"
+      - "Circular wait"
+
+  - id: q44
+    type: MCQ
+    topic: Deadlock
+    marks: 1
+    question: An unsafe state is the same as a deadlocked state.
+    correct: 1
+    rationale: >-
+      False. Unsafe means there is no guarantee all processes can complete under worst-case future requests, but
+      deadlock has not yet occurred. Banker's avoidance denies requests that would produce unsafe states to
+      pre-empt the possibility of deadlock.
+    choices:
+      - "True"
+      - "False"
+
+  # ---- IPC 1 / Semaphores / Sync (4) ----
+  - id: q45
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 2
+    question: >-
+      In producer-consumer with three semaphores (`empty=N, full=0, mutex=1`), what deadlock results if a producer
+      calls `P(mutex)` before `P(empty)`?
+    correct: 2
+    rationale: >-
+      Producer holds mutex, waits on empty when the buffer is full. Consumer cannot call P(mutex) to remove an item
+      → buffer stays full forever. A — no, the initial state is fine. B — livelock implies active state changes;
+      here both are blocked. D — misnames the deadlock; specifics of which sem is held matter.
+    choices:
+      - "No deadlock — semaphores are symmetric"
+      - "Starvation, not deadlock"
+      - "Producer holds mutex forever, consumer blocks on mutex"
+      - "Both block on the same semaphore"
+
+  - id: q46
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 1
+    question: Condition variables retain signals that arrive with no waiter present.
+    correct: 1
+    rationale: >-
+      False. Condition variables have **no memory** — signals sent with no waiter are lost. This is exactly why
+      monitors pair condition variables with an explicit predicate check in a while-loop.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q47
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 1
+    question: Which mechanism allows exactly one process to execute inside at a time without explicit P/V calls by the programmer?
+    correct: 2
+    rationale: >-
+      Monitor — compiler/runtime synthesizes mutual exclusion around every method. A (semaphore) requires explicit
+      P/V. B (mutex) requires explicit lock/unlock. D (spin lock) requires explicit acquire/release and burns CPU.
+    choices:
+      - "Counting semaphore"
+      - "Mutex lock"
+      - "Monitor"
+      - "Spin lock"
+
+  - id: q48
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 1
+    question: Strict alternation satisfies all four requirements for a correct mutual exclusion solution.
+    correct: 1
+    rationale: >-
+      False. Strict alternation violates requirement #3 (a process **outside** its critical region cannot block
+      another): if process A is slow or not running, process B is blocked waiting its "turn" even though A isn't
+      in its critical region. Professor highlights this on the requirements slide.
+    choices:
+      - "True"
+      - "False"
+
+  # ---- IPC 2 / Linux IPC (4) ----
+  - id: q49
+    type: MCQ
+    topic: IPC2
+    marks: 1
+    question: Which IPC mechanism is bidirectional and usable between **unrelated** processes?
+    correct: 2
+    rationale: >-
+      Named pipe (FIFO) — accessed by filesystem path, both directions available. A (unnamed pipe) is unidirectional
+      AND needs fork to share the fd. B (signal) carries no payload. D (System V semaphore) is synchronization,
+      not a data channel.
+    choices:
+      - "Unnamed pipe"
+      - "Signal"
+      - "Named pipe (FIFO)"
+      - "System V semaphore"
+
+  - id: q50
+    type: MCQ
+    topic: IPC2
+    marks: 1
+    question: Which signal cannot be caught, blocked, or ignored?
+    correct: 2
+    rationale: >-
+      SIGKILL — the kernel enforces immediate termination. A (SIGTERM) can be caught or ignored. B (SIGINT) handlers
+      are common (Ctrl-C handlers). D (SIGUSR1) is for application use, fully handler-able.
+    choices:
+      - "SIGTERM"
+      - "SIGINT"
+      - "SIGKILL"
+      - "SIGUSR1"
+
+  - id: q51
+    type: MCQ
+    topic: IPC2
+    marks: 1
+    question: `mmap` with `MAP_SHARED` allows two unrelated processes to share memory by mapping the same file.
+    correct: 0
+    rationale: >-
+      True. MAP_SHARED writes are visible to all processes mapping the same region of the same file. This is the
+      cross-Part-8-and-Part-10 bridge concept flagged as a likely exam target in the knowledge graph.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q52
+    type: MCQ
+    topic: IPC2
+    marks: 2
+    question: In a TCP socket server, which sequence correctly sets up a listening endpoint?
+    correct: 0
+    rationale: >-
+      socket → bind → listen → accept. B swaps bind and listen (listen cannot happen before the address is
+      assigned). C omits listen entirely. D is the client-side order (connect replaces listen/accept).
+    choices:
+      - "socket, bind, listen, accept"
+      - "socket, listen, bind, accept"
+      - "socket, bind, accept"
+      - "socket, bind, connect"

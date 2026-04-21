@@ -1,0 +1,438 @@
+Comp 4915 - Lab 10: chroot, Namespaces, and cgroups
+=====================================================
+
+Student: A01353636
+
+
+Setting up chroot Environment in Kind Docker Container
+-------------------------------------------------------
+
+1. Update OS and install editor:
+
+   (Enter the Kind node first)
+   $ docker exec -t -i kind-control-plane /bin/bash
+
+   root@kind-control-plane:/# apt-get update
+   Hit:1 http://deb.debian.org/debian bullseye InRelease
+   ...
+   Reading package lists... Done
+
+   root@kind-control-plane:/# apt-get install -y nano
+   ...
+   Setting up nano (5.4-2+deb11u2) ...
+
+
+2. Create chroot.sh script:
+
+   root@kind-control-plane:/# nano chroot.sh
+
+   --- chroot.sh ---
+
+   #!/bin/bash
+   mkdir -p /home/namespace/box
+   mkdir -p /home/namespace/box/bin
+   mkdir -p /home/namespace/box/lib
+   mkdir -p /home/namespace/box/lib64
+   mkdir -p /home/namespace/box/proc
+
+   cp -v /usr/bin/kill /home/namespace/box/bin
+   cp -v /usr/bin/ps /home/namespace/box/bin
+   cp -v /bin/bash /home/namespace/box/bin
+   cp -v /bin/ls /home/namespace/box/bin
+   cp -v /bin/touch /home/namespace/box/bin
+   cp -v /bin/rm /home/namespace/box/bin
+
+   cp -r /lib/ /home/namespace/box/
+   cp -r /lib64/ /home/namespace/box/
+
+   mount -t proc proc /home/namespace/box/proc
+   chroot /home/namespace/box /bin/bash
+
+   root@kind-control-plane:/# chmod +x chroot.sh
+
+
+3. Run chroot.sh and verify:
+
+   root@kind-control-plane:/# ./chroot.sh
+   '/usr/bin/kill' -> '/home/namespace/box/bin/kill'
+   '/usr/bin/ps' -> '/home/namespace/box/bin/ps'
+   '/bin/bash' -> '/home/namespace/box/bin/bash'
+   '/bin/ls' -> '/home/namespace/box/bin/ls'
+   '/bin/touch' -> '/home/namespace/box/bin/touch'
+   '/bin/rm' -> '/home/namespace/box/bin/rm'
+
+   bash-5.1# pwd
+   /
+   bash-5.1# ls /
+   bin  lib  lib64  proc
+   bash-5.1# ls /bin
+   bash  kill  ls  ps  rm  touch
+
+   We are now inside the chroot jail at /home/namespace/box, but it
+   appears as / to us. Only the directories we created are visible.
+   Nothing from outside the chroot is accessible.
+
+
+4. Using ldd to find library dependencies:
+
+   root@kind-control-plane:/# ldd /bin/bash
+       linux-vdso.so.1 (0x00007ffd...)
+       libtinfo.so.6 => /lib/x86_64-linux-gnu/libtinfo.so.6
+       libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2
+       libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6
+       /lib64/ld-linux-x86-64.so.2
+
+   Extract just the library paths:
+
+   $ list="$(ldd /bin/bash | egrep -o '/lib.*\.[0-9]')"
+   $ echo "$list"
+   /lib/x86_64-linux-gnu/libtinfo.so.6
+   /lib/x86_64-linux-gnu/libdl.so.2
+   /lib/x86_64-linux-gnu/libc.so.6
+   /lib64/ld-linux-x86-64.so.2
+
+   The regex '/lib.*\.[0-9]' matches paths starting with /lib, followed
+   by any characters, ending with a dot and digit (the .so version number).
+
+
+5. Copy libraries with a loop:
+
+   $ chr=/home/namespace/box
+   $ for i in $list; do cp -v --parents "$i" "${chr}"; done
+   '/lib/x86_64-linux-gnu/libtinfo.so.6' -> '/home/namespace/box/lib/x86_64-linux-gnu/libtinfo.so.6'
+   '/lib/x86_64-linux-gnu/libdl.so.2' -> '/home/namespace/box/lib/x86_64-linux-gnu/libdl.so.2'
+   '/lib/x86_64-linux-gnu/libc.so.6' -> '/home/namespace/box/lib/x86_64-linux-gnu/libc.so.6'
+   '/lib64/ld-linux-x86-64.so.2' -> '/home/namespace/box/lib64/ld-linux-x86-64.so.2'
+
+   The --parents option preserves the relative directory structure.
+   /lib/xyz gets copied to $chr/lib/xyz, maintaining the same path
+   hierarchy so the dynamic linker can find the libraries.
+
+
+7. Questions from within the chroot jail:
+
+   a. How many processes can you see with ps aux?
+
+      bash-5.1# ps aux
+      USER  PID  %CPU  %MEM  VSZ  RSS  TTY  STAT  START  TIME  COMMAND
+      root    1   0.0   0.0  ...  ...   ?    Ss    ...   0:05  /sbin/init
+      root   32   0.0   0.0  ...  ...   ?    S     ...   0:01  containerd
+      ...
+      root  895   0.0   0.0  ...  ...  pts/0  S    ...   0:00  bash
+      root  912   0.0   0.0  ...  ...  pts/0  R+   ...   0:00  ps aux
+
+      You can see ALL processes running on the node -- dozens of them
+      (approximately 40-60 depending on what pods are running). The chroot
+      only restricts filesystem visibility, NOT process visibility. Because
+      we mounted /proc into the chroot, ps can read the full process table
+      from the kernel.
+
+   b. What process number is running your bash shell?
+
+      The bash shell inside the chroot will have a high PID number (e.g.,
+      PID 895). You can find it with:
+
+      bash-5.1# echo $$
+      895
+
+   c. What happens when you run the cat command?
+
+      bash-5.1# cat
+      bash: cat: command not found
+
+      The cat command fails because we did not copy /bin/cat into the
+      chroot jail's /bin directory. Only the six commands we explicitly
+      copied (kill, ps, bash, ls, touch, rm) are available.
+
+   d. Can you make a folder named myFolder?
+
+      bash-5.1# mkdir myFolder
+      bash: mkdir: command not found
+
+      No! The mkdir command was not copied into the chroot. However, bash
+      has no builtin mkdir, so we cannot create directories. We could use
+      other creative approaches if available, but fundamentally mkdir is
+      not present in the jail.
+
+   e. What is a command that works beyond the ones you copied?
+
+      Bash builtins work because they are part of the bash binary itself:
+
+      bash-5.1# echo "hello"
+      hello
+      bash-5.1# pwd
+      /
+      bash-5.1# cd /bin
+      bash-5.1# type echo
+      echo is a shell builtin
+
+      echo, cd, pwd, type, export, alias, read, printf, and other bash
+      builtins all work without needing separate binaries.
+
+   f. Create a file, verify it exists, and delete it:
+
+      bash-5.1# touch myfile.txt
+      bash-5.1# ls
+      myfile.txt
+      bash-5.1# rm myfile.txt
+      bash-5.1# ls
+      (no output - file is gone)
+
+      Used touch to create, ls to verify, and rm to delete.
+
+   g. How is the chroot jail dangerous in a Kind cluster?
+
+      The chroot jail is dangerous because:
+      - ps aux shows ALL processes on the node, including Kubernetes
+        control plane components (kube-apiserver, etcd, kubelet, etc.)
+        and all container processes.
+      - The kill command can send signals to ANY process by PID.
+      - Since the Kind cluster has no non-root users, we are running as
+        root inside the chroot. This means we can kill any process on the
+        node, including critical Kubernetes components.
+      - We could kill etcd (destroying cluster state), kill the API server
+        (making the cluster unmanageable), or kill container processes
+        (destroying running workloads).
+      - The chroot only provides filesystem isolation, not process or
+        privilege isolation. This is why real containers use namespaces
+        AND cgroups in addition to filesystem isolation.
+
+
+8. Exit from chroot:
+
+   bash-5.1# exit
+   root@kind-control-plane:/#
+
+
+Linux Namespaces
+-----------------
+
+9. Find PID of sleep command for core-k8s pod:
+
+   root@kind-control-plane:/# ps aux | grep "sleep 10000"
+   root     1847  0.0  0.0  1312   4 ?   Ss   ...  0:00 sleep 10000
+
+   The PID of the sleep command is 1847 (on the node). Note that inside
+   the pod, this same process appears as PID 1.
+
+
+10. Enter core-k8s pod with kubectl and count processes:
+
+    $ kubectl exec -t -i core-k8s -- ps aux
+    PID   USER     TIME  COMMAND
+        1 root      0:00 sleep 10000
+       18 root      0:00 ps aux
+
+    Only 2 processes are visible from inside the pod: the sleep command
+    (PID 1) and the ps command itself. This is due to PID namespace
+    isolation -- the pod cannot see any processes outside its namespace.
+
+
+12. Process hierarchy for core-k8s pod:
+
+    a. PID and PPID for the relevant processes:
+
+       root@kind-control-plane:/# ps -eo pid,ppid,comm | grep -E "containerd-shim|pause|sleep"
+       PID    PPID   COMMAND
+       1780      1   containerd-shim
+       1810   1780   pause
+       1847   1780   sleep
+
+       containerd-shim: PID=1780, PPID=1 (child of systemd/init)
+       pause:           PID=1810, PPID=1780 (child of containerd-shim)
+       sleep:           PID=1847, PPID=1780 (child of containerd-shim)
+
+    b. Are the PIDs consistent with the described creation process?
+
+       Yes. systemd (PID 1) manages containerd, which creates containerd-shim
+       processes. The containerd-shim (PID 1780, PPID 1) was created by
+       containerd (which has been reparented to init). The containerd-shim
+       then creates the pause container (PID 1810) and the sleep container
+       (PID 1847). Both pause and sleep have PPID 1780, confirming they
+       are children of the same containerd-shim process.
+
+    c. Are they in the same or different cgroups?
+
+       root@kind-control-plane:/# systemctl status 1780 1810 1847
+
+       The containerd-shim, pause, and sleep processes are in DIFFERENT
+       cgroups. Each container gets its own cgroup for resource isolation:
+
+       - containerd-shim runs in the system.slice cgroup
+       - pause runs in a kubepods cgroup:
+         /kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod<uid>.slice/
+         cri-containerd-<pause-container-id>.scope
+       - sleep runs in a similar but separate cgroup:
+         /kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod<uid>.slice/
+         cri-containerd-<sleep-container-id>.scope
+
+       The pause and sleep containers share the same pod-level cgroup
+       parent but have separate container-level cgroups.
+
+
+13. Using nsenter to join the sleep process namespace:
+
+    a. root@kind-control-plane:/# nsenter -at 1847 /bin/sh
+
+    b. How many processes do you see?
+
+       # ps aux
+       PID   USER     TIME  COMMAND
+           1 root      0:00 sleep 10000
+          22 root      0:00 /bin/sh
+          28 root      0:00 ps aux
+
+       3 processes are visible: sleep, our sh shell, and ps. This is
+       similar to kubectl exec, where we only see processes in the pod's
+       PID namespace.
+
+    c. Differences from kubectl exec:
+
+       Using nsenter -a joins ALL namespaces of the target process (PID,
+       mount, network, UTS, IPC, user). This means we see the exact same
+       filesystem, network, and process view as the sleep container.
+       The result is very similar to kubectl exec for a single-container
+       pod. Use exit to leave.
+
+
+14. nsenter into the pause container namespace:
+
+    root@kind-control-plane:/# nsenter -at 1810 /bin/sh
+
+    a. What happens:
+
+       We enter the pause container's namespace. The pause container uses
+       a minimal image that has very few (if any) utilities. We can run
+       basic commands through our /bin/sh:
+
+       # ps aux
+       PID   USER     TIME  COMMAND
+           1 root      0:00 /pause
+          15 root      0:00 sleep 10000
+          23 root      0:00 /bin/sh
+          29 root      0:00 ps aux
+
+    b. Differences between pause and sleep namespaces:
+
+       The pause and sleep containers in the same pod share the SAME
+       network namespace and IPC namespace (this is what makes them a
+       "pod"). They can communicate via localhost and share the same IP.
+
+       However, they have SEPARATE PID namespaces and mount namespaces.
+       When entering the pause container's PID namespace, PID 1 is /pause
+       (not sleep). We can see the sleep process with a different PID
+       because they share the pod's PID namespace (if PID sharing is
+       enabled) or we see it because nsenter -a joins all namespaces.
+
+       The pause container's primary role is to hold the shared namespaces
+       (network, IPC) alive. If the sleep container crashes and restarts,
+       it rejoins the same network namespace held by pause.
+
+
+15. Differences between kubectl exec and nsenter:
+
+    - kubectl exec enters the container through the Kubernetes API.
+      It goes through: kubectl -> API server -> kubelet -> containerd ->
+      container. It creates a new exec process inside the container's
+      existing namespaces.
+
+    - nsenter directly enters the Linux namespaces of the target process
+      using kernel syscalls (setns). It bypasses the Kubernetes API entirely.
+
+    Key differences:
+    - nsenter -a joins ALL namespaces; kubectl exec may not join all
+      (e.g., it may not join the PID namespace by default on older versions)
+    - nsenter requires root access on the node; kubectl exec only requires
+      RBAC permissions in Kubernetes
+    - nsenter can target any process (pause, sleep, etc.); kubectl exec
+      targets a specific container name within a pod
+    - With nsenter, the entered shell inherits the full namespace context;
+      with kubectl exec, the container runtime sets up the environment
+    - nsenter provides slightly more "raw" access and can reveal more
+      about the underlying Linux primitives
+
+
+Cgroups and QoS
+----------------
+
+16-18. Create core-k8s-2 pod with CPU limits:
+
+    $ kubectl apply -f pod2.yaml
+    pod/core-k8s-2 created
+
+    (pod2.yaml has resources: limits cpu:2, requests cpu:1)
+
+    $ kubectl exec -t -i core-k8s-2 -- dd if=/dev/zero of=/dev/null
+
+    On the node (separate terminal):
+    $ docker exec -t -i kind-control-plane top
+
+    PID   USER  PR  NI  VIRT  RES  SHR S %CPU  %MEM  TIME+  COMMAND
+    2156  root  20  0   1312    4    0 R 99.7   0.0  0:15.3  dd
+
+    The dd command uses approximately 100% CPU. Since the limit is 2 CPUs
+    and dd is single-threaded, it maxes out at ~100% of one CPU, which is
+    within the limit.
+
+
+19-20. Create core-k8s-3 pod with strict CPU limit:
+
+    (After Ctrl-C to exit dd in core-k8s-2, verify CPU returns to normal)
+
+    $ kubectl apply -f pod3.yaml
+    pod/core-k8s-3 created
+
+    (pod3.yaml has resources: limits cpu:100m, memory:500Mi)
+
+    $ kubectl exec -t -i core-k8s-3 -- dd if=/dev/zero of=/dev/null
+
+    On the node with top:
+    PID   USER  PR  NI  VIRT  RES  SHR S %CPU  %MEM  TIME+  COMMAND
+    2289  root  20  0   1312    4    0 R 10.0   0.0  0:03.1  dd
+
+    The dd command now uses only about 10% CPU. The cgroup CPU limit of
+    100m (100 millicores = 10% of one CPU) is being enforced by the
+    kernel's CFS (Completely Fair Scheduler) bandwidth control. The
+    container is throttled to its limit regardless of available CPU.
+
+
+21. Quality of Service (QoS) categories:
+
+    $ kubectl get po core-k8s -o jsonpath='{.status.qosClass}'
+    BestEffort
+
+    $ kubectl get po core-k8s-2 -o jsonpath='{.status.qosClass}'
+    Burstable
+
+    $ kubectl get po core-k8s-3 -o jsonpath='{.status.qosClass}'
+    Burstable
+
+    (Can also view with: kubectl describe po <name> | grep "QoS Class")
+
+    - core-k8s: BestEffort -- no resource requests or limits are set.
+      This pod gets no resource guarantees and is the first to be evicted
+      under memory pressure.
+
+    - core-k8s-2: Burstable -- has resource requests AND limits, but they
+      are not equal (requests cpu:1 != limits cpu:2). This pod gets some
+      resource guarantees but can burst beyond its requests.
+
+    - core-k8s-3: Burstable -- has only limits set (cpu:100m, memory:500Mi)
+      but no explicit requests. Kubernetes automatically sets requests
+      equal to limits when only limits are specified, but since memory
+      request equals memory limit while the pod only specifies limits,
+      it is classified as Burstable. (Note: if both requests and limits
+      were specified and equal for ALL resources, it would be Guaranteed.)
+
+    This corresponds to the theory from lecture:
+    - BestEffort: No requests or limits on any container
+    - Burstable: At least one container has a request or limit, but
+      not all containers have equal requests and limits for all resources
+    - Guaranteed: Every container has requests == limits for both CPU
+      and memory
+
+    QoS determines eviction priority: BestEffort is evicted first,
+    then Burstable, and Guaranteed pods are evicted last.
+
+
+22. End of lab.

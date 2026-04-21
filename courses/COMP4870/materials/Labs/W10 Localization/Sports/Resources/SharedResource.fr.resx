@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Sports" xml:space="preserve">
+    <value>Sports</value>
+    <comment/>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Accueil</value>
+    <comment/>
+  </data>
+  <data name="Privacy" xml:space="preserve">
+    <value>Vie priv&#233;e</value>
+    <comment/>
+  </data>
+  <data name="Teams" xml:space="preserve">
+    <value>&#201;quipes</value>
+    <comment/>
+  </data>
+  <data name="Players" xml:space="preserve">
+    <value>Joueurs</value>
+    <comment/>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Cr&#233;er</value>
+    <comment/>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Modifier</value>
+    <comment/>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Supprimer</value>
+    <comment/>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>D&#233;tails</value>
+    <comment/>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Enregistrer</value>
+    <comment/>
+  </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Retour &#224; la liste</value>
+    <comment/>
+  </data>
+  <data name="CreateNew" xml:space="preserve">
+    <value>Cr&#233;er nouveau</value>
+    <comment/>
+  </data>
+  <data name="DeleteConfirm" xml:space="preserve">
+    <value>&#202;tes-vous s&#251;r de vouloir supprimer ceci ?</value>
+    <comment/>
+  </data>
+  <data name="Index" xml:space="preserve">
+    <value>Index</value>
+    <comment/>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>&#201;quipe</value>
+    <comment/>
+  </data>
+  <data name="Player" xml:space="preserve">
+    <value>Joueur</value>
+    <comment/>
+  </data>
+  <data name="TeamName" xml:space="preserve">
+    <value>Nom de l'&#233;quipe</value>
+    <comment/>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>Ville</value>
+    <comment/>
+  </data>
+  <data name="Province" xml:space="preserve">
+    <value>Province</value>
+    <comment/>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Pays</value>
+    <comment/>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>Pr&#233;nom</value>
+    <comment/>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Nom</value>
+    <comment/>
+  </data>
+  <data name="Gender" xml:space="preserve">
+    <value>Genre</value>
+    <comment/>
+  </data>
+  <data name="DateOfBirth" xml:space="preserve">
+    <value>Date de naissance</value>
+    <comment/>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Politique de confidentialit&#233;</value>
+    <comment/>
+  </data>
+  <data name="PrivacyText" xml:space="preserve">
+    <value>Utilisez cette page pour d&#233;tailler la politique de confidentialit&#233; de votre site.</value>
+    <comment/>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>Position</value>
+    <comment/>
+  </data>
+  <data name="PlayerId" xml:space="preserve">
+    <value>ID du joueur</value>
+    <comment/>
+  </data>
+  <data name="WithId" xml:space="preserve">
+    <value>avec ID</value>
+    <comment/>
+  </data>
+</root>

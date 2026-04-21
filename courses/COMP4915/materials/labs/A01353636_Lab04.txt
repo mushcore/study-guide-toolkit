@@ -1,0 +1,417 @@
+Comp 4915 - Lab 4
+=================
+
+1. Using sort as a filter, rewrite the following sequence of commands:
+   $ sort list > temp
+   $ lpr temp
+   $ rm temp
+
+   Rewritten as a single pipeline:
+
+     sort list | lpr
+
+   By using sort as a filter and piping its output directly to lpr, we
+   eliminate the need for a temporary file. The pipe (|) connects sort's
+   standard output to lpr's standard input, so the sorted data goes
+   straight to the printer without ever being written to disk.
+
+
+2. Give a command to:
+
+   a. Redirect the standard output from a sort command into a file named
+      phone_list. Assume that the input file is named numbers.
+
+        sort numbers > phone_list
+
+   b. Translate all occurrences of [ and { to ( and all occurrences of
+      ] and } to ) in the file permdemos.c.
+
+        tr '[{]}' '(())' < permdemos.c
+
+      The tr command translates characters one-to-one: [ maps to (, { maps
+      to (, ] maps to ), and } maps to ). The input is redirected from
+      permdemos.c. Note: to also save the result, redirect output:
+
+        tr '[{]}' '(())' < permdemos.c > permdemos_fixed.c
+
+   c. Create a file named book that contains the contents of two other
+      files: part1 and part2.
+
+        cat part1 part2 > book
+
+      The cat command concatenates the contents of part1 and part2 in order,
+      and the > redirects the combined output into the file book.
+
+
+3. Explain the following error message. What filenames would a subsequent
+   ls display?
+
+   $ ls
+   abc abd abe abf abg abh
+   $ rm abc ab*
+   rm: cannot remove 'abc' : No such file or directory
+
+   Explanation: The shell expands the glob pattern ab* BEFORE passing
+   arguments to rm. The wildcard ab* matches all six files: abc, abd, abe,
+   abf, abg, abh. So the command the shell actually executes is:
+
+     rm abc abc abd abe abf abg abh
+
+   The rm command processes arguments left to right. It first removes abc
+   successfully. Then it encounters abc again (from the expanded ab*), but
+   abc has already been deleted, so rm reports "cannot remove 'abc': No
+   such file or directory". It then continues and removes abd, abe, abf,
+   abg, and abh.
+
+   A subsequent ls would display nothing -- all files have been removed.
+   The error message is cosmetic; every file was still successfully deleted.
+
+
+4. Demonstrate that the shell creates the output file immediately, before
+   the command is executed.
+
+   Demonstration:
+
+     $ cat oldfile
+     This is the content of oldfile.
+     $ cat oldfile > oldfile
+     $ cat oldfile
+     $
+
+   The file oldfile is now empty. Here is what happened:
+
+   1. The shell sees > oldfile and immediately opens oldfile for writing,
+      truncating it to zero bytes.
+   2. Only THEN does the shell execute "cat oldfile".
+   3. cat reads from the now-empty oldfile and writes nothing to stdout
+      (which is redirected to oldfile).
+
+   This proves the output file is created (and truncated) before the
+   command runs. If the command ran first, cat would have read the original
+   content and written it back, leaving the file unchanged.
+
+   Another demonstration:
+
+     $ ls nonexistent > outputfile
+     ls: cannot access 'nonexistent': No such file or directory
+     $ ls -l outputfile
+     -rw-r--r-- 1 user user 0 ... outputfile
+
+   Even though ls produced an error (to stderr), the output file was
+   created as an empty file because the shell created it before ls ran.
+
+
+5. Alex accidentally deletes his PATH variable.
+
+   Problems he will encounter:
+   - He will not be able to run commands by name alone. Typing "ls" will
+     produce "-bash: ls: command not found" because the shell searches the
+     directories in PATH to find executables. With no PATH, it searches
+     nowhere.
+   - He can still run commands using their full absolute pathnames (e.g.,
+     /usr/bin/ls, /bin/cat), but this is extremely tedious.
+   - Shell built-in commands (cd, echo, pwd, alias, etc.) will still work
+     because they do not require PATH lookup.
+   - Tab completion for external commands will stop working.
+   - Scripts that rely on commands being found via PATH will break.
+
+   How to restore PATH easily:
+   - Start a new login shell, which will re-read /etc/profile and ~/.bashrc
+     (or ~/.bash_profile), restoring PATH to its original value:
+
+       exec bash -l
+
+   - Or source the profile manually using the absolute path:
+
+       . /etc/profile
+
+   - Or set it manually to a reasonable default:
+
+       export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
+
+6. Assume your permissions allow you to write to a file but not delete it.
+
+   a. Command to empty the file without invoking an editor:
+
+        > filename
+
+      or equivalently:
+
+        cp /dev/null filename
+
+      The > filename construct truncates the file to zero bytes. You can
+      write to the file (you have write permission on it), and truncation
+      is a write operation on the file itself, not a directory operation.
+
+   b. How you might have write permission but not delete permission:
+
+      Deleting a file requires write permission on the DIRECTORY that
+      contains the file, not on the file itself. Deleting a file means
+      removing its directory entry, which is a modification to the directory.
+
+      So if you have write permission on the file but do NOT have write
+      permission on the parent directory, you can modify (write to) the
+      file but cannot delete (unlink) it.
+
+      Additionally, if the directory has the sticky bit set (e.g., /tmp
+      has permissions drwxrwxrwt), only the file's owner, the directory's
+      owner, or root can delete files, even if others have write permission
+      on the directory.
+
+
+7. Explain the possibly unexpected result:
+
+   $ whereis date
+   date: /bin/date ...
+   $ echo $PATH
+   .:/usr/local/bin:/usr/bin:/bin
+   $ cat > date
+   echo "This is my own version of date."
+   ^D
+   $ date
+   Sat May 24 11:45:49 PDT 2008
+
+   The user created a file called "date" in the current directory containing
+   a shell script. Since PATH starts with "." (the current directory), you
+   might expect the shell to find and execute ./date instead of /bin/date.
+
+   However, the result is that the REAL /bin/date runs. This is because
+   the file "date" in the current directory does not have execute permission.
+   When cat > date created it, the default permissions do not include
+   execute. The shell finds ./date first in the PATH search, but since it
+   is not executable, it skips it and continues searching PATH until it
+   finds /bin/date, which IS executable.
+
+   If the user had run "chmod +x date" first, then typing "date" would
+   have executed the local script instead of /bin/date (printing "This is
+   my own version of date." instead of the actual date).
+
+
+8. Two ways to execute a shell script without execute permission:
+
+   a. Pass the script as an argument to the shell interpreter:
+
+        bash scriptname
+
+      or:
+
+        sh scriptname
+
+      The shell reads and executes the commands in the file. The shell
+      itself has execute permission; it only needs to READ the script file.
+
+   b. Use the source (or dot) command:
+
+        source scriptname
+        . scriptname
+
+      This reads and executes the script in the current shell environment.
+
+   Can you execute a script without read permission?
+
+   No. You cannot execute a shell script if you do not have read permission.
+   Shell scripts are interpreted, meaning the shell must read the file
+   line by line to execute the commands. Without read permission, the shell
+   cannot open the file.
+
+   This is different from compiled binary executables, which need execute
+   permission but not necessarily read permission (the kernel loads the
+   binary directly).
+
+
+9. The journal shell script:
+
+   a. What do you have to do to the script to be able to execute it?
+
+      You need to:
+      1. Add a shebang line as the first line: #!/bin/bash
+      2. Add execute permission: chmod +x journal
+
+      After this, you can run it with: ./journal
+
+   b. Why does the script use read the first time and cat the second time?
+
+      The script uses "read name" to capture a single line of input -- the
+      name of the person or group. The read builtin reads exactly one line
+      from standard input and stores it in the variable "name".
+
+      The script uses "cat >> $file" for the second input because the user
+      needs to enter multiple lines of freeform notes about the conversation
+      or meeting. cat reads from standard input and copies everything to
+      the file until the user signals end-of-input with Ctrl-D (EOF).
+
+      read is appropriate for a single line; cat is appropriate for
+      multiple lines of arbitrary length.
+
+
+10. Write a shell script that outputs the name of the shell executing it.
+
+      #!/bin/bash
+      echo "$0"
+
+    Or more informatively:
+
+      #!/bin/bash
+      # Display the name of the shell executing this script
+      echo "This script is being executed by: $0"
+      echo "The shell binary is: $(readlink -f /proc/$$/exe 2>/dev/null || echo $SHELL)"
+
+    The variable $0 contains the name used to invoke the script (or the
+    shell). The variable $SHELL contains the user's login shell. The
+    special variable $$ gives the PID of the current shell, and
+    /proc/$$/exe is a symlink to the actual binary.
+
+    If you simply want the shell name:
+
+      #!/bin/bash
+      basename "$0"
+
+
+11. What is the IFS variable used for?
+
+    IFS (Internal Field Separator) is used by the shell for word splitting.
+    When the shell expands unquoted variables, command substitutions, or
+    reads input with the read builtin, it uses the characters in IFS to
+    determine where to split the text into separate words/fields.
+
+    By default, IFS contains three characters: space, tab, and newline.
+
+    To display the contents of IFS (including nonvisible characters):
+
+      echo "$IFS" | cat -A
+
+    This shows:
+       ^I$
+      $
+      $
+
+    Where " " is space, ^I is tab, and $ marks end of line (newline).
+
+    Alternatively:
+
+      printf '%s' "$IFS" | od -c
+
+    Which shows: 0000000   \t  \n
+
+    To save and restore IFS:
+
+      OLDIFS="$IFS"        # save the original value
+      IFS=":"              # change IFS to colon (e.g., to parse PATH)
+      # ... do work ...
+      IFS="$OLDIFS"        # restore the original value
+
+
+12. How to use grep to find all lines in dog that start with a lower case
+    consonant:
+
+      grep '^[bcdfghjklmnpqrstvwxyz]' dog
+
+    Or more compactly using character class subtraction logic:
+
+      grep '^[b-df-hj-np-tv-z]' dog
+
+    This matches lines beginning with any lowercase letter that is NOT a
+    vowel (a, e, i, o, u). The ^ inside [] is NOT negation here -- the ^
+    outside [] anchors to the start of the line.
+
+
+13. How to use grep to find all lines in dog that contain "t" followed by
+    any character:
+
+      grep 't.' dog
+
+    The dot (.) in a regular expression matches any single character. So
+    t. matches "t" followed by any one character (e.g., "th", "to", "t ",
+    "t3", etc.). This will NOT match a "t" at the very end of a line
+    (since there is no character after it).
+
+
+14. How to use grep to find all empty lines in dog:
+
+      grep '^$' dog
+
+    The pattern ^$ matches lines where the beginning of the line (^) is
+    immediately followed by the end of the line ($), meaning the line
+    contains nothing -- it is empty (just a newline/carriage return).
+
+
+15. What does this command do: grep '^.[1-9]*\!$' myfile
+
+    This command searches myfile for lines matching the pattern:
+
+      ^       - start of line
+      .       - any single character
+      [1-9]*  - zero or more digits from 1 to 9
+      \!      - a literal exclamation mark (escaped with backslash)
+      $       - end of line
+
+    So it finds lines that:
+    - Start with exactly one arbitrary character
+    - Followed by zero or more non-zero digits (1-9)
+    - End with an exclamation mark
+
+    Examples of matching lines:
+      "a!"          (one char + zero digits + !)
+      "x5!"         (one char + one digit + !)
+      "Z123!"       (one char + three digits + !)
+
+    Examples of NON-matching lines:
+      "!"           (no leading character before !)
+      "ab!"         (two chars before digits -- 'b' is not in [1-9])
+      "a0!"         (0 is not in [1-9])
+
+
+16. What does the sed command do?
+
+    sed (Stream EDitor) is a non-interactive text editor that reads input
+    line by line, applies editing commands (specified on the command line
+    or in a script file), and writes the result to standard output. It
+    does not modify the input file unless the -i (in-place) option is used.
+
+    sed is particularly useful for:
+    - Search and replace: sed 's/old/new/g' file
+    - Deleting lines: sed '/pattern/d' file
+    - Inserting or appending text
+    - Translating characters
+    - Applying edits to specific line numbers or ranges
+    - Automating repetitive edits in scripts and pipelines
+
+    Unlike interactive editors (vi, nano), sed processes text in a stream,
+    making it ideal for use in pipelines and shell scripts. It uses regular
+    expressions for pattern matching, similar to grep.
+
+
+17. Use sed to delete all lines in dog that contain the letter "c":
+
+      sed '/c/d' dog
+
+    The /c/ is the address (pattern) that matches any line containing the
+    letter "c". The d command deletes those matched lines. Unmatched lines
+    are printed to standard output.
+
+    To modify the file in place:
+
+      sed -i '/c/d' dog
+
+
+18. Use sed to change every 4-letter word starting with "t" to the name
+    of your favorite childhood pet:
+
+      sed 's/\bt[a-zA-Z]\{3\}\b/Luna/g' dog
+
+    Explanation:
+      \b        - word boundary
+      t         - the letter t
+      [a-zA-Z]  - any letter
+      \{3\}     - exactly 3 more letters (total of 4 including 't')
+      \b        - word boundary
+      Luna      - the replacement name (my childhood pet)
+      g         - global flag (replace all occurrences on each line)
+
+    This matches words like "this", "that", "them", "tree", "turn", etc.
+    and replaces each with "Luna".
+
+    Using extended regex (-E) for cleaner syntax:
+
+      sed -E 's/\bt[a-zA-Z]{3}\b/Luna/g' dog

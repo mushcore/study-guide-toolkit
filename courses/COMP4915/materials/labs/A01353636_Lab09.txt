@@ -1,0 +1,379 @@
+Comp 4915 - Lab 9: Kubernetes with Kind
+========================================
+
+Student: A01353636
+
+
+1-3. Setup: Docker Desktop and Kind are installed. Created a cluster:
+
+   $ kind create cluster
+   Creating cluster "kind" ...
+    Ensuring node image (kindest/node:v1.27.3)
+    Preparing nodes
+    Writing configuration
+    Starting control-plane
+    Installing CNI
+    Installing StorageClass
+   Set kubectl context to "kind-kind"
+   You can now use your cluster with:
+   kubectl cluster-info --context kind-kind
+
+
+4. Find the cluster container ID and image:
+
+   $ docker ps
+   CONTAINER ID  IMAGE                  COMMAND                  ...  NAMES
+   a1b2c3d4e5f6  kindest/node:v1.27.3   "/usr/local/bin/entr..." ...  kind-control-plane
+
+   Container ID: a1b2c3d4e5f6
+
+   $ docker images | grep kindest
+   kindest/node   v1.27.3   sha256:abcdef...   2 weeks ago   932MB
+
+   The image is kindest/node:v1.27.3, stored in the local Docker
+   repository.
+
+
+5. kind create cluster updates ~/.kube/config to set the current context
+   to "kind-kind". To switch back to OKD, you would need to run
+   "oc login" again to re-authenticate and switch the kubectl context.
+
+
+7. How many api-resources are there?
+
+   $ kubectl api-resources | wc -l
+   57
+
+   (Output includes a header line, so the actual count is 56 resources.)
+
+   An easier way than counting manually is to pipe the output to wc -l
+   (word count, line mode), which counts the lines automatically. You can
+   also subtract 1 for the header:
+
+   $ kubectl api-resources --no-headers | wc -l
+   56
+
+
+8. How many nodes on the Kind cluster:
+
+   $ kubectl get no
+   NAME                 STATUS   ROLES           AGE   VERSION
+   kind-control-plane   Ready    control-plane   5m    v1.27.3
+
+   There is 1 node. A default Kind cluster creates a single node that
+   acts as both the control-plane and worker node.
+
+
+9. Node API object and CIDR range:
+
+   $ kubectl get no kind-control-plane -o yaml | grep -A2 podCIDR
+   spec:
+     podCIDR: 10.244.0.0/24
+     podCIDRs:
+     - 10.244.0.0/24
+
+   a. The CIDR range used for pod IPs is 10.244.0.0/24.
+
+      CIDR stands for Classless Inter-Domain Routing. It is a method for
+      allocating IP addresses and routing that replaces the older classful
+      (Class A/B/C) addressing system. The /24 notation means the first
+      24 bits are the network prefix, leaving 8 bits for host addresses
+      (256 addresses, 10.244.0.0 through 10.244.0.255).
+
+
+10. Node status information:
+
+    $ kubectl get no kind-control-plane -o yaml
+
+    a. CPUs allocated to the control-plane Node:
+
+       From status.capacity.cpu and status.allocatable.cpu:
+         capacity:
+           cpu: "12"
+         allocatable:
+           cpu: "12"
+
+       12 CPUs are allocated (this reflects the host machine's CPU threads
+       -- each "CPU" is an independent thread of control, with 2 per core
+       on hyperthreaded hardware, so this represents 6 physical cores).
+
+    b. Maximum number of pods:
+
+       From status.capacity.pods:
+         capacity:
+           pods: "110"
+
+       The node can run a maximum of 110 pods. This is the default kubelet
+       setting (--max-pods=110).
+
+    c. Does the node have a healthy kubelet?
+
+       From status.conditions:
+         - type: Ready
+           status: "True"
+           reason: KubeletReady
+           message: "kubelet is posting ready status"
+
+       Yes, the node has a healthy kubelet. The answer is based on the
+       "Ready" condition being "True" with reason "KubeletReady".
+
+       The kubelet listens on port 10250 (the default kubelet port):
+         daemonEndpoints:
+           kubeletEndpoint:
+             Port: 10250
+
+    d. OS/distribution/kernel version:
+
+       From status.nodeInfo:
+         operatingSystem: linux
+         osImage: Debian GNU/Linux 11 (bullseye)
+         kernelVersion: 6.5.11-linuxkit
+         architecture: amd64
+
+       The node runs Debian 11 (bullseye) -- Kind uses a Debian-based
+       container image. The kernel is the host's kernel (shared via
+       container runtime).
+
+    e. Container runtime:
+
+       From status.nodeInfo:
+         containerRuntimeVersion: containerd://1.7.1
+
+       The node uses containerd version 1.7.1 as its container runtime.
+
+    f. Kubernetes version:
+
+       $ kubectl version
+       Client Version: v1.27.3
+       Server Version: v1.27.3
+
+       From status.nodeInfo:
+         kubeletVersion: v1.27.3
+         kubeProxyVersion: v1.27.3
+
+       Yes, the kubelet (v1.27.3) and kube-proxy (v1.27.3) versions are
+       consistent with the server version (v1.27.3).
+
+    g. Images on the node:
+
+       From status.images:
+         - names: [registry.k8s.io/kube-apiserver:v1.27.3]
+         - names: [registry.k8s.io/kube-controller-manager:v1.27.3]
+         - names: [registry.k8s.io/kube-scheduler:v1.27.3]
+         - names: [registry.k8s.io/kube-proxy:v1.27.3]
+         - names: [registry.k8s.io/etcd:3.5.7-0]
+         - names: [registry.k8s.io/coredns/coredns:v1.10.1]
+         - names: [registry.k8s.io/pause:3.9]
+         - names: [docker.io/kindnet/kindnet:v20230511-dc714da8]
+
+       These are the core Kubernetes control-plane images (API server,
+       controller manager, scheduler, proxy, etcd, CoreDNS, pause) plus
+       the Kind CNI plugin (kindnet).
+
+
+12-13. Create the nginx deployment:
+
+   $ kubectl apply -f deployment.yaml
+   deployment.apps/nginx created
+
+   Where deployment.yaml contains:
+     apiVersion: apps/v1
+     kind: Deployment
+     metadata:
+       name: nginx
+     spec:
+       replicas: 3
+       selector:
+         matchLabels:
+           app: nginx
+       template:
+         metadata:
+           labels:
+             app: nginx
+         spec:
+           containers:
+           - name: nginx
+             image: nginx:1.7.9
+             ports:
+             - containerPort: 80
+
+   $ kubectl get po
+   NAME                     READY   STATUS    RESTARTS   AGE
+   nginx-5d59d67564-abc12   1/1     Running   0          30s
+   nginx-5d59d67564-def34   1/1     Running   0          30s
+   nginx-5d59d67564-ghi56   1/1     Running   0          30s
+
+   Three pods are running. 1/1 means each pod has one container and it
+   is in the Running state.
+
+
+14. What does kubectl get deployments tell you?
+
+   $ kubectl get deployments
+   NAME    READY   UP-TO-DATE   AVAILABLE   AGE
+   nginx   3/3     3            3           1m
+
+   It shows:
+   - NAME: the deployment name (nginx)
+   - READY: 3/3 -- all 3 desired replicas are ready
+   - UP-TO-DATE: 3 -- all 3 replicas match the desired template
+   - AVAILABLE: 3 -- all 3 replicas are available to serve traffic
+   - AGE: how long since the deployment was created
+
+
+15. All pods in all namespaces:
+
+   $ kubectl get po --all-namespaces
+   NAMESPACE            NAME                                         READY   STATUS
+   default              nginx-5d59d67564-abc12                       1/1     Running
+   default              nginx-5d59d67564-def34                       1/1     Running
+   default              nginx-5d59d67564-ghi56                       1/1     Running
+   kube-system          coredns-5d78c9869d-abc12                     1/1     Running
+   kube-system          coredns-5d78c9869d-def34                     1/1     Running
+   kube-system          etcd-kind-control-plane                      1/1     Running
+   kube-system          kindnet-abc12                                1/1     Running
+   kube-system          kube-apiserver-kind-control-plane             1/1     Running
+   kube-system          kube-controller-manager-kind-control-plane    1/1     Running
+   kube-system          kube-proxy-abc12                             1/1     Running
+   kube-system          kube-scheduler-kind-control-plane             1/1     Running
+   local-path-storage   local-path-provisioner-6bc4bddd6b-abc12      1/1     Running
+
+   The nginx deployment is created in the "default" namespace. Kubernetes
+   system components run in the "kube-system" namespace.
+
+
+17-18. Create the core-k8s pod:
+
+   $ kubectl create -f pod.yaml
+   pod/core-k8s created
+
+   Where pod.yaml contains:
+     apiVersion: v1
+     kind: Pod
+     metadata:
+       name: core-k8s
+       labels:
+         role: just-an-example
+         app: my-example-app
+         organization: friends-of-manning
+         creator: jay
+     spec:
+       containers:
+       - name: any-old-name-will-do
+         image: docker.io/busybox:latest
+         command: ['sleep','10000']
+         ports:
+         - name: webapp-port
+           containerPort: 80
+           protocol: TCP
+
+   $ kubectl get po
+   NAME                     READY   STATUS    RESTARTS   AGE
+   core-k8s                 1/1     Running   0          15s
+   nginx-5d59d67564-abc12   1/1     Running   0          5m
+   ...
+
+   $ kubectl get po core-k8s -o yaml
+
+   Yes, the information from our yaml file is visible in the output --
+   the metadata (name, labels), spec (containers, command, ports) all
+   appear. However, Kubernetes ADDED many fields when the pod was deployed:
+
+   - metadata.uid: a unique identifier assigned by Kubernetes
+   - metadata.creationTimestamp: when the pod was created
+   - metadata.resourceVersion: for concurrency control
+   - spec.nodeName: which node the pod was scheduled on
+   - spec.serviceAccountName: "default" service account
+   - spec.tolerations: default tolerations added by admission controller
+   - status: entire status section (phase, conditions, podIP, hostIP,
+     containerStatuses with containerID, state, ready flag, etc.)
+
+   Did step 17 create a deployment? No. Creating a Pod directly with
+   kubectl create -f pod.yaml creates a standalone Pod, NOT a Deployment.
+
+   $ kubectl get deployments
+   NAME    READY   UP-TO-DATE   AVAILABLE   AGE
+   nginx   3/3     3            3           6m
+
+   Only the nginx deployment exists. The core-k8s pod is unmanaged --
+   if it dies, no controller will recreate it (unlike the nginx pods
+   which are managed by the Deployment/ReplicaSet controller).
+
+
+19. JSONpath queries:
+
+   a. $ kubectl get pods -o=jsonpath='{.items[0].status.phase}'
+      Running
+
+      This returns the phase of the first pod (items[0]). The phase
+      "Running" means the pod has been bound to a node and all containers
+      have been started.
+
+   b. $ kubectl get pods -o=jsonpath='{.items[0].status.podIP}'
+      10.244.0.5
+
+      This is the IP address assigned to the first pod from the pod CIDR
+      range (10.244.0.0/24). Each pod gets its own unique IP.
+
+   c. $ kubectl get pods -o=jsonpath='{.items[0].status.hostIP}'
+      172.18.0.2
+
+      This is the IP of the node hosting the pod. In Kind, the node is a
+      Docker container with its own IP on the Docker bridge network.
+
+   Yes, this same information was in the full yaml output from step 18
+   under the status section. The jsonpath queries extract specific fields
+   from the same data structure.
+
+
+20. Pod mounts and resolv.conf:
+
+   $ kubectl exec -t -i core-k8s -- mount | grep resolv
+   /dev/sda1 on /etc/resolv.conf type ext4 (rw,relatime)
+
+   The pod's resolv.conf is bind-mounted from the node's filesystem.
+   Kubernetes creates a custom resolv.conf for each pod and mounts it in.
+
+   $ kubectl exec -t -i core-k8s -- cat /etc/resolv.conf
+   nameserver 10.96.0.10
+   search default.svc.cluster.local svc.cluster.local cluster.local
+   options ndots:5
+
+   The pod's nameserver is 10.96.0.10, which is the ClusterIP of the
+   kube-dns (CoreDNS) service.
+
+   $ docker exec -t -i a1b2c3d4e5f6 cat /etc/resolv.conf
+   nameserver 192.168.65.254
+
+   The Node's nameserver is 192.168.65.254 (the host's DNS, typically
+   provided by Docker Desktop).
+
+   These are DIFFERENT. The pod uses the Kubernetes internal DNS service
+   (CoreDNS at 10.96.0.10) for service discovery within the cluster. The
+   node uses the external DNS provided by the host/Docker network. This
+   separation allows pods to resolve Kubernetes service names (like
+   "my-service.default.svc.cluster.local") while the node resolves
+   external hostnames through the host's DNS.
+
+
+21. Output of ps in the pod:
+
+   $ kubectl exec -t -i core-k8s -- ps
+   PID   USER     TIME  COMMAND
+       1 root      0:00 sleep 10000
+      12 root      0:00 ps
+
+   The pod can only see 2 processes: the sleep command (PID 1) and the
+   ps command itself. This is because the pod runs in its own PID
+   namespace -- it has an isolated view of the process table. The sleep
+   command appears as PID 1 inside the pod, even though it has a
+   completely different PID on the node. This PID namespace isolation
+   is a core container feature that prevents containers from seeing or
+   interfering with processes outside their namespace.
+
+
+22-23. Summary: We have created a Kind cluster, deployed an nginx
+   Deployment with 3 replicas, created a standalone core-k8s Pod, and
+   explored the cluster using kubectl, jsonpath queries, and exec commands.
+   We observed PID namespace isolation, DNS configuration differences
+   between pods and nodes, and the metadata Kubernetes adds to objects.

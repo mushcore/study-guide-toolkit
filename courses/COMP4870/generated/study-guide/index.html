@@ -1,0 +1,2704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COMP 4870 — Exam Study Package</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --panel: #121212;
+    --panel-2: #181818;
+    --panel-3: #1f1f1f;
+    --border: #262626;
+    --border-strong: #333;
+    --text: #e5e5e5;
+    --text-dim: #a3a3a3;
+    --text-faint: #737373;
+    --accent: #7aa2f7;
+    --accent-dim: #3d5a8a;
+    --ok: #9ece6a;
+    --bad: #f7768e;
+    --warn: #e0af68;
+    --code-bg: #0d1117;
+    --mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.55;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* Sidebar */
+  aside.sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  aside.sidebar h1 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 0 20px 16px;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+  }
+  aside.sidebar .meta {
+    padding: 16px 20px;
+    font-size: 12px;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+  aside.sidebar .meta .countdown {
+    font-size: 22px;
+    color: var(--accent);
+    font-weight: 600;
+    font-family: var(--mono);
+  }
+  pre.mermaid {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 12px 0 20px;
+    overflow: auto;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  pre.mermaid svg { max-width: 100%; height: auto; }
+  aside.sidebar .meta .count-sub {
+    color: var(--text-faint);
+    font-size: 11px;
+    margin-top: 4px;
+  }
+  aside.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 0;
+    flex: 1;
+  }
+  aside.sidebar nav button {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    text-align: left;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all 0.12s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  aside.sidebar nav button .nav-num {
+    color: var(--text-faint);
+    font-size: 11px;
+    font-family: var(--mono);
+  }
+  aside.sidebar nav button:hover { color: var(--text); background: var(--panel-2); }
+  aside.sidebar nav button.active {
+    color: var(--text);
+    border-left-color: var(--accent);
+    background: var(--panel-2);
+  }
+  aside.sidebar .foot {
+    padding: 12px 20px;
+    font-size: 11px;
+    color: var(--text-faint);
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+  }
+
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+  }
+  section.view { display: none; padding: 32px 40px; max-width: 1200px; margin: 0 auto; }
+  section.view.active { display: block; }
+  h2.view-title { font-size: 22px; font-weight: 600; margin-bottom: 6px; letter-spacing: -0.02em; }
+  p.view-sub { color: var(--text-dim); font-size: 13px; margin-bottom: 28px; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .panel h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; letter-spacing: 0.02em; color: var(--text); }
+  .panel h4 { font-size: 13px; font-weight: 600; color: var(--text); margin: 14px 0 8px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+  .stat {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 14px 16px;
+  }
+  .stat .label { color: var(--text-faint); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .stat .value { font-size: 22px; font-weight: 600; color: var(--text); font-family: var(--mono); }
+  .stat .sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+  button.btn {
+    background: var(--panel-2);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    padding: 7px 14px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  button.btn:hover { background: var(--panel-3); border-color: var(--accent-dim); }
+  button.btn.primary { background: var(--accent-dim); color: #fff; border-color: var(--accent); }
+  button.btn.primary:hover { background: var(--accent); }
+  button.btn.ok { background: #2d4a2a; border-color: var(--ok); color: var(--ok); }
+  button.btn.bad { background: #4a2d2a; border-color: var(--bad); color: var(--bad); }
+
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-family: var(--mono);
+    border: 1px solid var(--border-strong);
+    color: var(--text-dim);
+    background: var(--panel-2);
+  }
+  .badge.high { border-color: var(--bad); color: var(--bad); }
+  .badge.med { border-color: var(--warn); color: var(--warn); }
+  .badge.low { border-color: var(--ok); color: var(--ok); }
+  .badge.pillar-tech { border-color: #7aa2f7; color: #7aa2f7; }
+  .badge.pillar-proc { border-color: #bb9af7; color: #bb9af7; }
+  .badge.bloom { color: var(--text-faint); border-color: var(--border); }
+
+  pre, code.inline { font-family: var(--mono); font-size: 12px; color: #c9d1d9; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 12px; overflow-x: auto; line-height: 1.45; margin: 8px 0; }
+  code.inline { background: var(--panel-3); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: var(--accent); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table th, table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  table th { color: var(--text-dim); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; background: var(--panel-2); }
+  table td code.inline { white-space: nowrap; }
+
+  .prio-item { padding: 8px 12px; border-left: 2px solid var(--border); margin-bottom: 6px; font-size: 13px; }
+  .prio-item.hi { border-left-color: var(--bad); }
+  .prio-item.low { border-left-color: var(--ok); }
+  .prio-item .why { color: var(--text-faint); font-size: 11px; margin-top: 2px; }
+
+  /* Lessons */
+  .lesson-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .lesson-nav button { background: var(--panel-2); border: 1px solid var(--border); color: var(--text-dim); padding: 7px 12px; font-size: 12px; border-radius: 3px; cursor: pointer; font-family: inherit; }
+  .lesson-nav button:hover { color: var(--text); border-color: var(--accent-dim); }
+  .lesson-nav button.active { border-color: var(--accent); color: var(--accent); background: var(--panel-3); }
+  .lesson-nav button.done { color: var(--ok); border-color: var(--ok); }
+  .lesson {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+    padding: 28px 36px; max-width: 780px; margin: 0 auto 24px; line-height: 1.7;
+  }
+  .lesson .lesson-head { padding-bottom: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .lesson .lesson-num { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+  .lesson h2.lesson-title { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .lesson .hook { color: var(--text-dim); font-size: 13px; font-style: italic; }
+  .lesson p { margin-bottom: 14px; font-size: 14px; }
+  .lesson h4 { font-size: 14px; font-weight: 600; margin: 20px 0 10px; color: var(--accent); }
+  .lesson ul, .lesson ol { padding-left: 24px; margin-bottom: 14px; }
+  .lesson li { margin-bottom: 6px; font-size: 14px; }
+  .lesson pre { margin: 12px 0; font-size: 12px; }
+  .lesson .analogy { background: var(--panel-2); border-left: 3px solid var(--warn); padding: 12px 16px; margin: 14px 0; font-size: 13px; color: var(--text-dim); border-radius: 0 4px 4px 0; }
+  .lesson .analogy strong { color: var(--warn); }
+  .lesson .checkpoint { background: var(--panel-3); border: 1px solid var(--accent-dim); border-radius: 4px; padding: 14px 16px; margin: 20px 0 8px; }
+  .lesson .checkpoint .ck-label { font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; font-weight: 600; }
+  .lesson .checkpoint .ck-q { font-size: 13px; margin-bottom: 8px; font-weight: 500; }
+  .lesson .checkpoint .ck-a { font-size: 13px; color: var(--text-dim); display: none; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border); }
+  .lesson .checkpoint.revealed .ck-a { display: block; }
+  .lesson .takeaway { background: linear-gradient(to right, rgba(122, 162, 247, 0.06), transparent); border-left: 3px solid var(--accent); padding: 12px 16px; margin: 20px 0; font-size: 13px; border-radius: 0 4px 4px 0; }
+  .lesson .takeaway strong { color: var(--accent); }
+  .lesson-footer { display: flex; justify-content: space-between; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+  /* Flashcards */
+  .flashcard { perspective: 1500px; min-height: 260px; margin: 24px auto; max-width: 680px; cursor: pointer; }
+  .flashcard-inner { position: relative; width: 100%; min-height: 260px; transition: transform 0.5s; transform-style: preserve-3d; }
+  .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+  .flashcard-side {
+    position: absolute; inset: 0; padding: 28px;
+    background: var(--panel); border: 1px solid var(--border-strong); border-radius: 6px;
+    backface-visibility: hidden; display: flex; flex-direction: column; min-height: 260px;
+  }
+  .flashcard-side.back { transform: rotateY(180deg); background: var(--panel-2); }
+  .flashcard-side .q-label, .flashcard-side .a-label { color: var(--text-faint); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+  .flashcard-side .a-label { color: var(--accent); }
+  .flashcard-side .q-body, .flashcard-side .a-body { font-size: 15px; line-height: 1.6; flex: 1; }
+  .flashcard-side .card-meta { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 11px; color: var(--text-faint); }
+  .fc-controls { max-width: 680px; margin: 0 auto; display: flex; gap: 8px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+  .fc-controls .fc-progress { color: var(--text-faint); font-size: 12px; font-family: var(--mono); }
+  .fc-filter { margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .fc-filter button { background: var(--panel-2); border: 1px solid var(--border); color: var(--text-dim); padding: 5px 12px; font-size: 11px; border-radius: 3px; cursor: pointer; font-family: inherit; }
+  .fc-filter button.active { border-color: var(--accent); color: var(--accent); }
+  .fc-filter button:hover { color: var(--text); }
+
+  /* Topics */
+  .topic-list { display: flex; flex-direction: column; gap: 12px; }
+  .topic-item { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .topic-header { padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.1s; }
+  .topic-header:hover { background: var(--panel-2); }
+  .topic-header .ttl { font-size: 14px; font-weight: 500; }
+  .topic-header .ttl .chapter { color: var(--text-faint); font-size: 11px; margin-left: 10px; font-family: var(--mono); }
+  .topic-header .tgl { color: var(--text-faint); font-family: var(--mono); }
+  .topic-body { padding: 0 18px 18px; display: none; border-top: 1px solid var(--border); background: var(--panel-2); }
+  .topic-item.expanded .topic-body { display: block; padding-top: 18px; }
+  .topic-body ul { padding-left: 20px; margin: 8px 0; color: var(--text-dim); }
+  .topic-body li { margin-bottom: 6px; font-size: 13px; }
+  .topic-body strong { color: var(--text); }
+
+  /* Mock exam + questions */
+  .mock-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 24px; }
+  .mock-timer { font-family: var(--mono); font-size: 24px; color: var(--accent); font-weight: 600; }
+  .mock-info { font-size: 12px; color: var(--text-dim); }
+  .question { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin-bottom: 16px; }
+  .question .q-num { color: var(--text-faint); font-size: 11px; font-family: var(--mono); margin-bottom: 6px; }
+  .question .q-type-tag { font-size: 10px; padding: 2px 6px; border-radius: 3px; background: var(--panel-3); color: var(--text-dim); margin-left: 6px; font-family: var(--mono); }
+  .question .q-text { font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
+  .question .q-text pre { margin: 10px 0; font-size: 11px; }
+  .choices { display: flex; flex-direction: column; gap: 6px; }
+  .choice { padding: 10px 14px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; font-size: 13px; transition: all 0.1s; background: var(--panel-2); display: flex; gap: 10px; align-items: flex-start; }
+  .choice:hover { border-color: var(--accent-dim); }
+  .choice.selected { border-color: var(--accent); background: var(--panel-3); }
+  .choice.correct { border-color: var(--ok); background: rgba(158, 206, 106, 0.08); }
+  .choice.incorrect { border-color: var(--bad); background: rgba(247, 118, 142, 0.08); }
+  .choice .letter { color: var(--text-faint); font-family: var(--mono); font-weight: 600; min-width: 20px; }
+  .tf-group { display: flex; gap: 10px; }
+  .tf-group .choice { flex: 1; justify-content: center; }
+  .short-answer textarea, .essay textarea, .code-annotate textarea { width: 100%; min-height: 80px; background: var(--code-bg); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px; font-family: var(--mono); font-size: 12px; resize: vertical; line-height: 1.5; }
+  .essay textarea { min-height: 160px; }
+  .code-annotate textarea { min-height: 200px; }
+  .short-answer textarea:focus, .essay textarea:focus, .code-annotate textarea:focus { outline: none; border-color: var(--accent); }
+  .reveal-answer { margin-top: 12px; padding: 12px 14px; background: var(--panel-3); border-left: 2px solid var(--accent); border-radius: 0 4px 4px 0; font-size: 13px; display: none; }
+  .question.revealed .reveal-answer { display: block; }
+  .reveal-answer .label { color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; font-weight: 600; }
+  .reveal-answer .expl { color: var(--text-dim); margin-top: 6px; font-size: 12px; }
+  .score-panel { padding: 18px 24px; background: var(--panel); border: 1px solid var(--accent-dim); border-radius: 6px; margin: 20px 0; }
+  .score-panel .score-big { font-family: var(--mono); font-size: 28px; color: var(--accent); font-weight: 600; }
+  .score-panel .score-break { color: var(--text-dim); font-size: 12px; margin-top: 8px; }
+
+  /* Cheatsheet */
+  .sheet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 900px) { .sheet-grid { grid-template-columns: 1fr; } }
+  .sheet-block { background: var(--panel); border: 1px solid var(--border); border-radius: 4px; padding: 14px 16px; font-size: 12px; line-height: 1.55; }
+  .sheet-block h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 8px; font-weight: 600; }
+  .sheet-block ul { padding-left: 18px; color: var(--text-dim); }
+  .sheet-block li { margin-bottom: 4px; }
+  .sheet-block li strong { color: var(--text); }
+
+  .mute { color: var(--text-faint); }
+  .dim { color: var(--text-dim); }
+  .mb0 { margin-bottom: 0 !important; }
+  .mb1 { margin-bottom: 8px; }
+  .mb2 { margin-bottom: 16px; }
+  .mb3 { margin-bottom: 24px; }
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--panel); }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+
+  @media print {
+    aside.sidebar { display: none; }
+    main { overflow: visible; }
+    section.view { display: block !important; padding: 12px; }
+    .panel, .sheet-block { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <h1 id="side-course">COMP 4870</h1>
+  <div class="meta">
+    <div class="countdown" id="countdown">–</div>
+    <div class="count-sub">until exam</div>
+    <div id="side-exam-info" style="margin-top:10px;font-size:11px;">Fri Apr 24 · 10:30 · SE12-327</div>
+  </div>
+  <nav id="nav">
+    <button data-section="dashboard" class="active"><span>Dashboard</span><span class="nav-num">01</span></button>
+    <button data-section="priorities"><span>Priorities</span><span class="nav-num">02</span></button>
+    <button data-section="lessons"><span>Lessons (from 0)</span><span class="nav-num">03</span></button>
+    <button data-section="topics"><span>Topic Deep-Dives</span><span class="nav-num">04</span></button>
+    <button data-section="flashcards"><span>Flashcards</span><span class="nav-num">05</span></button>
+    <button data-section="mockexam"><span>Mock Exam</span><span class="nav-num">06</span></button>
+    <button data-section="quizzes"><span>Quiz Replay</span><span class="nav-num">07</span></button>
+    <button data-section="code"><span>Code / Applied</span><span class="nav-num">08</span></button>
+    <button data-section="cheatsheet"><span>Cheat Sheet</span><span class="nav-num">09</span></button>
+  </nav>
+  <div class="foot" id="side-foot">v1.0 · Medhat Elmasry</div>
+</aside>
+
+<main>
+
+<section id="dashboard" class="view active">
+  <h2 class="view-title">Dashboard</h2>
+  <p class="view-sub" id="dashboard-sub">COMP 4870 · Web Applications · Final Exam prep</p>
+  <div id="dashboard-content"></div>
+</section>
+
+<section id="priorities" class="view">
+  <h2 class="view-title">Priorities</h2>
+  <p class="view-sub">What the instructor flagged, what the past exams revealed, what to skip.</p>
+  <div id="priorities-content"></div>
+</section>
+
+<section id="lessons" class="view">
+  <h2 class="view-title">Lessons — teaching from zero</h2>
+  <p class="view-sub">First-principles walkthroughs with analogies. Read top to bottom in order.</p>
+  <div class="lesson-nav" id="lesson-nav"></div>
+  <div id="lesson-content"></div>
+</section>
+
+<section id="topics" class="view">
+  <h2 class="view-title">Topic Deep-Dives</h2>
+  <p class="view-sub">Click any topic to expand. Filter by pillar.</p>
+  <div style="margin-bottom:16px;" class="fc-filter" id="topic-filter"></div>
+  <div class="topic-list" id="topic-list"></div>
+</section>
+
+<section id="flashcards" class="view">
+  <h2 class="view-title">Flashcards</h2>
+  <p class="view-sub">Active recall. Click card to flip. Mark known/unknown (saved in localStorage). Shortcuts: ← → space k u.</p>
+  <div class="fc-filter" id="fc-filter">
+    <button data-filter="all" class="active">All</button>
+    <button data-filter="unknown">Unknown only</button>
+    <button data-filter="known">Known</button>
+  </div>
+  <div class="fc-filter" id="fc-topic-filter"></div>
+  <div class="flashcard" id="flashcard" onclick="flipCard()">
+    <div class="flashcard-inner">
+      <div class="flashcard-side front">
+        <div class="q-label">Question · <span id="fc-topic-lbl">–</span></div>
+        <div class="q-body" id="fc-q">Loading...</div>
+        <div class="card-meta"><span id="fc-meta"></span><span class="mute">Click to flip</span></div>
+      </div>
+      <div class="flashcard-side back">
+        <div class="a-label">Answer</div>
+        <div class="a-body" id="fc-a">–</div>
+        <div class="card-meta"><span id="fc-meta-b"></span><span class="mute">Click to flip back</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="fc-controls">
+    <button class="btn" onclick="prevCard()">← Previous</button>
+    <div class="fc-progress" id="fc-progress">–/–</div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn bad" onclick="markCard('unknown')">Unknown (again)</button>
+      <button class="btn ok" onclick="markCard('known')">Known</button>
+    </div>
+    <button class="btn primary" onclick="nextCard()">Next →</button>
+  </div>
+  <div style="text-align:center;margin-top:20px;">
+    <button class="btn" onclick="resetFlashcards()">Reset progress</button>
+    <button class="btn" onclick="shuffleFlashcards()">Shuffle</button>
+  </div>
+</section>
+
+<section id="mockexam" class="view">
+  <h2 class="view-title">Mock Exam</h2>
+  <p class="view-sub">Timed practice matching real exam format. Submit to auto-grade MCQ + T/F; self-grade written.</p>
+  <div class="mock-header">
+    <div><div class="mock-info">Simulated final · <span id="mock-marks">–</span> marks · <span id="mock-qcount">–</span> questions</div></div>
+    <div class="mock-timer" id="mock-timer">–:--:--</div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn primary" id="mock-start" onclick="startMock()">Start timer</button>
+      <button class="btn" onclick="submitMock()">Submit & grade</button>
+    </div>
+  </div>
+  <div id="mock-score-container"></div>
+  <div id="mock-questions"></div>
+</section>
+
+<section id="quizzes" class="view">
+  <h2 class="view-title">Quiz Replay</h2>
+  <p class="view-sub">Past quizzes and exam questions with explanations. Instructors often reuse — memorize these cold.</p>
+  <div class="fc-filter" id="quiz-filter"></div>
+  <div id="quiz-questions"></div>
+</section>
+
+<section id="code" class="view">
+  <h2 class="view-title">Code / Applied Practice</h2>
+  <p class="view-sub">Practice problems with starter + solution + explanation.</p>
+  <div id="code-problems"></div>
+</section>
+
+<section id="cheatsheet" class="view">
+  <h2 class="view-title">Cheat Sheet</h2>
+  <p class="view-sub">Condensed reference. Print-friendly (Ctrl+P). For morning-of review only.</p>
+  <div id="cheatsheet-content"></div>
+</section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'dark',
+      themeVariables: {
+        darkMode: true,
+        background: '#0a0a0a',
+        primaryColor: '#1f1f1f',
+        primaryTextColor: '#e5e5e5',
+        primaryBorderColor: '#7aa2f7',
+        lineColor: '#7aa2f7',
+        textColor: '#e5e5e5',
+        mainBkg: '#181818',
+        secondaryColor: '#262626',
+        tertiaryColor: '#121212'
+      },
+      flowchart: { htmlLabels: true, curve: 'basis' }
+    });
+    // Re-run each time lessons view becomes active — lesson 12 has the diagrams
+    const renderMermaidIn = (root) => {
+      const nodes = root.querySelectorAll('pre.mermaid:not([data-processed])');
+      nodes.forEach((n, i) => {
+        n.setAttribute('data-processed', 'true');
+        const id = 'mmd-' + Date.now() + '-' + i;
+        const src = n.textContent;
+        mermaid.render(id, src).then(({ svg }) => { n.innerHTML = svg; }).catch(() => {});
+      });
+    };
+    window.addEventListener('load', () => {
+      setTimeout(() => renderMermaidIn(document), 200);
+    });
+    // Observe lesson view for re-renders
+    const obs = new MutationObserver(() => renderMermaidIn(document));
+    obs.observe(document.body, { childList: true, subtree: true });
+  }
+</script>
+<script>
+/* ============ DATA (populated by subsequent Edits) ============ */
+const DATA = {
+  meta: {
+    course: 'COMP 4870',
+    title: 'Web Applications',
+    instructor: 'Medhat Elmasry',
+    examDateISO: '2026-04-24T10:30:00-07:00',
+    examDateHuman: 'Fri Apr 24 · 10:30 · SE12-327',
+    weight: '20%',
+    mockDurationMinutes: 120,
+    dashboardStats: [],
+    formatTable: { headers: ['Type','Count','Marks ea','Total','Notes'], rows: [] },
+    instructorIntel: [],
+    extraPanels: []
+  },
+  priorities: { high: [], low: [], table: null },
+  lessons: [],
+  flashcards: [],
+  topics: [],
+  mockExam: [],
+  quizzes: {},
+  codePractice: [],
+  cheatSheet: []
+};
+
+// === DATA.meta.dashboardStats ===
+DATA.meta.dashboardStats = [
+  { label: 'Exam', value: 'Apr 24', sub: '10:30 · SE12-327' },
+  { label: 'Format', value: '60 MCQ + 10 Match + 1 Code', sub: '80 marks · 60 min' },
+  { label: 'Pass target', value: '55-60%', sub: 'broad partial credit' },
+  { label: 'Cheat sheet', value: '8.5×11 hand-written', sub: 'both sides allowed' }
+];
+
+// === DATA.meta.formatTable.rows ===
+DATA.meta.formatTable.rows = [
+  { type: 'Multiple Choice', count: '60', marksea: '1', total: '60', notes: '5 choices a-e, single correct' },
+  { type: 'Match Two Columns', count: '10', marksea: '1', total: '10', notes: 'A-J ↔ 1-10 mapping' },
+  { type: 'Coding Question', count: '1', marksea: '10', total: '10', notes: 'likely gRPC / TDD / ML.NET' },
+  { type: 'TOTAL', count: '71', marksea: '—', total: '80', notes: '60 min · pass 55%' }
+];
+
+// === DATA.meta.instructorIntel ===
+DATA.meta.instructorIntel = [
+  '<strong>Instructor:</strong> Medhat Elmasry · Covers weeks 7-13 (post-midterm, including W7)',
+  '<strong>Highest weight:</strong> AI (13) + ML.NET (12) = 25 marks — 31% of exam. Cannot skip.',
+  '<strong>Mid-weight:</strong> Cache/Redis (8), File-based (8), gRPC (7), TDD (6), Aspire (5) = 34 marks',
+  '<strong>Coding question (10 marks):</strong> most likely gRPC proto, xUnit test class, or ML.NET pipeline',
+  '<strong>Midterm style (matched on final):</strong> MCQ with 5 options a-e, exact method-name recognition, fake API distractors',
+  '<strong>Match column pattern (from midterm):</strong> package → file/command (e.g. React → Vite, TypeScript → tsc)',
+  '<strong>HAND-WRITTEN cheat sheet 8.5×11 both sides:</strong> pack method names, package names, exact syntax. Not printed.',
+  '<strong>Allowed scope:</strong> ASP.NET Core fundamentals carry over; exam focuses on W7-13 content'
+];
+
+// === DATA.meta.extraPanels ===
+DATA.meta.extraPanels = [
+  { title: 'Exam week schedule (competing load)', html: '<ul style="margin-left:18px;line-height:1.7"><li>Mon Apr 20 — COMP 4911</li><li>Tue Apr 21 — COMP 4736</li><li>Wed Apr 22 — LIBS 7102</li><li>Thu Apr 23 — COMP 4915</li><li><strong style="color:var(--accent)">Fri Apr 24 10:30 — COMP 4870</strong></li><li>Fri Apr 24 15:30 — COMP 4537 (back-to-back same day)</li></ul>' },
+  { title: 'Pass math (brutal)', html: '<p>Need <strong>44/80 = 55%</strong> to pass. Strategy:</p><ul style="margin-left:18px;line-height:1.7"><li>MCQ (60): at 50% hit rate → 30 marks</li><li>Match (10): at 50% → 5 marks</li><li>Code (10): attempt for 4-6 marks partial</li><li>Target floor: 39-41. Must push MCQ to 55%+ to clear pass.</li></ul>' }
+];
+
+// === DATA.priorities ===
+DATA.priorities = {
+  high: [
+    { title: 'AI / Semantic Kernel / MAF / MCP / Ollama (13 marks)', why: 'Biggest block. Kernel, ChatHistory, AIAgent, AIFunctionFactory, AsAIAgent, MCP transports (stdio/SSE), GitHub Models endpoint vs Ollama localhost:11434.' },
+    { title: 'ML.NET (12 marks)', why: 'MLContext, IDataView, Fit() returns ITransformer, LoadFromTextFile<T>, PredictionEngine, trainer namespaces (Regression/BinaryClassification/MulticlassClassification).' },
+    { title: 'Cache / Redis (8 marks)', why: 'IMemoryCache vs IDistributedCache, AddStackExchangeRedisCache, <cache> tag helper, vary-by-*, sliding vs absolute expiration.' },
+    { title: 'File-based apps (8 marks)', why: '#:package #:sdk #:property directive syntax (NO space after colon), dotnet run app.cs, dotnet project convert, .NET 10 feature.' },
+    { title: 'gRPC (7 marks)', why: 'Coding question candidate. .proto syntax, field tags, AddGrpc/MapGrpcService, GrpcChannel.ForAddress, Grpc.Tools <Protobuf> item.' },
+    { title: 'TDD / xUnit (6 marks)', why: 'Coding question candidate. [Fact] vs [Theory] [InlineData], AAA, Assert.Equal(expected, actual), constructor setup, IDisposable teardown.' }
+  ],
+  low: [
+    { title: 'Blazor / QuickGrid (2 marks)', why: 'Low weight. Know PropertyColumn vs TemplateColumn, PaginationState, @bind:event="oninput". Skip WASM vs Server deep-dive if tight.' },
+    { title: 'Excel/PDF/Chart (2 marks)', why: 'Tiny weight. Know ClosedXML, iText7+bouncy-castle, File() return, MIME types. Don\'t memorize full code.' },
+    { title: 'Tag Helpers (3 marks)', why: 'asp-for / asp-controller / asp-action pattern. Custom TagHelper class. Kebab-case property mapping. Mid-low priority.' },
+    { title: 'Earlier topics (midterm material)', why: 'Exam scope is weeks 7-13. Fundamentals may appear as context only — don\'t re-study MVC/Razor/EF.' }
+  ],
+  table: {
+    headers: ['Topic', 'Marks', '% of MCQ+Match (70)', 'Study depth'],
+    rows: [
+      ['AI / SLM / SK / MAF / MCP', '13', '19%', 'DEEP — recognize every class + method'],
+      ['ML.NET', '12', '17%', 'DEEP — full pipeline walkthrough'],
+      ['Cache / Redis', '8', '11%', 'MEDIUM — 3 strategies + code patterns'],
+      ['File-based apps', '8', '11%', 'MEDIUM — directive syntax exact'],
+      ['gRPC', '7', '10%', 'MEDIUM+ — coding candidate'],
+      ['TDD / xUnit', '6', '9%', 'MEDIUM+ — coding candidate'],
+      ['Aspire', '5', '7%', 'MEDIUM — AddProject/WithReference'],
+      ['Localization', '4', '6%', 'LIGHT — AddLocalization + resx naming'],
+      ['Tag Helpers', '3', '4%', 'LIGHT — built-in + custom class'],
+      ['Blazor QuickGrid', '2', '3%', 'QUICK — PropertyColumn/Pagination'],
+      ['Excel/PDF/Chart', '2', '3%', 'QUICK — package names only']
+    ]
+  }
+};
+
+// === DATA.lessons ===
+DATA.lessons = [
+  {
+    n: 1,
+    title: 'The exam game plan (pass at 55%)',
+    hook: 'You are starting behind and need 44 out of 80 marks. Strategy = breadth, not depth.',
+    html: `<p>Elmasry\'s exam is 60 MCQ + 10 match + 1 coding question = 80 marks. Your enemy is time (60 minutes) and topic breadth. Your friend is a hand-written cheat sheet (8.5×11, both sides).</p>
+      <div class="callout analogy"><strong>Analogy —</strong> Think of the exam like a buffet where each dish is one topic. You don\'t need to finish any dish. You need to taste every dish. One deep topic (ML.NET) at 100% = 12 marks; 10 shallow topics at 40% recognition = 28 marks. Shallow-broad wins.</div>
+      <p><strong>Math:</strong> If you score 30/60 MCQ (50%) + 5/10 match + 4/10 on the coding question, you hit 39 — two marks short of pass. You need to push MCQ recognition to 60% (36) to clear comfortably.</p>
+      <div class="callout take"><strong>Takeaway —</strong> Every topic gets at least one pass. Topics with high weight (AI, ML.NET) get two passes. No topic gets zero.</div>
+      <p><strong>Check:</strong> What\'s the MINIMUM marks across MCQ (at 60% hit) + Match (at 50%) + Code (at 40%)?</p>
+      <details><summary>Answer</summary><p>MCQ: 36, Match: 5, Code: 4 → <strong>45/80 = 56%</strong>. That\'s your floor. Study to exceed.</p></details>
+      <h4 style="margin-top:20px;color:var(--text-dim)">Where the marks live (MCQ + Match portion, 70 total)</h4>
+      <pre class="mermaid">
+pie showData title Marks by topic
+  "AI/SK/MAF/MCP" : 13
+  "ML.NET" : 12
+  "Cache/Redis" : 8
+  "File-based apps" : 8
+  "gRPC" : 7
+  "TDD/xUnit" : 6
+  "Aspire" : 5
+  "Localization" : 4
+  "Tag Helpers" : 3
+  "Blazor" : 2
+  "Excel/PDF/Chart" : 2
+      </pre>
+      <p style="color:var(--text-dim);font-size:13px">AI + ML.NET = <strong>25 of 70 marks (36%)</strong>. Drop either and you lose pass probability.</p>`
+  },
+  {
+    n: 2,
+    title: 'Semantic Kernel and chat completion',
+    hook: 'SK is Microsoft\'s AI glue. Build a Kernel, feed it messages, let it call plugins.',
+    html: `<p><strong>Semantic Kernel (SK)</strong> orchestrates LLM calls. You build a <code>Kernel</code>, it exposes <code>IChatCompletionService</code>, you hand it a <code>ChatHistory</code> with messages, it returns a response.</p>
+      <div class="callout analogy"><strong>Analogy —</strong> Kernel is a kitchen. Plugins are ingredients. ChatHistory is the conversation log. The chef (LLM) cooks responses based on what\'s in the log.</div>
+      <pre><code>// Program.cs — register SK
+var builder = Kernel.CreateBuilder();
+builder.AddOllamaChatCompletion("llama3", new Uri("http://localhost:11434"));
+// OR GitHub Models endpoint: https://models.github.ai/inference
+Kernel kernel = builder.Build();
+var chat = kernel.GetRequiredService&lt;IChatCompletionService&gt;();
+var history = new ChatHistory("You are helpful.");
+history.AddUserMessage("Hello");
+var reply = await chat.GetChatMessageContentAsync(history, kernel: kernel);</code></pre>
+      <p><strong>Plugins:</strong> C# classes decorated with <code>[KernelFunction]</code>. Register via <code>kernel.ImportPluginFromType&lt;T&gt;()</code> or <code>ImportPluginFromPromptDirectory</code> for skprompt.txt plugins.</p>
+      <h4 style="margin-top:16px;color:var(--text-dim)">The SK call chain</h4>
+      <pre class="mermaid">
+flowchart TB
+  B["Kernel.CreateBuilder()"] --> AD["AddOllamaChatCompletion / AddOpenAIChatCompletion"]
+  AD --> K["Kernel = Build()"]
+  K -- "GetRequiredService&lt;IChatCompletionService&gt;" --> CS[IChatCompletionService]
+  K -- "ImportPluginFromType&lt;T&gt;" --> PL["Plugin&#10;[KernelFunction]"]
+  H["ChatHistory('system')&#10;.AddUserMessage(...)"] --> CS
+  CS -- GetChatMessageContentAsync --> OUT[response]
+      </pre>
+      <div class="callout take"><strong>Takeaway —</strong> Kernel + ChatHistory + IChatCompletionService is the trio. Memorize this chain.</div>`
+  },
+  {
+    n: 3,
+    title: 'Microsoft Agent Framework (MAF) and MCP',
+    hook: 'MAF is SK\'s bigger sibling — agents with memory, tools, planners. MCP is tool transport.',
+    html: `<p><strong>MAF</strong> (Microsoft.Agents.AI) wraps an LLM into an <code>AIAgent</code>. It uses <code>AIFunction</code> (one tool) built via <code>AIFunctionFactory.Create(delegate)</code>.</p>
+      <pre><code>// MAF agent with tools
+var client = new OpenAIClient(...); // points to GitHub Models or Ollama
+var agent = client.AsAIAgent("gpt-4o-mini");
+var tool = AIFunctionFactory.Create(GetWeather, "get_weather", "Get weather");
+agent.Tools.Add(tool);
+var session = new AgentSession(agent);
+await foreach (var update in session.RunStreamingAsync("What\'s the weather?")) {
+    Console.Write(update);
+}</code></pre>
+      <div class="callout analogy"><strong>Analogy —</strong> SK = drinking coffee. MAF = espresso machine that knows your order history. MCP = the USB standard that lets any tool plug into any agent.</div>
+      <p><strong>MCP (Model Context Protocol):</strong> Transport for AI tools. Two transports:</p>
+      <ul style="margin-left:24px"><li><code>stdio</code> — local process over stdin/stdout</li><li><code>SSE</code> — Server-Sent Events over HTTP (cloud)</li></ul>
+      <h4 style="margin-top:16px;color:var(--text-dim)">MAF agent stack</h4>
+      <pre class="mermaid">
+flowchart TB
+  C[OpenAIClient / GitHub Models] -- ".AsAIAgent('gpt-4o-mini')" --> A[AIAgent]
+  A -- "agent.Tools.Add(tool)" --> F["AIFunction&#10;AIFunctionFactory.Create"]
+  A --> S["AgentSession&#10;holds multi-turn history"]
+  S -- "RunAsync / RunStreamingAsync" --> R["Response&#10;or token stream"]
+      </pre>
+      <h4 style="margin-top:16px;color:var(--text-dim)">MCP transports — stdio vs SSE</h4>
+      <pre class="mermaid">
+flowchart LR
+  subgraph STDIO["stdio (LOCAL)"]
+    H1[AI Host] <-. stdin/stdout .-> T1["MCP Server&#10;co-located process"]
+  end
+  subgraph SSE["SSE (REMOTE / CLOUD)"]
+    H2[AI Host] <-. HTTP SSE .-> T2["MCP Server&#10;Azure Functions HTTPS"]
+  end
+      </pre>
+      <div class="callout take"><strong>Takeaway —</strong> AsAIAgent() converts a model client into an agent. AIFunctionFactory.Create() wraps a C# method into a tool.</div>`
+  },
+  {
+    n: 4,
+    title: 'ML.NET: seven steps to a model',
+    hook: 'ML.NET is always: context → load → split → pipeline → fit → evaluate → save.',
+    html: `<p>Every ML.NET program follows the same pipeline. Memorize the shape; fill in trainer + columns.</p>
+      <pre><code>// 1. Context
+var mlContext = new MLContext(seed: 0);
+// 2. Load
+IDataView data = mlContext.Data.LoadFromTextFile&lt;TaxiTrip&gt;("taxi.csv", hasHeader: true, separatorChar: ',');
+// 3. Split
+var split = mlContext.Data.TrainTestSplit(data, testFraction: 0.2);
+// 4. Pipeline
+var pipeline = mlContext.Transforms.CopyColumns("Label", "FareAmount")
+    .Append(mlContext.Transforms.Categorical.OneHotEncoding("VendorIdEncoded", "VendorId"))
+    .Append(mlContext.Transforms.Concatenate("Features", "VendorIdEncoded", "TripDistance"))
+    .Append(mlContext.Regression.Trainers.FastTree());
+// 5. Fit
+ITransformer model = pipeline.Fit(split.TrainSet);
+// 6. Evaluate
+var predictions = model.Transform(split.TestSet);
+var metrics = mlContext.Regression.Evaluate(predictions, "Label");
+Console.WriteLine($"R²: {metrics.RSquared}");
+// 7. Save
+mlContext.Model.Save(model, data.Schema, "model.zip");</code></pre>
+      <div class="callout analogy"><strong>Analogy —</strong> MLContext is the lab. IDataView is a raw sample jar. The pipeline is the lab protocol. Fit() runs the experiment. ITransformer is the recipe you save for next time.</div>
+      <h4 style="margin-top:16px;color:var(--text-dim)">The 7-step pipeline — memorize the shape</h4>
+      <pre class="mermaid">
+flowchart LR
+  M[MLContext] --> L["LoadFromTextFile&lt;T&gt;&#10;IDataView"]
+  L --> T[TrainTestSplit 0.2]
+  T --> P["pipeline:&#10;Concatenate + Trainer"]
+  P --> F["Fit() → ITransformer"]
+  F --> E["Evaluate()&#10;RSquared / RMSE"]
+  E --> V["Model.Save('m.zip')"]
+      </pre>
+      <h4 style="margin-top:16px;color:var(--text-dim)">Trainer namespaces by task</h4>
+      <pre class="mermaid">
+flowchart TB
+  ML[mlContext]
+  ML --> REG[".Regression.Trainers&#10;FastTree, Sdca"]
+  ML --> BIN[".BinaryClassification.Trainers&#10;Logistic"]
+  ML --> MC[".MulticlassClassification.Trainers&#10;NaiveBayes"]
+  ML --> CL[".Clustering.Trainers&#10;KMeans"]
+      </pre>
+      <div class="callout take"><strong>Takeaway —</strong> Fit() returns ITransformer. LoadFromTextFile returns IDataView. RSquared is closer-to-1 = better for regression.</div>`
+  },
+  {
+    n: 5,
+    title: 'Caching: three strategies for one problem',
+    hook: 'Cache = "don\'t recompute what you already know". Three flavors, one pitfall.',
+    html: `<p>ASP.NET Core gives you three caching primitives. Each has a sweet spot.</p>
+      <ol style="margin-left:24px;line-height:1.8">
+        <li><strong>IMemoryCache</strong> — per-process RAM. Fast, simple, FAILS in web farms (each server has its own).</li>
+        <li><strong>IDistributedCache (Redis)</strong> — shared across servers. Solves the farm problem. Requires Redis container.</li>
+        <li><strong>Cache Tag Helper</strong> — declarative HTML fragment cache in Razor views. Uses IMemoryCache under the hood.</li>
+      </ol>
+      <pre><code>// In-memory
+builder.Services.AddMemoryCache();
+if (!_cache.TryGetValue("key", out Data val)) {
+    val = LoadFromDb();
+    _cache.Set("key", val, new MemoryCacheEntryOptions {
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10),
+        SlidingExpiration = TimeSpan.FromMinutes(2)
+    });
+}
+// Redis
+builder.Services.AddStackExchangeRedisCache(o => o.Configuration = "localhost:6379");
+await _redis.SetStringAsync("key", json);
+// Tag helper
+&lt;cache expires-after="@TimeSpan.FromMinutes(10)" vary-by-user="true"&gt;&lt;partial name="_Expensive" /&gt;&lt;/cache&gt;</code></pre>
+      <div class="callout analogy"><strong>Analogy —</strong> MemoryCache = sticky notes on YOUR desk. Redis = shared whiteboard in hallway. Cache tag helper = laminated HTML fragment.</div>
+      <h4 style="margin-top:16px;color:var(--text-dim)">Which cache strategy? Decision tree</h4>
+      <pre class="mermaid">
+flowchart TD
+  Q{Caching need?}
+  Q -->|1 server only| IM["IMemoryCache&#10;AddMemoryCache"]
+  Q -->|web farm / load-balanced| DC["IDistributedCache&#10;AddStackExchangeRedisCache"]
+  Q -->|Razor HTML fragment| CT["&lt;cache vary-by-* expires-after&gt;&#10;tag helper"]
+  CT -.uses under the hood.-> IM
+      </pre>
+      <div class="callout take"><strong>Takeaway —</strong> Memory cache: one server. Distributed (Redis): many servers. Tag helper: HTML fragments.</div>`
+  },
+  {
+    n: 6,
+    title: 'gRPC: contract-first RPC',
+    hook: 'Define the shape in .proto, generate C# both sides. HTTP/2 under the hood.',
+    html: `<p><strong>gRPC</strong> = Google Remote Procedure Call. Contract lives in a <code>.proto</code> file. Protoc generates C# classes for server AND client.</p>
+      <pre><code>// greet.proto
+syntax = "proto3";
+option csharp_namespace = "MyApp";
+service Greeter {
+  rpc SayHello (HelloRequest) returns (HelloReply);
+}
+message HelloRequest { string name = 1; }
+message HelloReply   { string message = 1; }</code></pre>
+      <p><strong>.csproj:</strong> <code>&lt;Protobuf Include="Protos/greet.proto" GrpcServices="Server"/&gt;</code> + <code>Grpc.Tools</code> package.</p>
+      <pre><code>// Server Program.cs
+builder.Services.AddGrpc();
+app.MapGrpcService&lt;GreeterImpl&gt;();
+// Server impl
+public override Task&lt;HelloReply&gt; SayHello(HelloRequest r, ServerCallContext c)
+  =&gt; Task.FromResult(new HelloReply { Message = "Hi " + r.Name });
+// Client
+var channel = GrpcChannel.ForAddress("https://localhost:5001");
+var client = new Greeter.GreeterClient(channel);
+var reply = await client.SayHelloAsync(new HelloRequest { Name = "Bob" });</code></pre>
+      <div class="callout analogy"><strong>Analogy —</strong> REST = text message ("please send user #5"). gRPC = binary function call (<code>GetUser(5)</code>) with HTTP/2 streaming.</div>
+      <p><strong>Four call types:</strong> unary, server streaming, client streaming, bidirectional.</p>
+      <h4 style="margin-top:16px;color:var(--text-dim)">4 call types — unary vs streaming</h4>
+      <pre class="mermaid">
+flowchart LR
+  subgraph Unary["1. Unary"]
+    C1[Client] -- "1 req" --> S1[Server]
+    S1 -- "1 rep" --> C1
+  end
+  subgraph SStream["2. Server streaming"]
+    C2[Client] -- "1 req" --> S2[Server]
+    S2 -- "stream of replies" --> C2
+  end
+  subgraph CStream["3. Client streaming"]
+    C3[Client] -- "stream of reqs" --> S3[Server]
+    S3 -- "1 rep" --> C3
+  end
+  subgraph BiDi["4. Bidirectional"]
+    C4[Client] <--> S4[Server]
+  end
+      </pre>
+      <div class="callout take"><strong>Takeaway —</strong> .proto defines the contract. Field numbers (not order) identify fields. TLS is default. Needs HTTP/2.</div>`
+  },
+  {
+    n: 7,
+    title: 'TDD / xUnit: red, green, refactor',
+    hook: 'Write the test first. Watch it fail. Make it pass. Clean it up.',
+    html: `<p><strong>TDD</strong> = Test-Driven Development. Robert Martin\'s three laws: (1) no code without a failing test, (2) no more test than what fails, (3) no more code than what makes it pass.</p>
+      <pre><code>using Xunit;
+public class CalculatorTests
+{
+    [Fact]
+    public void Add_TwoPositives_ReturnsSum()
+    {
+        // Arrange
+        var calc = new Calculator();
+        // Act
+        var result = calc.Add(2, 3);
+        // Assert
+        Assert.Equal(5, result); // expected, actual — ORDER MATTERS
+    }
+
+    [Theory]
+    [InlineData(1, 2, 3)]
+    [InlineData(0, 0, 0)]
+    [InlineData(-1, 1, 0)]
+    public void Add_Various(int a, int b, int expected)
+    {
+        var calc = new Calculator();
+        Assert.Equal(expected, calc.Add(a, b));
+    }
+}</code></pre>
+      <div class="callout analogy"><strong>Analogy —</strong> [Fact] = one photograph. [Theory] + [InlineData] = same photo shoot, different subjects. The [InlineData] rows ARE the test cases.</div>
+      <p><strong>Setup:</strong> Use the test class\'s constructor. <strong>Teardown:</strong> Implement <code>IDisposable</code>. <strong>Shared state:</strong> <code>IClassFixture&lt;T&gt;</code>.</p>
+      <p><strong>Assert methods:</strong> Equal, True, False, Null, NotNull, Throws&lt;T&gt;, ThrowsAsync&lt;T&gt;, Contains, Empty, InRange, IsType&lt;T&gt;.</p>
+      <h4 style="margin-top:16px;color:var(--text-dim)">The TDD cycle</h4>
+      <pre class="mermaid">
+flowchart LR
+  R["RED&#10;write failing test"] --> G["GREEN&#10;make it pass&#10;smallest change"]
+  G --> F["REFACTOR&#10;clean up, stay green"]
+  F --> R
+      </pre>
+      <div class="callout take"><strong>Takeaway —</strong> [Fact]=no args, [Theory]=with data. Assert.Equal(expected, actual). Constructor setup, IDisposable teardown.</div>`
+  },
+  {
+    n: 8,
+    title: 'File-based C# apps and ASP.NET Aspire',
+    hook: 'File-based apps: `.cs` without `.csproj`. Aspire: orchestrate many projects.',
+    html: `<p><strong>File-based apps</strong> (.NET 10): write plain <code>hello.cs</code>, run with <code>dotnet run hello.cs</code>. Use <code>#:</code> directives for packages, SDKs, MSBuild properties.</p>
+      <pre><code>// hello.cs
+#:package Spectre.Console@0.48.0
+#:sdk Microsoft.NET.Sdk.Web
+#:property LangVersion=preview
+
+using Spectre.Console;
+AnsiConsole.MarkupLine("[green]Hello[/]");</code></pre>
+      <div class="callout analogy"><strong>Analogy —</strong> File-based C# = Python script. <code>dotnet project convert file.cs</code> promotes it to a real project when you outgrow one file.</div>
+      <p><strong>CRITICAL:</strong> NO space after the colon. <code>#: package</code> ❌. <code>#:package</code> ✓.</p>
+      <p><strong>Aspire</strong> orchestrates multi-project solutions (web + api + db + cache) via an <strong>AppHost</strong> project.</p>
+      <pre><code>// AppHost/Program.cs
+var builder = DistributedApplication.CreateBuilder(args);
+var cache = builder.AddRedis("cache");
+var db    = builder.AddSqlServer("sql").AddDatabase("app");
+var api   = builder.AddProject&lt;Projects.Api&gt;("api").WithReference(cache).WithReference(db);
+builder.AddProject&lt;Projects.Web&gt;("web").WithReference(api);
+builder.Build().Run();</code></pre>
+      <p><strong>ServiceDefaults</strong>: shared telemetry + service discovery package. Each project calls <code>builder.AddServiceDefaults()</code>.</p>
+      <h4 style="margin-top:16px;color:var(--text-dim)">Aspire AppHost orchestration — resource graph</h4>
+      <pre class="mermaid">
+flowchart TB
+  AH["AppHost&#10;DistributedApplication.CreateBuilder"]
+  CA["AddRedis('cache')"]
+  DB["AddSqlServer → AddDatabase('app')"]
+  API["AddProject&lt;Projects.Api&gt;('api')"]
+  WEB["AddProject&lt;Projects.Web&gt;('web')"]
+  AH --> CA
+  AH --> DB
+  AH --> API
+  AH --> WEB
+  API -. WithReference .-> CA
+  API -. WithReference .-> DB
+  WEB -. WithReference + WaitFor .-> API
+      </pre>
+      <div class="callout take"><strong>Takeaway —</strong> File-based: <code>#:package</code>, <code>#:sdk</code>, <code>#:property</code>. Aspire: AppHost + AddProject + WithReference.</div>`
+  },
+  {
+    n: 9,
+    title: 'Localization, Tag Helpers, QuickGrid, Files',
+    hook: 'The "rest" pile — small weight each but together 14 marks. Recognition is enough.',
+    html: `<p><strong>Localization (4 marks):</strong></p>
+      <pre><code>builder.Services.AddLocalization(o =&gt; o.ResourcesPath = "Resources");
+builder.Services.Configure&lt;RequestLocalizationOptions&gt;(o =&gt; {
+    var cultures = new[] { new CultureInfo("en"), new CultureInfo("fr") };
+    o.DefaultRequestCulture = new RequestCulture("en");
+    o.SupportedCultures = cultures;
+    o.SupportedUICultures = cultures;
+});
+app.UseRequestLocalization();
+// In Razor: @inject IViewLocalizer Localizer then @Localizer["Hello"]</code></pre>
+      <p><strong>Resource file naming:</strong> <code>Pages.Index.fr.resx</code>. Culture providers order: QueryString → Cookie → AcceptLanguageHeader. <code>CurrentCulture</code> = numbers/dates; <code>CurrentUICulture</code> = strings.</p>
+      <p><strong>Tag Helpers (3 marks):</strong> Register via <code>@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers</code> in <code>_ViewImports.cshtml</code>. Built-in: <code>asp-for</code>, <code>asp-controller</code>, <code>asp-action</code>, <code>asp-route-*</code>, <code>asp-validation-for</code>. Custom: derive <code>TagHelper</code>, override <code>Process/ProcessAsync</code>, decorate <code>[HtmlTargetElement("x")]</code>. Properties PascalCase → attribute kebab-case.</p>
+      <p><strong>Blazor QuickGrid (2 marks):</strong> Package <code>Microsoft.AspNetCore.Components.QuickGrid</code>. <code>&lt;PropertyColumn Property="@(x =&gt; x.Name)" Sortable="true"/&gt;</code>. Template column NOT sortable by default — needs <code>SortBy="@gridSort"</code>. Pagination: <code>new PaginationState { ItemsPerPage = 10 }</code> + <code>&lt;Paginator State="@pagination"/&gt;</code>.</p>
+      <p><strong>Excel/PDF/Chart (2 marks):</strong> Excel → <code>ClosedXML</code> (<code>XLWorkbook</code>). PDF → <code>iText7</code> + <code>itext.bouncy-castle-adapter</code>. Charts → <code>Chart.js</code> via CDN. Return <code>File(bytes, mimeType, fileName)</code>. Excel MIME: <code>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</code>. PDF MIME: <code>application/pdf</code>.</p>
+      <h4 style="margin-top:16px;color:var(--text-dim)">Localization — culture provider chain</h4>
+      <pre class="mermaid">
+flowchart LR
+  REQ[Incoming request]
+  REQ --> QS["1. QueryString&#10;?culture=fr"]
+  QS --> CK["2. Cookie&#10;.AspNetCore.Culture"]
+  CK --> AL["3. Accept-Language&#10;browser default"]
+  AL --> FB[DefaultRequestCulture]
+  FB --> APP[CurrentUICulture set]
+      </pre>
+      <div class="callout take"><strong>Takeaway —</strong> These 4 topics = 11 marks. 15 min each on the cheat sheet pays off.</div>`
+  },
+  {
+    n: 10,
+    title: 'Reading the MCQ: trap-spotting',
+    hook: 'Elmasry\'s MCQ style: 5 options, fake method names, subtle flag swaps. Here\'s how to filter.',
+    html: `<p>From the midterm, the distractor patterns are consistent:</p>
+      <ol style="margin-left:24px;line-height:1.8">
+        <li><strong>Fake method names</strong> — e.g. <code>_context.Migrate()</code> vs <code>_context.Database.Migrate()</code>. Always pick the one with the real namespace chain.</li>
+        <li><strong>Wrong bracket style</strong> — e.g. <code>[Route("api/[controller]")]</code> vs <code>Route("[api]/[controller]")</code>. Remember: annotation = square brackets around, placeholder = square brackets inside.</li>
+        <li><strong>Command order swap</strong> — e.g. <code>dotnet ef update database</code> vs <code>dotnet ef database update</code>. The subject comes before the verb.</li>
+        <li><strong>Singular vs plural</strong> — <code>dotnet ef add migration</code> vs <code>dotnet ef migrations add</code>. Collection commands use the plural.</li>
+        <li><strong>Fake interface variants</strong> — <code>SignInManager</code> vs <code>RoleManager</code> vs <code>AuthManager</code> (fake) vs <code>IdentityManager</code> (fake).</li>
+      </ol>
+      <div class="callout analogy"><strong>Analogy —</strong> Treat wrong options like a phishing email. One giveaway (fake namespace, wrong capitalization, missing keyword) is enough to eliminate.</div>
+      <p><strong>Match-column strategy (from midterm):</strong> The pattern is <em>thing → its canonical tool or command</em>. Examples seen: React → Vite, TypeScript → tsc, Swagger → WebAPI docs, SignalR → Hub, Multi-docker → docker-compose.yml, Single docker → Dockerfile. Expect same pattern on final.</p>
+      <h4 style="margin-top:16px;color:var(--text-dim)">MCQ elimination flow — 30 seconds per question</h4>
+      <pre class="mermaid">
+flowchart TD
+  Q[Read question] --> F{Spot a fake&#10;method name?}
+  F -->|yes| X1[Eliminate]
+  F -->|no| B{Word order or&#10;singular/plural trap?}
+  B -->|yes| X2[Eliminate]
+  B -->|no| C{2+ options left?}
+  X1 --> C
+  X2 --> C
+  C -->|yes| GUESS[Best guess&#10;MOVE ON]
+  C -->|1 left| PICK[Pick it]
+      </pre>
+      <div class="callout take"><strong>Takeaway —</strong> Eliminate first, guess last. Two clear eliminations on an MCQ = 50% → skipping should be rare.</div>`
+  },
+  {
+    n: 11,
+    title: 'Hand-written cheat sheet: pack strategy',
+    hook: 'ONE 8.5×11, both sides. Hand-written. What goes on it decides 10-15 marks.',
+    html: `<p>Your cheat sheet is the force multiplier. Pack it right and it answers 15+ MCQ directly.</p>
+      <p><strong>Front side layout (suggested):</strong></p>
+      <ul style="margin-left:24px">
+        <li><strong>Upper-left:</strong> AI/SK/MAF/MCP method cheat block — <code>Kernel.CreateBuilder</code>, <code>AddOllamaChatCompletion</code>, <code>ChatHistory</code>, <code>IChatCompletionService</code>, <code>AsAIAgent</code>, <code>AIFunctionFactory.Create</code>.</li>
+        <li><strong>Upper-right:</strong> ML.NET 7-step template — <code>MLContext</code> → <code>LoadFromTextFile&lt;T&gt;</code> → <code>TrainTestSplit</code> → pipeline → <code>Fit</code> → <code>Evaluate</code> → <code>Save</code>.</li>
+        <li><strong>Middle:</strong> Cache patterns — MemoryCache, Redis, <code>&lt;cache&gt;</code> tag helper with all vary-by-* options.</li>
+        <li><strong>Lower:</strong> gRPC .proto skeleton + server/client Program.cs + csproj <code>&lt;Protobuf&gt;</code> line.</li>
+      </ul>
+      <p><strong>Back side layout (suggested):</strong></p>
+      <ul style="margin-left:24px">
+        <li>xUnit: <code>[Fact]</code>, <code>[Theory]</code>, <code>[InlineData]</code>, <code>Assert.Equal(expected,actual)</code>, <code>Assert.Throws&lt;T&gt;</code>.</li>
+        <li>File-based: all four <code>#:</code> directives with EXAMPLE syntax.</li>
+        <li>Aspire: AppHost Program.cs with <code>AddProject</code>, <code>WithReference</code>, <code>AddRedis</code>, <code>AddSqlServer</code>.</li>
+        <li>Localization: <code>AddLocalization</code>, resource file naming, CurrentCulture vs CurrentUICulture.</li>
+        <li>Tag Helpers: built-in list + custom class skeleton.</li>
+        <li>QuickGrid: PropertyColumn + PaginationState + filter @bind pattern.</li>
+        <li>Excel/PDF: package names + MIME strings.</li>
+      </ul>
+      <div class="callout analogy"><strong>Analogy —</strong> The cheat sheet is like your free souvenir from the topic. Bring back concrete method chains and exact syntax — not prose.</div>
+      <h4 style="margin-top:16px;color:var(--text-dim)">Suggested cheat-sheet layout</h4>
+      <pre class="mermaid">
+flowchart TB
+  subgraph FRONT["FRONT SIDE"]
+    F1["AI/SK/MAF/MCP&#10;method names"]
+    F2["ML.NET 7-step&#10;pipeline template"]
+    F3["Cache patterns&#10;vary-by-* list"]
+    F4["gRPC proto + server&#10;+ client skeleton"]
+  end
+  subgraph BACK["BACK SIDE"]
+    B1["xUnit [Fact] [Theory]&#10;Assert methods"]
+    B2["#:package #:sdk&#10;#:property"]
+    B3["Aspire AddProject&#10;WithReference"]
+    B4["Localization setup&#10;TagHelpers + QuickGrid&#10;Excel/PDF MIME"]
+  end
+      </pre>
+      <div class="callout take"><strong>Takeaway —</strong> Cheat sheet = method names + exact syntax + package names. Not definitions. Not prose.</div>`
+  }
+];
+
+// === DATA.flashcards ===
+DATA.flashcards = [
+  // AI / Semantic Kernel / MAF / MCP (25 cards)
+  {id:'ai01', topic:'AI', pillar:'SK', bloom:'Remember', source:'CSharp_Meets_AI.pptx', q:'What Kernel builder method registers Ollama chat completion?', a:'<code>builder.AddOllamaChatCompletion(modelName, new Uri("http://localhost:11434"))</code>'},
+  {id:'ai02', topic:'AI', pillar:'SK', bloom:'Remember', source:'SLM.docx', q:'Default Ollama local endpoint URL?', a:'<code>http://localhost:11434</code>'},
+  {id:'ai03', topic:'AI', pillar:'SK', bloom:'Remember', source:'SLM.docx', q:'GitHub Models inference endpoint URL?', a:'<code>https://models.github.ai/inference</code>'},
+  {id:'ai04', topic:'AI', pillar:'SK', bloom:'Remember', source:'CSharp_Meets_AI.pptx', q:'Service to resolve from Kernel for chat: ___', a:'<code>IChatCompletionService</code> — <code>kernel.GetRequiredService&lt;IChatCompletionService&gt;()</code>'},
+  {id:'ai05', topic:'AI', pillar:'SK', bloom:'Understand', source:'CSharp_Meets_AI.pptx', q:'What class holds the conversation context in SK?', a:'<code>ChatHistory</code> — can seed with system prompt in constructor: <code>new ChatHistory("You are helpful.")</code>'},
+  {id:'ai06', topic:'AI', pillar:'SK', bloom:'Apply', source:'CSharp_Meets_AI.pptx', q:'How to add a system message to ChatHistory?', a:'<code>history.AddSystemMessage("prompt")</code> (or pass to constructor)'},
+  {id:'ai07', topic:'AI', pillar:'SK', bloom:'Remember', source:'CSharp_Meets_AI.pptx', q:'Method to import native C# plugin into kernel?', a:'<code>kernel.ImportPluginFromType&lt;MyPlugin&gt;()</code>'},
+  {id:'ai08', topic:'AI', pillar:'SK', bloom:'Remember', source:'CSharp_Meets_AI.pptx', q:'Method to import prompt-directory plugins (skprompt.txt)?', a:'<code>kernel.ImportPluginFromPromptDirectory("Plugins/MyPlugin")</code>'},
+  {id:'ai09', topic:'AI', pillar:'SK', bloom:'Remember', source:'CSharp_Meets_AI.pptx', q:'Attribute marking a C# method as a kernel-callable function?', a:'<code>[KernelFunction]</code> with optional <code>[Description("...")]</code>'},
+  {id:'ai10', topic:'AI', pillar:'SK', bloom:'Understand', source:'CSharp_Meets_AI.pptx', q:'Variable placeholder syntax in skprompt.txt?', a:'<code>{{$variable}}</code>'},
+  {id:'ai11', topic:'AI', pillar:'MAF', bloom:'Remember', source:'AI-Models_MAF_SCRIPT.docx', q:'Method to convert an OpenAIClient into an agent?', a:'<code>.AsAIAgent("model-name")</code>'},
+  {id:'ai12', topic:'AI', pillar:'MAF', bloom:'Remember', source:'AI-Models_MAF_SCRIPT.docx', q:'Factory method to wrap a delegate as an AI tool?', a:'<code>AIFunctionFactory.Create(delegate, name, description)</code>'},
+  {id:'ai13', topic:'AI', pillar:'MAF', bloom:'Remember', source:'AI-Models_MAF_SCRIPT.docx', q:'Class that maintains multi-turn conversation state in MAF?', a:'<code>AgentSession</code> — <code>new AgentSession(agent)</code>'},
+  {id:'ai14', topic:'AI', pillar:'MAF', bloom:'Apply', source:'AI-Models_MAF_SCRIPT.docx', q:'Method to stream agent output as tokens arrive?', a:'<code>RunStreamingAsync(prompt)</code> — iterate with <code>await foreach</code>'},
+  {id:'ai15', topic:'AI', pillar:'MAF', bloom:'Remember', source:'AI-Models_MAF_SCRIPT.docx', q:'NuGet package for MAF + OpenAI integration?', a:'<code>Microsoft.Agents.AI.OpenAI</code>'},
+  {id:'ai16', topic:'AI', pillar:'MCP', bloom:'Understand', source:'SLM.pptx', q:'MCP transports: ___ (local) and ___ (cloud)', a:'<code>stdio</code> (process pipe) and <code>SSE</code> (Server-Sent Events over HTTP)'},
+  {id:'ai17', topic:'AI', pillar:'MCP', bloom:'Remember', source:'SLM.pptx', q:'MCP expands to: ___', a:'<strong>Model Context Protocol</strong> — open protocol for LLM tool/resource access'},
+  {id:'ai18', topic:'AI', pillar:'MCP', bloom:'Remember', source:'SLM.pptx', q:'Three MCP primitives a server can expose?', a:'<strong>Tools</strong> (executable), <strong>Resources</strong> (read-only data), <strong>Prompts</strong> (reusable templates)'},
+  {id:'ai19', topic:'AI', pillar:'Ollama', bloom:'Remember', source:'SLM.docx', q:'NuGet package for Ollama C# client?', a:'<code>OllamaSharp</code>'},
+  {id:'ai20', topic:'AI', pillar:'Ollama', bloom:'Apply', source:'SLM.docx', q:'CLI command to download llama3 to local Ollama?', a:'<code>ollama pull llama3</code>'},
+  {id:'ai21', topic:'AI', pillar:'SLM', bloom:'Understand', source:'SLM.pptx', q:'SLM vs LLM tradeoff in one sentence?', a:'SLM = smaller/faster/cheaper/local; LLM = bigger/smarter/needs cloud and API key'},
+  {id:'ai22', topic:'AI', pillar:'SK', bloom:'Remember', source:'CSharp_Meets_AI.pptx', q:'Class used in kernel builder: <code>Kernel.___.Build()</code>?', a:'<code>Kernel.CreateBuilder()</code>.Build()'},
+  {id:'ai23', topic:'AI', pillar:'SK', bloom:'Apply', source:'CSharp_Meets_AI.pptx', q:'Chat call method that returns full response: ___', a:'<code>chat.GetChatMessageContentAsync(history, kernel: kernel)</code>'},
+  {id:'ai24', topic:'AI', pillar:'MAF', bloom:'Understand', source:'AI-Models_MAF_SCRIPT.docx', q:'Key difference: SK vs MAF', a:'SK = kernel + plugins (flexible low-level); MAF = <code>AIAgent</code> (high-level, simpler agent creation)'},
+  {id:'ai25', topic:'AI', pillar:'MCP', bloom:'Remember', source:'SLM.pptx', q:'Which MCP transport requires a process pipe with stdin/stdout?', a:'<code>stdio</code> — used for local, co-located tools'},
+
+  // ML.NET (18 cards)
+  {id:'ml01', topic:'ML.NET', pillar:'Core', bloom:'Remember', source:'ML.NET.pptx', q:'Entry-point class for all ML.NET code?', a:'<code>MLContext</code> — <code>var mlContext = new MLContext(seed: 0);</code>'},
+  {id:'ml02', topic:'ML.NET', pillar:'Data', bloom:'Remember', source:'ML.NET.pptx', q:'Interface representing loaded/transformed data in ML.NET?', a:'<code>IDataView</code> (tabular data flow)'},
+  {id:'ml03', topic:'ML.NET', pillar:'Data', bloom:'Remember', source:'ML.NET_VS2022_SCRIPT.docx', q:'Method to load CSV data into an IDataView?', a:'<code>mlContext.Data.LoadFromTextFile&lt;T&gt;(path, hasHeader: true, separatorChar: \',\')</code>'},
+  {id:'ml04', topic:'ML.NET', pillar:'Data', bloom:'Remember', source:'ML.NET.pptx', q:'Method that splits data for testing?', a:'<code>mlContext.Data.TrainTestSplit(data, testFraction: 0.2)</code>'},
+  {id:'ml05', topic:'ML.NET', pillar:'Training', bloom:'Remember', source:'ML.NET.pptx', q:'What does <code>pipeline.Fit(trainSet)</code> return?', a:'<code>ITransformer</code> (the trained model)'},
+  {id:'ml06', topic:'ML.NET', pillar:'Training', bloom:'Remember', source:'ML.NET.pptx', q:'FastTree trainer for regression: <code>mlContext.___.Trainers.FastTree()</code>', a:'<code>Regression</code> — <code>mlContext.Regression.Trainers.FastTree()</code>'},
+  {id:'ml07', topic:'ML.NET', pillar:'Evaluation', bloom:'Remember', source:'ML.NET.pptx', q:'Regression metric: higher = better, scale 0-1?', a:'<code>RSquared</code>'},
+  {id:'ml08', topic:'ML.NET', pillar:'Evaluation', bloom:'Remember', source:'ML.NET.pptx', q:'Method to evaluate regression predictions?', a:'<code>mlContext.Regression.Evaluate(predictions, labelColumnName: "Label")</code>'},
+  {id:'ml09', topic:'ML.NET', pillar:'Persistence', bloom:'Remember', source:'ML.NET.pptx', q:'How to save a trained model to disk?', a:'<code>mlContext.Model.Save(model, data.Schema, "model.zip")</code>'},
+  {id:'ml10', topic:'ML.NET', pillar:'Persistence', bloom:'Remember', source:'ML.NET.pptx', q:'Method to load a saved model back?', a:'<code>mlContext.Model.Load("model.zip", out var schema)</code>'},
+  {id:'ml11', topic:'ML.NET', pillar:'Prediction', bloom:'Remember', source:'ML.NET.pptx', q:'Class used to predict on a single record?', a:'<code>PredictionEngine&lt;TInput, TOutput&gt;</code> — created via <code>mlContext.Model.CreatePredictionEngine&lt;I,O&gt;(model)</code>'},
+  {id:'ml12', topic:'ML.NET', pillar:'Transforms', bloom:'Remember', source:'ML.NET.pptx', q:'Transform that collapses string category to numeric vector?', a:'<code>mlContext.Transforms.Categorical.OneHotEncoding("outCol", "inCol")</code>'},
+  {id:'ml13', topic:'ML.NET', pillar:'Transforms', bloom:'Remember', source:'ML.NET.pptx', q:'Transform that combines columns into a single Features vector?', a:'<code>mlContext.Transforms.Concatenate("Features", "A", "B", "C")</code>'},
+  {id:'ml14', topic:'ML.NET', pillar:'Mapping', bloom:'Remember', source:'ML.NET.pptx', q:'Attribute on a class property to map CSV column index?', a:'<code>[LoadColumn(0)]</code> — e.g. <code>[LoadColumn(2)] public float Fare;</code>'},
+  {id:'ml15', topic:'ML.NET', pillar:'Mapping', bloom:'Remember', source:'ML.NET.pptx', q:'Attribute marking the target (Y) column in a training model?', a:'<code>[ColumnName("Label")]</code>'},
+  {id:'ml16', topic:'ML.NET', pillar:'Classification', bloom:'Remember', source:'ML.NET.pptx', q:'Namespace for 2-class trainers?', a:'<code>mlContext.BinaryClassification.Trainers</code>'},
+  {id:'ml17', topic:'ML.NET', pillar:'Classification', bloom:'Remember', source:'ML.NET.pptx', q:'Namespace for 3+-class trainers?', a:'<code>mlContext.MulticlassClassification.Trainers</code>'},
+  {id:'ml18', topic:'ML.NET', pillar:'Core', bloom:'Understand', source:'ML.NET_vscode_automl_SCRIPT.docx', q:'AutoML CLI command to train a model?', a:'<code>mlnet regression --dataset data.csv --label-col Label</code> (similar for classification)'},
+
+  // Cache / Redis (15 cards)
+  {id:'ca01', topic:'Cache', pillar:'InMem', bloom:'Remember', source:'DataCache_SCRIPT.docx', q:'Registration for in-memory cache in Program.cs?', a:'<code>builder.Services.AddMemoryCache();</code>'},
+  {id:'ca02', topic:'Cache', pillar:'InMem', bloom:'Remember', source:'DataCache_SCRIPT.docx', q:'Interface injected to use the in-memory cache?', a:'<code>IMemoryCache</code>'},
+  {id:'ca03', topic:'Cache', pillar:'InMem', bloom:'Apply', source:'DataCache_SCRIPT.docx', q:'Pattern to read cache with fallback load?', a:'<code>_cache.TryGetValue&lt;T&gt;(key, out var val)</code> then load + <code>_cache.Set(key, val, options)</code>'},
+  {id:'ca04', topic:'Cache', pillar:'InMem', bloom:'Remember', source:'DataCache_SCRIPT.docx', q:'Options class for in-memory cache entries?', a:'<code>MemoryCacheEntryOptions</code>'},
+  {id:'ca05', topic:'Cache', pillar:'InMem', bloom:'Understand', source:'DataCache_SCRIPT.docx', q:'Difference: AbsoluteExpiration vs SlidingExpiration', a:'Absolute = hard expiry at time X. Sliding = expire if idle for Y. Combine → whichever fires first.'},
+  {id:'ca06', topic:'Cache', pillar:'InMem', bloom:'Remember', source:'DataCache_SCRIPT.docx', q:'Property to mark a cache entry as never-evict-unless-full?', a:'<code>CacheItemPriority.NeverRemove</code> (also Low/Normal/High)'},
+  {id:'ca07', topic:'Cache', pillar:'Redis', bloom:'Remember', source:'redis_SCRIPT.docx', q:'Registration for Redis distributed cache?', a:'<code>builder.Services.AddStackExchangeRedisCache(o =&gt; o.Configuration = "localhost:6379");</code>'},
+  {id:'ca08', topic:'Cache', pillar:'Redis', bloom:'Remember', source:'redis_SCRIPT.docx', q:'Interface injected to use the distributed cache?', a:'<code>IDistributedCache</code>'},
+  {id:'ca09', topic:'Cache', pillar:'Redis', bloom:'Apply', source:'redis_SCRIPT.docx', q:'Method to store a string in IDistributedCache?', a:'<code>await cache.SetStringAsync(key, value, opts)</code>'},
+  {id:'ca10', topic:'Cache', pillar:'Redis', bloom:'Remember', source:'redis_SCRIPT.docx', q:'Docker command to run Redis locally?', a:'<code>docker run -d --name redis -p 6379:6379 redis</code>'},
+  {id:'ca11', topic:'Cache', pillar:'Tag', bloom:'Remember', source:'Cache_Tag_Helper_SCRIPT.docx', q:'Razor tag for server-fragment caching?', a:'<code>&lt;cache expires-after="@TimeSpan.FromMinutes(10)"&gt;...&lt;/cache&gt;</code>'},
+  {id:'ca12', topic:'Cache', pillar:'Tag', bloom:'Remember', source:'Cache_Tag_Helper_SCRIPT.docx', q:'Attribute to vary cached fragment by logged-in user?', a:'<code>vary-by-user="true"</code>'},
+  {id:'ca13', topic:'Cache', pillar:'Tag', bloom:'Remember', source:'Cache_Tag_Helper_SCRIPT.docx', q:'Five vary-by-* attributes on <cache>?', a:'<code>vary-by-user</code>, <code>vary-by-route</code>, <code>vary-by-query</code>, <code>vary-by-cookie</code>, <code>vary-by-header</code> (also <code>vary-by</code> for custom)'},
+  {id:'ca14', topic:'Cache', pillar:'Core', bloom:'Understand', source:'DataCache_SCRIPT.docx', q:'Why does IMemoryCache fail in load-balanced deployments?', a:'Each server has its own in-process cache → cache miss for users hitting different servers → inconsistent data. Use IDistributedCache (Redis) for shared cache.'},
+  {id:'ca15', topic:'Cache', pillar:'InMem', bloom:'Apply', source:'DataCache_SCRIPT.docx', q:'Single-call cache-or-load method?', a:'<code>await _cache.GetOrCreateAsync(key, async entry =&gt; { entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); return await Load(); })</code>'},
+
+  // gRPC (12 cards)
+  {id:'gr01', topic:'gRPC', pillar:'Core', bloom:'Remember', source:'gRPC.pptx', q:'Full name of gRPC?', a:'<strong>Google Remote Procedure Call</strong>'},
+  {id:'gr02', topic:'gRPC', pillar:'Core', bloom:'Remember', source:'gRPC.pptx', q:'HTTP protocol gRPC requires?', a:'<strong>HTTP/2</strong> (binary framing, multiplexing, streaming)'},
+  {id:'gr03', topic:'gRPC', pillar:'Core', bloom:'Remember', source:'gRPC.pptx', q:'Serialization format gRPC uses?', a:'<strong>Protocol Buffers (protobuf)</strong> — binary, compact, typed'},
+  {id:'gr04', topic:'gRPC', pillar:'Proto', bloom:'Remember', source:'gRPC.pptx', q:'First line of every proto3 file?', a:'<code>syntax = "proto3";</code>'},
+  {id:'gr05', topic:'gRPC', pillar:'Proto', bloom:'Remember', source:'gRPC.pptx', q:'Directive setting C# namespace in .proto?', a:'<code>option csharp_namespace = "MyApp";</code>'},
+  {id:'gr06', topic:'gRPC', pillar:'Proto', bloom:'Understand', source:'gRPC.pptx', q:'What does field number represent in a proto message?', a:'A stable wire-format identifier. Must be unique within the message. ORDER in code does NOT matter; field number does.'},
+  {id:'gr07', topic:'gRPC', pillar:'Server', bloom:'Remember', source:'gRPC_EF_SQLite_VSCode_SCRIPT.docx', q:'Service registration line for gRPC server?', a:'<code>builder.Services.AddGrpc();</code>'},
+  {id:'gr08', topic:'gRPC', pillar:'Server', bloom:'Remember', source:'gRPC_EF_SQLite_VSCode_SCRIPT.docx', q:'Middleware line to wire a gRPC service class?', a:'<code>app.MapGrpcService&lt;MyServiceImpl&gt;();</code>'},
+  {id:'gr09', topic:'gRPC', pillar:'Client', bloom:'Remember', source:'gRPC_EF_SQLite_VSCode_SCRIPT.docx', q:'Create a gRPC channel to a server?', a:'<code>GrpcChannel.ForAddress("https://localhost:5001")</code>'},
+  {id:'gr10', topic:'gRPC', pillar:'Client', bloom:'Remember', source:'gRPC_EF_SQLite_VSCode_SCRIPT.docx', q:'DI pattern to register a gRPC client?', a:'<code>builder.Services.AddGrpcClient&lt;Greeter.GreeterClient&gt;(o =&gt; o.Address = new Uri("https://..."));</code>'},
+  {id:'gr11', topic:'gRPC', pillar:'Csproj', bloom:'Remember', source:'gRPC.pptx', q:'csproj item to compile .proto files?', a:'<code>&lt;Protobuf Include="Protos/greet.proto" GrpcServices="Server" /&gt;</code> — values: Server | Client | Both'},
+  {id:'gr12', topic:'gRPC', pillar:'Core', bloom:'Remember', source:'gRPC.pptx', q:'The four gRPC call types?', a:'1) Unary 2) Server streaming 3) Client streaming 4) Bidirectional streaming'},
+
+  // TDD / xUnit (12 cards)
+  {id:'td01', topic:'TDD', pillar:'Core', bloom:'Remember', source:'TDD_xunit.pptx', q:'The TDD cycle: ___ / ___ / ___', a:'<strong>Red</strong> (failing test) → <strong>Green</strong> (make it pass) → <strong>Refactor</strong>'},
+  {id:'td02', topic:'TDD', pillar:'xUnit', bloom:'Remember', source:'TDD_xunit.pptx', q:'Attribute for a parameterless test?', a:'<code>[Fact]</code>'},
+  {id:'td03', topic:'TDD', pillar:'xUnit', bloom:'Remember', source:'TDD_xunit.pptx', q:'Attribute for a parameterized test?', a:'<code>[Theory]</code> — paired with <code>[InlineData(...)]</code>, <code>[MemberData(...)]</code>, or <code>[ClassData(typeof(X))]</code>'},
+  {id:'td04', topic:'TDD', pillar:'xUnit', bloom:'Apply', source:'TDD_xunit.pptx', q:'Assertion argument order?', a:'<code>Assert.Equal(expected, actual)</code> — EXPECTED first. Swapping gives misleading failure messages.'},
+  {id:'td05', topic:'TDD', pillar:'xUnit', bloom:'Remember', source:'TDD_xunit.pptx', q:'AAA pattern stands for?', a:'<strong>Arrange</strong> (setup) → <strong>Act</strong> (run) → <strong>Assert</strong> (verify)'},
+  {id:'td06', topic:'TDD', pillar:'xUnit', bloom:'Understand', source:'TDD_xunit.pptx', q:'How do you perform setup code in xUnit (no [SetUp] attribute)?', a:'Use the test class <strong>constructor</strong>. For teardown, implement <code>IDisposable</code>.'},
+  {id:'td07', topic:'TDD', pillar:'xUnit', bloom:'Remember', source:'TDD_xunit.pptx', q:'Interface for shared state across tests in a class?', a:'<code>IClassFixture&lt;TFixture&gt;</code> — shared across methods in one class'},
+  {id:'td08', topic:'TDD', pillar:'xUnit', bloom:'Remember', source:'TDD_xunit.pptx', q:'Interface for shared state across test CLASSES?', a:'<code>ICollectionFixture&lt;T&gt;</code> with <code>[Collection("name")]</code>'},
+  {id:'td09', topic:'TDD', pillar:'xUnit', bloom:'Remember', source:'TDD_xunit.pptx', q:'Assert method for expected exception?', a:'<code>Assert.Throws&lt;ExceptionType&gt;(() =&gt; code())</code>. Async version: <code>ThrowsAsync&lt;T&gt;</code>.'},
+  {id:'td10', topic:'TDD', pillar:'xUnit', bloom:'Remember', source:'TDD_xunit.pptx', q:'CLI to create and run a test project?', a:'<code>dotnet new xunit -n MyTests</code> then <code>dotnet test</code>'},
+  {id:'td11', topic:'TDD', pillar:'Mocks', bloom:'Remember', source:'TDD_xunit_SCRIPT.docx', q:'Moq pattern to stub a return?', a:'<code>var m = new Mock&lt;IFoo&gt;(); m.Setup(f =&gt; f.Get(5)).Returns("hi"); var svc = new Svc(m.Object);</code>'},
+  {id:'td12', topic:'TDD', pillar:'Mocks', bloom:'Understand', source:'TDD_xunit.pptx', q:'Difference between stub, mock, fake?', a:'<strong>Stub</strong>: provides canned answers. <strong>Mock</strong>: stub + verifies calls. <strong>Fake</strong>: working lightweight impl (in-memory db).'},
+
+  // File-based apps (10 cards)
+  {id:'fb01', topic:'FileBased', pillar:'Core', bloom:'Remember', source:'file-based-apps.pptx', q:'Command to run a file-based C# app?', a:'<code>dotnet run app.cs</code>'},
+  {id:'fb02', topic:'FileBased', pillar:'Core', bloom:'Remember', source:'file-based-apps.pptx', q:'Minimum .NET version for file-based apps?', a:'<strong>.NET 10</strong>'},
+  {id:'fb03', topic:'FileBased', pillar:'Directive', bloom:'Remember', source:'file-based-apps.docx', q:'Directive to reference a NuGet package?', a:'<code>#:package PackageName@version</code> — e.g. <code>#:package Spectre.Console@0.48.0</code>'},
+  {id:'fb04', topic:'FileBased', pillar:'Directive', bloom:'Remember', source:'file-based-apps.docx', q:'Directive to use the ASP.NET Web SDK?', a:'<code>#:sdk Microsoft.NET.Sdk.Web</code>'},
+  {id:'fb05', topic:'FileBased', pillar:'Directive', bloom:'Remember', source:'file-based-apps.docx', q:'Directive to set an MSBuild property?', a:'<code>#:property LangVersion=preview</code>'},
+  {id:'fb06', topic:'FileBased', pillar:'Directive', bloom:'Remember', source:'file-based-apps.docx', q:'Directive to reference another .csproj from a file-based app?', a:'<code>#:project ./path/MyLib.csproj</code>'},
+  {id:'fb07', topic:'FileBased', pillar:'Directive', bloom:'Apply', source:'file-based-apps.docx', q:'Exam trap — correct syntax: <code>#:package X</code> or <code>#: package X</code>?', a:'<strong>#:package X</strong> — NO space after the colon'},
+  {id:'fb08', topic:'FileBased', pillar:'Convert', bloom:'Remember', source:'file-based-apps.docx', q:'Command to promote a file-based app to a project?', a:'<code>dotnet project convert app.cs</code>'},
+  {id:'fb09', topic:'FileBased', pillar:'Core', bloom:'Understand', source:'file-based-apps.pptx', q:'Why file-based apps exist?', a:'Lightweight scripting for utilities, demos, learning — no .csproj, no bin/obj folders, single-file distribution.'},
+  {id:'fb10', topic:'FileBased', pillar:'Core', bloom:'Apply', source:'file-based-apps.pptx', q:'Shebang line for Linux/Mac direct execution?', a:'<code>#!/usr/bin/env dotnet</code> (then <code>chmod +x file.cs</code>)'},
+
+  // Aspire (10 cards)
+  {id:'as01', topic:'Aspire', pillar:'Core', bloom:'Remember', source:'aspire_SCRIPT.docx', q:'Aspire builder entry point?', a:'<code>var builder = DistributedApplication.CreateBuilder(args);</code>'},
+  {id:'as02', topic:'Aspire', pillar:'Core', bloom:'Remember', source:'aspire_SCRIPT.docx', q:'Method to add a .NET project to the distributed app?', a:'<code>builder.AddProject&lt;Projects.MyApi&gt;("api")</code>'},
+  {id:'as03', topic:'Aspire', pillar:'Core', bloom:'Remember', source:'aspire_SCRIPT.docx', q:'Method to inject cache URL into a project?', a:'<code>api.WithReference(cache)</code> — passes connection string via env var'},
+  {id:'as04', topic:'Aspire', pillar:'Core', bloom:'Remember', source:'aspire_SCRIPT.docx', q:'Add a Redis resource to Aspire?', a:'<code>var cache = builder.AddRedis("cache");</code>'},
+  {id:'as05', topic:'Aspire', pillar:'Core', bloom:'Remember', source:'aspire_SCRIPT.docx', q:'Add SQL Server + a database?', a:'<code>var sql = builder.AddSqlServer("sql"); var db = sql.AddDatabase("app");</code>'},
+  {id:'as06', topic:'Aspire', pillar:'Core', bloom:'Remember', source:'aspire_SCRIPT.docx', q:'Service discovery URL scheme?', a:'<code>https+http://api</code> — scheme fallback + logical name'},
+  {id:'as07', topic:'Aspire', pillar:'Setup', bloom:'Understand', source:'aspire_SCRIPT.docx', q:'What is an Aspire AppHost?', a:'A <strong>project template</strong> (not a class) that orchestrates all resources (projects, db, cache) and launches them together.'},
+  {id:'as08', topic:'Aspire', pillar:'Setup', bloom:'Understand', source:'aspire_SCRIPT.docx', q:'ServiceDefaults vs AppHost roles?', a:'<strong>AppHost</strong>: orchestrates everything (in AppHost\'s Program.cs). <strong>ServiceDefaults</strong>: shared wire-up (telemetry, health checks) each service imports.'},
+  {id:'as09', topic:'Aspire', pillar:'Setup', bloom:'Remember', source:'aspire_SCRIPT.docx', q:'Method each service calls to register Aspire defaults?', a:'<code>builder.AddServiceDefaults();</code>'},
+  {id:'as10', topic:'Aspire', pillar:'Core', bloom:'Remember', source:'aspire_SCRIPT.docx', q:'Method to wait for a dependency before starting?', a:'<code>.WaitFor(resource)</code>'},
+
+  // Localization (8 cards)
+  {id:'lo01', topic:'Localization', pillar:'Core', bloom:'Remember', source:'asp_core_localization.pptx', q:'Service registration for localization?', a:'<code>builder.Services.AddLocalization(o =&gt; o.ResourcesPath = "Resources");</code>'},
+  {id:'lo02', topic:'Localization', pillar:'Core', bloom:'Remember', source:'asp_core_localization.pptx', q:'Middleware to apply culture selection?', a:'<code>app.UseRequestLocalization();</code>'},
+  {id:'lo03', topic:'Localization', pillar:'Core', bloom:'Remember', source:'asp_core_localization.pptx', q:'Interface injected in a Razor view for translations?', a:'<code>IViewLocalizer</code> — <code>@inject IViewLocalizer Localizer</code>, use <code>@Localizer["Hello"]</code>'},
+  {id:'lo04', topic:'Localization', pillar:'Core', bloom:'Remember', source:'asp_core_localization.pptx', q:'Resource file naming convention (French, for IndexModel)?', a:'<code>Pages.Index.fr.resx</code> or <code>Pages/Index.fr.resx</code> (depends on ResourcesPath setting)'},
+  {id:'lo05', topic:'Localization', pillar:'Core', bloom:'Understand', source:'asp_core_localization.pptx', q:'CurrentCulture vs CurrentUICulture?', a:'<strong>CurrentCulture</strong> — number/date formatting. <strong>CurrentUICulture</strong> — which resx to load for translated strings.'},
+  {id:'lo06', topic:'Localization', pillar:'Core', bloom:'Remember', source:'asp_core_localization.pptx', q:'Three built-in culture providers (in priority order)?', a:'1) QueryString (<code>?culture=fr</code>) 2) Cookie 3) Accept-Language header'},
+  {id:'lo07', topic:'Localization', pillar:'Core', bloom:'Apply', source:'razor_pages_localization_SCRIPT.docx', q:'Cookie name used by CookieRequestCultureProvider?', a:'<code>CookieRequestCultureProvider.DefaultCookieName</code> (literal: <code>.AspNetCore.Culture</code>)'},
+  {id:'lo08', topic:'Localization', pillar:'Core', bloom:'Remember', source:'asp_core_localization.pptx', q:'Difference between i18n and l10n?', a:'<strong>i18n (globalization)</strong> = design for any culture. <strong>l10n (localization)</strong> = specific resources/translations for one culture.'},
+
+  // Tag Helpers (6 cards)
+  {id:'th01', topic:'TagHelpers', pillar:'Core', bloom:'Remember', source:'TagHelpers_SCRIPT.docx', q:'File where tag helpers are registered?', a:'<code>_ViewImports.cshtml</code> — <code>@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers</code>'},
+  {id:'th02', topic:'TagHelpers', pillar:'Core', bloom:'Remember', source:'TagHelpers_SCRIPT.docx', q:'Custom tag helper: base class + method to override?', a:'Base: <code>TagHelper</code>. Override: <code>Process(context, output)</code> or <code>ProcessAsync(...)</code>.'},
+  {id:'th03', topic:'TagHelpers', pillar:'Core', bloom:'Remember', source:'TagHelpers_SCRIPT.docx', q:'Attribute to target an HTML element name in a custom tag helper?', a:'<code>[HtmlTargetElement("toon")]</code>'},
+  {id:'th04', topic:'TagHelpers', pillar:'Core', bloom:'Understand', source:'TagHelpers_SCRIPT.docx', q:'Property <code>FontFamily</code> on a tag helper maps to what HTML attribute?', a:'<code>font-family</code> (PascalCase → kebab-case)'},
+  {id:'th05', topic:'TagHelpers', pillar:'Core', bloom:'Remember', source:'TagHelpers_SCRIPT.docx', q:'Tag helper to render a validation error for a single field?', a:'<code>&lt;span asp-validation-for="PropertyName"&gt;&lt;/span&gt;</code>'},
+  {id:'th06', topic:'TagHelpers', pillar:'Core', bloom:'Remember', source:'TagHelpers_SCRIPT.docx', q:'Tag helper to cache-bust a script reference?', a:'<code>&lt;script src="/js/site.js" asp-append-version="true"&gt;&lt;/script&gt;</code>'},
+
+  // Blazor QuickGrid (5 cards)
+  {id:'bz01', topic:'Blazor', pillar:'QuickGrid', bloom:'Remember', source:'BlazorServer_QuickGrid.docx', q:'NuGet package for QuickGrid?', a:'<code>Microsoft.AspNetCore.Components.QuickGrid</code>'},
+  {id:'bz02', topic:'Blazor', pillar:'QuickGrid', bloom:'Apply', source:'BlazorServer_QuickGrid.docx', q:'Sortable property column syntax?', a:'<code>&lt;PropertyColumn Property="@(_ =&gt; _.Name)" Sortable="true" /&gt;</code>'},
+  {id:'bz03', topic:'Blazor', pillar:'QuickGrid', bloom:'Remember', source:'BlazorServer_QuickGrid.docx', q:'Pagination state declaration?', a:'<code>private PaginationState pagination = new PaginationState { ItemsPerPage = 10 };</code>'},
+  {id:'bz04', topic:'Blazor', pillar:'QuickGrid', bloom:'Understand', source:'BlazorServer_QuickGrid.docx', q:'TemplateColumn sorting requires?', a:'Explicit <code>SortBy="@gridSort"</code> — uses <code>GridSort&lt;T&gt;.ByAscending(x =&gt; x.Prop)</code>'},
+  {id:'bz05', topic:'Blazor', pillar:'QuickGrid', bloom:'Apply', source:'BlazorWasm_QuickGrid.docx', q:'Live-filter input binding?', a:'<code>&lt;input @bind="filter" @bind:event="oninput" /&gt;</code>'},
+
+  // Excel/PDF/Chart (5 cards)
+  {id:'xp01', topic:'ExcelPDF', pillar:'Excel', bloom:'Remember', source:'Add package for PDF.html + W13 lab', q:'Package used for Excel export?', a:'<code>ClosedXML</code> — <code>new XLWorkbook()</code> + <code>Worksheets.Add()</code> + <code>Cell(r,c).Value</code>'},
+  {id:'xp02', topic:'ExcelPDF', pillar:'PDF', bloom:'Remember', source:'Add package for PDF.html', q:'Packages required for PDF generation?', a:'<code>itext7</code> + <code>itext.bouncy-castle-adapter</code> (BOTH needed)'},
+  {id:'xp03', topic:'ExcelPDF', pillar:'MIME', bloom:'Remember', source:'W13 lab', q:'MIME type for Excel .xlsx?', a:'<code>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</code>'},
+  {id:'xp04', topic:'ExcelPDF', pillar:'MIME', bloom:'Remember', source:'W13 lab', q:'MIME type for PDF?', a:'<code>application/pdf</code>'},
+  {id:'xp05', topic:'ExcelPDF', pillar:'Chart', bloom:'Remember', source:'W13 lab', q:'Chart rendering library used in course?', a:'<strong>Chart.js</strong> (via CDN, client-side rendering inside Razor)'}
+];
+
+// === DATA.topics ===
+DATA.topics = [
+  {pillar:'AI', priority:'HIGH', chapter:'W12-13', title:'Semantic Kernel — Kernel, ChatHistory, Plugins', html:`
+    <h3>Exact registration pattern</h3>
+    <pre><code>// Program.cs
+var builder = Kernel.CreateBuilder();
+// Ollama (local)
+builder.AddOllamaChatCompletion("llama3", new Uri("http://localhost:11434"));
+// OR OpenAI-compatible (e.g., GitHub Models)
+builder.AddOpenAIChatCompletion(
+    modelId: "gpt-4o-mini",
+    apiKey: token,
+    endpoint: new Uri("https://models.github.ai/inference"));
+Kernel kernel = builder.Build();</code></pre>
+    <h3>Running a prompt</h3>
+    <pre><code>var chat = kernel.GetRequiredService&lt;IChatCompletionService&gt;();
+var history = new ChatHistory("You are a helpful assistant.");
+history.AddUserMessage("Hello!");
+var response = await chat.GetChatMessageContentAsync(history, kernel: kernel);
+Console.WriteLine(response.Content);</code></pre>
+    <h3>Plugins (C# native)</h3>
+    <pre><code>public class MathPlugin {
+    [KernelFunction, Description("Add two numbers")]
+    public int Add(int a, int b) =&gt; a + b;
+}
+// Register
+kernel.ImportPluginFromType&lt;MathPlugin&gt;();</code></pre>
+    <h3>Plugins (prompt-based / skprompt.txt)</h3>
+    <pre><code>// Folder structure:
+// Plugins/
+//   Writer/
+//     Summarize/
+//       skprompt.txt       <- contains prompt with {{$input}}
+//       config.json        <- execution settings
+
+kernel.ImportPluginFromPromptDirectory("Plugins/Writer");</code></pre>
+    <h3>Exam traps</h3>
+    <ul><li><code>Kernel.CreateBuilder()</code> NOT <code>new Kernel()</code></li><li>Ollama default port 11434 (not 11343, not 11434 over HTTPS)</li><li>Plugin annotation is <code>[KernelFunction]</code> not <code>[SKFunction]</code> (renamed)</li><li>System prompt goes into <code>ChatHistory</code> ctor OR <code>AddSystemMessage</code> — it does NOT go to the user message</li></ul>`},
+
+  {pillar:'AI', priority:'HIGH', chapter:'W12-13', title:'Microsoft Agent Framework (MAF)', html:`
+    <h3>Create an agent</h3>
+    <pre><code>// NuGet: Microsoft.Agents.AI, Microsoft.Agents.AI.OpenAI
+using Microsoft.Agents.AI;
+using OpenAI;
+
+var client = new OpenAIClient(new ApiKeyCredential(token),
+    new OpenAIClientOptions { Endpoint = new Uri("https://models.github.ai/inference") });
+AIAgent agent = client.AsAIAgent("gpt-4o-mini");
+agent.Instructions = "You are a helpful weather assistant.";</code></pre>
+    <h3>Register an AI tool (function)</h3>
+    <pre><code>string GetWeather(string city) =&gt; $"It is sunny in {city}.";
+
+AIFunction weatherTool = AIFunctionFactory.Create(
+    GetWeather,
+    name: "get_weather",
+    description: "Get current weather for a city.");
+
+agent.Tools.Add(weatherTool);</code></pre>
+    <h3>Sessions &amp; streaming</h3>
+    <pre><code>var session = new AgentSession(agent);
+// Single turn
+var response = await session.RunAsync("Weather in Vancouver?");
+Console.WriteLine(response);
+
+// Stream tokens
+await foreach (var update in session.RunStreamingAsync("And Toronto?")) {
+    Console.Write(update.Content);
+}</code></pre>
+    <h3>Exam traps</h3>
+    <ul><li><code>AsAIAgent</code> is an extension on an OpenAI client — not <code>.ToAIAgent</code> or <code>.CreateAgent</code></li><li><code>AIFunctionFactory.Create(delegate, name, description)</code> — delegate comes first</li><li>Tools are added to <code>agent.Tools</code> (collection), not via a method</li><li><code>AgentSession</code> carries multi-turn history — creating a new session each call = no memory</li></ul>`},
+
+  {pillar:'AI', priority:'HIGH', chapter:'W05-06', title:'MCP — Model Context Protocol', html:`
+    <h3>What MCP is</h3>
+    <p>Open protocol for wiring AI models to external tools, resources, and prompts. Two transports:</p>
+    <ul><li><strong>stdio</strong> — process pipe (local, co-located tools)</li><li><strong>SSE</strong> — Server-Sent Events over HTTP (cloud / remote)</li></ul>
+    <h3>Three primitives a server exposes</h3>
+    <table style="width:100%;margin-top:8px"><tr><th style="text-align:left;border-bottom:1px solid var(--border);padding:6px">Primitive</th><th style="text-align:left;border-bottom:1px solid var(--border);padding:6px">Purpose</th></tr>
+    <tr><td style="padding:6px;border-bottom:1px solid var(--border)"><strong>Tools</strong></td><td style="padding:6px;border-bottom:1px solid var(--border)">Executable functions the model can call</td></tr>
+    <tr><td style="padding:6px;border-bottom:1px solid var(--border)"><strong>Resources</strong></td><td style="padding:6px;border-bottom:1px solid var(--border)">Read-only data (files, DB rows, wiki pages)</td></tr>
+    <tr><td style="padding:6px"><strong>Prompts</strong></td><td style="padding:6px">Reusable templated prompts</td></tr></table>
+    <h3>Minimal server (Labs W05/W06)</h3>
+    <pre><code>// W05: stdio MCP server (console app, runs under Claude/other host)
+var builder = Host.CreateApplicationBuilder(args);
+builder.Services
+  .AddMcpServer()
+  .WithStdioServerTransport()
+  .WithToolsFromAssembly();
+await builder.Build().RunAsync();
+
+// Tool class
+[McpServerToolType]
+public static class Tools {
+  [McpServerTool, Description("Multiply two numbers")]
+  public static int Multiply(int a, int b) =&gt; a * b;
+}</code></pre>
+    <h3>W06 — Azure Functions MCP server uses SSE transport</h3>
+    <p>Azure Function app with MCP trigger → reachable over HTTPS → works with any MCP client.</p>
+    <h3>Exam traps</h3>
+    <ul><li>MCP is NOT a Microsoft-only protocol — it\'s open, maintained by Anthropic + broader community</li><li>stdio transport = LOCAL only (not network-addressable)</li><li>SSE = one-way stream from server to client (classic Server-Sent Events)</li><li><code>[McpServerTool]</code> attribute on the method; <code>[McpServerToolType]</code> on the class</li></ul>`},
+
+  {pillar:'ML.NET', priority:'HIGH', chapter:'W08-09', title:'ML.NET — Full pipeline and metrics', html:`
+    <h3>Data model</h3>
+    <pre><code>public class TaxiTrip {
+    [LoadColumn(0)] public string VendorId;
+    [LoadColumn(1)] public string RateCode;
+    [LoadColumn(2)] public float PassengerCount;
+    [LoadColumn(3)] public float TripDistance;
+    [LoadColumn(4)] public float FareAmount;  // target
+}
+
+public class TaxiFarePrediction {
+    [ColumnName("Score")] public float FareAmount;
+}</code></pre>
+    <h3>Pipeline</h3>
+    <pre><code>var ml = new MLContext(seed: 0);
+IDataView data = ml.Data.LoadFromTextFile&lt;TaxiTrip&gt;("taxi.csv", hasHeader: true, separatorChar: ',');
+var split = ml.Data.TrainTestSplit(data, testFraction: 0.2);
+
+var pipeline = ml.Transforms.CopyColumns("Label", "FareAmount")
+    .Append(ml.Transforms.Categorical.OneHotEncoding("VendorIdEncoded", "VendorId"))
+    .Append(ml.Transforms.Concatenate("Features", "VendorIdEncoded", "TripDistance"))
+    .Append(ml.Regression.Trainers.FastTree());
+
+ITransformer model = pipeline.Fit(split.TrainSet);
+IDataView preds = model.Transform(split.TestSet);
+var m = ml.Regression.Evaluate(preds, labelColumnName: "Label");
+Console.WriteLine($"R²={m.RSquared:F3}, RMSE={m.RootMeanSquaredError:F3}");
+
+ml.Model.Save(model, data.Schema, "taxi.zip");</code></pre>
+    <h3>Trainer namespaces</h3>
+    <table style="width:100%;margin-top:8px"><tr><th style="text-align:left;border-bottom:1px solid var(--border);padding:6px">Task</th><th style="text-align:left;border-bottom:1px solid var(--border);padding:6px">Namespace</th><th style="text-align:left;border-bottom:1px solid var(--border);padding:6px">Trainer examples</th></tr>
+    <tr><td style="padding:6px">Regression</td><td style="padding:6px">mlContext.Regression.Trainers</td><td style="padding:6px">FastTree, FastForest, Sdca, LightGbm</td></tr>
+    <tr><td style="padding:6px">Binary classification</td><td style="padding:6px">BinaryClassification.Trainers</td><td style="padding:6px">LogisticRegression, AveragedPerceptron</td></tr>
+    <tr><td style="padding:6px">Multiclass</td><td style="padding:6px">MulticlassClassification.Trainers</td><td style="padding:6px">NaiveBayes, SdcaMaximumEntropy</td></tr>
+    <tr><td style="padding:6px">Clustering</td><td style="padding:6px">Clustering.Trainers</td><td style="padding:6px">KMeans</td></tr></table>
+    <h3>Metrics</h3>
+    <table style="width:100%;margin-top:8px"><tr><th style="text-align:left;border-bottom:1px solid var(--border);padding:6px">Task</th><th style="text-align:left;border-bottom:1px solid var(--border);padding:6px">Metric</th><th style="text-align:left;border-bottom:1px solid var(--border);padding:6px">Better direction</th></tr>
+    <tr><td style="padding:6px">Regression</td><td style="padding:6px">RSquared</td><td style="padding:6px">0→1, higher = better</td></tr>
+    <tr><td style="padding:6px">Regression</td><td style="padding:6px">RootMeanSquaredError (RMSE)</td><td style="padding:6px">lower = better</td></tr>
+    <tr><td style="padding:6px">Binary</td><td style="padding:6px">Accuracy, F1Score, AreaUnderRocCurve</td><td style="padding:6px">higher = better</td></tr>
+    <tr><td style="padding:6px">Multiclass</td><td style="padding:6px">MacroAccuracy, LogLoss</td><td style="padding:6px">acc higher, logloss lower</td></tr></table>`},
+
+  {pillar:'Cache', priority:'HIGH', chapter:'W10', title:'IMemoryCache — single-server cache', html:`
+    <h3>Register</h3>
+    <pre><code>builder.Services.AddMemoryCache();</code></pre>
+    <h3>Consume</h3>
+    <pre><code>public class WeatherService {
+    private readonly IMemoryCache _cache;
+    public WeatherService(IMemoryCache cache) { _cache = cache; }
+
+    public Forecast Get() {
+        if (!_cache.TryGetValue("fc", out Forecast fc)) {
+            fc = Load();  // expensive
+            var opts = new MemoryCacheEntryOptions {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10),
+                SlidingExpiration = TimeSpan.FromMinutes(2),
+                Priority = CacheItemPriority.Normal
+            };
+            _cache.Set("fc", fc, opts);
+        }
+        return fc;
+    }
+}</code></pre>
+    <h3>GetOrCreateAsync</h3>
+    <pre><code>var fc = await _cache.GetOrCreateAsync("fc", async entry =&gt; {
+    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+    return await LoadAsync();
+});</code></pre>
+    <h3>Why this fails in production</h3>
+    <p>Each web server has its own <code>IMemoryCache</code>. In a load balancer with 3 servers, the same user hitting server A vs B sees different cached data. Solution: use <code>IDistributedCache</code> (Redis).</p>`},
+
+  {pillar:'Cache', priority:'HIGH', chapter:'W10', title:'Redis (IDistributedCache) + Cache Tag Helper', html:`
+    <h3>Start Redis</h3>
+    <pre><code>docker run -d --name redis -p 6379:6379 redis</code></pre>
+    <h3>Register</h3>
+    <pre><code>builder.Services.AddStackExchangeRedisCache(o =&gt; {
+    o.Configuration = "localhost:6379";
+    o.InstanceName = "myapp_";
+});</code></pre>
+    <h3>Consume</h3>
+    <pre><code>public class Svc {
+    private readonly IDistributedCache _cache;
+    public Svc(IDistributedCache c) { _cache = c; }
+    public async Task SetAsync(string key, string value) {
+        var opts = new DistributedCacheEntryOptions {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+        };
+        await _cache.SetStringAsync(key, value, opts);
+    }
+    public Task&lt;string&gt; GetAsync(string key) =&gt; _cache.GetStringAsync(key);
+}</code></pre>
+    <h3>Cache Tag Helper</h3>
+    <pre><code>&lt;cache expires-after="@TimeSpan.FromMinutes(10)"
+       vary-by-user="true"
+       vary-by-route="category"
+       vary-by-query="page;sort"
+       priority="High"&gt;
+    &lt;partial name="_ExpensiveFragment" /&gt;
+&lt;/cache&gt;</code></pre>
+    <p><strong>vary-by-*</strong> attributes: <code>vary-by-user</code>, <code>vary-by-route</code>, <code>vary-by-query</code>, <code>vary-by-cookie</code>, <code>vary-by-header</code>, custom <code>vary-by="@Model.Id"</code>.</p>
+    <p>Uses <code>IMemoryCache</code> under the hood → same load-balancer caveat applies.</p>`},
+
+  {pillar:'gRPC', priority:'HIGH', chapter:'W09', title:'gRPC — proto + server + client', html:`
+    <h3>greet.proto</h3>
+    <pre><code>syntax = "proto3";
+option csharp_namespace = "GrpcGreeter";
+package greet;
+
+service Greeter {
+  rpc SayHello (HelloRequest) returns (HelloReply);
+  rpc StreamNames (HelloRequest) returns (stream HelloReply);       // server stream
+  rpc CollectNames (stream HelloRequest) returns (HelloReply);      // client stream
+  rpc Chat (stream HelloRequest) returns (stream HelloReply);       // bidi
+}
+
+message HelloRequest {
+  string name = 1;
+  int32  age  = 2;
+}
+
+message HelloReply {
+  string message = 1;
+}</code></pre>
+    <h3>Server .csproj</h3>
+    <pre><code>&lt;ItemGroup&gt;
+  &lt;Protobuf Include="Protos/greet.proto" GrpcServices="Server" /&gt;
+  &lt;PackageReference Include="Grpc.AspNetCore" /&gt;
+&lt;/ItemGroup&gt;</code></pre>
+    <h3>Server impl</h3>
+    <pre><code>public class GreeterImpl : Greeter.GreeterBase {
+    public override Task&lt;HelloReply&gt; SayHello(HelloRequest req, ServerCallContext ctx) {
+        return Task.FromResult(new HelloReply { Message = $"Hello {req.Name}" });
+    }
+}
+// Program.cs
+builder.Services.AddGrpc();
+app.MapGrpcService&lt;GreeterImpl&gt;();</code></pre>
+    <h3>Client</h3>
+    <pre><code>using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+var client = new Greeter.GreeterClient(channel);
+var reply = await client.SayHelloAsync(new HelloRequest { Name = "Bob", Age = 30 });
+Console.WriteLine(reply.Message);</code></pre>
+    <h3>DI client</h3>
+    <pre><code>builder.Services.AddGrpcClient&lt;Greeter.GreeterClient&gt;(o =&gt; {
+    o.Address = new Uri("https://localhost:5001");
+});</code></pre>
+    <h3>Exam traps</h3>
+    <ul><li>Field numbers (<code>= 1, = 2</code>) are ID tags, NOT ordinals; reordering in code is fine</li><li>Tags 1-15 encode in 1 byte → reserve them for frequent fields</li><li>Server-streaming uses <code>IServerStreamWriter&lt;T&gt;</code> and returns <code>Task</code>, writes with <code>await responseStream.WriteAsync(...)</code></li><li>Default port in ASP.NET gRPC template: HTTPS 5001, HTTP 5000. gRPC REQUIRES HTTP/2, which requires TLS in browsers</li></ul>`},
+
+  {pillar:'TDD', priority:'HIGH', chapter:'W08', title:'xUnit — the full Assert surface', html:`
+    <h3>Full example — AAA + Theory + exception + async</h3>
+    <pre><code>public class CalculatorTests : IDisposable {
+    private readonly Calculator _calc;
+
+    public CalculatorTests() {   // setup
+        _calc = new Calculator();
+    }
+
+    public void Dispose() { }    // teardown
+
+    [Fact]
+    public void Add_TwoPositives_ReturnsSum() {
+        var r = _calc.Add(2, 3);
+        Assert.Equal(5, r);
+    }
+
+    [Theory]
+    [InlineData(1, 2, 3)]
+    [InlineData(0, 0, 0)]
+    [InlineData(-1, 1, 0)]
+    public void Add_Various(int a, int b, int expected) {
+        Assert.Equal(expected, _calc.Add(a, b));
+    }
+
+    [Fact]
+    public void Divide_ByZero_Throws() {
+        var ex = Assert.Throws&lt;DivideByZeroException&gt;(() =&gt; _calc.Divide(5, 0));
+        Assert.Contains("zero", ex.Message);
+    }
+
+    [Fact]
+    public async Task LongTask_Completes() {
+        await Assert.ThrowsAsync&lt;TimeoutException&gt;(async () =&gt; await _calc.SlowAsync());
+    }
+}</code></pre>
+    <h3>Asserts in the course</h3>
+    <p><code>Equal, NotEqual, True, False, Null, NotNull, Same, NotSame, Throws&lt;T&gt;, ThrowsAsync&lt;T&gt;, Contains, DoesNotContain, Empty, NotEmpty, InRange, IsType&lt;T&gt;, IsAssignableFrom&lt;T&gt;, Collection</code></p>
+    <h3>Test data sources</h3>
+    <p><code>[InlineData(...)]</code> — literal args. <code>[MemberData(nameof(Data))]</code> — reference a static <code>IEnumerable&lt;object[]&gt;</code> property. <code>[ClassData(typeof(X))]</code> — class implementing <code>IEnumerable&lt;object[]&gt;</code>.</p>
+    <h3>Shared fixtures</h3>
+    <p><code>IClassFixture&lt;TFx&gt;</code> — one fixture per test class. <code>ICollectionFixture&lt;TFx&gt;</code> + <code>[Collection("Name")]</code> — shared across classes.</p>`},
+
+  {pillar:'FileBased', priority:'HIGH', chapter:'W11', title:'File-based C# — every directive', html:`
+    <h3>All four directives</h3>
+    <pre><code>// ==== app.cs ====
+#:package Spectre.Console@0.48.0       // NuGet package
+#:package Newtonsoft.Json@13.0.3
+#:sdk Microsoft.NET.Sdk.Web            // use ASP.NET SDK
+#:property LangVersion=preview         // MSBuild property
+#:property TargetFramework=net10.0
+#:project ./lib/MyHelpers.csproj       // reference another project
+
+using Spectre.Console;
+
+AnsiConsole.MarkupLine("[green]Hello[/]");
+
+foreach (var arg in args) Console.WriteLine(arg);</code></pre>
+    <p><strong>Run:</strong> <code>dotnet run app.cs -- extra args</code> (anything after <code>--</code> goes to <code>args</code>)</p>
+    <h3>CRITICAL syntax rules</h3>
+    <ul><li><code>#:package</code> — NO space after colon (<code>#: package</code> ❌)</li><li>Directives must be at TOP of file before any code</li><li>@version optional → uses latest if omitted</li><li>SDK names are Microsoft-standard: <code>Microsoft.NET.Sdk</code> (default), <code>Microsoft.NET.Sdk.Web</code>, <code>Microsoft.NET.Sdk.Worker</code></li></ul>
+    <h3>Minimal Web API — single file</h3>
+    <pre><code>#:sdk Microsoft.NET.Sdk.Web
+
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+app.MapGet("/", () =&gt; "Hello");
+app.Run();</code></pre>
+    <h3>Convert to a real project</h3>
+    <pre><code>dotnet project convert app.cs -o NewFolder</code></pre>
+    <h3>Shebang (mac/linux)</h3>
+    <pre><code>#!/usr/bin/env dotnet
+#:package Spectre.Console@0.48.0
+...</code></pre>
+    <p>Then <code>chmod +x app.cs</code> and run as <code>./app.cs</code>.</p>`},
+
+  {pillar:'Aspire', priority:'MEDIUM', chapter:'W09', title:'Aspire — orchestrating a stack', html:`
+    <h3>AppHost Program.cs</h3>
+    <pre><code>var builder = DistributedApplication.CreateBuilder(args);
+
+// Resources
+var cache = builder.AddRedis("cache");
+var sql   = builder.AddSqlServer("sql");
+var db    = sql.AddDatabase("appdb");
+
+// Projects
+var api = builder.AddProject&lt;Projects.Api&gt;("api")
+    .WithReference(cache)
+    .WithReference(db);
+
+builder.AddProject&lt;Projects.Web&gt;("web")
+    .WithReference(api)
+    .WaitFor(api);
+
+builder.Build().Run();</code></pre>
+    <h3>Each service calls:</h3>
+    <pre><code>// In every downstream project\'s Program.cs
+builder.AddServiceDefaults();          // telemetry, health, discovery
+builder.AddRedisClient("cache");        // named resource
+builder.AddSqlServerDbContext&lt;AppDb&gt;("appdb");</code></pre>
+    <h3>Service discovery URL</h3>
+    <pre><code>// HttpClient registration — logical name, not URL
+builder.Services.AddHttpClient&lt;ApiClient&gt;(c =&gt; c.BaseAddress = new Uri("https+http://api"));</code></pre>
+    <h3>Aspire Dashboard</h3>
+    <p>Automatic telemetry UI launched on AppHost run. Shows logs, traces, metrics per resource.</p>
+    <h3>Exam traps</h3>
+    <ul><li>AppHost ≠ ServiceDefaults. AppHost orchestrates. ServiceDefaults is a library each service imports.</li><li><code>AddProject&lt;Projects.Foo&gt;</code> — <code>Projects.Foo</code> is a generated type from the project reference</li><li><code>https+http://api</code> → the scheme tells the resolver to try HTTPS first, fall back to HTTP</li></ul>`},
+
+  {pillar:'Localization', priority:'MEDIUM', chapter:'W10', title:'Localization — culture + resources', html:`
+    <h3>Program.cs setup</h3>
+    <pre><code>builder.Services.AddLocalization(o =&gt; o.ResourcesPath = "Resources");
+builder.Services.AddRazorPages()
+    .AddViewLocalization()
+    .AddDataAnnotationsLocalization();
+
+builder.Services.Configure&lt;RequestLocalizationOptions&gt;(o =&gt; {
+    var cultures = new[] { new CultureInfo("en"), new CultureInfo("fr"), new CultureInfo("es") };
+    o.DefaultRequestCulture = new RequestCulture("en");
+    o.SupportedCultures = cultures;
+    o.SupportedUICultures = cultures;
+});
+
+var app = builder.Build();
+app.UseRequestLocalization();</code></pre>
+    <h3>Resource files</h3>
+    <p>Default culture: <code>Resources/Pages.Index.resx</code> (or no .resx — strings used as fallbacks). Localized: <code>Resources/Pages.Index.fr.resx</code>, <code>Resources/Pages.Index.es.resx</code>.</p>
+    <h3>In PageModel</h3>
+    <pre><code>public class IndexModel : PageModel {
+    private readonly IStringLocalizer&lt;IndexModel&gt; _loc;
+    public IndexModel(IStringLocalizer&lt;IndexModel&gt; loc) { _loc = loc; }
+    public string Greet() =&gt; _loc["Hello"];
+}</code></pre>
+    <h3>In Razor view</h3>
+    <pre><code>@inject IViewLocalizer Localizer
+&lt;h1&gt;@Localizer["Welcome"]&lt;/h1&gt;
+&lt;p&gt;@Html.Raw(Localizer["GreetWithName", User.Identity.Name])&lt;/p&gt;</code></pre>
+    <h3>Change culture via cookie</h3>
+    <pre><code>Response.Cookies.Append(
+    CookieRequestCultureProvider.DefaultCookieName,
+    CookieRequestCultureProvider.MakeCookieValue(new RequestCulture("fr")),
+    new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });</code></pre>
+    <h3>CurrentCulture vs CurrentUICulture</h3>
+    <ul><li><strong>CurrentCulture</strong> — number/date formatting (e.g., <code>1,234.56</code> US vs <code>1 234,56</code> FR)</li><li><strong>CurrentUICulture</strong> — which .resx to load</li></ul>`},
+
+  {pillar:'TagHelpers', priority:'MEDIUM', chapter:'W07', title:'Tag Helpers — built-in and custom', html:`
+    <h3>Register in _ViewImports.cshtml</h3>
+    <pre><code>@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper "*, MyApp"  // your custom tag helpers</code></pre>
+    <h3>Built-in reference</h3>
+    <table style="width:100%"><tr><th style="text-align:left;padding:4px;border-bottom:1px solid var(--border)">Element</th><th style="text-align:left;padding:4px;border-bottom:1px solid var(--border)">Key attrs</th></tr>
+    <tr><td style="padding:4px">form</td><td style="padding:4px">asp-controller, asp-action, asp-route-*</td></tr>
+    <tr><td style="padding:4px">input/label/select/textarea</td><td style="padding:4px">asp-for, asp-items</td></tr>
+    <tr><td style="padding:4px">span/div</td><td style="padding:4px">asp-validation-for</td></tr>
+    <tr><td style="padding:4px">div (summary)</td><td style="padding:4px">asp-validation-summary</td></tr>
+    <tr><td style="padding:4px">a</td><td style="padding:4px">asp-controller, asp-action, asp-route-*</td></tr>
+    <tr><td style="padding:4px">script / link</td><td style="padding:4px">asp-append-version, asp-fallback-src</td></tr>
+    <tr><td style="padding:4px">environment</td><td style="padding:4px">names (Development, Production)</td></tr>
+    <tr><td style="padding:4px">cache</td><td style="padding:4px">expires-after, vary-by-*</td></tr></table>
+    <h3>Custom tag helper skeleton</h3>
+    <pre><code>using Microsoft.AspNetCore.Razor.TagHelpers;
+
+[HtmlTargetElement("quote")]  // &lt;quote text="..."&gt;&lt;/quote&gt;
+public class QuoteTag : TagHelper {
+    public string Text { get; set; }
+    public string Author { get; set; }  // attribute: author
+
+    public override void Process(TagHelperContext ctx, TagHelperOutput out) {
+        out.TagName = "blockquote";
+        out.Attributes.SetAttribute("class", "quote");
+        out.Content.SetHtmlContent($"&quot;{Text}&quot; <footer>— {Author}</footer>");
+    }
+}</code></pre>
+    <h3>Kebab-case rule</h3>
+    <p>Property <code>FontFamily</code> → HTML attribute <code>font-family</code>. Property <code>Text</code> → <code>text</code>.</p>`},
+
+  {pillar:'Blazor', priority:'LOW', chapter:'W07', title:'Blazor QuickGrid', html:`
+    <h3>Setup</h3>
+    <pre><code>// _Imports.razor
+@using Microsoft.AspNetCore.Components.QuickGrid</code></pre>
+    <h3>Full grid with sort + pagination + filter</h3>
+    <pre><code>@page "/students"
+
+&lt;input @bind="filter" @bind:event="oninput" placeholder="Search..." /&gt;
+
+&lt;QuickGrid Items="@filtered" Pagination="@pagination"&gt;
+    &lt;PropertyColumn Property="@(_ =&gt; _.Id)" Sortable="true" /&gt;
+    &lt;TemplateColumn Title="Name" SortBy="@sortByName"&gt;
+        &lt;strong&gt;@context.FirstName @context.LastName&lt;/strong&gt;
+    &lt;/TemplateColumn&gt;
+    &lt;PropertyColumn Property="@(_ =&gt; _.School)" Sortable="true" /&gt;
+&lt;/QuickGrid&gt;
+
+&lt;Paginator State="@pagination" /&gt;
+
+@code {
+    string filter = "";
+    PaginationState pagination = new() { ItemsPerPage = 10 };
+    GridSort&lt;Student&gt; sortByName = GridSort&lt;Student&gt;
+        .ByAscending(s =&gt; s.FirstName).ThenAscending(s =&gt; s.LastName);
+
+    IQueryable&lt;Student&gt; allStudents = Student.GetStudents();
+    IQueryable&lt;Student&gt; filtered =&gt; string.IsNullOrEmpty(filter)
+        ? allStudents
+        : allStudents.Where(s =&gt; s.FirstName.Contains(filter, StringComparison.OrdinalIgnoreCase));
+}</code></pre>
+    <h3>Server vs WASM</h3>
+    <ul><li><strong>Server</strong>: use <code>ItemsProvider</code> callback for server-paged data</li><li><strong>WASM</strong>: <code>IQueryable&lt;T&gt;</code> is in-memory only (no LINQ-to-SQL on client)</li></ul>
+    <h3>Exam traps</h3>
+    <ul><li><code>PropertyColumn</code> sortable with <code>Sortable="true"</code>. <code>TemplateColumn</code> needs <code>SortBy</code>, not Sortable.</li><li>Must declare <code>PaginationState</code> explicitly — not auto-created</li><li>Package: <code>Microsoft.AspNetCore.Components.QuickGrid</code> — .NET 8+</li></ul>`},
+
+  {pillar:'ExcelPDF', priority:'LOW', chapter:'W13', title:'Excel / PDF / Chart export', html:`
+    <h3>Excel with ClosedXML</h3>
+    <pre><code>using ClosedXML.Excel;
+using var wb = new XLWorkbook();
+var ws = wb.Worksheets.Add("Sheet1");
+ws.Cell(1, 1).Value = "Name";
+ws.Cell(1, 2).Value = "Score";
+ws.Cell(2, 1).Value = "Alice";
+ws.Cell(2, 2).Value = 92;
+
+using var ms = new MemoryStream();
+wb.SaveAs(ms);
+return File(ms.ToArray(),
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "report.xlsx");</code></pre>
+    <h3>PDF with iText7</h3>
+    <pre><code>using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+
+using var ms = new MemoryStream();
+var writer = new PdfWriter(ms);
+var pdf = new PdfDocument(writer);
+var doc = new Document(pdf);
+doc.Add(new Paragraph("Hello PDF"));
+var table = new Table(2);
+table.AddCell("Name"); table.AddCell("Score");
+table.AddCell("Alice"); table.AddCell("92");
+doc.Add(table);
+doc.Close();
+return File(ms.ToArray(), "application/pdf", "report.pdf");</code></pre>
+    <p><strong>Required packages:</strong> <code>itext7</code> + <code>itext.bouncy-castle-adapter</code></p>
+    <h3>Chart.js (client-side in Razor)</h3>
+    <pre><code>&lt;canvas id="myChart"&gt;&lt;/canvas&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  new Chart(document.getElementById('myChart'), {
+    type: 'pie',
+    data: {
+      labels: [@:Html.Raw(string.Join(',', labels.Select(l =&gt; $"'{l}'")))],
+      datasets: [{ data: [@:Html.Raw(string.Join(',', values))] }]
+    }
+  });
+&lt;/script&gt;</code></pre>
+    <h3>MIME types</h3>
+    <ul><li>Excel <code>.xlsx</code> → <code>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</code></li><li>PDF → <code>application/pdf</code></li><li>PNG image → <code>image/png</code></li></ul>`},
+
+  {pillar:'AI', priority:'HIGH', chapter:'W12-13', title:'Ollama — running a local SLM', html:`
+    <h3>Install + download model</h3>
+    <pre><code>ollama pull llama3        # download
+ollama run llama3         # interactive REPL
+ollama list               # list downloaded models</code></pre>
+    <h3>C# client via OllamaSharp</h3>
+    <pre><code>// NuGet: OllamaSharp
+var ollama = new OllamaApiClient("http://localhost:11434");
+ollama.SelectedModel = "llama3";
+await foreach (var chunk in ollama.GenerateAsync("Tell me a joke")) {
+    Console.Write(chunk.Response);
+}</code></pre>
+    <h3>With Semantic Kernel</h3>
+    <pre><code>var b = Kernel.CreateBuilder();
+b.AddOllamaChatCompletion("llama3", new Uri("http://localhost:11434"));
+var kernel = b.Build();</code></pre>
+    <h3>Why Ollama</h3>
+    <ul><li>Runs locally — NO API key, NO cloud bill, offline-capable</li><li>Good for privacy-sensitive or learning contexts</li><li>Tradeoff: slower, smaller models (7B-13B typical vs 1T+ cloud)</li></ul>
+    <h3>Exam traps</h3>
+    <ul><li>Endpoint is <code>http://</code> (not https) on localhost</li><li>Default port 11434</li><li>OpenAI SDK is NOT the Ollama SDK — use <code>OllamaSharp</code> for direct calls OR SK\'s <code>AddOllamaChatCompletion</code></li></ul>`}
+];
+
+// Mermaid diagrams injected inline to each lesson via separate Edits (see below)
+
+// === DATA.mockExam ===
+DATA.mockExam = [
+  // AI / SK / MAF / MCP (7 qs)
+  {type:'mcq', marks:1, topic:'AI', question:'Which method resolves the chat service from a built SK Kernel?', choices:['a. kernel.Services.GetChat()','b. kernel.Chat','c. kernel.GetRequiredService&lt;IChatCompletionService&gt;()','d. kernel.CreateChatCompletion()','e. new ChatCompletion(kernel)'], answer:'c', explanation:'Standard DI pattern — kernel is an IServiceProvider. <code>GetRequiredService&lt;IChatCompletionService&gt;()</code> is the canonical resolve.'},
+  {type:'mcq', marks:1, topic:'AI', question:'What is the default local Ollama endpoint?', choices:['a. http://localhost:8080','b. http://localhost:11434','c. https://localhost:11434','d. http://localhost:3000','e. http://127.0.0.1:5000'], answer:'b', explanation:'Ollama default port is 11434 and uses plain HTTP on localhost.'},
+  {type:'mcq', marks:1, topic:'AI', question:'Which factory method creates an AI tool from a C# delegate in MAF?', choices:['a. AIFunction.Create(delegate)','b. AIAgent.CreateTool(delegate)','c. AIFunctionFactory.Create(delegate, name, desc)','d. Tool.FromMethod(delegate)','e. new AIFunction(delegate)'], answer:'c', explanation:'<code>AIFunctionFactory.Create(delegate, name, description)</code> is the static factory. Wraps a C# method into an <code>AIFunction</code> tool.'},
+  {type:'mcq', marks:1, topic:'AI', question:'Which attribute marks a C# method as Kernel-callable in Semantic Kernel?', choices:['a. [SKFunction]','b. [KernelFunction]','c. [AIFunction]','d. [SemanticFunction]','e. [Callable]'], answer:'b', explanation:'The current attribute (post rename) is <code>[KernelFunction]</code>. <code>[SKFunction]</code> was the older name and is a classic distractor.'},
+  {type:'mcq', marks:1, topic:'AI', question:'Which MCP transport is appropriate for a LOCAL co-located tool?', choices:['a. SSE','b. WebSocket','c. HTTP/2','d. stdio','e. gRPC'], answer:'d', explanation:'<code>stdio</code> uses a stdin/stdout process pipe — local only. <code>SSE</code> is HTTP-based for remote.'},
+  {type:'mcq', marks:1, topic:'AI', question:'In MAF, what object maintains multi-turn history across calls?', choices:['a. ChatHistory','b. AgentSession','c. ConversationContext','d. IContextMemory','e. AgentContext'], answer:'b', explanation:'<code>AgentSession</code> wraps an <code>AIAgent</code> and tracks prior messages. <code>ChatHistory</code> is the SK equivalent, not MAF.'},
+  {type:'mcq', marks:1, topic:'AI', question:'Which MAF extension method turns an OpenAIClient into an agent?', choices:['a. .ToAIAgent(model)','b. .CreateAgent(model)','c. .AsAIAgent(model)','d. .MakeAgent(model)','e. new AIAgent(client, model)'], answer:'c', explanation:'Extension: <code>client.AsAIAgent("gpt-4o-mini")</code>.'},
+
+  // ML.NET (6 qs)
+  {type:'mcq', marks:1, topic:'ML.NET', question:'What does <code>pipeline.Fit(trainSet)</code> return?', choices:['a. IDataView','b. MLContext','c. ITransformer','d. IEstimator','e. PredictionEngine'], answer:'c', explanation:'Fit trains the pipeline and returns an <code>ITransformer</code> (the trained model). It does NOT return the predictions.'},
+  {type:'mcq', marks:1, topic:'ML.NET', question:'Which method loads a CSV file as IDataView?', choices:['a. mlContext.Data.LoadCsv&lt;T&gt;(path)','b. mlContext.LoadFromCsv&lt;T&gt;(path)','c. mlContext.Data.LoadFromTextFile&lt;T&gt;(path, hasHeader: true, separatorChar: \',\')','d. mlContext.ReadCsv(path)','e. new IDataView(path)'], answer:'c', explanation:'<code>LoadFromTextFile&lt;T&gt;</code> is the correct name and takes hasHeader + separatorChar.'},
+  {type:'mcq', marks:1, topic:'ML.NET', question:'Which metric is appropriate for a REGRESSION model?', choices:['a. Accuracy','b. F1Score','c. MacroAccuracy','d. RSquared','e. LogLoss'], answer:'d', explanation:'RSquared (and RMSE) are regression metrics. Accuracy/F1/LogLoss are for classification.'},
+  {type:'mcq', marks:1, topic:'ML.NET', question:'Which namespace holds trainers for a binary (2-class) classifier?', choices:['a. mlContext.BinaryClassification.Trainers','b. mlContext.Classification.Trainers','c. mlContext.MulticlassClassification.Trainers','d. mlContext.Classify.Trainers','e. mlContext.Predictor.Trainers'], answer:'a', explanation:'<code>BinaryClassification.Trainers</code> for 2-class; <code>MulticlassClassification.Trainers</code> for 3+.'},
+  {type:'mcq', marks:1, topic:'ML.NET', question:'What transform combines multiple columns into a single Features vector?', choices:['a. Concatenate','b. Combine','c. MergeColumns','d. BuildVector','e. Union'], answer:'a', explanation:'<code>mlContext.Transforms.Concatenate("Features", "A", "B", "C")</code> — required by trainers that expect a single Features column.'},
+  {type:'mcq', marks:1, topic:'ML.NET', question:'Which attribute maps a CSV column index to a class property?', choices:['a. [Column(0)]','b. [LoadColumn(0)]','c. [FromCsv(0)]','d. [Index(0)]','e. [Ordinal(0)]'], answer:'b', explanation:'<code>[LoadColumn(0)]</code> maps the zero-based CSV column to the property.'},
+
+  // Cache / Redis (5 qs)
+  {type:'mcq', marks:1, topic:'Cache', question:'Which interface is injected for distributed caching?', choices:['a. IMemoryCache','b. ICacheProvider','c. IDistributedCache','d. IRedisCache','e. ICacheManager'], answer:'c', explanation:'<code>IDistributedCache</code> is the abstraction backed by Redis / SQL Server / etc.'},
+  {type:'mcq', marks:1, topic:'Cache', question:'Register Redis distributed cache in Program.cs:', choices:['a. builder.Services.AddRedisCache("localhost:6379")','b. builder.Services.AddDistributedRedisCache(o =&gt; o.Host = "localhost")','c. builder.Services.AddStackExchangeRedisCache(o =&gt; o.Configuration = "localhost:6379")','d. builder.Services.AddRedis("localhost:6379")','e. builder.Services.UseRedis()'], answer:'c', explanation:'<code>AddStackExchangeRedisCache</code> uses the options callback with <code>Configuration</code> property.'},
+  {type:'mcq', marks:1, topic:'Cache', question:'Why does IMemoryCache fail in a load-balanced web farm?', choices:['a. Memory leak','b. Thread safety','c. Each server instance has its own cache','d. MemoryCache is deprecated','e. Firewall blocks it'], answer:'c', explanation:'In-process cache = per-server RAM. Server A has no clue about what Server B cached. Redis solves this.'},
+  {type:'mcq', marks:1, topic:'Cache', question:'Cache Tag Helper attribute to vary fragment by current user:', choices:['a. vary-by-identity','b. vary-by-user','c. user="true"','d. authenticate-vary','e. vary-by-auth'], answer:'b', explanation:'<code>vary-by-user="true"</code>.'},
+  {type:'mcq', marks:1, topic:'Cache', question:'Difference between AbsoluteExpiration and SlidingExpiration?', choices:['a. Absolute = fixed duration; Sliding = resets on access','b. Both are identical','c. Absolute = relative time; Sliding = calendar time','d. Absolute applies to Redis only','e. Sliding expires immediately'], answer:'a', explanation:'Absolute: expires at fixed DateTimeOffset. Sliding: resets TTL whenever entry is accessed. Combining = earlier wins.'},
+
+  // File-based apps (5 qs)
+  {type:'mcq', marks:1, topic:'FileBased', question:'Which is the CORRECT directive to reference a NuGet package?', choices:['a. #: package Humanizer@2.14.1','b. #package Humanizer@2.14.1','c. #:package Humanizer@2.14.1','d. //:package Humanizer@2.14.1','e. #pragma package Humanizer'], answer:'c', explanation:'No space after colon: <code>#:package</code>. Space between directive and content is OK.'},
+  {type:'mcq', marks:1, topic:'FileBased', question:'Command to run a single file-based C# app:', choices:['a. dotnet app.cs','b. dotnet exec app.cs','c. dotnet run app.cs','d. dotnet script app.cs','e. csi app.cs'], answer:'c', explanation:'<code>dotnet run app.cs</code> — detects the .cs argument and compiles/runs in memory.'},
+  {type:'mcq', marks:1, topic:'FileBased', question:'What directive selects the ASP.NET Core web SDK in a file-based app?', choices:['a. #:sdk AspNetCore','b. #:sdk Microsoft.NET.Sdk.Web','c. #:framework web','d. #:use Web','e. #:webhost'], answer:'b', explanation:'<code>#:sdk Microsoft.NET.Sdk.Web</code> — full MSBuild SDK identifier.'},
+  {type:'mcq', marks:1, topic:'FileBased', question:'Command to convert a file-based app into a .csproj project:', choices:['a. dotnet upgrade app.cs','b. dotnet convert app.cs','c. dotnet project convert app.cs','d. dotnet new project --from app.cs','e. dotnet build --promote app.cs'], answer:'c', explanation:'<code>dotnet project convert app.cs</code> promotes the script into a proper project with a .csproj.'},
+  {type:'mcq', marks:1, topic:'FileBased', question:'Which .NET version introduced file-based apps?', choices:['a. .NET 6','b. .NET 7','c. .NET 8','d. .NET 9','e. .NET 10'], answer:'e', explanation:'Single-file apps with #: directives shipped in .NET 10.'},
+
+  // gRPC (4 qs + 1 code question)
+  {type:'mcq', marks:1, topic:'gRPC', question:'First line of every .proto3 file?', choices:['a. package proto3;','b. syntax = "proto3";','c. version 3;','d. proto 3;','e. schema = "proto3";'], answer:'b', explanation:'Literally <code>syntax = "proto3";</code> at the top.'},
+  {type:'mcq', marks:1, topic:'gRPC', question:'Protocol gRPC REQUIRES?', choices:['a. HTTP/1.0','b. HTTP/1.1','c. HTTP/2','d. WebSocket','e. QUIC'], answer:'c', explanation:'gRPC is built on HTTP/2 (binary framing, multiplexing, streaming).'},
+  {type:'mcq', marks:1, topic:'gRPC', question:'Register a gRPC service in Program.cs:', choices:['a. app.MapGrpc&lt;MyService&gt;()','b. app.UseGrpc()','c. builder.Services.AddGrpc(); app.MapGrpcService&lt;MyServiceImpl&gt;();','d. builder.Services.AddGrpcService&lt;MyServiceImpl&gt;()','e. app.MapService&lt;MyServiceImpl&gt;()'], answer:'c', explanation:'Two steps: <code>AddGrpc()</code> in services, <code>MapGrpcService&lt;T&gt;()</code> in the pipeline.'},
+  {type:'mcq', marks:1, topic:'gRPC', question:'csproj item to compile a .proto for the server:', choices:['a. &lt;Protobuf Include="x.proto" Role="Server"/&gt;','b. &lt;Protobuf Include="x.proto" GrpcServices="Server"/&gt;','c. &lt;Proto Include="x.proto" For="Server"/&gt;','d. &lt;ProtobufServer Include="x.proto"/&gt;','e. &lt;Grpc Include="x.proto" Generate="Server"/&gt;'], answer:'b', explanation:'<code>&lt;Protobuf Include="..." GrpcServices="Server|Client|Both" /&gt;</code> — "Role" and "For" are fake.'},
+
+  // TDD / xUnit (4 qs)
+  {type:'mcq', marks:1, topic:'TDD', question:'Argument order for <code>Assert.Equal</code>:', choices:['a. (actual, expected)','b. (expected, actual)','c. (left, right)','d. Order does not matter','e. (value, compareTo)'], answer:'b', explanation:'Always <code>(expected, actual)</code>. Swapping produces misleading failure messages.'},
+  {type:'mcq', marks:1, topic:'TDD', question:'Attribute for a test with multiple parameter sets:', choices:['a. [TestCase]','b. [DataRow]','c. [Theory] + [InlineData]','d. [Parameterized]','e. [Many]'], answer:'c', explanation:'<code>[Theory]</code> with <code>[InlineData(...)]</code> rows. <code>[Fact]</code> = no args.'},
+  {type:'mcq', marks:1, topic:'TDD', question:'How do you perform test setup in xUnit?', choices:['a. [SetUp] method','b. [TestInitialize] method','c. Class constructor','d. OnBefore() override','e. Static Init()'], answer:'c', explanation:'xUnit uses the class constructor. Teardown: implement <code>IDisposable</code>.'},
+  {type:'mcq', marks:1, topic:'TDD', question:'How do you assert that code throws an exception?', choices:['a. Assert.ThrowsException&lt;T&gt;(code)','b. Assert.Throws&lt;T&gt;(() =&gt; code())','c. [ExpectedException(typeof(T))]','d. try/catch with Assert.Fail','e. Assert.HasException&lt;T&gt;'], answer:'b', explanation:'<code>Assert.Throws&lt;T&gt;(Action)</code> — use <code>ThrowsAsync&lt;T&gt;</code> for async.'},
+
+  // Aspire (3 qs)
+  {type:'mcq', marks:1, topic:'Aspire', question:'Aspire AppHost entry point:', choices:['a. new DistributedApplication()','b. var builder = DistributedApplication.CreateBuilder(args);','c. Aspire.CreateHost(args)','d. new AspireAppHost()','e. Host.CreateApplicationBuilder(args)'], answer:'b', explanation:'<code>DistributedApplication.CreateBuilder(args)</code> — parallels <code>WebApplication.CreateBuilder</code>.'},
+  {type:'mcq', marks:1, topic:'Aspire', question:'Add a Redis resource to Aspire AppHost:', choices:['a. builder.AddRedis("cache")','b. builder.Services.AddRedis("cache")','c. builder.UseRedis()','d. DistributedApplication.AddRedis("cache")','e. builder.AddContainer("redis")'], answer:'a', explanation:'<code>builder.AddRedis("cache")</code> on the AppHost builder.'},
+  {type:'mcq', marks:1, topic:'Aspire', question:'Method that passes a resource\'s connection info to a project:', choices:['a. .WithConnection(db)','b. .WithReference(db)','c. .UseDatabase(db)','d. .LinkTo(db)','e. .AddDependency(db)'], answer:'b', explanation:'<code>project.WithReference(resource)</code> injects env vars/connection strings.'},
+
+  // Localization (3 qs)
+  {type:'mcq', marks:1, topic:'Localization', question:'Register localization service:', choices:['a. builder.Services.AddLocalization(o =&gt; o.ResourcesPath = "Resources")','b. builder.UseLocalization("Resources")','c. builder.Services.AddI18n()','d. builder.AddCultures(new[] { "en", "fr" })','e. builder.Services.UseResources("Resources")'], answer:'a', explanation:'<code>AddLocalization</code> with options callback setting <code>ResourcesPath</code>.'},
+  {type:'mcq', marks:1, topic:'Localization', question:'Which interface is injected in a Razor view for translations?', choices:['a. IStringLocalizer','b. ILocalizer','c. IViewLocalizer','d. IResourceLocalizer','e. IHtmlLocalizer'], answer:'c', explanation:'<code>IViewLocalizer</code> is the one designed for Razor views. <code>IStringLocalizer&lt;T&gt;</code> used in code-behind / controllers.'},
+  {type:'mcq', marks:1, topic:'Localization', question:'Which property controls number/date formatting culture?', choices:['a. CurrentUICulture','b. CurrentLocale','c. CurrentCulture','d. FormattingCulture','e. DisplayCulture'], answer:'c', explanation:'<code>CurrentCulture</code> = formatting. <code>CurrentUICulture</code> = which resx to load.'},
+
+  // Tag Helpers (2 qs)
+  {type:'mcq', marks:1, topic:'TagHelpers', question:'File where tag helpers are registered for a folder?', choices:['a. _Layout.cshtml','b. _ViewStart.cshtml','c. _ViewImports.cshtml','d. appsettings.json','e. Program.cs'], answer:'c', explanation:'<code>_ViewImports.cshtml</code> — via <code>@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers</code>.'},
+  {type:'mcq', marks:1, topic:'TagHelpers', question:'Property <code>FontFamily</code> on a custom tag helper maps to which HTML attribute?', choices:['a. fontFamily','b. Font-Family','c. FONT_FAMILY','d. font-family','e. fontfamily'], answer:'d', explanation:'Kebab-case conversion: PascalCase C# → lowercase-hyphenated HTML.'},
+
+  // Blazor / QuickGrid (2 qs)
+  {type:'mcq', marks:1, topic:'Blazor', question:'NuGet package for QuickGrid:', choices:['a. Microsoft.AspNetCore.Components.Grid','b. Microsoft.AspNetCore.QuickGrid','c. Microsoft.AspNetCore.Components.QuickGrid','d. Blazor.QuickGrid','e. Syncfusion.QuickGrid'], answer:'c', explanation:'<code>Microsoft.AspNetCore.Components.QuickGrid</code>.'},
+  {type:'mcq', marks:1, topic:'Blazor', question:'A <code>TemplateColumn</code> with <code>Sortable="true"</code> — what happens?', choices:['a. It sorts alphabetically','b. Sorting ignores the attribute; TemplateColumn needs SortBy','c. Compile error','d. Runtime exception','e. Sorts by row index'], answer:'b', explanation:'<code>Sortable="true"</code> is only recognized on <code>PropertyColumn</code>. <code>TemplateColumn</code> needs <code>SortBy="@GridSort..."</code>.'},
+
+  // Excel/PDF (1 q)
+  {type:'mcq', marks:1, topic:'ExcelPDF', question:'Correct MIME type for an .xlsx download?', choices:['a. application/xlsx','b. application/excel','c. application/vnd.ms-excel','d. application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','e. text/xlsx'], answer:'d', explanation:'The modern Open XML MIME type. <code>application/vnd.ms-excel</code> is for legacy .xls.'},
+
+  // Match-column (10 marks one problem, rendered as short-answer template)
+  {type:'short', marks:10, topic:'Match', question:'Match each item from Column A to the most correct item in Column B.<br><br><strong>Column A</strong><ol><li>Semantic Kernel<br></li><li>MCP stdio transport<br></li><li>ML.NET entry point<br></li><li>IMemoryCache failure mode<br></li><li>gRPC .proto field identifier<br></li><li>xUnit parameterized test<br></li><li>Aspire orchestration<br></li><li>File-based C# package<br></li><li>Localization culture cookie<br></li><li>Blazor grid column with HTML<br></li></ol><strong>Column B</strong><ul><li>A. <code>[Theory] + [InlineData]</code></li><li>B. TemplateColumn with <code>SortBy</code></li><li>C. <code>MLContext</code></li><li>D. <code>Kernel.CreateBuilder()</code></li><li>E. load-balanced web farms</li><li>F. <code>AddProject / WithReference</code></li><li>G. field number tag (<code>= 1</code>)</li><li>H. <code>#:package X@version</code></li><li>I. local process pipe</li><li>J. <code>.AspNetCore.Culture</code></li></ul>', answer:'1→D · 2→I · 3→C · 4→E · 5→G · 6→A · 7→F · 8→H · 9→J · 10→B', explanation:'Every pairing is a canonical course fact. The match column on the final will follow the same "concept → exact identifier" structure as the midterm.'},
+
+  // Coding question (10 marks)
+  {type:'code', marks:10, topic:'Coding', question:'Write a gRPC service contract and server implementation for a Calculator service.<br><br>Requirements:<br>1) Create a <code>.proto</code> file named <code>calculator.proto</code> defining a <code>Calculator</code> service with one RPC <code>Add(AddRequest)</code> returning <code>AddResponse</code>. AddRequest has two int32 fields (<code>a</code>, <code>b</code>). AddResponse has one int32 field (<code>sum</code>).<br>2) Register the service in <code>Program.cs</code>.<br>3) Implement the service class to return the sum.', answer:'See model solution below.', template:`// calculator.proto
+syntax = "proto3";
+option csharp_namespace = "CalcGrpc";
+
+service Calculator {
+  rpc Add (AddRequest) returns (AddResponse);
+}
+
+message AddRequest  { int32 a = 1; int32 b = 2; }
+message AddResponse { int32 sum = 1; }
+
+// .csproj
+// <ItemGroup>
+//   <Protobuf Include="Protos/calculator.proto" GrpcServices="Server" />
+// </ItemGroup>
+
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddGrpc();
+var app = builder.Build();
+app.MapGrpcService<CalculatorImpl>();
+app.Run();
+
+// CalculatorImpl.cs
+using Grpc.Core;
+using CalcGrpc;
+
+public class CalculatorImpl : Calculator.CalculatorBase {
+    public override Task<AddResponse> Add(AddRequest r, ServerCallContext ctx) {
+        return Task.FromResult(new AddResponse { Sum = r.A + r.B });
+    }
+}`, explanation:'<strong>Marking rubric (10 marks):</strong> proto syntax line + csharp_namespace (2) · service + rpc signature (2) · two messages with field tags (2) · AddGrpc + MapGrpcService (2) · correct override signature returning Task&lt;AddResponse&gt; (2).'}
+];
+
+// === DATA.quizzes ===
+DATA.quizzes = {
+  midterm: [
+    {type:'mcq', marks:1, topic:'Razor', question:'Which of the following is the correct RAZOR syntax?', choices:['a. &lt;h1&gt;@DateTime.Now&lt;/h1&gt;','b. &lt;h1&gt;{@DateTime.Now}&lt;/h1&gt;','c. &lt;h1&gt;{{DateTime.Now}}&lt;/h1&gt;','d. &lt;h1&gt;${DateTime.Now}&lt;/h1&gt;','e. &lt;h1&gt;#{DateTime.Now}&lt;/h1&gt;'], answer:'a', explanation:'<code>@expr</code> is Razor inline syntax. Curly variants are Handlebars/Vue/Angular — classic distractors.'},
+    {type:'mcq', marks:1, topic:'Blazor', question:'To inject a service into a Blazor component, you use the directive named:', choices:['a. @service','b. @using','c. @inject','d. @provide','e. @import'], answer:'c', explanation:'<code>@inject Type Name</code> — carries across to the final exam in case of Blazor question.'},
+    {type:'mcq', marks:1, topic:'ASP.NET', question:'Which file configures/bootstraps an ASP.NET Core application?', choices:['a. Startup.cs','b. App.config','c. Program.cs','d. Web.config','e. appsettings.json'], answer:'c', explanation:'Post .NET 6 minimal hosting — Program.cs is the single entry point. Startup.cs is pre-.NET 6.'},
+    {type:'mcq', marks:1, topic:'EF Core', question:'Command to update the database schema in EF Core?', choices:['a. dotnet ef update database','b. dotnet ef database update','c. dotnet ef migrations apply','d. dotnet ef schema update','e. dotnet ef db migrate'], answer:'b', explanation:'Verb order: tool verb (database) then action (update). Elmasry trap: swapped word order.'},
+    {type:'mcq', marks:1, topic:'Blazor', question:'Which is FALSE about Blazor WebAssembly?', choices:['a. Runs C# directly in the browser','b. Can run offline','c. Requires constant server connection like Blazor Server','d. Can be hosted as static site','e. Same Razor component model'], answer:'c', explanation:'WASM runs client-side — the constant-connection claim describes Blazor Server.'},
+    {type:'mcq', marks:1, topic:'EF Core', question:'The two methods generated in an EF migration class?', choices:['a. Up() and Down()','b. Start() and End()','c. Update() and Rollback()','d. Build() and TearDown()','e. Stop() and Start()'], answer:'a', explanation:'Every EF migration inherits <code>Migration</code> and implements <code>Up()</code> (apply) + <code>Down()</code> (revert).'},
+    {type:'mcq', marks:1, topic:'WebAPI', question:'Correct route annotation for a Web API controller?', choices:['a. [api/[controller]]','b. Route("[api]/[controller]")','c. [Route("api/[controller]")]','d. Route("[api]/[controller]")','e. [Route("[api]/[controller]")]'], answer:'c', explanation:'Attribute goes in outer square brackets. <code>[controller]</code> token substitutes class name. Literal "api" is plain text, not a token.'},
+    {type:'mcq', marks:1, topic:'EF Core', question:'Find a Category by primary key?', choices:['a. ctx.Categories.Find("CategoryIds9")','b. ctx.Categories.FirstOrDefault("CategoryIds9")','c. ctx.Categories.Select("CategoryIds9")','d. ctx.Categories.Where("CategoryIds9")'], answer:'a', explanation:'<code>Find(key)</code> is the PK-lookup method. <code>FirstOrDefault</code> requires a predicate expression.'},
+    {type:'mcq', marks:1, topic:'EF Core', question:'Correct insert pattern in EF Core?', choices:['a. Add(book); SaveChanges(book);','b. Add(book); SaveChanges();','c. Insert(book); DBSave();','d. Insert(book); SaveChanges(book);','e. Save(book); AddChanges(book);'], answer:'b', explanation:'<code>.Add(entity)</code> then <code>.SaveChanges()</code> — SaveChanges is parameterless.'},
+    {type:'mcq', marks:1, topic:'EF Core', question:'Apply outstanding migrations programmatically?', choices:['a. _context.Migrate()','b. _context.Database.Migrate()','c. _context.DbContext.Migrate()','d. _context.Migrations.Migrate()','e. _context.Schema.Migrate()'], answer:'b', explanation:'<code>Migrate()</code> is on the <code>Database</code> facade. Often called in Program.cs at startup.'},
+    {type:'mcq', marks:1, topic:'SQL', question:'Default local SQL Server username?', choices:['a. admin','b. root','c. sa','d. dbo','e. user'], answer:'c', explanation:'<code>sa</code> = system administrator. Trap: <code>dbo</code> is the database-owner SCHEMA name, not a username.'},
+    {type:'mcq', marks:1, topic:'MVC', question:'NOT part of an MVC view?', choices:['a. Razor syntax','b. HTML markup','c. Database connection string','d. @model directive','e. Layout reference'], answer:'c', explanation:'Connection strings live in <code>appsettings.json</code>, NOT in views.'},
+    {type:'mcq', marks:1, topic:'MVC', question:'Reference the model instance in a Razor view?', choices:['a. this.Model','b. @Model','c. @this.Model','d. Model.this','e. @ViewBag.Model'], answer:'b', explanation:'<code>@Model</code> — the global in a strongly-typed view.'},
+    {type:'mcq', marks:1, topic:'Identity', question:'Class that manages security roles?', choices:['a. UserManager','b. SignInManager','c. RoleManager','d. IdentityManager','e. AuthManager'], answer:'c', explanation:'<code>RoleManager&lt;TRole&gt;</code>. IdentityManager and AuthManager are FAKE options.'},
+    {type:'mcq', marks:1, topic:'EF Core', question:'Annotation marking a code-first primary key?', choices:['a. [PrimaryKey]','b. [Key]','c. [Id]','d. [Identity]','e. [Index]'], answer:'b', explanation:'<code>[Key]</code> — lives in <code>System.ComponentModel.DataAnnotations</code>.'},
+    {type:'mcq', marks:1, topic:'Blazor', question:'Default Blazor nav menu component filename?', choices:['a. NavigationMenu.razor','b. NavMenu.razor','c. Menu.razor','d. NavBar.razor','e. MainMenu.razor'], answer:'b', explanation:'<code>NavMenu.razor</code> — Microsoft template default.'},
+    {type:'mcq', marks:1, topic:'EF Core', question:'Command to add a migration?', choices:['a. migrations add &lt;name&gt;','b. dotnet add migrations &lt;name&gt;','c. ef migrations add &lt;name&gt;','d. dotnet ef migrations add &lt;name&gt;','e. dotnet ef add migration &lt;name&gt;'], answer:'d', explanation:'<code>dotnet ef migrations add &lt;name&gt;</code> — migrations (plural) collection, action add.'},
+    {type:'mcq', marks:1, topic:'WebAPI', question:'FALSE about URL <code>/CollegesApi/all/14</code>?', choices:['a. CollegesApi is the controller name','b. "all" is the action name','c. 14 is a route parameter','d. Uses GET by default','e. Controller must inherit from ControllerBase'], answer:'e', explanation:'Web API controllers inherit from <code>ControllerBase</code> by CONVENTION, but this isn\'t strictly required — MVC Controller also works. Other 4 statements are all TRUE.'},
+    {type:'mcq', marks:1, topic:'Blazor', question:'Async equivalent of OnInitialized?', choices:['a. OnInit()','b. OnStart()','c. OnInitializedAsync()','d. OnLoadAsync()','e. InitializeAsync()'], answer:'c', explanation:'<code>OnInitializedAsync()</code> — called when component is initialized; correct place to await data loading.'},
+    {type:'mcq', marks:1, topic:'Auth', question:'Annotation requiring authentication?', choices:['a. [Authenticate]','b. [Authorize]','c. [RequireAuth]','d. [Login]','e. [Secure]'], answer:'b', explanation:'<code>[Authorize]</code> — apply to controller OR action.'},
+    // Match column from midterm
+    {type:'short', marks:10, topic:'Match', question:'Match Column A to Column B.<br><br><strong>Column A:</strong><br>1. Code-first EF Development<br>2. Multi-docker containers<br>3. React.js<br>4. Azure Static Web App<br>5. Minimal WebAPI<br>6. Azure Functions<br>7. Build single docker image<br>8. TypeScript<br>9. Swagger<br>10. SignalR<br><br><strong>Column B:</strong><br>A. Dockerfile<br>B. func start<br>C. Ad-hoc database updates<br>D. docker-compose.yml<br>E. Hub<br>F. Vite<br>G. Azure Function App &amp; Blazor WASM<br>H. app.MapGet<br>I. tsc<br>J. WebAPI documentation', answer:'1→C · 2→D · 3→F · 4→G · 5→H · 6→B · 7→A · 8→I · 9→J · 10→E', explanation:'This match column is HIGHLY predictive for the final. Memorize the structure (concept → tool/command identifier) — not just the answers.'}
+  ]
+};
+
+// === DATA.codePractice ===
+DATA.codePractice = [
+  {
+    title: 'gRPC Calculator (coding candidate #1)',
+    prompt: 'Write a gRPC service for a Calculator. Define Add(a,b) returning sum. Include: (1) calculator.proto with proto3 syntax, csharp_namespace, service + rpc, AddRequest/AddResponse messages with field tags; (2) .csproj Protobuf item; (3) Program.cs AddGrpc + MapGrpcService; (4) CalculatorImpl class overriding Add.',
+    starter: `// calculator.proto
+syntax = "proto3";
+option csharp_namespace = "CalcGrpc";
+
+service Calculator {
+  // TODO
+}
+
+message AddRequest {
+  // TODO
+}
+
+message AddResponse {
+  // TODO
+}
+
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+// TODO: register gRPC
+
+var app = builder.Build();
+// TODO: map service
+app.Run();
+
+// CalculatorImpl.cs
+public class CalculatorImpl : /* TODO: base class */ {
+    // TODO: override Add
+}`,
+    solution: `// calculator.proto
+syntax = "proto3";
+option csharp_namespace = "CalcGrpc";
+
+service Calculator {
+  rpc Add (AddRequest) returns (AddResponse);
+}
+
+message AddRequest {
+  int32 a = 1;
+  int32 b = 2;
+}
+
+message AddResponse {
+  int32 sum = 1;
+}
+
+// .csproj
+// <ItemGroup>
+//   <Protobuf Include="Protos/calculator.proto" GrpcServices="Server" />
+// </ItemGroup>
+
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddGrpc();
+
+var app = builder.Build();
+app.MapGrpcService<CalculatorImpl>();
+app.Run();
+
+// CalculatorImpl.cs
+using Grpc.Core;
+using CalcGrpc;
+
+public class CalculatorImpl : Calculator.CalculatorBase {
+    public override Task<AddResponse> Add(AddRequest r, ServerCallContext ctx) {
+        return Task.FromResult(new AddResponse { Sum = r.A + r.B });
+    }
+}`,
+    explanation: '<strong>Marking checklist (10 marks):</strong><ul><li>syntax = "proto3" + csharp_namespace (2)</li><li>service Calculator + rpc Add signature (2)</li><li>AddRequest / AddResponse with int32 fields + field numbers (2)</li><li>AddGrpc + MapGrpcService<T> (2)</li><li>Override signature Task<AddResponse> Add(AddRequest, ServerCallContext) (2)</li></ul>'
+  },
+  {
+    title: 'xUnit test class (coding candidate #2)',
+    prompt: 'Write an xUnit test class for a <code>StringValidator</code> class with a method <code>IsValidEmail(string)</code>. Include: (1) one [Fact] for happy path; (2) one [Theory] with 3 [InlineData] rows of invalid emails; (3) one test asserting a <code>null</code> input throws <code>ArgumentNullException</code>.',
+    starter: `using Xunit;
+
+public class StringValidatorTests {
+    // TODO: happy path [Fact]
+
+    // TODO: [Theory] with invalid emails
+
+    // TODO: [Fact] that null throws
+}`,
+    solution: `using Xunit;
+using System;
+
+public class StringValidatorTests {
+    private readonly StringValidator _v = new StringValidator();
+
+    [Fact]
+    public void IsValidEmail_WellFormed_ReturnsTrue() {
+        var result = _v.IsValidEmail("user@bcit.ca");
+        Assert.True(result);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("no-at-sign")]
+    [InlineData("@nouser")]
+    public void IsValidEmail_Invalid_ReturnsFalse(string input) {
+        Assert.False(_v.IsValidEmail(input));
+    }
+
+    [Fact]
+    public void IsValidEmail_Null_ThrowsArgumentNull() {
+        Assert.Throws<ArgumentNullException>(() => _v.IsValidEmail(null));
+    }
+}`,
+    explanation: '<strong>Marking checklist (10 marks):</strong><ul><li>Test class public, no attributes on class (1)</li><li>[Fact] method name describing scenario (1)</li><li>AAA pattern visible (1)</li><li>[Theory] + 3 [InlineData] (3)</li><li>parameter signature matches InlineData args (1)</li><li>Assert.Throws&lt;ArgumentNullException&gt;(Action) (2)</li><li>Using statement for Xunit (1)</li></ul>'
+  },
+  {
+    title: 'ML.NET regression pipeline (coding candidate #3)',
+    prompt: 'Write the ML.NET code to train and evaluate a regression model predicting HousePrice from Area and Bedrooms. Include: MLContext creation, data model class with [LoadColumn], LoadFromTextFile, TrainTestSplit, pipeline with Concatenate + Regression.Trainers.FastTree, Fit, Evaluate reporting RSquared, and model save.',
+    starter: `// Data model
+public class House {
+    // TODO: LoadColumn attributes
+}
+
+// Program.cs
+var ml = new MLContext(seed: 0);
+// TODO: load CSV
+// TODO: split
+// TODO: pipeline
+// TODO: fit
+// TODO: evaluate + Console.WriteLine R²
+// TODO: save model`,
+    solution: `using Microsoft.ML;
+using Microsoft.ML.Data;
+
+public class House {
+    [LoadColumn(0)] public float Area;
+    [LoadColumn(1)] public float Bedrooms;
+    [LoadColumn(2), ColumnName("Label")] public float HousePrice;
+}
+
+public class HousePrediction {
+    [ColumnName("Score")] public float HousePrice;
+}
+
+// Program.cs
+var ml = new MLContext(seed: 0);
+
+IDataView data = ml.Data.LoadFromTextFile<House>(
+    "houses.csv", hasHeader: true, separatorChar: ',');
+
+var split = ml.Data.TrainTestSplit(data, testFraction: 0.2);
+
+var pipeline = ml.Transforms.Concatenate("Features", "Area", "Bedrooms")
+    .Append(ml.Regression.Trainers.FastTree());
+
+ITransformer model = pipeline.Fit(split.TrainSet);
+
+IDataView preds = model.Transform(split.TestSet);
+var metrics = ml.Regression.Evaluate(preds, labelColumnName: "Label");
+Console.WriteLine($"R²: {metrics.RSquared:F3}");
+Console.WriteLine($"RMSE: {metrics.RootMeanSquaredError:F2}");
+
+ml.Model.Save(model, data.Schema, "house.zip");`,
+    explanation: '<strong>Marking checklist (10 marks):</strong><ul><li>MLContext instantiated with seed (1)</li><li>[LoadColumn] on data model properties (2)</li><li>Label column marked via ColumnName("Label") (1)</li><li>LoadFromTextFile&lt;T&gt; with hasHeader + separator (2)</li><li>TrainTestSplit with testFraction (1)</li><li>pipeline with Concatenate("Features", ...).Append(FastTree()) (2)</li><li>Fit returns ITransformer, Evaluate reports RSquared (1)</li></ul>'
+  },
+  {
+    title: 'Semantic Kernel chat + plugin',
+    prompt: 'Register Semantic Kernel with Ollama llama3 endpoint. Create a plugin with a [KernelFunction] method <code>GetWeather(string city)</code>. Run a chat with a user prompt "What is the weather in Vancouver?" and print the response.',
+    starter: `using Microsoft.SemanticKernel;
+
+public class WeatherPlugin {
+    // TODO: [KernelFunction] GetWeather
+}
+
+// Program.cs
+// TODO: build kernel with Ollama
+// TODO: import plugin
+// TODO: chat history with user prompt
+// TODO: get response`,
+    solution: `using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
+using System.ComponentModel;
+
+public class WeatherPlugin {
+    [KernelFunction, Description("Get weather for a city")]
+    public string GetWeather(string city) => $"Sunny in {city}.";
+}
+
+// Program.cs
+var builder = Kernel.CreateBuilder();
+builder.AddOllamaChatCompletion("llama3", new Uri("http://localhost:11434"));
+Kernel kernel = builder.Build();
+
+kernel.ImportPluginFromType<WeatherPlugin>();
+
+var chat = kernel.GetRequiredService<IChatCompletionService>();
+var history = new ChatHistory("You are helpful.");
+history.AddUserMessage("What is the weather in Vancouver?");
+
+var response = await chat.GetChatMessageContentAsync(history, kernel: kernel);
+Console.WriteLine(response.Content);`,
+    explanation: '<strong>Marking checklist (10 marks):</strong><ul><li>Kernel.CreateBuilder() (1)</li><li>AddOllamaChatCompletion with correct endpoint (2)</li><li>ImportPluginFromType&lt;T&gt; (1)</li><li>[KernelFunction] attribute (2)</li><li>IChatCompletionService via GetRequiredService (1)</li><li>ChatHistory with system prompt (1)</li><li>AddUserMessage + GetChatMessageContentAsync (2)</li></ul>'
+  },
+  {
+    title: 'Aspire AppHost stack',
+    prompt: 'Write AppHost Program.cs that orchestrates: a Redis cache, a SQL Server with a database named <code>app</code>, an API project that references both, and a Web project that references the API and waits for it.',
+    starter: `var builder = DistributedApplication.CreateBuilder(args);
+
+// TODO: Redis
+// TODO: SQL + database
+// TODO: API project referencing cache + db
+// TODO: Web referencing API + waits
+
+builder.Build().Run();`,
+    solution: `var builder = DistributedApplication.CreateBuilder(args);
+
+var cache = builder.AddRedis("cache");
+var sql   = builder.AddSqlServer("sql");
+var db    = sql.AddDatabase("app");
+
+var api = builder.AddProject<Projects.Api>("api")
+    .WithReference(cache)
+    .WithReference(db);
+
+builder.AddProject<Projects.Web>("web")
+    .WithReference(api)
+    .WaitFor(api);
+
+builder.Build().Run();`,
+    explanation: '<strong>Marking checklist (10 marks):</strong><ul><li>DistributedApplication.CreateBuilder(args) (1)</li><li>AddRedis("cache") (1)</li><li>AddSqlServer + AddDatabase (2)</li><li>AddProject&lt;Projects.Api&gt; (1)</li><li>WithReference(cache) + WithReference(db) on api (2)</li><li>Web WithReference(api) (1)</li><li>WaitFor(api) (1)</li><li>builder.Build().Run() (1)</li></ul>'
+  }
+];
+
+// === DATA.cheatSheet ===
+DATA.cheatSheet = [
+  {title:'AI — Semantic Kernel skeleton', body:`<pre><code>var b = Kernel.CreateBuilder();
+b.AddOllamaChatCompletion("llama3",
+  new Uri("http://localhost:11434"));
+Kernel kernel = b.Build();
+
+var chat = kernel.GetRequiredService
+  &lt;IChatCompletionService&gt;();
+var h = new ChatHistory("system");
+h.AddUserMessage("...");
+var r = await chat.GetChatMessageContentAsync(h, kernel: kernel);
+
+kernel.ImportPluginFromType&lt;MyPlugin&gt;();
+// [KernelFunction, Description("...")]</code></pre>`},
+  {title:'AI — MAF agent skeleton', body:`<pre><code>using Microsoft.Agents.AI;
+var client = new OpenAIClient(cred,
+  new OpenAIClientOptions { Endpoint =
+    new Uri("https://models.github.ai/inference")});
+var agent = client.AsAIAgent("gpt-4o-mini");
+var tool = AIFunctionFactory.Create(
+  MyFn, "name", "desc");
+agent.Tools.Add(tool);
+var s = new AgentSession(agent);
+await foreach (var u in s.RunStreamingAsync("q"))
+  Console.Write(u);</code></pre>`},
+  {title:'AI — MCP transports + primitives', body:`<ul><li><strong>stdio</strong> — local process pipe</li><li><strong>SSE</strong> — HTTP Server-Sent Events</li></ul><p>3 primitives: <strong>Tools</strong> (exec) · <strong>Resources</strong> (data) · <strong>Prompts</strong> (templates)</p><p>Server tool: <code>[McpServerTool]</code> on method, <code>[McpServerToolType]</code> on class. <code>.WithStdioServerTransport().WithToolsFromAssembly()</code></p>`},
+  {title:'ML.NET — 7-step pipeline', body:`<pre><code>var ml = new MLContext(seed:0);
+IDataView d = ml.Data.LoadFromTextFile&lt;T&gt;(
+  "x.csv", hasHeader:true, separatorChar:',');
+var sp = ml.Data.TrainTestSplit(d, 0.2);
+
+var p = ml.Transforms.Concatenate("Features",...)
+  .Append(ml.Regression.Trainers.FastTree());
+
+ITransformer m = p.Fit(sp.TrainSet);
+var pr = m.Transform(sp.TestSet);
+var mx = ml.Regression.Evaluate(pr, "Label");
+ml.Model.Save(m, d.Schema, "m.zip");</code></pre><p>Attrs: <code>[LoadColumn(0)]</code>, <code>[ColumnName("Label")]</code>, <code>[ColumnName("Score")]</code> (output)</p>`},
+  {title:'ML.NET — trainer namespaces', body:`<ul><li><code>mlContext.Regression.Trainers</code> — FastTree, FastForest, Sdca</li><li><code>BinaryClassification.Trainers</code> — Logistic, AveragedPerceptron</li><li><code>MulticlassClassification.Trainers</code> — NaiveBayes, SdcaMax</li><li><code>Clustering.Trainers</code> — KMeans</li></ul><p>Metrics: Regression → RSquared, RMSE. Binary → Accuracy, AUC, F1. Multi → MacroAccuracy, LogLoss.</p>`},
+  {title:'Cache — 3 strategies', body:`<pre><code>// In-memory
+builder.Services.AddMemoryCache();
+_cache.TryGetValue&lt;T&gt;("k", out var v);
+_cache.Set("k", v, new MemoryCacheEntryOptions {
+  AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10),
+  SlidingExpiration = TimeSpan.FromMinutes(2)});
+
+// Redis
+builder.Services.AddStackExchangeRedisCache(
+  o =&gt; o.Configuration = "localhost:6379");
+// inject IDistributedCache
+
+// Tag helper
+&lt;cache expires-after="@TimeSpan.FromMinutes(10)"
+  vary-by-user="true" vary-by-route="id"&gt;
+  &lt;partial name="_X"/&gt;&lt;/cache&gt;</code></pre>`},
+  {title:'gRPC — proto + server + client', body:`<pre><code>// .proto
+syntax = "proto3";
+option csharp_namespace = "X";
+service S { rpc M (Req) returns (Rep); }
+message Req { int32 a = 1; }
+message Rep { string r = 1; }
+
+// csproj
+&lt;Protobuf Include="Protos/s.proto"
+  GrpcServices="Server"/&gt;
+
+// server
+builder.Services.AddGrpc();
+app.MapGrpcService&lt;Impl&gt;();
+public class Impl : S.SBase {
+  public override Task&lt;Rep&gt; M(Req r, ServerCallContext c)
+    =&gt; Task.FromResult(new Rep{R="hi"});
+}
+
+// client
+var ch = GrpcChannel.ForAddress("https://...");
+var c = new S.SClient(ch);
+await c.MAsync(new Req{A=1});</code></pre>`},
+  {title:'xUnit — cheat block', body:`<pre><code>[Fact]
+public void X_When_Y() {
+  // Arrange
+  var s = new Svc();
+  // Act
+  var r = s.Do();
+  // Assert  EXPECTED, ACTUAL
+  Assert.Equal(5, r);
+}
+
+[Theory]
+[InlineData(1,2,3)]
+[InlineData(0,0,0)]
+public void Add(int a,int b,int e) =&gt;
+  Assert.Equal(e, new Calc().Add(a,b));
+
+Assert.Throws&lt;Ex&gt;(()=&gt;bad());
+await Assert.ThrowsAsync&lt;Ex&gt;(async ()=&gt;await bad());
+// teardown → IDisposable
+// shared → IClassFixture&lt;F&gt;</code></pre>`},
+  {title:'File-based C# — all directives', body:`<pre><code>#:package Spectre.Console@0.48.0
+#:package Newtonsoft.Json@13.0.3
+#:sdk Microsoft.NET.Sdk.Web
+#:property LangVersion=preview
+#:project ./lib/X.csproj
+
+Console.WriteLine("Hello");
+</code></pre><ul><li>Run: <code>dotnet run app.cs</code></li><li>Convert: <code>dotnet project convert app.cs</code></li><li>NO space after colon</li><li>.NET 10 required</li></ul>`},
+  {title:'Aspire — AppHost template', body:`<pre><code>var b = DistributedApplication
+  .CreateBuilder(args);
+
+var cache = b.AddRedis("cache");
+var sql   = b.AddSqlServer("sql");
+var db    = sql.AddDatabase("app");
+
+var api = b.AddProject&lt;Projects.Api&gt;("api")
+  .WithReference(cache)
+  .WithReference(db);
+
+b.AddProject&lt;Projects.Web&gt;("web")
+  .WithReference(api).WaitFor(api);
+
+b.Build().Run();</code></pre><p>Each service: <code>builder.AddServiceDefaults();</code></p>`},
+  {title:'Localization setup', body:`<pre><code>builder.Services.AddLocalization(
+  o =&gt; o.ResourcesPath = "Resources");
+builder.Services.AddRazorPages()
+  .AddViewLocalization();
+
+builder.Services.Configure
+  &lt;RequestLocalizationOptions&gt;(o =&gt; {
+  var c = new[]{new CultureInfo("en"),
+                new CultureInfo("fr")};
+  o.DefaultRequestCulture = new RequestCulture("en");
+  o.SupportedCultures = c;
+  o.SupportedUICultures = c;
+});
+app.UseRequestLocalization();
+
+// Razor: @inject IViewLocalizer L
+// @L["Hello"]
+// File: Pages.Index.fr.resx</code></pre><p><strong>CurrentCulture</strong>=formatting · <strong>CurrentUICulture</strong>=resx lookup</p>`},
+  {title:'Tag Helpers — built-in + custom', body:`<pre><code>// _ViewImports.cshtml
+@addTagHelper *,
+  Microsoft.AspNetCore.Mvc.TagHelpers
+
+// Built-in
+&lt;form asp-controller="Home" asp-action="X"/&gt;
+&lt;input asp-for="Name"/&gt;
+&lt;span asp-validation-for="Name"/&gt;
+&lt;a asp-controller="Home" asp-action="Index"
+  asp-route-id="5"&gt;Go&lt;/a&gt;
+&lt;script src="s.js" asp-append-version="true"/&gt;
+
+// Custom
+[HtmlTargetElement("quote")]
+public class QuoteTag : TagHelper {
+  public string Text { get; set; }
+  public override void Process(TagHelperContext c,
+    TagHelperOutput o) {
+    o.TagName = "blockquote";
+    o.Content.SetHtmlContent(Text);
+  }
+}</code></pre><p>Property PascalCase → attribute kebab-case</p>`},
+  {title:'Blazor QuickGrid', body:`<pre><code>@using Microsoft.AspNetCore
+  .Components.QuickGrid
+
+&lt;QuickGrid Items="@q" Pagination="@p"&gt;
+  &lt;PropertyColumn
+    Property="@(_=&gt;_.Name)" Sortable="true"/&gt;
+  &lt;TemplateColumn Title="X" SortBy="@sort"&gt;
+    &lt;strong&gt;@context.Y&lt;/strong&gt;
+  &lt;/TemplateColumn&gt;
+&lt;/QuickGrid&gt;
+&lt;Paginator State="@p"/&gt;
+
+@code {
+  PaginationState p =
+    new() { ItemsPerPage = 10 };
+  GridSort&lt;T&gt; sort = GridSort&lt;T&gt;
+    .ByAscending(x=&gt;x.Y);
+}</code></pre><p>Filter: <code>&lt;input @bind="f" @bind:event="oninput"/&gt;</code></p>`},
+  {title:'Excel / PDF / Chart', body:`<p><strong>Excel (ClosedXML)</strong></p><pre><code>using var w = new XLWorkbook();
+var s = w.Worksheets.Add("x");
+s.Cell(1,1).Value = "hi";
+using var ms = new MemoryStream();
+w.SaveAs(ms);
+return File(ms.ToArray(),
+ "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+ "x.xlsx");</code></pre><p><strong>PDF (iText7 + bouncy-castle-adapter)</strong></p><pre><code>var w = new PdfWriter(ms);
+var pdf = new PdfDocument(w);
+var d = new Document(pdf);
+d.Add(new Paragraph("hi"));
+d.Close();
+return File(ms.ToArray(),"application/pdf","x.pdf");</code></pre><p>Chart.js via CDN, client-side</p>`},
+  {title:'MCQ trap patterns (from midterm)', body:`<ol style="margin-left:18px"><li>Fake method names — eliminate if namespace chain looks wrong</li><li>Bracket style swaps: <code>[Route("api/[c]")]</code> vs <code>Route("[api]/[c]")</code></li><li>Word order swap: <code>dotnet ef update database</code> vs <code>dotnet ef database update</code></li><li>Singular/plural: <code>migrations add</code> not <code>migration add</code></li><li>Fake interfaces: <code>AuthManager</code>, <code>IdentityManager</code> — not real</li><li>Protocol: gRPC = HTTP/2 (not 1.1); Ollama = http (not https)</li></ol>`},
+  {title:'Match-column patterns to expect', body:`<p>Column A (concept) → Column B (canonical identifier):</p><ul><li>SK → <code>Kernel.CreateBuilder</code></li><li>MAF → <code>AIAgent</code>, <code>AIFunctionFactory</code></li><li>MCP → stdio / SSE transports</li><li>ML.NET → <code>MLContext</code>, <code>LoadFromTextFile</code>, <code>Fit</code></li><li>Redis → <code>AddStackExchangeRedisCache</code></li><li>Cache tag → <code>&lt;cache vary-by-*&gt;</code></li><li>gRPC → <code>.proto</code>, <code>AddGrpc</code>, HTTP/2</li><li>xUnit → <code>[Fact]</code>, <code>[Theory] [InlineData]</code></li><li>File-based → <code>#:package</code>, <code>#:sdk</code></li><li>Aspire → <code>AddProject</code>, <code>WithReference</code></li><li>Localization → <code>IViewLocalizer</code>, <code>Pages.Index.fr.resx</code></li><li>QuickGrid → <code>PropertyColumn</code>, <code>PaginationState</code></li></ul>`},
+  {title:'Time budget (60 min, 80 marks)', body:`<p>MCQ (60): 30 min → 30 s each. If &gt;45s → skip, come back.</p><p>Match (10): 5 min — do LAST minus code.</p><p>Code (10): 15 min — start with skeleton, get structure marks even if logic wrong.</p><p>Review: 10 min — revisit skipped MCQs, double-check match column.</p><p><strong>Don\'t</strong>: spend &gt;2 min on any MCQ. 40 MCQ at 60% &gt; 20 MCQ at 90%.</p>`},
+  {title:'Morning-of checklist', body:`<ul style="margin-left:18px"><li>Eat carbs + protein</li><li>Hand-written cheat sheet: both sides filled, black pen</li><li>Student ID + 2 pens + pencil + eraser</li><li>No smartwatches, phones off</li><li>Arrive 15 min early</li><li>First: read ALL questions, answer easiest first, skip hard</li><li>Match column → do when brain fatigues from MCQ (pattern matching is easier)</li><li>Code question → read requirements TWICE, write skeleton first</li></ul>`}
+];
+
+/* ============ APP ============ */
+
+// Countdown
+function updateCountdown() {
+  const iso = DATA.meta.examDateISO;
+  if (!iso || iso.indexOf('{{') === 0) { document.getElementById('countdown').textContent = 'set date'; return; }
+  const exam = new Date(iso);
+  const now = new Date();
+  const diff = exam - now;
+  const el = document.getElementById('countdown');
+  if (diff <= 0) { el.textContent = 'NOW'; return; }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  el.textContent = d + 'd ' + String(h).padStart(2,'0') + 'h ' + String(m).padStart(2,'0') + 'm';
+}
+setInterval(updateCountdown, 30000);
+
+// Study time tracker
+(function trackStudyTime() {
+  const key = (DATA.meta.course || 'course').replace(/\s+/g,'_').toLowerCase() + '_study_seconds';
+  let seconds = parseInt(localStorage.getItem(key) || '0');
+  function tick() {
+    if (!document.hidden) { seconds += 5; localStorage.setItem(key, String(seconds)); }
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const el = document.getElementById('study-time-val');
+    if (el) el.textContent = h + 'h ' + m + 'm';
+  }
+  tick();
+  setInterval(tick, 5000);
+})();
+
+// Nav
+document.querySelectorAll('aside.sidebar nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('aside.sidebar nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('section.view').forEach(s => s.classList.remove('active'));
+    document.getElementById(btn.dataset.section).classList.add('active');
+    document.querySelector('main').scrollTop = 0;
+  });
+});
+
+/* ============ DASHBOARD ============ */
+function renderDashboard() {
+  const root = document.getElementById('dashboard-content');
+  const m = DATA.meta;
+  let html = '';
+
+  // Stat tiles
+  const defaultStats = [
+    { label: 'Exam Weight', value: m.weight || '–', sub: 'final exam' },
+    { label: 'Marks', value: (m.formatTable.rows.reduce((s,r)=>s+(parseInt(r.total)||0),0) || '–') + '', sub: 'estimated total' },
+    { label: 'Topics', value: DATA.topics.length + '', sub: 'deep-dives' },
+    { label: 'Study Time', value: '–', sub: 'this session', id: 'study-time-val' }
+  ];
+  const stats = (m.dashboardStats && m.dashboardStats.length) ? m.dashboardStats : defaultStats;
+  html += '<div class="grid-4 mb3">' + stats.map(s =>
+    `<div class="stat"><div class="label">${s.label}</div><div class="value" ${s.id?`id="${s.id}"`:''}>${s.value}</div><div class="sub">${s.sub||''}</div></div>`
+  ).join('') + '</div>';
+
+  // Format table
+  if (m.formatTable && m.formatTable.rows && m.formatTable.rows.length) {
+    html += '<div class="panel"><h3>Exam format</h3><table><thead><tr>' +
+      m.formatTable.headers.map(h => `<th>${h}</th>`).join('') +
+      '</tr></thead><tbody>' +
+      m.formatTable.rows.map(r =>
+        '<tr>' + m.formatTable.headers.map(h => {
+          const key = h.toLowerCase().replace(/\s+/g,'');
+          const val = r[key] || r[h.toLowerCase()] || r[h] || '';
+          return `<td>${val}</td>`;
+        }).join('') + '</tr>'
+      ).join('') + '</tbody></table></div>';
+  }
+
+  // Instructor intel
+  if (m.instructorIntel && m.instructorIntel.length) {
+    html += '<div class="panel"><h3>Instructor intel' + (m.instructor ? ' — ' + m.instructor : '') + '</h3><ul style="padding-left:20px;color:var(--text-dim);">' +
+      m.instructorIntel.map(i => `<li>${i}</li>`).join('') + '</ul></div>';
+  }
+
+  // Extra panels
+  (m.extraPanels || []).forEach(p => {
+    html += `<div class="panel"><h3>${p.title}</h3>${p.html}</div>`;
+  });
+
+  // How to use
+  html += `<div class="panel"><h3>How to use this package</h3><div class="grid-2">
+    <div><h4>Active recall &gt; rereading</h4><p class="dim" style="font-size:13px;">Flashcards + mock exam + quiz replay are the highest-ROI sections. Skim topic summaries only to close gaps.</p></div>
+    <div><h4>Target order</h4><p class="dim" style="font-size:13px;">Lessons → Flashcards → Quiz Replay → Mock Exam → Code / Applied → Cheat Sheet (morning-of).</p></div>
+  </div></div>`;
+
+  root.innerHTML = html;
+}
+
+/* ============ PRIORITIES ============ */
+function renderPriorities() {
+  const root = document.getElementById('priorities-content');
+  const p = DATA.priorities || { high: [], low: [] };
+  let html = '<div class="grid-2 mb3">';
+  html += '<div class="panel"><h3 style="color:var(--bad);">HIGH priority — study first</h3>' +
+    (p.high && p.high.length ? p.high.map(i => `<div class="prio-item hi"><strong>${i.title}</strong>${i.why?`<div class="why">${i.why}</div>`:''}</div>`).join('') : '<p class="dim">No high-priority items defined.</p>') +
+    '</div>';
+  html += '<div class="panel"><h3 style="color:var(--ok);">LOW priority — skip if tight</h3>' +
+    (p.low && p.low.length ? p.low.map(i => `<div class="prio-item low"><strong>${i.title}</strong>${i.why?`<div class="why">${i.why}</div>`:''}</div>`).join('') : '<p class="dim">No low-priority items defined.</p>') +
+    '</div>';
+  html += '</div>';
+  if (p.table && p.table.rows && p.table.rows.length) {
+    html += '<div class="panel"><h3>Past-exam question distribution (data-driven priority)</h3><table><thead><tr>' +
+      p.table.headers.map(h => `<th>${h}</th>`).join('') + '</tr></thead><tbody>' +
+      p.table.rows.map(r => '<tr>' + p.table.headers.map(h => `<td>${r[h.toLowerCase().replace(/\s+/g,'')] || r[h] || ''}</td>`).join('') + '</tr>').join('') +
+      '</tbody></table></div>';
+  }
+  root.innerHTML = html;
+}
+
+/* ============ FLASHCARDS ============ */
+let fcIndex = 0;
+let fcFilter = 'all';
+let fcTopicFilter = 'all';
+let fcList = [];
+
+function fcKey() { return (DATA.meta.course || 'course').replace(/\s+/g,'_').toLowerCase() + '_fc'; }
+function loadFCState() { try { return JSON.parse(localStorage.getItem(fcKey()) || '{}'); } catch { return {}; } }
+function saveFCState(s) { localStorage.setItem(fcKey(), JSON.stringify(s)); }
+
+function buildTopicFilter() {
+  const topics = [...new Set(DATA.flashcards.map(c => c.topic))];
+  const el = document.getElementById('fc-topic-filter');
+  if (!el) return;
+  el.innerHTML = '<button data-topic="all" class="active">All topics</button>' +
+    topics.sort().map(t => `<button data-topic="${t}">${t}</button>`).join('');
+  el.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      el.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      fcTopicFilter = b.dataset.topic;
+      filterFC();
+    });
+  });
+}
+
+function filterFC() {
+  const state = loadFCState();
+  fcList = DATA.flashcards.filter(c => {
+    if (fcTopicFilter !== 'all' && c.topic !== fcTopicFilter) return false;
+    if (fcFilter === 'unknown') return state[c.id] !== 'known';
+    if (fcFilter === 'known') return state[c.id] === 'known';
+    return true;
+  });
+  if (fcList.length === 0) fcList = DATA.flashcards;
+  fcIndex = 0;
+  renderFlashcard();
+}
+
+function renderFlashcard() {
+  if (fcList.length === 0) return;
+  const c = fcList[fcIndex];
+  const state = loadFCState();
+  document.getElementById('fc-q').innerHTML = c.q;
+  document.getElementById('fc-a').innerHTML = c.a;
+  document.getElementById('fc-topic-lbl').textContent = c.topic || '';
+  const pillarClass = c.pillar === 'tech' ? 'pillar-tech' : (c.pillar === 'proc' ? 'pillar-proc' : '');
+  document.getElementById('fc-meta').innerHTML =
+    (c.pillar ? `<span class="badge ${pillarClass}">${c.pillar}</span> ` : '') +
+    `<span class="badge bloom">${c.bloom || 'Remember'}</span> <span class="mute">${c.source || ''}</span>`;
+  document.getElementById('fc-meta-b').innerHTML = (state[c.id] === 'known' ? '<span class="badge low">Known</span>' : '<span class="badge high">Unknown</span>');
+  document.getElementById('fc-progress').textContent = `${fcIndex + 1} / ${fcList.length}`;
+  document.getElementById('flashcard').classList.remove('flipped');
+}
+function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); }
+function nextCard() { if (fcList.length) { fcIndex = (fcIndex + 1) % fcList.length; renderFlashcard(); } }
+function prevCard() { if (fcList.length) { fcIndex = (fcIndex - 1 + fcList.length) % fcList.length; renderFlashcard(); } }
+function markCard(mark) { if (!fcList.length) return; const c = fcList[fcIndex]; const state = loadFCState(); state[c.id] = mark; saveFCState(state); nextCard(); }
+function resetFlashcards() { if (confirm('Reset all flashcard progress?')) { localStorage.removeItem(fcKey()); filterFC(); } }
+function shuffleFlashcards() { fcList.sort(() => Math.random() - 0.5); fcIndex = 0; renderFlashcard(); }
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('flashcards').classList.contains('active')) return;
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowLeft') prevCard();
+  if (e.key === 'ArrowRight') nextCard();
+  if (e.key === ' ') { e.preventDefault(); flipCard(); }
+  if (e.key === 'k') markCard('known');
+  if (e.key === 'u') markCard('unknown');
+});
+
+document.querySelectorAll('#fc-filter button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#fc-filter button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    fcFilter = b.dataset.filter;
+    filterFC();
+  });
+});
+
+/* ============ LESSONS ============ */
+let currentLesson = 0;
+function lessonStateKey() { return (DATA.meta.course || 'course').replace(/\s+/g,'_').toLowerCase() + '_lessons_done'; }
+function loadLessonState() { try { return JSON.parse(localStorage.getItem(lessonStateKey()) || '{}'); } catch { return {}; } }
+function saveLessonState(s) { localStorage.setItem(lessonStateKey(), JSON.stringify(s)); }
+
+function buildLessonNav() {
+  const nav = document.getElementById('lesson-nav');
+  const state = loadLessonState();
+  nav.innerHTML = DATA.lessons.map((l, i) => {
+    const cls = (i === currentLesson) ? 'active' : (state[l.n] ? 'done' : '');
+    const short = (l.title || '').split(' — ')[0].replace(/\([^)]*\)/g,'').trim();
+    return `<button data-idx="${i}" class="${cls}">L${l.n} · ${short}</button>`;
+  }).join('');
+  nav.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => { currentLesson = parseInt(b.dataset.idx); renderLesson(); });
+  });
+}
+
+function renderLesson() {
+  const l = DATA.lessons[currentLesson];
+  if (!l) { document.getElementById('lesson-content').innerHTML = '<p class="dim">No lessons defined.</p>'; return; }
+  const state = loadLessonState();
+  const isDone = !!state[l.n];
+  document.getElementById('lesson-content').innerHTML = `
+    <div class="lesson">
+      <div class="lesson-head">
+        <div class="lesson-num">Lesson ${l.n} of ${DATA.lessons.length}</div>
+        <h2 class="lesson-title">${l.title}</h2>
+        <p class="hook">${l.hook || ''}</p>
+      </div>
+      ${l.html || ''}
+      <div class="lesson-footer">
+        <button class="btn" onclick="prevLesson()" ${currentLesson === 0 ? 'disabled' : ''}>← Previous</button>
+        <button class="btn ${isDone ? 'ok' : 'primary'}" onclick="toggleLessonDone()">${isDone ? '✓ Marked done' : 'Mark as done'}</button>
+        <button class="btn" onclick="nextLesson()" ${currentLesson === DATA.lessons.length - 1 ? 'disabled' : ''}>Next →</button>
+      </div>
+    </div>`;
+  buildLessonNav();
+  const mainEl = document.querySelector('main');
+  if (mainEl) mainEl.scrollTop = 0;
+}
+function prevLesson() { if (currentLesson > 0) { currentLesson--; renderLesson(); } }
+function nextLesson() { if (currentLesson < DATA.lessons.length - 1) { currentLesson++; renderLesson(); } }
+function toggleLessonDone() {
+  const l = DATA.lessons[currentLesson];
+  const state = loadLessonState();
+  if (state[l.n]) delete state[l.n]; else state[l.n] = true;
+  saveLessonState(state);
+  renderLesson();
+}
+
+/* ============ TOPICS ============ */
+function renderTopicFilter() {
+  const pillars = [...new Set(DATA.topics.map(t => t.pillar).filter(Boolean))];
+  const el = document.getElementById('topic-filter');
+  if (!el) return;
+  el.innerHTML = '<button data-pillar="all" class="active">All</button>' +
+    pillars.map(p => `<button data-pillar="${p}">${p}</button>`).join('');
+  el.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      el.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      renderTopics(b.dataset.pillar);
+    });
+  });
+}
+
+function renderTopics(filter = 'all') {
+  const list = document.getElementById('topic-list');
+  const filtered = DATA.topics.filter(t => filter === 'all' || t.pillar === filter);
+  list.innerHTML = filtered.map((t, i) => {
+    const pillarClass = t.pillar === 'tech' ? 'pillar-tech' : (t.pillar === 'proc' ? 'pillar-proc' : '');
+    return `
+    <div class="topic-item" data-idx="${i}">
+      <div class="topic-header" onclick="this.parentElement.classList.toggle('expanded'); this.querySelector('.tgl').textContent = this.parentElement.classList.contains('expanded') ? '−' : '+'">
+        <div class="ttl">
+          ${t.pillar ? `<span class="badge ${pillarClass}">${t.pillar.toUpperCase()}</span>` : ''}
+          ${t.title}
+          ${t.chapter ? `<span class="chapter">${t.chapter}</span>` : ''}
+          ${t.priority === 'high' ? '<span class="badge high">HIGH</span>' : (t.priority === 'low' ? '<span class="badge low">LOW</span>' : '')}
+        </div>
+        <div class="tgl">+</div>
+      </div>
+      <div class="topic-body">${t.html || ''}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ============ MOCK EXAM ============ */
+let mockTimer = null;
+let mockRemaining = 0;
+
+function renderMockExam() {
+  const root = document.getElementById('mock-questions');
+  root.innerHTML = DATA.mockExam.map((q, i) => renderQuestion(q, i, 'mock')).join('');
+  document.getElementById('mock-qcount').textContent = DATA.mockExam.length;
+  document.getElementById('mock-marks').textContent = DATA.mockExam.reduce((s,q)=>s+(q.marks||0),0);
+}
+
+function renderQuestion(q, i, prefix) {
+  let html = `<div class="question" id="${prefix}-q-${i}" data-idx="${i}">`;
+  html += `<div class="q-num">#${i + 1} <span class="q-type-tag">${q.type}</span> <span class="q-type-tag">${q.marks} mk</span> <span class="mute">· ${q.topic || ''}</span></div>`;
+  html += `<div class="q-text">${q.question}</div>`;
+  if (q.type === 'MCQ') {
+    html += '<div class="choices">' + (q.choices || []).map((c, j) => {
+      const letter = String.fromCharCode(65 + j);
+      return `<div class="choice" data-letter="${letter}" onclick="selectChoice('${prefix}', ${i}, '${letter}')"><span class="letter">${letter})</span><span>${c}</span></div>`;
+    }).join('') + '</div>';
+  } else if (q.type === 'T/F') {
+    html += '<div class="choices tf-group">' +
+      `<div class="choice" data-letter="T" onclick="selectChoice('${prefix}', ${i}, 'T')"><span class="letter">T</span><span>True</span></div>` +
+      `<div class="choice" data-letter="F" onclick="selectChoice('${prefix}', ${i}, 'F')"><span class="letter">F</span><span>False</span></div>` +
+      '</div>';
+  } else if (q.type === 'Short Answer') {
+    html += `<div class="short-answer"><textarea id="${prefix}-ans-${i}" placeholder="Type your answer..."></textarea></div>`;
+  } else if (q.type === 'Essay') {
+    html += `<div class="essay"><textarea id="${prefix}-ans-${i}" placeholder="Outline + support. Aim for 5-8 bullet points."></textarea></div>`;
+  } else if (q.type === 'Code Annotation' || q.type === 'Applied') {
+    html += `<div class="code-annotate"><textarea id="${prefix}-ans-${i}" placeholder="Type your answer here...">${q.template || ''}</textarea></div>`;
+  }
+  html += `<div style="margin-top:10px;"><button class="btn" onclick="revealAnswer('${prefix}', ${i})">Show answer</button></div>`;
+  html += `<div class="reveal-answer"><div class="label">Correct Answer</div><div>${q.answer || ''}</div>`;
+  if (q.explanation) html += `<div class="expl">${q.explanation}</div>`;
+  html += '</div></div>';
+  return html;
+}
+
+function selectChoice(prefix, qIdx, letter) {
+  const qEl = document.getElementById(`${prefix}-q-${qIdx}`);
+  qEl.querySelectorAll('.choice').forEach(c => c.classList.remove('selected'));
+  qEl.querySelector(`.choice[data-letter="${letter}"]`).classList.add('selected');
+  qEl.dataset.selected = letter;
+}
+
+function revealAnswer(prefix, qIdx) {
+  const qEl = document.getElementById(`${prefix}-q-${qIdx}`);
+  qEl.classList.add('revealed');
+  let source = null;
+  if (prefix === 'mock') source = DATA.mockExam[qIdx];
+  else if (prefix.startsWith('quiz-')) source = DATA.quizzes[prefix.slice(5)][qIdx];
+  if (!source) return;
+  if (source.type === 'MCQ' || source.type === 'T/F') {
+    qEl.querySelectorAll('.choice').forEach(c => {
+      if (c.dataset.letter === source.answer) c.classList.add('correct');
+      else if (c.classList.contains('selected')) c.classList.add('incorrect');
+    });
+  }
+}
+
+function startMock() {
+  if (mockTimer) clearInterval(mockTimer);
+  mockRemaining = (DATA.meta.mockDurationMinutes || 120) * 60;
+  mockTimer = setInterval(() => {
+    mockRemaining--;
+    const h = Math.floor(mockRemaining / 3600);
+    const m = Math.floor((mockRemaining % 3600) / 60);
+    const s = mockRemaining % 60;
+    document.getElementById('mock-timer').textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if (mockRemaining <= 0) { clearInterval(mockTimer); alert('TIME. Submit & grade.'); }
+  }, 1000);
+  document.getElementById('mock-start').textContent = 'Running...';
+}
+
+function submitMock() {
+  let total = 0, auto = 0, autoTotal = 0, written = 0, writtenTotal = 0, correctCount = 0, autoCount = 0;
+  DATA.mockExam.forEach((q, i) => {
+    total += (q.marks || 0);
+    const qEl = document.getElementById(`mock-q-${i}`);
+    if (q.type === 'MCQ' || q.type === 'T/F') {
+      autoTotal += q.marks; autoCount++;
+      if (qEl.dataset.selected === q.answer) { auto += q.marks; correctCount++; }
+      revealAnswer('mock', i);
+    } else {
+      writtenTotal += q.marks;
+      const ans = document.getElementById(`mock-ans-${i}`)?.value.trim() || '';
+      if (ans.length > 20) written += Math.floor(q.marks * 0.7);
+      revealAnswer('mock', i);
+    }
+  });
+  document.getElementById('mock-score-container').innerHTML = `
+    <div class="score-panel">
+      <div class="score-big">${auto + written} / ${total}</div>
+      <div class="score-break">
+        Auto-graded (MCQ + T/F): <strong>${auto}/${autoTotal}</strong> · ${correctCount}/${autoCount} correct<br>
+        Written (self-estimate @ 70%): ${written}/${writtenTotal} — review your answers + model answers
+      </div>
+    </div>`;
+  if (mockTimer) clearInterval(mockTimer);
+}
+
+/* ============ QUIZZES ============ */
+function buildQuizFilter() {
+  const el = document.getElementById('quiz-filter');
+  const keys = Object.keys(DATA.quizzes || {});
+  if (keys.length === 0) { el.innerHTML = '<span class="dim">No past quizzes loaded.</span>'; return; }
+  el.innerHTML = keys.map((k, i) => `<button data-quiz="${k}" ${i===0?'class="active"':''}>${k} (${(DATA.quizzes[k]||[]).length} Qs)</button>`).join('');
+  el.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      el.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      renderQuiz(b.dataset.quiz);
+    });
+  });
+  if (keys.length) renderQuiz(keys[0]);
+}
+
+function renderQuiz(quizId) {
+  const qs = DATA.quizzes[quizId] || [];
+  const root = document.getElementById('quiz-questions');
+  root.innerHTML = `<div class="panel"><h3>${quizId} — ${qs.length} questions</h3><p class="dim" style="font-size:12px;">Instructor bank may reappear on final. Memorize answers + explanations.</p></div>` +
+    qs.map((q, i) => renderQuestion(q, i, 'quiz-' + quizId)).join('');
+}
+
+/* ============ CODE PRACTICE ============ */
+function escapeHtml(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+function renderCodePractice() {
+  const root = document.getElementById('code-problems');
+  if (!DATA.codePractice.length) { root.innerHTML = '<p class="dim">No practice problems defined.</p>'; return; }
+  root.innerHTML = DATA.codePractice.map((p, i) => `
+    <div class="question" id="code-q-${i}">
+      <div class="q-num">Problem ${i + 1} · ${p.title || ''}</div>
+      <div class="q-text">${p.prompt || ''}</div>
+      ${p.starter ? `<div class="dim mb1" style="font-size:12px;">Starter code:</div><pre>${escapeHtml(p.starter)}</pre>` : ''}
+      <div class="code-annotate"><textarea id="code-ans-${i}" placeholder="Type your answer...">${p.starter || ''}</textarea></div>
+      <div style="margin-top:10px;"><button class="btn" onclick="document.getElementById('code-q-${i}').classList.add('revealed')">Show solution</button></div>
+      <div class="reveal-answer"><div class="label">Solution</div><pre>${escapeHtml(p.solution || '')}</pre>
+      ${p.explanation ? '<div class="expl">' + p.explanation + '</div>' : ''}</div>
+    </div>`).join('');
+}
+
+/* ============ CHEAT SHEET ============ */
+function renderCheatSheet() {
+  const root = document.getElementById('cheatsheet-content');
+  if (!DATA.cheatSheet.length) { root.innerHTML = '<p class="dim">No cheat sheet blocks defined.</p>'; return; }
+  root.innerHTML = '<div class="sheet-grid">' + DATA.cheatSheet.map(s =>
+    `<div class="sheet-block"><h4>${s.title}</h4>${s.body}</div>`
+  ).join('') + '</div>';
+}
+
+/* ============ INIT ============ */
+function init() {
+  document.getElementById('side-course').textContent = DATA.meta.course || 'Course';
+  document.getElementById('side-exam-info').textContent = DATA.meta.examDateHuman || '';
+  document.getElementById('side-foot').textContent = 'v1.0 · ' + (DATA.meta.instructor || '');
+  document.getElementById('dashboard-sub').textContent = (DATA.meta.course || '') + ' · ' + (DATA.meta.title || '') + ' · Final Exam prep';
+  renderDashboard();
+  renderPriorities();
+  buildTopicFilter();
+  filterFC();
+  renderTopicFilter();
+  renderTopics();
+  renderMockExam();
+  buildQuizFilter();
+  renderCodePractice();
+  renderCheatSheet();
+  renderLesson();
+  updateCountdown();
+}
+
+window.addEventListener('DOMContentLoaded', () => { setTimeout(init, 50); });
+</script>
+
+</body>
+</html>

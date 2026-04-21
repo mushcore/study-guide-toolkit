@@ -1,0 +1,379 @@
+Comp 4915 - Lab 1 (Chapter 1-5 plus research)
+===============================================
+
+1. In what language is Linux written? What does the language have to do with
+   the success of Linux?
+
+   Linux is written in C. The C programming language was designed by Dennis
+   Ritchie in 1970, and UNIX was rewritten in C in 1973. Before that, UNIX
+   was written in assembly language and could only run on the specific hardware
+   it was written for. Rewriting UNIX in C made it portable -- the same source
+   code could be compiled on many different hardware platforms. This portability
+   is what allowed AT&T to license UNIX to universities starting in 1974,
+   spreading it across academia and industry. Linux inherited this advantage:
+   because Torvalds wrote the Linux kernel in C (1991), it can be compiled on
+   virtually any processor architecture (x86, ARM, MIPS, PowerPC, etc.). This
+   hardware portability is a core reason Linux became the dominant server
+   operating system and the foundation of the modern internet.
+
+
+2. What is a shell? How does it work with the kernel? With the user?
+
+   A shell is a user program that acts as a command line interpreter. It is
+   also a programming language. The shell is distinct from the kernel -- it
+   runs as a regular user-space application on top of the kernel.
+
+   How it works with the kernel:
+   When the user types a command, the shell breaks the line into tokens
+   (words), identifies the first token as the command name, and searches the
+   directories in PATH for the corresponding executable. The shell then makes
+   system calls to the kernel (fork to create a new process, exec to load the
+   program) to run the command. The shell sleeps (waits) until the kernel
+   signals that the child process has finished, then prompts for the next
+   command.
+
+   How it works with the user:
+   The shell displays a prompt and reads commands from the user's keyboard
+   (standard input). It provides feedback through standard output and standard
+   error. The shell also substitutes variable values, performs filename
+   generation (globbing), handles I/O redirection and pipelines, completes
+   filenames, and provides a scripting/programming interface for automating
+   tasks.
+
+   The shell's seven functions are:
+     - Searches for command and executes associated program
+     - Substitutes shell variable values
+     - Performs command substitution
+     - Performs filename generation
+     - Completes filenames
+     - Handles I/O redirection and pipelines
+     - Provides interpreted programming interface
+
+
+3. What happens when you give the following commands when the file named done
+   already exists (assume to_do also exists)?
+
+   a. cp to_do done
+      The cp command copies the contents of to_do into done. The previous
+      contents of done are overwritten without warning. After the command,
+      both files exist: to_do is unchanged, and done now contains a copy
+      of to_do's contents. The original contents of done are lost.
+
+   b. mv to_do done
+      The mv command moves (renames) to_do to done. The previous contents
+      of done are overwritten without warning. After the command, to_do no
+      longer exists, and done now contains what was previously in to_do.
+      The original contents of done are lost.
+
+   Key difference: cp leaves the source file intact; mv removes it.
+
+
+4. What happens if you use diff to compare two binary files that are not
+   identical? Explain why the diff output for binary files is different than
+   the diff output for ASCII files.
+
+   When diff is run on two non-identical binary files, it outputs a message
+   like:
+
+     Binary files file1.gz and file2.gz differ
+
+   It simply reports that the files differ without showing the specific
+   differences. For ASCII text files, diff shows the exact lines that differ,
+   with indicators showing which lines were added, deleted, or changed.
+
+   The reason the output differs is that diff works on a line-by-line basis,
+   comparing readable text. Binary files contain non-printable characters, null
+   bytes, and data that has no meaningful "line" structure. Displaying raw
+   byte-level differences would produce unreadable garbage on the terminal.
+   diff detects that the files are binary (by finding null bytes or
+   non-printable characters) and falls back to the simple "differ" message
+   instead of attempting a line-by-line comparison.
+
+   To create binary files for this experiment:
+     echo "hello" > a.txt
+     echo "world" > b.txt
+     gzip a.txt       # creates a.txt.gz
+     gzip b.txt       # creates b.txt.gz
+     diff a.txt.gz b.txt.gz
+     # Output: Binary files a.txt.gz and b.txt.gz differ
+
+
+5. What does which do? What is the result of giving the which utility the name
+   of a command that resides in a directory that is not in your search path?
+
+   The which command searches through the directories listed in your PATH
+   environment variable and displays the full absolute pathname of the
+   executable that would be run when you type the command name.
+
+   Example:
+     $ which ls
+     /usr/bin/ls
+
+   If you give which the name of a command that is not in any directory in
+   your PATH, it returns an error message such as:
+
+     /usr/bin/which: no such_command in (/usr/local/bin:/usr/bin:/bin:...)
+
+   or on some systems it simply produces no output and returns a non-zero
+   exit status. This tells you the command cannot be found via your current
+   PATH.
+
+
+6. Experiment by calling the file utility with names of files in /usr/bin.
+   How many different types of files can you find there (approximately)?
+
+   Running "file /usr/bin/*" on a typical Linux system reveals approximately
+   6-8 different types of files, including:
+
+     1. ELF 64-bit LSB executable, dynamically linked
+        (standard compiled programs, e.g., /usr/bin/ls)
+     2. ELF 64-bit LSB shared object / position-independent executable
+        (modern executables compiled with PIE for security)
+     3. POSIX shell script text executable
+        (scripts starting with #!/bin/sh)
+     4. Bash shell script text executable
+        (scripts starting with #!/bin/bash)
+     5. Perl script text executable
+        (scripts starting with #!/usr/bin/perl)
+     6. Python script text executable
+        (scripts starting with #!/usr/bin/python)
+     7. Symbolic links to other executables
+     8. setuid ELF executables (executables with special permissions)
+
+   The file utility determines file type by examining the file's contents
+   (magic numbers in the file header), not by the file extension. It reads
+   the magic number database at /usr/share/magic to identify types.
+
+
+7. Try giving the two commands and explain the difference between them:
+
+   a. echo cat
+      Output: cat
+
+      The echo command prints its arguments to standard output. The word
+      "cat" is treated as a text argument, and echo simply displays the
+      string "cat" on the screen.
+
+   b. cat echo
+      Output: cat: echo: No such file or directory
+
+      The cat command tries to open and display the contents of a file named
+      "echo". Since there is (normally) no file called "echo" in the current
+      directory, cat reports an error.
+
+   The difference: echo is a command that prints text strings to stdout;
+   cat is a command that reads and displays file contents. In (a), "cat" is
+   a text argument. In (b), "echo" is interpreted as a filename. The first
+   token on the command line is always treated as the command; subsequent
+   tokens are arguments to that command.
+
+
+8. Find an existing file, or create a file that:
+
+   a. gzip compresses by more than 80 per cent
+
+      A file with highly repetitive content compresses extremely well.
+
+        $ yes "This is a repeated line of text for compression" | head -10000 > repeat.txt
+        $ ls -l repeat.txt
+        -rw-r--r-- 1 user user 510000 ... repeat.txt
+        $ gzip -v repeat.txt
+        repeat.txt:   99.3% -- replaced with repeat.txt.gz
+
+      The file compresses by over 99% because gzip uses LZ77 which excels
+      at eliminating repeated patterns. Any large file with repetitive
+      content (log files, files of repeated characters) will compress well
+      over 80%.
+
+   b. gzip compresses by less than 10 per cent
+
+      A file that is already compressed or has high entropy (randomness)
+      will barely compress at all.
+
+        $ gzip -v /usr/bin/ls
+        /usr/bin/ls:    2.3% -- replaced with /usr/bin/ls.gz
+
+      Compiled ELF binaries, JPEG images, MP3 files, and already-compressed
+      files (.gz, .zip, .bz2) all have very little redundancy remaining,
+      so gzip achieves less than 10% compression.
+
+   c. gets larger when compressed with gzip
+
+      A very small file will actually grow because gzip adds a header
+      (10 bytes) and trailer (8 bytes) of metadata overhead.
+
+        $ echo "hi" > tiny.txt
+        $ ls -l tiny.txt
+        -rw-r--r-- 1 user user 3 ... tiny.txt
+        $ gzip -v tiny.txt
+        tiny.txt:      0.0% -- replaced with tiny.txt.gz
+        $ ls -l tiny.txt.gz
+        -rw-r--r-- 1 user user 26 ... tiny.txt.gz
+
+      The original 3-byte file becomes a 26-byte .gz file. The gzip
+      header/trailer overhead exceeds any compression savings, making the
+      result larger than the original.
+
+
+9. Write a grep command to do the following:
+
+   a. Display all lines starting with t or T in the file fred.txt:
+
+        grep '^[tT]' fred.txt
+
+      The ^ anchors to the start of the line, and [tT] matches either
+      lowercase t or uppercase T.
+
+   b. Display all lines in the file header.h which contain write
+      (upper or lower case):
+
+        grep -i 'write' header.h
+
+      The -i option makes the search case-insensitive, matching "write",
+      "Write", "WRITE", and any other case variation.
+
+   c. Count all of the lines that are empty (use grep and wc):
+
+        grep -c '^$' filename
+
+      or using both grep and wc as the question specifies:
+
+        grep '^$' filename | wc -l
+
+      The pattern ^$ matches lines that start (^) and immediately end ($)
+      with nothing in between, i.e., empty lines. The -c flag or wc -l
+      gives the count.
+
+
+10. What grep options will:
+
+    a. Print only a count of matched lines:
+
+         -c
+
+    b. List filenames, but not matched lines:
+
+         -l
+
+    c. Print lines and their line numbers:
+
+         -n
+
+    d. Ignore upper and lower case distinctions:
+
+         -i
+
+
+11. What command will print the last 132 lines of the file test?
+
+      tail -132 test
+
+    or equivalently:
+
+      tail -n 132 test
+
+    The tail command displays the end of a file. The -n option (or the older
+    -NUM shorthand) specifies how many lines from the end to display.
+
+
+12. What command can you use to copy all of the files in the directory lab1
+    (including any subdirectories) into the directory /home/eric?
+
+      cp -r lab1 /home/eric/
+
+    The -r (or -R) option tells cp to copy recursively, descending into
+    subdirectories and copying their contents as well. Without -r, cp would
+    refuse to copy a directory.
+
+
+13. The ls command has lots of options. What options will:
+
+    a. Show nonprinting characters in octal:
+
+         -b
+
+    b. List files by creation/modification time:
+
+         -t
+
+    c. Indicate file type by appending / to directories, * to executables,
+       and @ to symbolic links:
+
+         -F
+
+    d. List only the directory name, not its contents:
+
+         -d
+
+    e. List all files, even those normally hidden:
+
+         -a
+
+    f. Recursively list subdirectories as well as the current directory:
+
+         -R
+
+    g. List files according to modification time:
+
+         -t     (same as option b above)
+
+    h. Show permissions, owner, size, modification type:
+
+         -l     (long listing format)
+
+
+14. Write a find command to do the following:
+
+    a. List all files (and subdirectories) in your home directory:
+
+         find ~ -print
+
+       or simply:
+
+         find ~
+
+       The ~ expands to your home directory. find recursively lists all
+       files and directories under the specified starting point.
+
+    b. List all files named fred1 in the /work directory:
+
+         find /work -name fred1
+
+    c. List all files whose name starts with memo and which are owned by
+       ann in the system:
+
+         find / -name 'memo*' -user ann
+
+       The / starts the search from the root of the filesystem. The quotes
+       around 'memo*' prevent the shell from expanding the wildcard before
+       find can use it.
+
+    d. List all files in the system that were modified within the last two
+       days:
+
+         find / -mtime -2
+
+       The -mtime -2 matches files whose modification time is less than
+       2 days ago (i.e., within the last 48 hours).
+
+    e. Use find to grep for a pattern down a directory tree. Display all
+       lines in all files in your login directory (or subdirectories) which
+       contain the string "ListMe":
+
+         find ~ -type f -exec grep "ListMe" {} +
+
+       or alternatively:
+
+         find ~ -type f -exec grep -l "ListMe" {} \;
+
+       The first form displays the matching lines (and filenames) from all
+       regular files under the home directory. The -type f restricts the
+       search to regular files (not directories). The -exec flag runs grep
+       on each found file. The {} is replaced by the filename, and + (or \;)
+       terminates the -exec clause.
+
+       To test this, create test data first:
+         echo "This line has ListMe in it" > ~/testfile1.txt
+         echo "No match here" > ~/testfile2.txt
+         find ~ -type f -exec grep "ListMe" {} +
+       The output should show the line from testfile1.txt containing "ListMe".

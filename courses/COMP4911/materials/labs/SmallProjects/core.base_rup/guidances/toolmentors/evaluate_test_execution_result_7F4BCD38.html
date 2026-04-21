@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Analyzing Test Failures using Rational TestManager and TestFactory</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="evaluate_test_execution_result">
+<meta name="uma.presentationName" content="Analyzing Test Failures using Rational TestManager and TestFactory">
+<meta name="uma.category" content="Tool:rup_test_factory:Rational TestFactory">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational TestFactory">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{037E5AB9-7DC1-4CDB-8395-A2647F5A7F24}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_9U7IkDIEEdqwaNnSEheSAg", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{037E5AB9-7DC1-4CDB-8395-A2647F5A7F24}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{037E5AB9-7DC1-4CDB-8395-A2647F5A7F24}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{037E5AB9-7DC1-4CDB-8395-A2647F5A7F24}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Analyzing Test Failures using Rational TestManager and TestFactory</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to use Rational TestManager, Rational Robot and Rational TestFactory to analyze automatically generated Test Scripts that uncovered errors. </td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_test_factory_3EDA2115.html" guid="{FBA5098E-2CA8-483D-814D-DE3E876426B1}">Rational TestFactory</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/analyze_runtime_behavior_B2DD7652.html" guid="{5131A5BB-5B95-499E-A68B-788A2F0957C3}">Analyze Runtime Behavior</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/tasks/determine_test_results_630C9EC9.html" guid="{74E51E86-ECAB-4A61-9A88-FD358EE6F2B1}">Determine Test Results</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    Overview
+</h3>
+<p>
+    This tool mentor is applicable when running Windows 98/2000/NT 4.0.
+</p>
+<p>
+    To use Rational TestFactory, Rational Robot, and Rational TestManager to analyze the automatically generated test
+    scripts, do one or both of the following:
+</p>
+<ul>
+    <li>
+        <a href="#Analyze defect script">Analyze a Test Script that uncovered a defect</a>
+    </li>
+    <li>
+        <a href="#Analyze UAW script">Analyze a Test Script that uncovered an unexpected active window</a>
+    </li>
+</ul>
+<h3>
+    1.&nbsp; <a id="Analyze defect script" name="Analyze defect script">Analyze a Test Script that uncovered a defect</a>
+</h3>
+<p>
+    As described in <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/toolmentors/generate_test_scripts_71EF254E.html" guid="{19F8AE86-E40A-42F5-8B81-673C306F5C35}">Tool Mentor: Implementing Generating Test Scripts Using Rational Test
+    Factory</a>, a Pilot is the Rational TestFactory tool that automatically generates Test Script. For each defect it
+    encounters while it is running, a Pilot generates a "defect script," which contains the Test Script statements that
+    cause the defect to occur.
+</p>
+<p>
+    When a Pilot finds defects during the run, the Test Script that uncovered defects are located in a separate "Defects
+    Found" subfolder under the run folder. You can use Rational TestManager to view the run log for the Test Script that
+    uncovered defects.
+</p>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;Refer to the <i>View the log for
+    a script run</i> topic in Rational TestFactory online Help.
+</p>
+<h3>
+    2.&nbsp; <a id="Analyze UAW script" name="Analyze UAW script">Analyze a Test Script that uncovered an
+    unexpected&nbsp;active window</a>
+</h3>
+<p>
+    During Test Script generation, a Pilot can encounter an "unexpected active window" (UAW)-a window that reflects an
+    inconsistency between the UI objects in the application map and the controls in the application-under-test (AUT). One
+    of two conditions can cause the Pilot to encounter an unexpected active window:
+</p>
+<ul>
+    <li>
+        The AUT contains a window for which there is no corresponding UI object in the application map. A typical example
+        of this condition is a message window that is not uncovered during mapping.
+    </li>
+    <li>
+        A UI object in the application map represents a window that is no longer in the AUT.
+    </li>
+</ul>
+<p>
+    Whenever it encounters an unexpected active window, the Pilot generates a "UAW script" and places it in the Pilot run
+    folder. You can play back a UAW script in Rational Robot, and then use Robot and Rational TestManager to determine the
+    cause of the unexpected active window. After you resolve the cause in Rational TestFactory, subsequent Pilot runs will
+    not encounter the unexpected active window.
+</p>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;Refer to the following topics in
+    Rational TestFactory online Help:
+</p>
+<ul>
+    <li>
+        <i>Find the cause of an unexpected active window</i>
+    </li>
+    <li>
+        <i>Resolve an unexpected active window</i>
+    </li>
+</ul><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>
