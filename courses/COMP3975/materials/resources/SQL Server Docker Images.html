@@ -1,7 +1,0 @@
-<!DOCTYPE html>
-<html><head></head><body style="color: rgb(32, 33, 34); font-family: undefined;"><p>docker run --cap-add SYS_PTRACE -e ACCEPT_EULA=1 -e MSSQL_SA_PASSWORD=SqlPassword! -p 1444:1433 --name sql-edge -d mcr.microsoft.com/azure-sql-</p>
-<p>OR</p>
-<p>docker run --cap-add SYS_PTRACE -e ACCEPT_EULA=1 -e MSSQL_SA_PASSWORD=SqlPassword! -p 1444:1433 --name azsql -d mcr.microsoft.com/mssql/server:2022-latest</p>
-<p>If you are having problems on a mac, try this:</p>
-<p>docker run --platform=linux/amd64 --name sqlserver -e "ACCEPT_EULA=1" -e "MSSQL_SA_PASSWORD=YourStrongPassword" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest</p>
-<p></p></body></html>

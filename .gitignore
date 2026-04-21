@@ -1,6 +1,7 @@
 **/node_modules/
 .archive/
 deploy/
+courses/
 .DS_Store
 dist/
 .env

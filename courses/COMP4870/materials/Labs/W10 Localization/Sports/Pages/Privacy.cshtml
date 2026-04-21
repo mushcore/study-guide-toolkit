@@ -1,9 +1,0 @@
-@page
-@model PrivacyModel
-@inject Sports.Services.SharedResourceService sharedLocalizer
-@{
-    ViewData["Title"] = @sharedLocalizer.Get("PrivacyPolicy");
-}
-<h1>@ViewData["Title"]</h1>
-
-<p>@sharedLocalizer.Get("PrivacyText")</p>

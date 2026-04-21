@@ -1,1 +1,0 @@
-dotnet ef migrations add M1 --project ../SchoolLibrary/SchoolLibrary.csproj -o Data/Migrations
