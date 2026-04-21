@@ -1,0 +1,144 @@
+modules:
+  - id: api-and-auth
+    name: "API and Authentication"
+    topics:
+      - id: jwt-authentication
+        name: "JWT Authentication"
+        tags: [jwt, authentication, bearer-token, laravel, api]
+        prose: "JWT (JSON Web Token) is a stateless authentication mechanism. The server signs a token on login; every request carries that token; the server re-verifies the signature. No session table required."
+        priority: high
+        source: "PHP_JWT.pptx; laravel-jwt_SCRIPT.docx"
+        cards:
+
+          # --- Structure ---
+
+          - type: cloze
+            prompt: "A JWT token has three dot-separated sections: {{header}}.{{payload}}.{{signature}}, all base64-encoded."
+            answer: "header, payload, signature"
+            explanation: "The header declares the algorithm (e.g. HS256). The payload holds claims (user data + metadata). The signature is a hash of header + payload using the server's secret — it proves the token was not tampered with."
+            example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MiIsImlhdCI6MTcxNjIzOTAyMn0.SflKxwRJSMeKKF2Q"
+            source: "PHP_JWT.pptx slide 9"
+            bloom: remember
+
+          - type: name
+            prompt: "Which part of a JWT token proves the payload has not been modified after issuance?"
+            answer: "The signature"
+            explanation: "The server computes the signature by hashing base64(header) + '.' + base64(payload) with its secret key. On each request it recomputes the hash — any payload change breaks the match and the request is rejected."
+            source: "PHP_JWT.pptx slide 5"
+            bloom: understand
+
+          # --- Reserved claims: iat, iss, nbf ---
+
+          - type: cloze
+            prompt: "The JWT reserved claim {{iat}} records the Unix timestamp when the token was issued."
+            answer: "iat"
+            explanation: "'Issued At' — a required baseline for validating nbf and exp. All time-based claims are relative to or compared against iat."
+            source: "PHP_JWT.pptx slide 8"
+            bloom: remember
+
+          - type: cloze
+            prompt: "The JWT reserved claim {{iss}} identifies which application produced the token and can be used to reject tokens from other apps."
+            answer: "iss"
+            explanation: "'Issuer' — typically set to a domain name or app identifier. A server can check this field to refuse tokens minted by a different service."
+            example: "\"iss\": \"your-app.com\""
+            source: "PHP_JWT.pptx slide 8"
+            bloom: understand
+
+          - type: cloze
+            prompt: "The JWT reserved claim {{nbf}} sets the earliest timestamp at which the token is considered valid; it must be ≥ iat."
+            answer: "nbf"
+            explanation: "'Not Before' — allows issuing a token that is not yet valid (e.g. starts 10 seconds after creation). Requests arriving before this timestamp are rejected even if the signature is valid."
+            source: "PHP_JWT.pptx slide 8"
+            bloom: understand
+
+          # --- Reserved claims: exp, sub, aud, jti ---
+
+          - type: cloze
+            prompt: "The JWT reserved claim {{exp}} is the Unix timestamp after which the token is no longer accepted; it must be greater than both iat and nbf."
+            answer: "exp"
+            explanation: "'Expiration Time' — the primary expiry guard. If the current time exceeds exp, the server returns 401 regardless of signature validity."
+            example: "\"exp\": 1716242622  // iat + 3600 = expires in 1 hour"
+            source: "PHP_JWT.pptx slide 8"
+            bloom: remember
+
+          - type: cloze
+            prompt: "The JWT reserved claim {{sub}} identifies the principal the token is about — in Laravel JWT it stores the user's primary key."
+            answer: "sub"
+            explanation: "'Subject' — getJWTIdentifier() on the User model returns $this->getKey(), which becomes the sub claim value. The server uses sub to look up the user on protected requests."
+            source: "PHP_JWT.pptx slide 9; laravel-jwt_SCRIPT.docx"
+            bloom: understand
+
+          - type: name
+            prompt: "Which JWT reserved claim identifies the intended recipient(s) of the token, allowing a server to reject tokens not addressed to it?"
+            answer: "aud (audience)"
+            explanation: "'Audience' — prevents a valid token issued for app-A from being accepted by app-B. The server checks that its own identifier appears in the aud claim."
+            source: "PHP_JWT.pptx slide 9"
+            bloom: understand
+
+          - type: name
+            prompt: "Which JWT reserved claim provides a unique identifier for each individual token, used to prevent replay attacks?"
+            answer: "jti (JWT ID)"
+            explanation: "'JWT ID' — a UUID or similar unique string. By storing seen jti values, a server can reject a token that has already been used, even if it is still within its expiry window."
+            source: "PHP_JWT.pptx slide 9"
+            bloom: analyze
+
+          # --- Package name ---
+
+          - type: cloze
+            prompt: "The JWT Composer package used in this course is {{php-open-source-saver/jwt-auth}}, NOT tymon/jwt-auth."
+            answer: "php-open-source-saver/jwt-auth"
+            explanation: "These are two different packages with different namespaces and different setup steps. Using tymon/jwt-auth is the most common setup mistake. The service provider for the correct package is PHPOpenSourceSaver\\JWTAuth\\Providers\\LaravelServiceProvider."
+            source: "laravel-jwt_SCRIPT.docx"
+            bloom: remember
+
+          # --- Bearer token format ---
+
+          - type: cloze
+            prompt: "After login, the client sends the JWT on every protected request using the header: {{Authorization}}: {{Bearer}} <token>."
+            answer: "Authorization, Bearer"
+            explanation: "The auth:api middleware reads this header, strips the 'Bearer ' prefix, and validates the token signature and expiry. No cookie. No session. The token is the only credential."
+            example: "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            source: "laravel-jwt_SCRIPT.docx"
+            bloom: remember
+
+          # --- JWTSubject interface ---
+
+          - type: name
+            prompt: "Name the two methods the User model must implement when it implements the JWTSubject interface."
+            answer: "getJWTIdentifier() and getJWTCustomClaims()"
+            explanation: "getJWTIdentifier() returns the value stored in the 'sub' claim (typically $this->getKey()). getJWTCustomClaims() returns an array of any extra payload fields — returning [] is valid for basic auth."
+            source: "laravel-jwt_SCRIPT.docx"
+            bloom: remember
+
+          - type: predict
+            lang: php
+            prompt: "What does Auth::attempt($credentials) return on a successful login in a JWT-configured app?"
+            code: |
+              $credentials = $request->only('email', 'password');
+              $result = Auth::attempt($credentials);
+              // What is $result on success?
+            answer: "The JWT token string (not just true). On failure it returns false."
+            explanation: "In a JWT-guarded app, Auth::attempt() returns the signed token string directly when credentials are valid. This differs from session-based auth where attempt() returns a boolean. The token is then returned to the client in the JSON response."
+            source: "laravel-jwt_SCRIPT.docx"
+            bloom: apply
+
+          # --- Setup steps ---
+
+          - type: cloze
+            prompt: "After installing php-open-source-saver/jwt-auth, run {{php artisan jwt:secret}} to generate the signing key written to .env."
+            answer: "php artisan jwt:secret"
+            explanation: "This writes JWT_SECRET=... to .env. The secret is used to sign and verify every token. Without it the package cannot produce valid signatures."
+            source: "laravel-jwt_SCRIPT.docx"
+            bloom: remember
+
+          - type: name
+            prompt: "In config/auth.php, what driver value must you set for the 'api' guard to enable JWT authentication?"
+            answer: "'driver' => 'jwt'"
+            explanation: "Without this, the auth:api middleware does not know to use JWT. It would fall back to session or token-based auth and reject all Bearer token requests. The 'provider' must also be set to 'users'."
+            example: |
+              'api' => [
+                  'driver'   => 'jwt',
+                  'provider' => 'users',
+              ],
+            source: "laravel-jwt_SCRIPT.docx"
+            bloom: apply

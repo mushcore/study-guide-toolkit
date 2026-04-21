@@ -1,0 +1,75 @@
+# Flashcards — session-auth-breeze
+# Module: API and Authentication
+# Source: auth-with-breeze_SQLite_SCRIPT.docx
+
+- id: session-auth-card-01
+  type: cloze
+  prompt: "Install Breeze with: `{{composer require laravel/breeze --dev}}` followed by `{{php artisan breeze:install}}`."
+  answer: "composer require laravel/breeze --dev; php artisan breeze:install"
+  explanation: "The first command pulls the package as a dev dependency; the second publishes routes, controllers, and Blade views into your project. Both steps are required — the package alone does nothing until the installer runs."
+  source: "auth-with-breeze_SQLite_SCRIPT.docx"
+  bloom: remember
+
+- id: session-auth-card-02
+  type: name
+  prompt: "Which CSS framework does Laravel Breeze use for its scaffolded views?"
+  answer: "Tailwind CSS"
+  explanation: "Breeze is built on Tailwind CSS. The older laravel/ui package uses Bootstrap instead. This distinction is explicitly tested — do not substitute one for the other."
+  source: "auth-with-breeze_SQLite_SCRIPT.docx"
+  bloom: remember
+
+- id: session-auth-card-03
+  type: name
+  prompt: "Name the Auth facade call that returns the full authenticated User model."
+  answer: "Auth::user()"
+  explanation: "Auth::user() returns the authenticated User Eloquent model (or null if unauthenticated). Auth::id() returns only the primary key integer. Use the facade form, not auth()->user()."
+  source: "auth-with-breeze_SQLite_SCRIPT.docx"
+  bloom: understand
+
+- id: session-auth-card-04
+  type: cloze
+  prompt: "To restrict all routes in a group to logged-in users, write: `Route::middleware({{' auth '}})->group(function () { ... });`"
+  answer: "'auth'"
+  explanation: "The 'auth' middleware checks for a valid session and redirects unauthenticated visitors to /login. Chaining it on a route group applies protection to every route inside."
+  source: "auth-with-breeze_SQLite_SCRIPT.docx"
+  bloom: apply
+
+- id: session-auth-card-05
+  type: name
+  prompt: "What does the `'verified'` middleware require beyond what `'auth'` already checks?"
+  answer: "The user's email address must be verified"
+  explanation: "'auth' only requires a valid session. 'verified' additionally checks that the user has clicked the email verification link. A logged-in but unverified user is redirected to /verify-email."
+  source: "auth-with-breeze_SQLite_SCRIPT.docx"
+  bloom: understand
+
+- id: session-auth-card-06
+  type: cloze
+  prompt: "Breeze stores all auth routes in `{{routes/auth.php}}`, which is included from `routes/web.php` via `require __DIR__.'/auth.php'`."
+  answer: "routes/auth.php"
+  explanation: "Breeze separates auth routes from application routes to keep web.php clean. The require statement at the bottom of web.php loads all register/login/logout/password-reset/verify-email routes."
+  source: "auth-with-breeze_SQLite_SCRIPT.docx"
+  bloom: remember
+
+- id: session-auth-card-07
+  type: name
+  prompt: "Which first-party Laravel package provides token authentication as an alternative to Breeze's session-based auth?"
+  answer: "Sanctum"
+  explanation: "Sanctum issues personal access tokens stored in the database (via createToken()). Breeze manages server-side sessions with cookies. Both are first-party Laravel packages; Sanctum is the token-based alternative for SPA and mobile API clients."
+  source: "auth-with-breeze_SQLite_SCRIPT.docx"
+  bloom: understand
+
+- id: session-auth-card-08
+  type: predict
+  lang: php
+  prompt: "What does Auth::id() return when called inside a controller method protected by the 'auth' middleware?"
+  code: |
+    Route::middleware('auth')->group(function () {
+        Route::get('/orgs', [OrgController::class, 'index']);
+    });
+
+    // Inside OrgController::index():
+    return Auth::id();
+  answer: "The authenticated user's integer primary key (e.g. 1, 2, 3). It is guaranteed non-null here because the 'auth' middleware blocks unauthenticated requests before they reach the controller."
+  explanation: "Auth::id() returns null for unauthenticated requests. Because the route has 'auth' middleware, only authenticated requests arrive at the controller — so the return value is always an integer in this context."
+  source: "auth-with-breeze_SQLite_SCRIPT.docx"
+  bloom: apply

@@ -24,7 +24,7 @@ Router. This directory is a monorepo of BCIT CST Term 4 study-guide tooling.
 
 - `/author-course {id} [materials-path]` — Phase A automation: drives the 5-stage playbook in `ADD-NEW-COURSE.md §Phase A` (triage → course-level artifacts → per-module authoring → mock-exam → final audit). Pauses after each stage for review. Reads materials, produces the full `content/{id}/` tree enforcing STANDARDS at every audit gate.
 - `/audit-content {id}` — full audit of a `content/{id}/` tree against `content/STANDARDS.md` (pedagogical contract) + `content/SCHEMA.md` (hard-fail invariants). Writes `content/{id}/audit-report.md`. Called automatically by other skills; invoke directly to check enrichment depth anytime.
-- `/add-course {id}` — Phase B automation: calls `/audit-content` preflight, compiles the bundle, wires the three hardcoded touchpoints (`scripts/build-content.js`, `content/_dist/_aggregator.js`, `app/src/main.jsx`), handles annotation-variant dispatch in `App.jsx`, verifies `npm run build`.
+- `/add-course {id}` — Phase B automation: calls `/audit-content` preflight, compiles the bundle, wires the two hardcoded touchpoints (`scripts/build-content.js`, `app/src/main.jsx`), handles annotation-variant dispatch in `App.jsx`, verifies `npm run build`.
 - `/enrich-course {id}` — for upgrading existing courses to current STANDARDS: reads materials + existing tree, runs the audit, and writes `content/{id}/enrichment-plan.md` (gap analysis + prioritized patch plan). Does not apply patches.
 
 **Typical new-course flow**: `/author-course {id}` → smoke-test dev server → `./deploy.sh`. The skill invokes `/audit-content` at every stage gate and `/add-course` at the final stage.

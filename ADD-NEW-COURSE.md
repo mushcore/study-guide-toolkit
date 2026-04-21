@@ -123,7 +123,7 @@ Do NOT reuse past-exam questions verbatim (they stay in `materials/`). Generate 
 
 1. Full `/audit-content {id}`. Close every remaining critical. Warnings are ship-blocking; advisories are polish and can defer.
 2. Fill any remaining `##` blocks in `cheat-sheet.md` from the Stage 3 topic content.
-3. `/add-course {id}` — re-runs audit preflight, compiles, wires the three touchpoints, verifies `npm run build`.
+3. `/add-course {id}` — re-runs audit preflight, compiles, wires the two touchpoints, verifies `npm run build`.
 4. `cd app && npm run dev` — smoke-test every subview.
 5. `./deploy.sh` — ship.
 
@@ -147,7 +147,7 @@ Do NOT reuse past-exam questions verbatim (they stay in `materials/`). Generate 
 > **Skill shortcuts**:
 > - `/author-course {id} [materials-path]` — drives **Phase A** end-to-end (the five stages above). Pauses after each stage. Typical entry point for a new course.
 > - `/audit-content {id}` — full audit against STANDARDS.md + schema invariants. Called at every stage gate; invoke directly anytime.
-> - `/add-course {id}` — **Phase B** automation. Calls `/audit-content` preflight, compiles, wires the three touchpoints, verifies the React build. Called at the end of `/author-course` Stage 5.
+> - `/add-course {id}` — **Phase B** automation. Calls `/audit-content` preflight, compiles, wires the two touchpoints, verifies the React build. Called at the end of `/author-course` Stage 5.
 > - `/enrich-course {id}` — for existing courses: runs the audit and produces `content/{id}/enrichment-plan.md` with a prioritized gap-closure plan grounded in materials. You review, then apply.
 
 ### B1. Compile the bundle
@@ -161,22 +161,20 @@ node scripts/build-content.js {ID}        # just the new one
 
 Output: `content/_dist/{ID}.js` (populates `window.CONTENT["{ID}"]`) and refreshed `content/_dist/manifest.json`. The build aborts on hard-fail invariants (duplicate ids, cloze with no blanks, mock-question `correct` out of range, code-practice with wrong H2 sections, unparseable YAML).
 
-### B2. Wire three hardcoded touchpoints
+### B2. Wire two hardcoded touchpoints
 
-The app loads bundles via side-effect imports in a fixed order. Miss one of these three and the new course is silently invisible.
+The app loads bundles via side-effect imports in a fixed order. Miss one of these two and the new course is silently invisible.
 
 1. `scripts/build-content.js` (~line 21):
    ```js
    const COURSES = ['4736', '4870', '4911', '4915', '{NEW_ID}'];
    ```
-2. `content/_dist/_aggregator.js` (~line 6):
-   ```js
-   const ids = ['4736', '4870', '4911', '4915', '{NEW_ID}'];
-   ```
-3. `app/src/main.jsx` — add the side-effect import **before** `_aggregator.js`:
+2. `app/src/main.jsx` — add the side-effect import **before** `_aggregator.js`:
    ```js
    import '../../content/_dist/{NEW_ID}.js';
    ```
+
+`_aggregator.js` auto-derives course ids from `Object.keys(window.CONTENT)` — no edit needed there.
 
 If the new course uses `annotation` code-practice, the `code` subview dispatch in `app/src/App.jsx` currently hard-codes `route.courseId === '4911'`. Extend that check (or, better, replace it with a `codeVariant` field read from `course.yaml`).
 

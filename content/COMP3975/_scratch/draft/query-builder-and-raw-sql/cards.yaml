@@ -1,0 +1,102 @@
+- id: query-builder-and-raw-sql
+  name: "Query Builder and Raw SQL"
+  tags: [laravel, query-builder, raw-sql]
+  prose: "Laravel offers three data-access patterns in explicit preference order: Eloquent ORM first, Query Builder (DB::table()) second, raw SQL (DB::select()) third. Query Builder chains fluent methods and returns stdClass objects; raw SQL takes a plain SQL string and also returns stdClass objects."
+  cards:
+
+    - type: cloze
+      prompt: "In the professor's preference hierarchy, the order from most to least preferred is {{Eloquent ORM}}, then {{Query Builder}}, then {{raw SQL}}."
+      answer: "Eloquent ORM, Query Builder, raw SQL"
+      explanation: "The professor explicitly ranks these three patterns. Eloquent is preferred because it works with typed model instances. Query Builder is second — it works without a model and chains fluently. Raw SQL is last — it forces you to write and maintain SQL strings manually."
+      example: |
+        ```php
+        // 1st — Eloquent
+        $students = Student::all();
+        // 2nd — Query Builder
+        $students = DB::table('students')->get();
+        // 3rd — Raw SQL
+        $students = DB::select('SELECT * FROM students');
+        ```
+      source: "TIDBITS-components_config_db_SCRIPT.docx"
+      bloom: remember
+
+    - type: cloze
+      prompt: "To start a Query Builder chain on the `students` table, you call {{DB::table('students')}}."
+      answer: "DB::table('students')"
+      explanation: "DB is the facade for Laravel's database layer. Calling DB::table('table_name') creates a query builder instance for that table. You then chain select(), where(), orderBy(), and finish with get()."
+      example: |
+        ```php
+        use Illuminate\Support\Facades\DB;
+        $rows = DB::table('students')->select(['FirstName', 'LastName'])->get();
+        ```
+      source: "TIDBITS-components_config_db_SCRIPT.docx"
+      bloom: remember
+
+    - type: name
+      prompt: "What terminal method must you call at the end of a Query Builder chain to actually execute the query and receive results?"
+      answer: "->get()"
+      explanation: "Every Query Builder method except get() returns the builder itself — the query is not sent to the database until get() is called. Omitting get() leaves you with a Builder object, not a collection of rows."
+      example: |
+        ```php
+        // Without ->get(): returns a Builder object, not results
+        $q = DB::table('students')->whereNotNull('School');
+        // With ->get(): executes and returns a collection of stdClass objects
+        $students = DB::table('students')->whereNotNull('School')->get();
+        ```
+      source: "TIDBITS-components_config_db_SCRIPT.docx"
+      bloom: understand
+
+    - type: cloze
+      prompt: "To execute a raw SQL query in Laravel, you call {{DB::select('SELECT * FROM students')}}."
+      answer: "DB::select('SELECT * FROM students')"
+      explanation: "DB::select() takes a raw SQL string and an optional array of parameter bindings. It returns an array of stdClass objects. Unlike Query Builder, it gives you no fluent methods — you write the full SQL string yourself."
+      example: |
+        ```php
+        // Plain raw SQL
+        $students = DB::select('SELECT * FROM students');
+
+        // With a parameterised binding (safe against SQL injection)
+        $students = DB::select('SELECT * FROM students WHERE School = ?', ['Mining']);
+        ```
+      source: "TIDBITS-components_config_db_SCRIPT.docx"
+      bloom: remember
+
+    - type: name
+      prompt: "You want to add a WHERE School IS NOT NULL clause using Query Builder. Which method do you chain?"
+      answer: "->whereNotNull('School')"
+      explanation: "whereNotNull() generates WHERE column IS NOT NULL in the query. It is one of many convenience methods on the Query Builder that translate readable PHP calls into correct SQL clauses, reducing the chance of SQL syntax errors."
+      example: |
+        ```php
+        $students = DB::table('students')
+            ->select(['FirstName', 'LastName', 'School'])
+            ->whereNotNull('School')
+            ->orderBy('FirstName')
+            ->get();
+        ```
+      source: "TIDBITS-components_config_db_SCRIPT.docx"
+      bloom: apply
+
+    - type: predict
+      lang: php
+      prompt: "What type of objects does this Query Builder call return, and how does that differ from an Eloquent call?"
+      code: |
+        $students = DB::table('students')
+            ->select(['FirstName', 'LastName'])
+            ->get();
+      answer: "Returns a collection of stdClass objects, not typed Student model instances. Eloquent's Student::all() returns Student model objects with model methods; Query Builder's DB::table() returns generic stdClass objects with no model methods."
+      explanation: "Because Query Builder does not know which Eloquent model the table belongs to, it cannot instantiate model objects. You access properties the same way ($item->FirstName) but you cannot call model methods like $item->save() or use relationships."
+      source: "TIDBITS-components_config_db_SCRIPT.docx"
+      bloom: understand
+
+    - type: name
+      prompt: "Which two methods on the DB facade let you log and then retrieve the actual SQL queries that Laravel sends to the database?"
+      answer: "DB::enableQueryLog() and DB::getQueryLog()"
+      explanation: "Call DB::enableQueryLog() before running queries to start recording. Then call DB::getQueryLog() after to retrieve an array of the SQL strings and their bound parameter values. This is the primary debugging tool when a query returns unexpected results."
+      example: |
+        ```php
+        DB::enableQueryLog();
+        $students = DB::table('students')->whereNotNull('School')->get();
+        print_r(DB::getQueryLog());
+        ```
+      source: "TIDBITS-components_config_db_SCRIPT.docx"
+      bloom: apply

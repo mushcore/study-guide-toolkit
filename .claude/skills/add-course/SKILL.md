@@ -1,6 +1,6 @@
 ---
 name: add-course
-description: Register a new course in the app. Compiles the content/{id}/ tree to a bundle, wires the three hardcoded touchpoints (build-content.js, _aggregator.js, main.jsx), handles the annotation-variant dispatch in App.jsx if needed, and verifies the React build succeeds. Use when the user says "add course {id}", "register course {id}", "wire up course {id}", or invokes /add-course.
+description: Register a new course in the app. Compiles the content/{id}/ tree to a bundle, wires the two hardcoded touchpoints (build-content.js, main.jsx), handles the annotation-variant dispatch in App.jsx if needed, and verifies the React build succeeds. Use when the user says "add course {id}", "register course {id}", "wire up course {id}", or invokes /add-course.
 argument-hint: <course-id>
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob
 disable-model-invocation: false
@@ -13,7 +13,7 @@ You are registering a new course into the `app/` React+Vite app. The canonical c
 - Root: `/Users/kevinliang/BCIT/CST/TERM4/` — monorepo root. `content/`, `scripts/`, `app/` all live here.
 - Canonical content: `content/{id}/` with seven files (see `content/SCHEMA.md`).
 - Compiler: `scripts/build-content.js`. Reads `COURSES` array and compiles each to `content/_dist/{id}.js`.
-- Aggregator: `content/_dist/_aggregator.js`. Has its own `ids` array for flattening into window globals.
+- Aggregator: `content/_dist/_aggregator.js`. Auto-derives course ids from `Object.keys(window.CONTENT)` — no edit needed when adding a course.
 - App entry: `app/src/main.jsx`. Side-effect-imports each bundle before `_aggregator.js`, then mounts React.
 - Code-practice dispatch: `app/src/App.jsx`. Hard-coded `route.courseId === '4911'` for annotation variant.
 
@@ -61,15 +61,11 @@ These reflect the pedagogical contract — a course failing any of them isn't re
 
 Read the file. Find the `const COURSES = [...]` line (near the top, around line 21). If `{id}` is already in the array, skip. Otherwise add it at the end preserving the existing quoting and ordering style.
 
-### Step 4 — Touchpoint: `content/_dist/_aggregator.js`
-
-Read the file. Find the `const ids = [...]` line (top of the IIFE, around line 6). If `{id}` is already in the array, skip. Otherwise add it at the end. Keep style consistent with the existing entries.
-
-### Step 5 — Touchpoint: `app/src/main.jsx`
+### Step 4 — Touchpoint: `app/src/main.jsx`
 
 Read the file. Find the block of `import '../../content/_dist/NNNN.js';` lines. If an import for `{id}` already exists, skip. Otherwise add a new line **before** the `_aggregator.js` import — aggregator must run last. Match the existing indentation and quoting.
 
-### Step 6 — Dispatch: `app/src/App.jsx` (annotation variant only)
+### Step 5 — Dispatch: `app/src/App.jsx` (annotation variant only)
 
 If Step 1 flagged the annotation variant, find the line in `App.jsx`:
 
@@ -81,7 +77,7 @@ Extend the condition to include `{id}`, e.g. `(route.courseId === '4911' || rout
 
 If you see a growing chain of `||` ids, mention it to the user as a cleanup opportunity — the principled fix is a `codeVariant` field in `course.yaml` read by the aggregator — but don't refactor in this skill; it's out of scope.
 
-### Step 7 — Compile
+### Step 6 — Compile
 
 From the TERM4 root:
 
@@ -93,28 +89,28 @@ If the compile fails with a hard-fail invariant (duplicate id, cloze-without-bla
 
 Confirm `content/_dist/{id}.js` was produced and `content/_dist/manifest.json` now lists the id with non-zero counts per section.
 
-### Step 8 — Verify the React build
+### Step 7 — Verify the React build
 
 ```
 cd app && npm run build
 ```
 
-If build succeeds, Phase B is done. If it fails, read the error — most likely a typo in one of the touchpoints from steps 3–5.
+If build succeeds, Phase B is done. If it fails, read the error — most likely a typo in one of the touchpoints from steps 3–4.
 
 Do NOT run `npm run dev` from this skill (it's a long-running server). Tell the user to run it themselves and confirm the course renders.
 
-### Step 9 — Summary
+### Step 8 — Summary
 
 Report:
 
 - Course id, code, name, exam date (from course.yaml).
 - Audit status: critical = 0 (required to have reached this step), warning count, advisory count. Include a one-line pointer to the audit report for the user.
 - Bundle counts from the manifest (modules, topics, cards, lessons, codePractice, topicDives, cheatBlocks, mockQuestions).
-- Three-to-four touchpoints touched (build-content.js, _aggregator.js, main.jsx, optionally App.jsx).
+- Two-to-three touchpoints touched (build-content.js, main.jsx, optionally App.jsx).
 - Next steps for the user: `cd app && npm run dev`, verify dashboard shows the course card, every subview renders, `./deploy.sh` once smoke-tested. If warnings exist, suggest running `/enrich-course {id}` to address them before shipping.
 
 ## Non-goals
 
 - Do not author content. If `content/{id}/` is incomplete or low-quality, stop and point the user at `ADD-NEW-COURSE.md §Phase A`.
-- Do not refactor the three hardcoded touchpoints into a dynamic loader. That's a standing tech-debt item; call it out but don't do it.
+- Do not refactor the two hardcoded touchpoints into a dynamic loader. That's a standing tech-debt item; call it out but don't do it.
 - Do not run `npm run dev`, `deploy.sh`, or any push. Those are user actions.

@@ -60,3 +60,4 @@ Read this before writing any content. Use the canonical form verbatim; never sub
 | belongsTo() | belongs to, inverse relationship | Eloquent relationship method defining the inverse of a hasMany — the "child" side. | laravel_with_students_MySQL_SCRIPT.docx |
 | whereBelongsTo() | where belongs to, ownership filter | Eloquent shorthand to filter a query to records belonging to a given model instance. | auth-with-breeze_SQLite_SCRIPT.docx |
 | Blade components | x-components, component syntax | Reusable Blade templates invoked with `<x-component-name>` syntax; `<x-slot>` for named slots. | Week11 - Table of Contents.html |
+| vendor:publish | vendor publish, publish config | `php artisan vendor:publish` — copies a package's config/views/assets into the application for customization. | laravel_with_sqlite_API_SCRIPT.docx |

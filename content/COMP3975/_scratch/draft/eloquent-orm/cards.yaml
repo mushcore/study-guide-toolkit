@@ -1,0 +1,84 @@
+- id: eloquent-orm
+  name: "Eloquent ORM"
+  tags: [eloquent, orm, laravel, database]
+  prose: "Eloquent ORM is Laravel's object-relational mapper. Each model class maps to a database table; methods like all(), find(), findOrFail(), create(), and delete() translate PHP calls into SQL automatically."
+  cards:
+    - type: name
+      prompt: "What Artisan command creates a Student model AND its migration in one step?"
+      answer: "php artisan make:model Student -m"
+      explanation: "The -m flag generates the matching migration file alongside the model. Without it you would run make:model and make:migration separately."
+      example: "Running `php artisan make:model Student -m` produces app/Models/Student.php and a file like database/migrations/2024_03_21_000000_create_students_table.php."
+      source: "laravel_with_students_MySQL_SCRIPT.docx"
+      bloom: remember
+
+    - type: cloze
+      prompt: "To allow mass assignment on the FirstName and School columns, add `protected {{$fillable}} = ['FirstName', 'School'];` to the model."
+      answer: "$fillable"
+      explanation: "$fillable is a whitelist array on an Eloquent model. Only listed columns may be set through create() or update(). Columns absent from the list are silently blocked, preventing attackers from setting fields like is_admin."
+      example: "Without $fillable, calling Student::create($request->all()) throws a MassAssignmentException even if your form only sends safe fields."
+      source: "laravel_with_sqlite_API_SCRIPT.docx"
+      bloom: remember
+
+    - type: name
+      prompt: "Which Eloquent method returns a model instance or throws a 404 if the record does not exist?"
+      answer: "findOrFail()"
+      explanation: "findOrFail() throws a ModelNotFoundException when the id is not found. Laravel automatically converts that exception to an HTTP 404 response — you get safe error handling without writing an if-statement."
+      example: "`$student = Student::findOrFail($id);` — if id=99 does not exist, the user sees a 404 page rather than a PHP error."
+      source: "laravel_with_students_MySQL_SCRIPT.docx"
+      bloom: understand
+
+    - type: cloze
+      prompt: "To fetch students filtered by School not null and sorted by FirstName, you write: `Student::whereNotNull('School')->orderBy('FirstName')->{{get}}();`"
+      answer: "get"
+      explanation: "Builder method chains on a model do not execute until you call ->get(). Without get(), you hold an unresolved query object, not a Collection. Student::all() is the only read method that executes without a terminal call."
+      example: "Student::where('School', 'Mining')->get() runs SELECT * FROM students WHERE School = 'Mining'. Omitting ->get() returns a Builder, not data."
+      source: "TIDBITS-components_config_db_SCRIPT.docx"
+      bloom: apply
+
+    - type: name
+      prompt: "What is the correct way to insert a new Student when you already have an array of field values from a form request?"
+      answer: "Student::create(['FirstName' => ..., 'LastName' => ..., 'School' => ...])"
+      explanation: "create() accepts an associative array and executes an INSERT in one call. It requires $fillable to be defined on the model — without it Laravel throws MassAssignmentException as a security guard."
+      example: "Student::create(['FirstName' => 'Ann', 'LastName' => 'Fox', 'School' => 'Business']) inserts one row and returns the new Student instance."
+      source: "laravel_with_students_MySQL_SCRIPT.docx"
+      bloom: apply
+
+    - type: cloze
+      prompt: "After retrieving a student with findOrFail, you update its properties and call `$student->{{save}}()` to persist changes."
+      answer: "save"
+      explanation: "save() works for both inserts (on a new Student instance) and updates (on an existing one). Eloquent detects whether the model has a primary key set and issues INSERT or UPDATE accordingly."
+      example: "$student->FirstName = 'Tom'; $student->save(); — Eloquent runs UPDATE students SET FirstName='Tom' WHERE id=X."
+      source: "laravel_with_students_MySQL_SCRIPT.docx"
+      bloom: apply
+
+    - type: name
+      prompt: "In the professor's data-access hierarchy, which pattern comes first: Eloquent ORM, Query Builder, or raw SQL?"
+      answer: "Eloquent ORM"
+      explanation: "The professor explicitly orders patterns as Eloquent first, Query Builder second, raw SQL third. Eloquent is preferred because it is readable, relationship-aware, and ties closely to the model layer. Query Builder and raw SQL are fallbacks for complex or vendor-specific queries."
+      example: "Use Student::all() before reaching for DB::table('students')->get(), and reach for DB::select() only as a last resort."
+      source: "TIDBITS-components_config_db_SCRIPT.docx"
+      bloom: understand
+
+    - type: cloze
+      prompt: "`Student::{{all}}()` fetches every row; it cannot be followed by a ->where() filter that runs at the SQL level."
+      answer: "all"
+      explanation: "Student::all() immediately executes SELECT * and returns a Collection in PHP memory. Chaining ->where() after it filters the in-memory Collection in PHP, not at the database. For SQL-level filtering, use Student::where(...)->get()."
+      example: "Student::all()->where('School', 'Mining') loads all 10,000 students into PHP first, then discards most of them. Student::where('School', 'Mining')->get() sends one efficient SQL query."
+      source: "TIDBITS-components_config_db_SCRIPT.docx"
+      bloom: analyze
+
+    - type: name
+      prompt: "Which interactive Artisan REPL lets you test Eloquent queries without writing a controller?"
+      answer: "tinker"
+      explanation: "php artisan tinker opens a REPL with full Laravel context. You can call any Eloquent method directly — Student::all(), new Student(), save() — and see results instantly. It is the professor's recommended tool for verifying model behavior."
+      example: "In tinker: `\\App\\Models\\Student::all()` returns the full collection; `$s = new \\App\\Models\\Student(); $s->FirstName='Joe'; $s->save();` inserts a row."
+      source: "laravel_with_students_MySQL_SCRIPT.docx"
+      bloom: remember
+
+    - type: name
+      prompt: "A Student record exists with id=5. What does Student::find(5) return versus Student::find(999) when 999 does not exist?"
+      answer: "find(5) returns the Student model instance; find(999) returns null"
+      explanation: "find() returns the model or null — it never throws. Use findOrFail() when a missing record should be a 404. Use find() when you need to handle the null case yourself, for example to return a custom JSON error message."
+      example: "if (!$student = Student::find($id)) { return response()->json(['message' => 'Not found'], 404); }"
+      source: "laravel_with_sqlite_API_SCRIPT.docx"
+      bloom: analyze

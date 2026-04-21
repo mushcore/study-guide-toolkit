@@ -1,0 +1,70 @@
+- id: model-relationships
+  name: "Eloquent Relationships"
+  tags: [eloquent, relationships, laravel]
+  prose: "Eloquent's hasMany() and belongsTo() declare a one-to-many relationship between two models. Declaring them once unlocks relationship-aware querying, creation, and ownership checks throughout your controllers."
+
+  cards:
+
+    - type: name
+      prompt: "What Eloquent method do you add to the parent model (e.g. User) to declare it has many child records (e.g. Org)?"
+      answer: "hasMany()"
+      explanation: "hasMany() is placed on the parent side of a one-to-many relationship. It tells Eloquent to look for a foreign key on the child table named after the parent model (e.g. user_id on the orgs table)."
+      example: "public function orgs() { return $this->hasMany(Org::class); }"
+      source: "auth-with-breeze_SQLite_SCRIPT.docx §Eloquent Relationships"
+      bloom: remember
+
+    - type: name
+      prompt: "What Eloquent method do you add to the child model (e.g. Org) to declare it belongs to a parent (e.g. User)?"
+      answer: "belongsTo()"
+      explanation: "belongsTo() is placed on the child side. It lets you traverse from a child record up to its parent: $org->user returns the related User model. The method name should be singular (user, not users)."
+      example: "public function user() { return $this->belongsTo(User::class); }"
+      source: "auth-with-breeze_SQLite_SCRIPT.docx §Eloquent Relationships"
+      bloom: remember
+
+    - type: cloze
+      prompt: "To fetch all orgs for the currently logged-in user via the relationship chain, you write: {{Auth::user()->orgs()}}->latest('updated_at')->get();"
+      answer: "Auth::user()->orgs()"
+      explanation: "Auth::user() returns the authenticated User model. Calling orgs() on it (with parentheses) returns a query builder scoped to that user's orgs via the hasMany relationship. You can chain further constraints before calling get()."
+      example: "$orgs = Auth::user()->orgs()->latest('updated_at')->get();"
+      source: "auth-with-breeze_SQLite_SCRIPT.docx §Query & Save relationships"
+      bloom: apply
+
+    - type: cloze
+      prompt: "The whereBelongsTo() shorthand for fetching the current user's orgs is: Org::{{whereBelongsTo(Auth::user())}}->latest('updated_at')->get();"
+      answer: "whereBelongsTo(Auth::user())"
+      explanation: "whereBelongsTo() filters a query to records whose foreign key matches the given model instance. It is the most readable form and requires the belongsTo relationship to be declared on Org. It replaces Org::where('user_id', Auth::id())."
+      example: "$orgs = Org::whereBelongsTo(Auth::user())->latest('updated_at')->get();"
+      source: "auth-with-breeze_SQLite_SCRIPT.docx §Query & Save relationships"
+      bloom: apply
+
+    - type: name
+      prompt: "In the ownership check pattern, what method compares two Eloquent model instances by primary key?"
+      answer: "is()"
+      explanation: "is() returns true when two model instances have the same primary key value. Used as: $org->user->is(Auth::user()). This is the canonical way to verify a resource belongs to the current user before allowing show/edit/delete."
+      example: "if (!$org->user->is(Auth::user())) { return abort(403); }"
+      source: "auth-with-breeze_SQLite_SCRIPT.docx §Query & Save relationships"
+      bloom: understand
+
+    - type: cloze
+      prompt: "When creating a new org through the relationship, you write Auth::user()->orgs()->{{create([...])}} — this automatically sets the {{user_id}} foreign key."
+      answer: "create([...]); user_id"
+      explanation: "Calling create() on a relationship query builder automatically injects the parent's primary key as the foreign key value. You never need to pass user_id manually. The Org model's $fillable array must still list all other attributes."
+      example: "Auth::user()->orgs()->create(['orgName' => $request->orgName, ...]);"
+      source: "auth-with-breeze_SQLite_SCRIPT.docx §Query & Save relationships"
+      bloom: apply
+
+    - type: name
+      prompt: "What migration column declaration creates the user_id foreign key with a referential constraint on the users table?"
+      answer: "$table->foreignId('user_id')->constrained()"
+      explanation: "foreignId() creates an unsigned big integer column. constrained() adds the foreign key constraint that references the id column of the users table (inferred from the column name). Without this, relationship queries return empty results with no error."
+      example: "Schema::create('orgs', function (Blueprint $table) { $table->foreignId('user_id')->constrained(); });"
+      source: "auth-with-breeze_SQLite_SCRIPT.docx §Database Model"
+      bloom: remember
+
+    - type: name
+      prompt: "What is the key difference between accessing $org->user (property) vs $org->user() (method call) on an Eloquent model?"
+      answer: "Property returns a cached model; method returns a query builder you can chain."
+      explanation: "Accessing a relationship as a property (no parentheses) triggers lazy loading and returns the related model or collection directly. Calling it as a method (with parentheses) returns a query builder, allowing you to chain where(), latest(), paginate(), etc. Using the property form and then chaining query methods causes a fatal error."
+      example: "$org->user           // returns User model (cached)\n$org->user()->first() // query builder form"
+      source: "auth-with-breeze_SQLite_SCRIPT.docx §Query & Save relationships"
+      bloom: understand

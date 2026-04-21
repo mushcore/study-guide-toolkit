@@ -1,0 +1,149 @@
+topics:
+  - id: rest-api-design
+    name: "REST API design in Laravel"
+    tags: [rest, api, json, http-methods, laravel, resource-controller]
+    prose: >
+      Laravel's resource controller maps HTTP verbs to controller methods through
+      Route::resource(). A working API requires route registration, validation,
+      $fillable on the model, proper JSON responses, and 404 handling.
+    source: "laravel_with_sqlite_API_SCRIPT.docx"
+    cards:
+
+      - id: rest-api-card-01
+        type: cloze
+        prompt: >
+          To register all five RESTful routes for a StudentsController, add
+          {{Route::resource('students', StudentsController::class)}} to routes/api.php.
+        answer: "Route::resource('students', StudentsController::class)"
+        explanation: >
+          Route::resource() maps GET, POST, PUT, and DELETE verbs to index, store,
+          show, update, and destroy methods in one declaration, eliminating five
+          separate Route:: calls.
+        example: |
+          // Replaces these five individual routes:
+          Route::get('students', [StudentsController::class, 'index']);
+          Route::post('students', [StudentsController::class, 'store']);
+          // ... etc.
+          // With this single line:
+          Route::resource('students', StudentsController::class);
+        source: "laravel_with_sqlite_API_SCRIPT.docx"
+        bloom: remember
+
+      - id: rest-api-card-02
+        type: name
+        prompt: >
+          Which HTTP status code should store() return when a new resource is
+          successfully created, and how do you set it with response()->json()?
+        answer: "201 — pass it as the second argument: response()->json($data, 201)"
+        explanation: >
+          201 Created signals that a new resource was created (not merely
+          retrieved). Returning 200 on a POST is technically incorrect and
+          misleads API consumers who inspect status codes.
+        example: |
+          return response()->json($student, 201);
+          // vs. returning 200 (default, wrong for store()):
+          return response()->json($student);
+        source: "laravel_with_sqlite_API_SCRIPT.docx"
+        bloom: understand
+
+      - id: rest-api-card-03
+        type: cloze
+        prompt: >
+          Without a {{$fillable}} array on an Eloquent model, calling
+          Student::create([...]) throws a MassAssignmentException.
+        answer: "$fillable"
+        explanation: >
+          $fillable is a whitelist of attributes that may be set via mass
+          assignment (create() or fill()). Laravel blocks all other attributes
+          to prevent accidental or malicious data injection.
+        example: |
+          // app/Models/Student.php
+          protected $fillable = [
+              'FirstName',
+              'LastName',
+              'School',
+          ];
+        source: "laravel_with_sqlite_API_SCRIPT.docx"
+        bloom: understand
+
+      - id: rest-api-card-04
+        type: name
+        prompt: >
+          What does findOrFail($id) return when the record does not exist in
+          the database?
+        answer: "It throws a ModelNotFoundException, which Laravel converts to a 404 response."
+        explanation: >
+          findOrFail() eliminates the manual if (!$model) check. The thrown
+          ModelNotFoundException is caught by Laravel's exception handler and
+          converted to an HTTP 404 response automatically.
+        example: |
+          // Idiomatic:
+          $student = Student::findOrFail($id); // 404 if missing
+          // Verbose equivalent:
+          $student = Student::find($id);
+          if (!$student) {
+              return response()->json(['message' => 'Not found'], 404);
+          }
+        source: "laravel_with_sqlite_API_SCRIPT.docx"
+        bloom: understand
+
+      - id: rest-api-card-05
+        type: predict
+        lang: php
+        prompt: >
+          This store() method is called with a POST body missing the 'School'
+          field. What HTTP status code does Laravel return?
+        code: |
+          public function store(Request $request)
+          {
+              $request->validate([
+                  'FirstName' => 'required',
+                  'LastName'  => 'required',
+                  'School'    => 'required',
+              ]);
+              $student = Student::create([...]);
+              return response()->json($student, 201);
+          }
+        answer: "422 Unprocessable Entity — validate() halts execution and Laravel returns a JSON error body listing the failed 'School' rule."
+        explanation: >
+          $request->validate() throws a ValidationException when any rule
+          fails. Laravel's exception handler converts it to a 422 response with
+          a structured JSON body — no additional code is required in the
+          controller.
+        source: "laravel_with_sqlite_API_SCRIPT.docx"
+        bloom: apply
+
+      - id: rest-api-card-06
+        type: name
+        prompt: >
+          Where in a Laravel project is CORS configured, and what does the
+          default wildcard value allow?
+        answer: "config/cors.php — the default allowed_origins: ['*'] permits requests from any origin for all HTTP methods."
+        explanation: >
+          Laravel includes HandleCors middleware by default. The wildcard is
+          fine for development but should be narrowed to specific domains in
+          production. After changing config/cors.php, run php artisan
+          config:clear to invalidate the cache.
+        example: |
+          // config/cors.php
+          'allowed_origins' => ['*'],  // allow any origin
+          'allowed_methods' => ['*'],  // allow any HTTP method
+        source: "laravel_with_sqlite_API_SCRIPT.docx"
+        bloom: understand
+
+      - id: rest-api-card-07
+        type: cloze
+        prompt: >
+          The Artisan command to create an API resource controller for the
+          Student model is: php artisan {{make:controller api/StudentsController --api --model=Student}}.
+        answer: "make:controller api/StudentsController --api --model=Student"
+        explanation: >
+          --api omits create() and edit() (which render HTML forms, not
+          useful in a JSON API). --model=Student injects route-model binding
+          into the scaffolded methods automatically.
+        example: |
+          php artisan make:controller api/StudentsController --api --model=Student
+          # Creates: app/Http/Controllers/api/StudentsController.php
+          # Scaffolds: index, store, show, update, destroy
+        source: "laravel_with_sqlite_API_SCRIPT.docx"
+        bloom: remember

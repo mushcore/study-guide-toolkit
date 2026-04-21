@@ -84,7 +84,7 @@ The pipeline has two phases:
 Place raw materials under `courses/COMP{ID}/materials/`. Produce the seven canonical files under `content/{ID}/` following the schema in `content/SCHEMA.md` and the pedagogical contract in `content/STANDARDS.md`.
 
 **Phase B — compile and register.**
-Run `npm run build-content`, wire three hardcoded touchpoints in `scripts/build-content.js`, `content/_dist/_aggregator.js`, and `app/src/main.jsx`, then verify with `npm run build`.
+Run `npm run build-content`, wire two hardcoded touchpoints in `scripts/build-content.js` and `app/src/main.jsx`, then verify with `npm run build`. (`_aggregator.js` auto-derives course ids from `window.CONTENT` — no edit needed.)
 
 ### Claude Code skills
 

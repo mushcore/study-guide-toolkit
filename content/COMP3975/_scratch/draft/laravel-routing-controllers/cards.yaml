@@ -1,0 +1,162 @@
+- id: laravel-routing-controllers
+  name: "Routes and Resource Controllers"
+  tags: [laravel, routing, controllers]
+  prose: >
+    Laravel's resource routing maps HTTP verbs to controller methods by
+    convention. Route::apiResource() registers five endpoints with one line,
+    binding GET/POST/PUT/DELETE to index, store, show, update, and destroy.
+    Middleware chains protect routes; route caching optimises production
+    performance but must be cleared after every routing change.
+  cards:
+    - id: routing-card-01
+      type: cloze
+      prompt: >
+        To register all five RESTful API routes for a StudentsController in
+        one line, write:
+        {{Route::apiResource('students', StudentsController::class)}}.
+      answer: "Route::apiResource('students', StudentsController::class)"
+      explanation: >
+        Route::apiResource() binds GET /students → index, POST /students →
+        store, GET /students/{id} → show, PUT /students/{id} → update, and
+        DELETE /students/{id} → destroy. It omits create and edit because
+        those return HTML forms a JSON API never needs.
+      example: |
+        ```php
+        // routes/api.php
+        Route::apiResource('students', StudentsController::class);
+        ```
+      source: "laravel_with_sqlite_API_SCRIPT.docx"
+      bloom: apply
+
+    - id: routing-card-02
+      type: name
+      prompt: >
+        Route::resource() registers 7 methods. Route::apiResource() registers
+        only 5. Which two methods does apiResource() drop, and why?
+      answer: "create and edit — they return HTML forms, which a JSON API does not need"
+      explanation: >
+        create() serves the "new item" HTML form; edit() serves the "edit
+        item" HTML form. Stateless JSON APIs never render forms, so Laravel
+        excludes these two methods when you use apiResource().
+      example: |
+        ```php
+        // web.php — 7 methods including create and edit
+        Route::resource('posts', PostController::class);
+
+        // api.php — 5 methods, no create or edit
+        Route::apiResource('posts', PostController::class);
+        ```
+      source: "laravel_with_sqlite_API_SCRIPT.docx"
+      bloom: understand
+
+    - id: routing-card-03
+      type: cloze
+      prompt: >
+        The 5 controller method names bound by Route::apiResource() are:
+        {{index}}, {{store}}, {{show}}, {{update}}, and {{destroy}}.
+      answer: "index, store, show, update, destroy"
+      explanation: >
+        Each name maps to a specific HTTP verb and URL pattern. index = GET
+        /resource; store = POST /resource; show = GET /resource/{id}; update
+        = PUT /resource/{id}; destroy = DELETE /resource/{id}. Memorise the
+        names exactly — Laravel's scaffolding, Sanctum, and form requests all
+        assume this convention.
+      example: |
+        ```php
+        // Generated stub from: php artisan make:controller api/StudentsController --api
+        public function index()   { /* GET /api/students */ }
+        public function store()   { /* POST /api/students */ }
+        public function show()    { /* GET /api/students/{id} */ }
+        public function update()  { /* PUT /api/students/{id} */ }
+        public function destroy() { /* DELETE /api/students/{id} */ }
+        ```
+      source: "laravel_with_sqlite_API_SCRIPT.docx"
+      bloom: remember
+
+    - id: routing-card-04
+      type: name
+      prompt: >
+        You add ->middleware(['auth:sanctum']) to a resource route and deploy.
+        Authenticated requests still reach the controller without a token.
+        What is the most likely cause?
+      answer: "A stale route cache — run php artisan route:clear"
+      explanation: >
+        php artisan route:cache compiles all routes to a single PHP file.
+        Until you clear that file with php artisan route:clear, Laravel serves
+        the cached route table regardless of changes to route files. The
+        middleware addition is correct but invisible until the cache is
+        invalidated.
+      example: |
+        ```bash
+        # After any routing or middleware change:
+        php artisan route:clear
+        # Optional: rebuild cache for production
+        php artisan route:cache
+        ```
+      source: "laravel_with_sqlite_API_SCRIPT.docx"
+      bloom: apply
+
+    - id: routing-card-05
+      type: cloze
+      prompt: >
+        API routes live in {{routes/api.php}} and are automatically prefixed
+        with {{/api/}}. Web routes live in {{routes/web.php}} and apply
+        session state and CSRF protection.
+      answer: "routes/api.php; /api/; routes/web.php"
+      explanation: >
+        Laravel splits routing into two files by middleware group. The api
+        group (routes/api.php) is stateless and rate-limited; every URI is
+        reachable at /api/{uri}. The web group (routes/web.php) uses sessions
+        and cookies. Putting a REST endpoint in web.php will break stateless
+        clients that do not send a CSRF token.
+      example: |
+        ```php
+        // routes/api.php
+        // Accessible at: http://localhost:8888/api/students
+        Route::apiResource('students', StudentsController::class);
+        ```
+      source: "laravel_with_sqlite_API_SCRIPT.docx"
+      bloom: understand
+
+    - id: routing-card-06
+      type: predict
+      lang: php
+      prompt: >
+        You run: Route::apiResource('students', StudentsController::class)
+        ->only(['index', 'store']);
+        A client sends DELETE /api/students/5. What does Laravel return?
+      code: |
+        // routes/api.php
+        Route::apiResource('students', StudentsController::class)
+            ->only(['index', 'store']);
+
+        // Client request:
+        // DELETE /api/students/5
+      answer: "404 Not Found — the destroy route was not registered by ->only(['index', 'store'])"
+      explanation: >
+        ->only() whitelists exactly the named controller methods. Any HTTP
+        verb or URL that does not match a registered route returns 404.
+        This is intentional: it prevents accidental exposure of endpoints
+        that have no controller logic.
+      source: "laravel_with_sqlite_API_SCRIPT.docx"
+      bloom: apply
+
+    - id: routing-card-07
+      type: name
+      prompt: >
+        What Artisan command scaffolds a resource controller bound to a model,
+        omitting the create and edit method stubs?
+      answer: "php artisan make:controller api/StudentsController --api --model=Student"
+      explanation: >
+        --api tells Artisan to generate only the 5 API method stubs (no
+        create/edit). --model=Student binds route model injection so Laravel
+        automatically resolves the Student model from the {student} route
+        parameter.
+      example: |
+        ```bash
+        php artisan make:controller api/StudentsController --api --model=Student
+        # Generates: app/Http/Controllers/api/StudentsController.php
+        # with stubs: index, store, show, update, destroy
+        ```
+      source: "laravel_with_sqlite_API_SCRIPT.docx"
+      bloom: apply

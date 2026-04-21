@@ -52,7 +52,7 @@ All persistence is `localStorage` under the `sgv2:` prefix (`sgv2:conf`, `sgv2:l
 ### Content schema
 Canonical spec: `../content/SCHEMA.md`. Source of truth for the shape of `course.yaml`, `flashcards.yaml`, `mock-exam.yaml`, `lessons/*.md`, `code-practice/*.md`, `topic-dives/*.md`, `cheat-sheet.md`. The build pipeline is: schema → `scripts/build-content.js` → consumers. Any schema change must update all three.
 
-Four course IDs are hard-coded throughout (`4736`, `4870`, `4911`, `4915`) — in `main.jsx` imports, `_aggregator.js` ids array, and `scripts/build-content.js` COURSES constant. Adding/removing a course requires touching all three.
+Two touchpoints require manual updates when adding/removing a course: `main.jsx` (side-effect import) and `scripts/build-content.js` (COURSES array). `_aggregator.js` auto-derives ids from `Object.keys(window.CONTENT)`.
 
 **Adding a new course end-to-end** (raw materials → live in the app): see `../ADD-NEW-COURSE.md`. That doc is the canonical pipeline and consolidates the teaching / formatting standards (SuperMemo 20 rules, Bloom's progression, worked-example transparency, peer-shareability + teaching-craft rubrics) that every generated artifact must follow.
 

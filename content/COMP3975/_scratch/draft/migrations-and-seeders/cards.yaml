@@ -1,0 +1,77 @@
+- id: migrations-and-seeders
+  name: "Migrations and Seeders"
+  tags: [laravel, migrations, seeders, database-schema]
+  prose: "Migrations are PHP classes that define and version your database schema. Seeders populate tables with sample data. Together they let you rebuild a clean, consistent database with a single Artisan command."
+  cards:
+
+    - type: cloze
+      prompt: "To create a Student model and its migration at the same time, run: `php artisan make:model Student {{-m}}`."
+      answer: "-m"
+      explanation: "The -m flag tells Artisan to generate a migration file alongside the model. Without it you only get the model class and must create the migration separately."
+      example: "Running `php artisan make:model Student -m` produces `app/Models/Student.php` and a timestamped file in `database/migrations/`."
+      source: "laravel_with_students_MySQL_SCRIPT.docx"
+      bloom: remember
+
+    - type: cloze
+      prompt: "To apply all pending migrations to the database, run: `php artisan {{migrate}}`."
+      answer: "migrate"
+      explanation: "Laravel compares each migration file's timestamp against the `migrations` table in the database and runs only the files that have not been applied yet."
+      example: "After adding `$table->string('School');` to a new migration file, `php artisan migrate` creates the column in the live database."
+      source: "laravel_with_students_MySQL_SCRIPT.docx"
+      bloom: remember
+
+    - type: cloze
+      prompt: "The command `php artisan migrate:refresh {{--seed}}` drops all tables, re-runs every migration, and then runs all registered seeders."
+      answer: "--seed"
+      explanation: "The --seed flag causes Artisan to call DatabaseSeeder::run() after the refresh completes. Without it, migrate:refresh only rebuilds the schema with no data."
+      example: "During development, `php artisan migrate:refresh --seed` resets the students table and repopulates it via StudentSeeder."
+      source: "laravel_with_students_MySQL_SCRIPT.docx; laravel_with_sqlite_API_SCRIPT.docx"
+      bloom: remember
+
+    - type: name
+      prompt: "A PHP class in `database/migrations/` with `up()` and `down()` methods that defines a database schema change — what is it called?"
+      answer: "A migration"
+      explanation: "Migrations version your schema the same way git versions code. The `up()` method applies the change; `down()` reverses it, enabling rollback."
+      example: "`Schema::create('students', function (Blueprint $table) { $table->id(); $table->string('FirstName'); });` is a typical `up()` body."
+      source: "laravel_with_students_MySQL_SCRIPT.docx"
+      bloom: understand
+
+    - type: name
+      prompt: "Which Artisan command creates a new seeder class file in `database/seeders/`?"
+      answer: "`php artisan make:seeder StudentSeeder`"
+      explanation: "The generated class has an empty `run()` method where you write the insert logic. It does nothing until you register it in DatabaseSeeder and run `db:seed` or `migrate:refresh --seed`."
+      example: "`php artisan make:seeder StudentSeeder` produces `database/seeders/StudentSeeder.php` with a `run(): void` stub."
+      source: "laravel_with_students_MySQL_SCRIPT.docx"
+      bloom: remember
+
+    - type: name
+      prompt: "In `DatabaseSeeder.php`, what method call registers a custom seeder so it runs automatically during `php artisan migrate:refresh --seed`?"
+      answer: "`$this->call(StudentSeeder::class);`"
+      explanation: "DatabaseSeeder is the entry point for all seeding. Without this registration, your custom seeder never fires even if the file exists."
+      example: "Adding `$this->call(StudentSeeder::class);` inside DatabaseSeeder's `run()` method means StudentSeeder fires every time you seed."
+      source: "laravel_with_students_MySQL_SCRIPT.docx; laravel_with_sqlite_API_SCRIPT.docx"
+      bloom: understand
+
+    - type: cloze
+      prompt: "A migration's `{{up()}}` method defines the schema change to apply, while its `{{down()}}` method defines how to reverse it."
+      answer: "up(), down()"
+      explanation: "Laravel uses `down()` when you roll back a migration. Without a correct `down()`, rollback either fails or leaves orphan tables."
+      example: "A `down()` that calls `Schema::dropIfExists('students')` cleanly removes the table on rollback."
+      source: "laravel_with_students_MySQL_SCRIPT.docx"
+      bloom: understand
+
+    - type: predict
+      lang: php
+      prompt: "What table does this migration create, and which columns does it add beyond the defaults?"
+      code: |
+        Schema::create('students', function (Blueprint $table) {
+            $table->id();
+            $table->string('FirstName');
+            $table->string('LastName');
+            $table->string('School');
+            $table->timestamps();
+        });
+      answer: "Creates the `students` table with columns: `id` (auto-increment PK), `FirstName` (VARCHAR 255), `LastName` (VARCHAR 255), `School` (VARCHAR 255), `created_at`, and `updated_at`. The developer added FirstName, LastName, School; the rest come from the builder helpers."
+      explanation: "`$table->id()` and `$table->timestamps()` are always present in the scaffold. You only write the domain-specific columns like FirstName, LastName, School."
+      source: "laravel_with_students_MySQL_SCRIPT.docx"
+      bloom: apply

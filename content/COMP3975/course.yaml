@@ -1,0 +1,10 @@
+id: "COMP3975"
+code: "COMP 3975"
+name: "Server-Side Web Scripting"
+exam: "2026-04-23T10:30:00-07:00"
+room: "— see course page"
+format: "60 MCQ + 10 match-two-columns + 1 coding · 80 marks · 60 min"
+instructor: "Medhat Elmasry"
+notes: |
+  One handwritten cheat sheet (8.5×11", both sides) allowed.
+  Covers Weeks 7–13 (Laravel, JWT, Swagger, Localization, MCP, Azure Static Web Apps).

@@ -356,7 +356,7 @@ Wait.
 
 1. Full `/audit-content {id}`. Close every remaining critical. Warnings ship-blocking, advisories defer.
 2. Verify cheat-sheet blocks all filled (no empty `##` headings).
-3. Invoke `/add-course {id}` — it re-runs audit preflight, compiles the bundle, wires the three touchpoints (`scripts/build-content.js`, `content/_dist/_aggregator.js`, `app/src/main.jsx`), verifies `npm run build`.
+3. Invoke `/add-course {id}` — it re-runs audit preflight, compiles the bundle, wires the two touchpoints (`scripts/build-content.js`, `app/src/main.jsx`), verifies `npm run build`.
 4. Report final status: course id, bundle counts, touchpoints modified, audit warning/advisory counts for the user's follow-up list.
 
 Tell the user the next manual step: `cd app && npm run dev`, smoke-test dashboard + every subview, then `./deploy.sh`.
