@@ -3,8 +3,8 @@
 // Runs after the per-course bundle scripts; runs before state.js + JSX.
 
 (function () {
-  const ids = ['4736', '4870', '4911', '4915', '3522'];
   const C = window.CONTENT || {};
+  const ids = Object.keys(C);
 
   // window.COURSES — one Course object per id, flashcard modules attached.
   window.COURSES = ids.filter(id => C[id]).map(id => ({
