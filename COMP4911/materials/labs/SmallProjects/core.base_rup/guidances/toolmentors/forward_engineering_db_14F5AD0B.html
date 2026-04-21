@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Forward Engineering Databases Using Rational XDE Developer</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="forward_engineering_db">
+<meta name="uma.presentationName" content="Forward Engineering Databases Using Rational XDE Developer">
+<meta name="uma.category" content="Tool:rup_xde:Rational XDE Developer">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational XDE Developer">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_qS-iwAIOEdqTna4sZVFRow", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{F55D370E-F820-4646-A0B8-C2242A07A83F}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_U5tiUAISEdqTna4sZVFRow", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{F55D370E-F820-4646-A0B8-C2242A07A83F}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{F55D370E-F820-4646-A0B8-C2242A07A83F}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{F55D370E-F820-4646-A0B8-C2242A07A83F}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{F55D370E-F820-4646-A0B8-C2242A07A83F}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Forward Engineering Databases Using Rational XDE Developer</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes the use of forward engineering in the Rational XDE Developer software tool to generate a database schema or DDL script file from an existing Rational XDE Data Model.</td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_xde_D81FFA70.html" guid="{303A82D2-E3AB-4501-8563-0D4D43782AF9}">Rational XDE Developer</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/database_design_8552DD3.html" guid="{2E74A414-49F5-4F27-BFCB-AA2DAC675F58}">Database Design</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><h3>
+    Overview
+</h3>
+<p>
+    The following steps are performed in this tool mentor:
+</p>
+<ul>
+    <li>
+        <a href="#Set Model Properties">Set Model Properties</a>
+    </li>
+    <li>
+        <a href="#Forward Engineer Database">Forward Engineer Data Model to a Database</a>
+    </li>
+    <li>
+        <a href="#MoreInfo">Manage Changes to the Model and Database</a>
+    </li>
+</ul>
+<h3>
+    <a id="Set Model Properties" name="Set Model Properties">Set Model Properties</a>
+</h3>
+<p>
+    Two types of model properties must be set to enable forward engineering of the Data Model to create a database or Data
+    Definition Language (DDL) file.&nbsp;These properties are:
+</p>
+<ul>
+    <li>
+        Default Database Target Database Management System (DBMS) (see <img alt="helpbook icon"         src="./../../../core.base_rup/resources/helpbook.gif" /><i>Setting the Default Database Target</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_t_set_default_db_target"); -->)
+    </li>
+    <li>
+        Default Database Assignment (see <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Setting the
+        Default Database Assignment</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_t_set_default_db_assign"); -->)
+    </li>
+</ul>
+<p>
+    Rational XDE supports forward engineering to the ANSI SQL 92 standard and to the database management systems (DBMS)
+    listed in the Rational XDE online Help topic <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Databases
+    Supported in Rational XDE</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_r_db_support"); -->.
+</p>
+<p>
+    Reference: <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Setting Data Modeling Options</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_o_mdl_data_pref"); -->.
+</p>
+<h3>
+    <a id="Forward Engineer Database" name="Forward Engineer Database">Forward Engineer Data Model to a Database</a>&nbsp;
+</h3>
+<p>
+    Rational XDE can be used to forward engineer a Data Model to a new database schema or a new DDL file. You can forward
+    engineer individual tables or an entire Data Model. Reference: <img alt="helpbook icon"     src="./../../../core.base_rup/resources/helpbook.gif" /><i>Database and DDL Generation</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_c_fe_overview"); -->You initiate the
+    forward-engineering process using the data modeling <b>Forward Engineering Wizard</b> provided by Rational XDE. (See
+    <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Generating Databases or DDLs</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_t_fe_db_ddl"); -->.) &nbsp;
+</p>
+<p>
+    Whether you decide to only generate a DDL or to execute the DDL to create a database, Rational XDE creates a DDL file
+    for you in the directory that you specify in the wizard. The elements that Rational XDE includes in the
+    forward-engineering process depend upon the options that you selected in the <b>Forward Engineering Wizard</b>. All
+    elements or DDL scripts are generated according to the specified DBMS. Refer to the following Rational XDE online Help
+    topics for specifics on the different types of supported DBMS:
+</p>
+<ul>
+    <li>
+        <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>DB2 Database and DDL Generation</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_c_fe_db2_db"); -->
+    </li>
+    <li>
+        <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Oracle Database and DDL Generation</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_c_fe_oracle_db"); -->
+    </li>
+    <li>
+        <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>SQL Server Database and DDL Generation</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_c_fe_sqlsrv_db"); -->
+    </li>
+    <li>
+        <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Sybase Database and DDL Generation</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_c_fe_sybase_db"); -->
+    </li>
+</ul>
+<p>
+    If you forward engineer an ANSI SQL 92 Data Model, Rational XDE generates a DBMS-independent DDL. You can use the
+    database tool of your choice to execute this DDL.
+</p>
+<p>
+    In order to perform the forward engineering of the database, Rational XDE must establish a connection to the
+    appropriate DBMS. See <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Connecting to Database
+    Management Systems</i> 
+    <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_o_connect_dbms"); -->&nbsp;for more
+    information on establishing database connections. Refer to the following Rational XDE online Help topics for
+    information on establishing connections for a specific DBMS type:
+</p>
+<ul>
+    <li>
+        <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Oracle Database Connections</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_c_oracle_db_connect"); -->
+    </li>
+    <li>
+        <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>SQL Server Database Connections</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_c_sqlsrv_db_connect"); -->
+    </li>
+    <li>
+        <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Sybase Database Connections</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_c_sybase_db_connect"); -->
+    </li>
+    <li>
+        <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>DB2 Database Connections</i> 
+        <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_c_db2_db_connect"); -->
+    </li>
+</ul>
+<h3>
+    <a id="MoreInfo" name="MoreInfo">Manage Changes to the Model and Database</a>
+</h3>
+<p>
+    After the database or DDL has been created, the changes to the Data Model and generated database must be controlled and
+    managed.&nbsp;Rational XDE provides a Compare and Synchronize feature to assist the database designer in managing
+    change. Reference: <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /><i>Comparing and Synchronizing in Data
+    Modeling</i> <!--  Temporarily removed Javascript - ReferenceHelpTopic(topicTitle,"dm","dm_o_gen_dm_cmpsync"); -->, <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/toolmentors/managing_db_ACA9AB6E.html" guid="{3B09E5BE-4AC8-4206-B9D8-4F85D36B9C75}">Tool Mentor: Managing Databases in Rational XDE</a>.
+</p></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><table width="100%" border="0">
+    <tbody>
+        <tr>
+            <td valign="center" align="left">
+                <a href="http://www.appliedis.com" target="_blank"><img alt="Applied Information Sciences icon"                 src="./../../../core.base_rup/guidances/supportingmaterials/resources/appliedis.gif" border="0" /></a>
+            </td>
+            <td valign="center" align="left" width="86%">
+                <font face="Arial"><small><small>This content developed or partially developed by <a href="http://www.appliedis.com" target="_blank">Applied Information Sciences</a>.</small></small></font>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

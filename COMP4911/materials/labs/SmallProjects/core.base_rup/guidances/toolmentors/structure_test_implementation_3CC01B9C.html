@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Structuring the Test Implementation with Rational TestFactory</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="structure_test_implementation">
+<meta name="uma.presentationName" content="Structuring the Test Implementation with Rational TestFactory">
+<meta name="uma.category" content="Tool:rup_test_factory:Rational TestFactory">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational TestFactory">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{AD403709-9F1A-496A-B5F7-F7CF823F8BDD}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_9U7IkDIEEdqwaNnSEheSAg", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{AD403709-9F1A-496A-B5F7-F7CF823F8BDD}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{AD403709-9F1A-496A-B5F7-F7CF823F8BDD}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{AD403709-9F1A-496A-B5F7-F7CF823F8BDD}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Structuring the Test Implementation with Rational TestFactory</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to use Rational TestFactory to begin structuring the test implementation to enable generated tests to be implemented. </td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_test_factory_3EDA2115.html" guid="{FBA5098E-2CA8-483D-814D-DE3E876426B1}">Rational TestFactory</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    Overview
+</h3>
+<p>
+    In Rational TestFactory, you start to structure the test implementation using the "application map" feature.
+</p>
+<p>
+    A well-developed application map reflects an accurate representation of the user interface in the
+    application-under-test (AUT). Each window and control in the AUT is represented by a "UI object" in the application
+    map. For information about developing the application map, see <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/toolmentors/setup_testfactory_C77C34F4.html" guid="{FAC387D8-BA1A-4056-A53B-E1C43571D1DC}">Tool Mentor: Setting Up the Test Environment in Rational TestFactory</a>.
+</p>
+<p>
+    This tool mentor is applicable when running Windows 98/2000/NT 4.0.
+</p>
+<p>
+    To use Rational TestFactory to capture the results of the test model for automated testing:
+</p>
+<ol>
+    <li>
+        <a href="#ID test locations">Identify the parts of the application that you want to test</a>
+    </li>
+    <li>
+        <a href="#Set up interaction objects">Set up interaction objects to reflect Test Script requirements</a>
+    </li>
+    <li>
+        <a href="#Supply test data">Supply Test Data for objects that represent text controls</a>
+    </li>
+    <li>
+        <a href="#Restrict object testing">Restrict testing of specific objects</a>
+    </li>
+</ol>
+<h3>
+    1.&nbsp;&nbsp; <a id="ID test locations" name="ID test locations">Identify the parts of the application that you want
+    to test</a>
+</h3>
+<p>
+    After you have developed the application map, you can determine the areas of the AUT that are appropriate for testing
+    in Rational TestFactory.
+</p>
+<p>
+    A "Pilot" is the Rational TestFactory tool that automatically generates test scripts. The locations at which you place
+    Pilots in the application map determine the controls in the AUT that they can test. A Pilot can test all the available
+    UI objects in the map that are in the branch under the Pilot's parent object. If a control is represented by a UI
+    object in that branch of the map and the object is available, the Pilot will test it.
+</p>
+<p>
+    Review the test procedures created during the Design Test task, with the objective of identifying:
+</p>
+<ul>
+    <li>
+        The controls that must be exercised in a specific order.
+    </li>
+    <li>
+        The controls for which Test Data must be provided.
+    </li>
+    <li>
+        The windows or dialog boxes in which the controls are displayed.
+    </li>
+</ul>
+<p>
+    The UI objects in the application map that correspond to the windows, dialog boxes, and controls that you identify are
+    good candidates for testing by Pilots in Rational TestFactory. You can specify how TestFactory must test a control in
+    the AUT by setting the property values of its corresponding UI object.
+</p>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;&nbsp; Refer to the following
+    topics in Rational TestFactory Help:
+</p>
+<p>
+    <i>Pilots: What they are and how they work</i>
+</p>
+<p>
+    <i>Effective Pilot placement</i>
+</p>
+<h3>
+    2.&nbsp;&nbsp; <a id="Set up interaction objects" name="Set up interaction objects">Set up interaction objects to
+    reflect Test Script requirements</a>
+</h3>
+<p>
+    A Test Script in which all the controls are located in the same window is a good candidate for testing in Rational
+    TestFactory. An "interaction object" is the TestFactory feature that lets you specify the Test Script interaction
+    method for such controls.
+</p>
+<p>
+    An interaction object is a container to which you can add one or more UI objects as "components." The interaction
+    object components represent the controls that need to be exercised to take a specific path or perform a specific task
+    in the AUT. After you add the components for the interaction, you can configure them to meet the Test Script
+    requirements.
+</p>
+<p>
+    If you have more than one Test Script that tests controls in the same window, you can specify the requirements for each
+    Test Script in a separate interaction object. The Pilot feature of TestFactory can test multiple interaction objects in
+    the same window during a single Test Suite execution or Pilot run.
+</p>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;&nbsp; Refer to the <i>Using
+    interaction objects to set up specific tests</i> topic in Rational TestFactory Help:
+</p>
+<h3>
+    3.&nbsp;&nbsp; <a id="Supply test data" name="Supply test data">Supply Test Data for objects that represent input
+    controls</a>
+</h3>
+<p>
+    The Pilot feature of TestFactory performs many tests on as many of the available UI objects as possible in the specific
+    area of the map to which it has access. By default, a Pilot exercises the objects in a random order, and supplies
+    random data values to objects that require input.
+</p>
+<p>
+    If there are controls in your Test Script that require specific Test Data as input, you can use a "data entry style" to
+    supply the necessary input information. A data entry style is a group of the UI object properties that specify test
+    input for a UI object:
+</p>
+<ul>
+    <li>
+        A required string case that a TestFactory Pilot must use.
+    </li>
+    <li>
+        A list of string cases that act as a datapool that a Pilot can pick from randomly.
+    </li>
+    <li>
+        A list of mask cases for which Rational TestFactory generates string values that a Pilot can pick from randomly.
+    </li>
+    <li>
+        Options that let a Pilot generate random integer, floating point, and string values.
+    </li>
+</ul>
+<p>
+    Rational TestFactory provides a set of predefined <i>system</i> data entry styles that reflect standard types of input.
+    You can create additional <i>custom</i> data entry styles that are based either on system styles or on existing custom
+    styles. You can also override the settings in a system style or a custom style for an individual object.
+</p>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;&nbsp; Refer to the <i>Using
+    data entry styles for input-type objects</i> topic in Rational TestFactory Help:
+</p>
+<h3>
+    4.&nbsp;&nbsp; <a id="Restrict object testing" name="Restrict object testing">Restrict testing of specific objects</a>
+</h3>
+<p>
+    By default, all the controls in the AUT that are represented by UI objects in the application map are eligible for
+    testing. If a Pilot encounters a UI object as it follows a path through the application map, the Pilot can include the
+    UI object in a generated Test Script. However, your AUT might contain mapped controls that you do not want Pilots to
+    test. Some examples are:
+</p>
+<ul>
+    <li>
+        An unstable control
+    </li>
+    <li>
+        A control whose functionality causes a destructive action<br />
+         (for example, a control that deletes a database)
+    </li>
+    <li>
+        A control that you do not want to test<br />
+         (for example, a print control or a control that opens Help)
+    </li>
+</ul>
+<p>
+    If your AUT contains such controls, you can exclude its associated UI object from testing. You can also limit the test
+    actions that a Pilot performs on a control. The properties of the UI object associated with a control reflect the
+    possible actions that a user can perform on the control.
+</p>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;&nbsp; Refer to the following
+    topics in Rational TestFactory Help:
+</p>
+<ul>
+    <li>
+        <i>Excluding UI objects from testing</i>
+    </li>
+    <li>
+        <i>Change UI object test actions</i>
+    </li>
+</ul></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

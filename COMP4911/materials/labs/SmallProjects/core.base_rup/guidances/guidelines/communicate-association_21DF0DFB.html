@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Guideline: Communicate-Association</title>
+<meta name="uma.type" content="Guideline">
+<meta name="uma.name" content="communicate-association">
+<meta name="uma.presentationName" content="Communicate-Association">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_N13eYAINEdq-_NKqZM1EhA", "_KVkLoN7HEdm8G6yT7-Wdqw", "{9C66F2EC-EDEB-4369-9AFB-04B9E7CBCB8E}", "4.1665593852713E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_EOvXUN7HEdm8G6yT7-Wdqw", "_KVkLoN7HEdm8G6yT7-Wdqw", "{9C66F2EC-EDEB-4369-9AFB-04B9E7CBCB8E}", "4.1665593852713E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_jijhYAIaEdqEutyfYo0quQ", "_mTMIkN7REdmjRZts2c4ZjQ", "{9C66F2EC-EDEB-4369-9AFB-04B9E7CBCB8E}", "4.1665593852713E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_2ClPcDIcEdqDs_9ORT1Rig", "4.1665593852713E-305"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="4.1665593852713E-305"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Guideline: Communicate-Association</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/guidance.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">A Communicate-Association models how Use cases and actors interact by sending signals to one another. This guideline explains how to use this relationship.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/find_actors_and_use_cases_1ACB35F0.html" guid="{3CD5FA7E-160C-4A39-9DEB-C6D162D8AECD}">Find Actors and Use Cases</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/workproducts/rup_usecase_model_EF15E534.html" guid="{9C66F2EC-EDEB-4369-9AFB-04B9E7CBCB8E}">Use-Case Model</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a><a id="XE_communicates-association__guidelines_for" name="XE_communicates-association__guidelines_for"></a> 
+<h3>
+    <a id="Explanation" name="Explanation">Explanation</a>
+</h3>
+<p>
+    Use cases and actors interact by sending signals to one another. To indicate such interactions we use a
+    <b>communicate-association</b> between use-case and actor. A use-case has at most one communicate-association to a
+    specific actor, and an actor has at most one communicate-association to a specific use-case, no matter how many signal
+    transmissions there are. The complete network of such associations is a static picture of the communication between the
+    system and its environment.
+</p>
+<p>
+    Communicate-associations are not given names. Because there can be only one communicate-association between a use-case
+    and an actor, you need only specify the start and end points to identify a particular communicate-association.
+</p>
+<p align="center">
+    <img height="140" alt="Diagram described in accompanying text." src="./../../../core.base_rup/guidances/guidelines/resources/comasso1.gif" width="214" />
+</p>
+<p class="picturetext">
+    A line or arrow between an actor and a use case indicates they interact by sending signals to one another.
+</p>
+<h3>
+    <a id="Roles" name="Roles">Roles</a>
+</h3>
+<p>
+    Each end of a communicate-association is a <b>role</b> specifying the face that a use case or actor plays in the
+    association<i>.</i> The roles are used to specify multiplicities and directions of the association (see below).
+</p>
+<h3>
+    <a id="Multiplicity" name="Multiplicity">Multiplicity</a>
+</h3>
+<p>
+    Each role of a communicate-association indicates the <b>multiplicity</b> of its type, that is, how many instances of
+    that actor or use case can be associated with one instance of the other use case or actor. Multiplicity is indicated by
+    a text expression on the role. The expression is a comma-separated list of integer ranges. A range is indicated by an
+    integer (the lower value), two dots, and an integer (the upper value); a single integer is a valid range, and the
+    symbol '*' indicates "many", that is, an unlimited number of objects. The symbol '*' by itself is equivalent to '0..*',
+    that is, any number including none; this is the default value. An optional scalar role has the multiplicity 0..1.
+</p>
+<p>
+    The multiplicity may be augmented with a time unit constraint. This is done to state how many instances that may be
+    associated, possibly by different instances, during the time unit. This information is useful since it can tell us if
+    the use case is performed often, and also how often each actor instance employs the use case.
+</p>
+<h5>
+    Example:
+</h5>
+<p align="center">
+    <img height="105" alt="Diagram described in accompanying text." src="./../../../core.base_rup/guidances/guidelines/resources/md_coma4.gif" width="450" />
+</p>
+<p class="picturetext">
+    The Conduct Transactions use case is used 400,000 times per day by Customers. Each Customer employs the use case two
+    times per month.
+</p>
+<h3>
+    <a id="Navigability" name="Navigability">Navigability</a>
+</h3>
+<p>
+    Each role of a communicate-association has a <b>navigability</b> property, indicating who initiates communication in
+    the interaction.&nbsp; Navigability is shown by an open arrowhead.&nbsp; If the arrowhead points to a use case, the
+    actor at the other end of the association initiates the interaction with the system.&nbsp; If the arrowhead points to
+    an actor, the system initiates the interaction with the actor.&nbsp; Two-way navigability is shown by a line with no
+    arrow-heads (two arrow-heads tends to clutter diagrams).
+</p>
+<p align="center">
+    <img height="211" alt="Diagram described in accompanying text." src="./../../../core.base_rup/guidances/guidelines/resources/comasso2.gif" width="446" />
+</p>
+<p class="picturetext">
+    The communication arrow defines the actor that initiated the use case. For each communication arrow the return message
+    is assumed. A line with no arrow heads assumes two-way communication.
+</p>
+<p>
+    Do not confuse navigability with data flow; i<span style="mso-bidi-font-family: 'Courier New'">t is used</span> <span     style="FONT-SIZE: 12pt; FONT-FAMILY: 'Times New Roman'; mso-bidi-font-family: 'Courier New'; mso-fareast-font-family: 'Times New Roman'; mso-ansi-language: EN-US; mso-fareast-language: EN-US; mso-bidi-language: AR-SA">to
+    show initiation of communication only.&nbsp; For example, a customer request for data is shown by an arrow to the use
+    case representing the system, even though most of the data flows from the system to the customer.</span>
+</p>
+<h3>
+    <a id="Communication from Actor to Use Case" name="Communication from Actor to Use Case">Communication from Actor to
+    Use Case</a> <a href="#Top"><img height="20" alt="To top of page" src="./../../../core.base_rup/resources/top.gif" width="26"     border="0" /></a>
+</h3>
+<p>
+    Actors communicate with the system by sending signals. To fully understand the role of the actor, you must know which
+    use cases the actor is involved in. This is shown by communicate-associations between the actor and the use cases.
+</p>
+<p>
+    The multiplicity of the association shows how many instances of a use case one instance of an actor can communicate
+    with at the same time.
+</p>
+<h5>
+    Example:
+</h5>
+<p class="example">
+    In the Recycling Machine System, each time an instance of the actor Customer hands in a deposit item, he sends a signal
+    to the associated instance of the use case Recycle Items. When the actor is finished, the use case prints out a
+    receipt. A Customer can communicate with only one instance of Recycle Items. Thus, the multiplicity of the association
+    is 1. The receipt returned from the system is considered here as a response from the use-case instance; thus, the
+    communicate-association needs no navigability in the other direction.
+</p>
+<p class="picturecenter" align="center">
+    <img height="68" alt="Diagram described in accompanying text." src="./../../../core.base_rup/guidances/guidelines/resources/md_coma2.gif" width="236" />
+</p>
+<p class="picturetext">
+    A Customer who wants to return deposit items into a recycling machine will communicate with the use case Recycle Items.
+</p>
+<p>
+    An actor communicates with use cases for many reasons, including:
+</p>
+<ul>
+    <li>
+        To invoke a use case. An actor instance always invokes a use-case instance.
+    </li>
+    <li>
+        To ask for some data stored in the system, which the use case then fetches and presents to the actor.
+    </li>
+    <li>
+        To change the data stored in the system by means of a dialog with the system.
+    </li>
+    <li>
+        To report that something special has happened in the system's surroundings that the system should take care of.
+    </li>
+</ul>
+<h3>
+    <a id="Communication from Use Case to Actor" name="Communication from Use Case to Actor">Communication from Use Case to
+    Actor</a>
+</h3>
+<p>
+    One actor initiates a use case. However, once it has started, the use case can communicate with several actors. You can
+    use communicate-associations between the use case and the actors to show which actors the use case communicates with.
+    The association's multiplicity shows how many instances of an actor one instance of a use case can communicate with at
+    the same time.
+</p>
+<p>
+    Use cases communicate with actors for many reasons, including:
+</p>
+<ul>
+    <li>
+        If something special has taken place in the system, an actor might need to know.
+    </li>
+    <li>
+        A use case may need to ask an actor for help in making a decision if several options are available.
+    </li>
+</ul>
+<p>
+    It is common, but not always true, that the use case waits for an answer when it has sent a signal to an actor. This
+    should be explicitly described in the use case.
+</p>
+<h3>
+    <a id="Optional Conventions" name="Optional Conventions">Optional Conventions</a>
+</h3>
+<p>
+    The following are common optional conventions which make it clear which actor initiates the use case.
+</p>
+<ul>
+    <li>
+        <span style="mso-bidi-font-family: Courier New">The initiating actor-to-use-case arrowhead is always shown, even if
+        the use case later initiates communication to the initiating actor.&nbsp; This is also the only actor-to-use-case
+        arrowhead shown.</span>
+    </li>
+    <li>
+        <span style="mso-bidi-font-family: Courier New">Arrowheads from use case to actors may be omitted, or may be
+        included for clarity.</span><br />
+    </li>
+</ul></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

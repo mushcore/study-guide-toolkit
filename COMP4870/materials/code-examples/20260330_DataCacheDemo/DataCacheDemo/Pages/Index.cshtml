@@ -1,0 +1,25 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Northwind Products List";
+}
+
+<h3>@ViewData["Title"]</h3>
+
+<table class="table table-striped">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Quantity</th>
+        <td>Unit Price</td>
+    </tr>
+    @foreach (var item in Model.Products!)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Name</td>
+            <td>@item.QuantityPerUnit</td>
+            <td>@item.UnitPrice</td>
+        </tr>
+    }
+</table>

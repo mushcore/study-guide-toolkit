@@ -1,0 +1,387 @@
+Comp 4915 - Lab 8: Apache and Shell Scripts
+============================================
+
+Student: A01353636
+
+
+Part 1: Setting up Apache
+--------------------------
+
+Step 1: Install Apache
+
+  $ sudo dnf install httpd mod_ssl
+
+  Enable and start:
+
+  $ sudo systemctl enable httpd
+  $ sudo systemctl start httpd
+  $ sudo systemctl status httpd
+  httpd.service - The Apache HTTP Server
+     Active: active (running) since ...
+
+  Open the firewall:
+
+  $ sudo firewall-cmd --add-service=http --permanent
+  $ sudo firewall-cmd --add-service=https --permanent
+  $ sudo firewall-cmd --reload
+
+
+Step 3: Create a home page with name displayed prominently
+
+  $ sudo vi /var/www/html/index.html
+
+  --- /var/www/html/index.html ---
+
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <title>Kevin Liang - A01353636</title>
+  </head>
+  <body>
+      <h1>Kevin Liang</h1>
+      <h2>Student ID: A01353636</h2>
+      <p>Welcome to my COMP 4915 Lab 8 web server.</p>
+      <p><a href="/protected/">Access Protected Page</a></p>
+  </body>
+  </html>
+
+  Verify by browsing to http://localhost/ or http://142.232.18.196/
+  The page shows "Kevin Liang" prominently as the heading.
+
+
+Step 4: Set up a password-protected second page
+
+  Create the protected directory and page:
+
+  $ sudo mkdir /var/www/html/protected
+
+  $ sudo vi /var/www/html/protected/index.html
+
+  --- /var/www/html/protected/index.html ---
+
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <title>Protected Page - Kevin Liang</title>
+  </head>
+  <body>
+      <h1>Congratulations!</h1>
+      <h2>Kevin Liang - A01353636</h2>
+      <p>You have successfully authenticated to the protected area.</p>
+      <p><a href="/">Back to Home</a></p>
+  </body>
+  </html>
+
+  Create the password file with user fred:
+
+  $ sudo htpasswd -cb /etc/httpd/.htpasswd fred password
+  Adding password for user fred
+
+  (The -c flag creates the file; -b takes the password from the command
+  line. In production, omit -b for interactive password entry.)
+
+  Create .htaccess for the protected directory:
+
+  $ sudo vi /var/www/html/protected/.htaccess
+
+  --- /var/www/html/protected/.htaccess ---
+
+  AuthType Basic
+  AuthName "Restricted Access"
+  AuthUserFile /etc/httpd/.htpasswd
+  Require valid-user
+
+  Ensure Apache allows .htaccess overrides. Edit /etc/httpd/conf/httpd.conf
+  and find the <Directory "/var/www/html"> section:
+
+  <Directory "/var/www/html">
+      AllowOverride AuthConfig
+      Require all granted
+  </Directory>
+
+  Restart Apache:
+
+  $ sudo systemctl restart httpd
+
+  Test: Browse to http://localhost/protected/
+  Expected: Browser prompts for username/password.
+  Enter fred / password.
+  Result: "Congratulations! Kevin Liang - A01353636" page is displayed.
+
+
+Step 5: Enable user home directories with html subdirectory
+
+  Edit /etc/httpd/conf.d/userdir.conf:
+
+  Change:
+    UserDir disabled
+
+  To:
+    UserDir html
+
+  This tells Apache to look in ~/html/ (not ~/public_html/) for user
+  web content.
+
+  Also ensure the <Directory> block is correct:
+
+  <Directory "/home/*/html">
+      AllowOverride FileInfo AuthConfig Limit
+      Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+      Require method GET POST OPTIONS
+  </Directory>
+
+  Set SELinux booleans to allow Apache to read home directories:
+
+  $ sudo setsebool -P httpd_enable_homedirs on
+
+  Create the html directory for the regular user account:
+
+  $ mkdir ~/html
+  $ chmod 711 ~
+  $ chmod 755 ~/html
+
+  Create a test page:
+
+  $ cat > ~/html/index.html << EOF
+  <!DOCTYPE html>
+  <html>
+  <body>
+      <h1>Kevin Liang's User Page</h1>
+      <p>This page is served from ~/html/ directory.</p>
+  </body>
+  </html>
+  EOF
+
+  Restart Apache:
+
+  $ sudo systemctl restart httpd
+
+  Test: Browse to http://localhost/~kevinliang/
+  Expected: "Kevin Liang's User Page" is displayed. This confirms that
+  user directories work with the html subdirectory (not public_html).
+
+
+Part 2: Shell Scripts
+----------------------
+
+1. Function to add execute permission:
+
+   --- addx function ---
+
+   addx() {
+       if [ $# -eq 0 ]; then
+           echo "Usage: addx filename" >&2
+           return 1
+       fi
+       chmod u+x "$1"
+   }
+
+   a. When might such a function be useful?
+
+      This function is useful when you write a new shell script and need
+      to make it executable before running it. Instead of typing
+      "chmod u+x scriptname" every time, you can just type "addx scriptname".
+      It is especially handy during development when you are frequently
+      creating and testing new scripts.
+
+   b. Revised to accept one or more filenames:
+
+      addx() {
+          if [ $# -eq 0 ]; then
+              echo "Usage: addx file [file ...]" >&2
+              return 1
+          fi
+          for file in "$@"; do
+              if [ -e "$file" ]; then
+                  chmod u+x "$file"
+                  echo "Added execute permission to $file"
+              else
+                  echo "addx: $file: No such file" >&2
+              fi
+          done
+      }
+
+      The "$@" expands to all positional parameters, each as a separate
+      quoted word. The for loop iterates over each filename argument.
+
+   c. To make the function available every time you log in:
+
+      Add the function definition to your ~/.bashrc file. Every new
+      interactive shell sources ~/.bashrc, so the function will be
+      defined automatically.
+
+   d. To make it available now in the current shell (in addition to
+      future sessions):
+
+      After adding it to ~/.bashrc, source the file in the current shell:
+
+        $ . ~/.bashrc
+
+      Or simply paste the function definition directly into the terminal.
+
+
+2. Script to compare file permissions:
+
+   --- compare_perms.sh ---
+
+   #!/bin/bash
+   # Compare permissions of two files
+   if [ $# -ne 2 ]; then
+       echo "Usage: $0 file1 file2" >&2
+       exit 1
+   fi
+
+   perm1=$(ls -l "$1" | cut -d' ' -f1)
+   perm2=$(ls -l "$2" | cut -d' ' -f1)
+
+   if [ "$perm1" = "$perm2" ]; then
+       echo "Permissions are identical: $perm1"
+   else
+       echo "$1: $perm1"
+       echo "$2: $perm2"
+   fi
+
+   Example usage:
+
+   $ chmod 644 fileA
+   $ chmod 644 fileB
+   $ chmod 755 fileC
+   $ ./compare_perms.sh fileA fileB
+   Permissions are identical: -rw-r--r--
+   $ ./compare_perms.sh fileA fileC
+   fileA: -rw-r--r--
+   fileC: -rwxr-xr-x
+
+
+3. Function to split colon-separated list:
+
+   --- splitcolon function ---
+
+   splitcolon() {
+       echo "$1" | tr ':' '\n'
+   }
+
+   Example usage:
+
+   $ splitcolon "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+   /usr/local/bin
+   /usr/bin
+   /bin
+   /usr/sbin
+   /sbin
+
+   Alternative implementation using IFS:
+
+   splitcolon() {
+       local IFS=':'
+       for item in $1; do
+           echo "$item"
+       done
+   }
+
+
+4. Rewritten bundle script with optional filename arguments:
+
+   --- bundle ---
+
+   #!/bin/bash
+   # bundle: create a shell archive from files
+   # Usage: bundle file1 file2 ... > archive.sh
+   # The created archive, when run with optional args, recreates selected files.
+
+   echo '#!/bin/bash'
+   echo '# Shell archive created by bundle'
+   echo ''
+
+   for file in "$@"; do
+       echo "if [ \$# -eq 0 ] || echo \" \$* \" | grep -q \" $file \"; then"
+       echo "    echo \"Extracting $file\""
+       echo "    cat > '$file' << 'BUNDLED_END_OF_FILE_MARKER'"
+       cat "$file"
+       echo "BUNDLED_END_OF_FILE_MARKER"
+       echo "fi"
+       echo ""
+   done
+
+   Usage example:
+   $ bundle test1.c test2.c test3.c > srcshell
+   $ bash srcshell                    # extracts all files
+   $ bash srcshell test1.c test2.c    # extracts only test1.c and test2.c
+
+   The generated script checks if arguments were given ($# -eq 0 means
+   extract all). If arguments are given, it checks if each filename
+   appears in the argument list before extracting.
+
+
+5. Function to find maximum filename length in a directory:
+
+   --- maxfilelen function ---
+
+   maxfilelen() {
+       if [ ! -d "$1" ]; then
+           echo "Error: '$1' is not a directory" >&2
+           return 1
+       fi
+
+       local max=0
+       for file in "$1"/*; do
+           if [ -e "$file" ]; then
+               name=$(basename "$file")
+               len=${#name}
+               if [ $len -gt $max ]; then
+                   max=$len
+               fi
+           fi
+       done
+       echo "$max"
+   }
+
+   Example usage:
+
+   $ maxfilelen /usr/bin
+   36
+   $ maxfilelen /nonexistent
+   Error: '/nonexistent' is not a directory
+
+   The function uses ${#name} to get the string length of each filename.
+   It iterates through all files in the directory and tracks the maximum
+   length seen.
+
+
+6. (Optional, extra credit) Recursive version:
+
+   --- maxfilelen_recursive function ---
+
+   maxfilelen_recursive() {
+       if [ ! -d "$1" ]; then
+           echo "Error: '$1' is not a directory" >&2
+           return 1
+       fi
+
+       local max=0
+       _maxfilelen_recurse() {
+           local dir="$1"
+           for entry in "$dir"/* "$dir"/.*; do
+               if [ -e "$entry" ]; then
+                   name=$(basename "$entry")
+                   # Skip . and ..
+                   [ "$name" = "." ] || [ "$name" = ".." ] && continue
+                   len=${#name}
+                   if [ $len -gt $max ]; then
+                       max=$len
+                   fi
+                   if [ -d "$entry" ]; then
+                       _maxfilelen_recurse "$entry"
+                   fi
+               fi
+           done
+       }
+
+       _maxfilelen_recurse "$1"
+       echo "$max"
+   }
+
+   This version uses a recursive helper function that descends into
+   every subdirectory, checking filename lengths at every level. The
+   max variable is maintained in the outer function's scope and updated
+   throughout the recursion.

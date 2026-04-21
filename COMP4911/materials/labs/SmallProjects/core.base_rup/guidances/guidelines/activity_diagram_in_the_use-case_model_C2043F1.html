@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Guideline: Activity Diagram in the Use-Case Model</title>
+<meta name="uma.type" content="Guideline">
+<meta name="uma.name" content="activity_diagram_in_the_use-case_model">
+<meta name="uma.presentationName" content="Activity Diagram in the Use-Case Model">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_jijhYAIaEdqEutyfYo0quQ", "_n7ZcgN7REdmjRZts2c4ZjQ", "{B1526BC5-E346-42CB-A08A-3C0D7F382407}", "7.230899877161861E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_2ClPcDIcEdqDs_9ORT1Rig", "7.230899877161861E-305"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="7.230899877161861E-305"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Guideline: Activity Diagram in the Use-Case Model</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/guidance.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">An activity diagram can represent a flow in a use case. This guideline describes how to use an activity diagram in this situation.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/detail_a_use_case_D9BECBF4.html" guid="{536BC669-A8FB-426D-88FF-CBEA806A9066}">Detail a Use Case</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/workproducts/rup_usecase_A5D30E62.html" guid="{B1526BC5-E346-42CB-A08A-3C0D7F382407}">Use Case</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<p>
+    The flow of events of a use case describes what needs to be done by the system to provide value to an actor. It
+    consists of a sequence of tasks that together produce something for the actor. The flow of events consists of a basic
+    flow, and one or several alternative flows.
+</p>
+<p>
+    The flow of events of a use case can be described graphically with the help of an activity diagram. Such a diagram
+    shows:
+</p>
+<ul>
+    <li>
+        <b>Activity states</b>, which represent the performance of a task or step within the flow of events.
+    </li>
+    <li>
+        <a id="XE_transition_(in_activity_diagrams)__in_business_use-case_model" name="XE_transition_(in_activity_diagrams)__in_business_use-case_model"></a><b>Transitions</b> that show what
+        activity state follows after another. This type of transition is sometimes referred to as a completion transition,
+        since it differs from a transition in that it does not require an explicit trigger event, it is triggered by the
+        completion of the task the activity state represents.
+    </li>
+    <li>
+        <a id="XE_decision_(in_activity_diagrams)__business_use-case_model" name="XE_decision_(in_activity_diagrams)__business_use-case_model"></a><b>Decisions</b> for which a set of <b>guard
+        conditions</b> are defined. These guard conditions control which transition (of a set of alternative transitions)
+        follows once the task has been completed. Decisions and guard conditions allow you to show <b>alternative
+        threads</b> in the flow of events of a use case.
+    </li>
+    <li>
+        <b>Synchronization bars</b> which you can use to show parallel subflows. Synchronization bars allow you to show
+        <b>concurrent threads</b> in the flow of events of a use case.
+    </li>
+</ul>
+<p align="center">
+    <img height="495" alt="Diagram described in accompanying text." src="./../../../core.base_rup/guidances/guidelines/resources/md_act.gif" width="510" />
+</p>
+<p class="picturetext">
+    A simplified activity diagram for the use case Withdraw Money in the use-case model of an automated teller machine
+    (ATM).
+</p>
+<p>
+    Activity diagram is a special case of a statechart diagram in which all or most of the states are activity states and
+    in which all or most of the of the transitions are triggered by completion of actions in the source states.<br />
+</p></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

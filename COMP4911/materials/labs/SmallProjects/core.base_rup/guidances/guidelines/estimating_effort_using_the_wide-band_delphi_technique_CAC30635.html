@@ -1,0 +1,447 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Guideline: Estimating Effort Using the Wide-Band Delphi Technique</title>
+<meta name="uma.type" content="Guideline">
+<meta name="uma.name" content="estimating_effort_using_the_wide-band_delphi_technique">
+<meta name="uma.presentationName" content="Estimating Effort Using the Wide-Band Delphi Technique">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_4U33kAILEdq-_NKqZM1EhA", "_U8LVkAIUEdqEutyfYo0quQ", "_C49xgP_UEdmVCcs_BRqacA", "{18DB40A1-6272-467A-AC68-B2C4BE1DCD6C}", "8.245547473531647E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_EOvXUN7HEdm8G6yT7-Wdqw", "_C49xgP_UEdmVCcs_BRqacA", "{18DB40A1-6272-467A-AC68-B2C4BE1DCD6C}", "8.245547473531647E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_jijhYAIaEdqEutyfYo0quQ", "_qUsPIN7REdmjRZts2c4ZjQ", "{18DB40A1-6272-467A-AC68-B2C4BE1DCD6C}", "8.245547473531647E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_2ClPcDIcEdqDs_9ORT1Rig", "8.245547473531647E-305"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="8.245547473531647E-305"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Guideline: Estimating Effort Using the Wide-Band Delphi Technique</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/guidance.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This guideline describes how to use the Wide-Band Delphi Technique to estimate software development effort.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/schedule_and_assign_work_63D7C4DF.html" guid="{972CBA81-A21B-4384-B482-3DA7D0859613}">Schedule and Assign Work</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/workproducts/rup_work_order_CFBC805B.html" guid="{18DB40A1-6272-467A-AC68-B2C4BE1DCD6C}">Work Order</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a><a id="XE_Index_Entry_Category___New_Guideline" name="XE_Index_Entry_Category___New_Guideline"></a> 
+<p>
+    <i>Contributed to RUP by Karl Wiegers (www.processimpact.com), with permission from</i> Software Development Magazine.
+    <i>Further edited by Rational Software Corporation.</i>
+</p>
+<h3>
+    <a id="Introduction" name="Introduction"></a>Introduction
+</h3>
+<p>
+    This guideline describes a technique that can be used to estimate software development effort. The Wideband Delphi
+    estimation method can be summarized as follows:
+</p>
+<ul>
+    <li>
+        Select a team of experts, and provide each with a description of the problem to be estimated.
+    </li>
+    <li>
+        Ask each expert to provide an estimate (often anonymously) of the effort, including a breakdown of the problem into
+        a list of tasks, and an effort estimate for each task.
+    </li>
+    <li>
+        The experts then collaborate, revising their estimates iteratively, until a consensus has been reached.
+    </li>
+</ul>
+<p>
+    Using the Wideband Delphi method provides several advantages over obtaining an estimate from a single individual.
+    First, it helps build a complete task list or work breakdown structure for major tasks, because each participant will
+    think of tasks. The consensus approach helps eliminate bias in estimates produced by self-proclaimed experts,
+    inexperienced estimators or influential individuals who have hidden agendas or divergent objectives. People are
+    generally more committed to estimates they help produce than to those generated by others. No participant in an
+    estimation task knows the "right" answer, and creating multiple estimates acknowledges this uncertainty. Finally, users
+    of the Delphi approach recognize the value of iteration on any complex task.
+</p>
+<h3>
+    <a id="Applying Wideband Delphi" name="Applying Wideband Delphi"></a>Applying Wideband Delphi
+</h3>
+<p>
+    Wideband Delphi can be used to estimate virtually anything-the number of labor months needed to implement a specific
+    subsystem, the lines of code or number of classes in an entire product, or the gallons of paint needed to redecorate
+    Bill Gates' house, or the effort it would take a particular organization to achieve level two of the Capability
+    Maturity Model.
+</p>
+<p>
+    The Delphi method helps you develop a detailed work breakdown structure, which provides the foundation for bottom-up
+    effort and schedule or size estimation. The starting point for a Delphi session could be a Vision document, a more
+    detailed Requirements specification of the problem being estimated or an initial high-level architecture description,
+    or a project schedule. The outputs are a more detailed project task list; a list of associated quality, process-related
+    and overhead tasks; estimation assumptions; and a set of tasks and overall project estimates, one from each
+    participant.
+</p>
+<p>
+    Figure 1 illustrates the process flow for a Wideband Delphi session. The problem being estimated is defined and the
+    participants selected during planning. The kickoff meeting gets all estimators focused on the problem. Each participant
+    then individually prepares his or her initial task lists and estimates. They bring these items to the estimation
+    meeting, during which several estimating cycles lead to a more comprehensive task list and a revised set of estimates.
+    The moderator or project manager then consolidates the assorted estimation information offline, and the team reviews
+    the estimation results. When some predetermined exit criteria are satisfied, the session is completed. The resulting
+    range of estimates is likely to be a more realistic predictor of the future than any single estimate. Let's look at
+    each of these process steps in turn.
+</p>
+<div align="center">
+    <img alt="Diagram showing wideband Delphi process flow." src="./../../../core.base_rup/guidances/guidelines/resources/wbimg2.jpg" />
+</div>
+<blockquote>
+    <i>When planning a Wideband Delphi session, the problem is defined and the participants selected. The kickoff meeting
+    gets all estimators focused on the problem. Each participant then individually prepares initial task lists and
+    estimates. During the estimation meeting, several cycles lead to a more comprehensive task list and a revised set of
+    estimates. The information is then consolidated offline, and the team reviews the estimation results. When the exit
+    criteria are satisfied, the session is completed.</i>
+</blockquote>
+<h4>
+    <a id="Planning" name="Planning"></a>Planning
+</h4>
+<p>
+    A Wideband Delphi session begins with defining and scoping the problem: vision, use case model, existing system,
+    preliminary architecture. Large problems are broken down into manageable portions that can be estimated more
+    accurately, perhaps by different teams. The person who initiated the estimation task assembles a problem specification
+    that will give the participants enough information to produce credible, informed estimates.
+</p>
+<p>
+    The estimation participants include a moderator, who plans and coordinates the task, the project manager and two to
+    four other estimators. The moderator should be informed enough to participate as an estimator but acts as an impartial
+    facilitator who won't skew the results with his or her own biases or insights. The participants are selected because
+    they understand the problem or project and associated estimation issues.
+</p>
+<h4>
+    <a id="The Kickoff" name="The Kickoff"></a>The Kickoff
+</h4>
+<p>
+    An initial kickoff meeting of up to an hour gets all participants up to speed on the estimation problem. The moderator
+    explains Wideband Delphi to team members who are unfamiliar with it and supplies the other estimators with the problem
+    specification and any assumptions or project constraints. The moderator strives to give the estimators enough
+    information to do a good job without unduly influencing their estimates.
+</p>
+<p>
+    The team reviews the estimation objectives and discusses the problem and any estimation issues. The participants agree
+    on the estimation units they will use, such as weeks, labor hours, dollars or lines of code. If the moderator concludes
+    that all team members are sufficiently knowledgeable to contribute to the estimation task, the group is ready to roll.
+    Otherwise, the participants may need to be briefed more fully on the problem they're estimating, or possibly replaced
+    by others who can generate more accurate estimates.
+</p>
+<p>
+    To determine whether you're ready to proceed with the Wideband Delphi session, check your entry criteria-that is, the
+    prerequisites that must be satisfied for you to proceed with subsequent process steps. Before you dive into the
+    estimation exercise, ensure that the following conditions are satisfied:
+</p>
+<ul>
+    <li>
+        Appropriate team members have been selected.
+    </li>
+    <li>
+        The kickoff meeting has been held.
+    </li>
+    <li>
+        The participants have agreed on the estimation goal and units.
+    </li>
+    <li>
+        The project manager can participate in the session.
+    </li>
+    <li>
+        The estimators have the information they need to participate effectively.
+    </li>
+</ul>
+<h4>
+    <a id="Individual Preparation" name="Individual Preparation"></a>Individual Preparation
+</h4>
+<p>
+    Let's assume that you wish to estimate the total amount of work effort (typically expressed in labor hours) needed to
+    complete a certain project. The estimation process begins with each participant independently developing an initial
+    list of the tasks that will have to be completed to reach the stated project goal, using a form like that shown in
+    Figure 2. Each participant then estimates the effort each task will consume. Break each task down into tasks that are
+    small enough to estimate accurately. State the tasks clearly, because someone will have to merge all of the participant
+    task lists into a single composite list. Total the estimates you produce for each project task, in the agreed-upon
+    units, to generate your initial overall estimate.
+</p>
+<div align="center">
+    <img alt="Chart showing sample Delphi estimation form" src="./../../../core.base_rup/guidances/guidelines/resources/wbimg4.jpg" />
+</div>
+<blockquote>
+    <i>The estimation process begins with each participant independently using this form to develop an initial list of the
+    tasks that will have to be completed to reach the stated project goal.</i>
+</blockquote>
+<p>
+    Your estimate should have no relationship to the answer you think the project manager or other stakeholders want to
+    hear. There's a good chance the estimate will fall outside the acceptable project bounds of schedule, effort or cost, a
+    situation that demands negotiation and might lead to scope reduction, schedule extension or resource adjustments. But
+    don't let outside pressure sway your best projection of how the project will play out.
+</p>
+<p>
+    In addition to identifying the project tasks, separately record any tasks for related or supporting tasks. Do not
+    forgot to list tasks dealing with management, configuration management and process-related tasks on the first cycle. Be
+    sure to include rework tasks following testing or inspection tasks. Reworking to correct defects is a fact of life, so
+    you should plan for it. If you're estimating a schedule, also think of any overhead tasks that aren't specific to the
+    project that you might have to build into your planning. These include meetings, vacation, training, other project
+    assignments and myriad other things that suck time out of your day.
+</p>
+<p>
+    Since radically different assumptions can lead to wide estimate variations, record any assumptions you made while
+    preparing your estimates. For example, if you assumed that you will purchase a specific component library or reuse one
+    from a previous project, write that down. Another estimator might assume that the project will develop that library,
+    which will lead to a mismatch between your two overall estimates.
+</p>
+<p>
+    Keep the following estimation guidelines in mind:
+</p>
+<ul>
+    <li>
+        Assume one person (you) will perform all tasks.
+    </li>
+    <li>
+        Assume all tasks will be performed sequentially; don't worry about sequencing and predecessor tasks at this time.
+    </li>
+    <li>
+        Assume that you can devote uninterrupted effort to each task (this may seem absurdly optimistic, but it simplifies
+        the estimation process).
+    </li>
+    <li>
+        In units of calendar time, list any known waiting times you expect to encounter between tasks. This will help you
+        translate effort estimates into schedule estimates later on.
+    </li>
+</ul>
+<h4>
+    <a id="Estimation Meeting" name="Estimation Meeting"></a>Estimation Meeting
+</h4>
+<p>
+    The moderator begins the estimation meeting by collecting the participants' individual estimates and creating a chart
+    such as Figure 3. Each participant's total project estimate is shown as an X on the "Round 1" line. Each estimator can
+    see where his or her initial value fits along the spectrum. The initial estimates probably will cover a frighteningly
+    large range. Just imagine the different conclusions you might have collected had you asked just one of the participants
+    for his or her estimate and used that to plan the project.
+</p>
+<div align="center">
+    <img alt="Chart showing initial estimation from a Wideband Delphi session." src="./../../../core.base_rup/guidances/guidelines/resources/wbimg6.jpg" />
+</div>
+<blockquote>
+    <i>The moderator begins the estimation meeting by collecting and charting the participants' individual estimates. Each
+    participant's total project estimate is shown as an X on the "Round 1" line. The initial estimates probably will cover
+    a frighteningly large range.&nbsp;</i>
+</blockquote>
+<p>
+    In some organization, the moderator does not identify who created each estimate; they feel this anonymity is an
+    important aspect of the Delphi technique. Anonymity prevents an outspoken colleague from intimidating the other
+    participants into seeing things his or her way. It also means team members are less likely to defer to the most
+    respected participant's judgment when their own analyses lead to different conclusions. But this is not a must.
+</p>
+<p>
+    Each estimator reads his initial task list, identifying any assumptions made and raising any questions or issues,
+    without revealing which estimate was his. Each participant will have listed different tasks that need to be performed.
+    Combining these individual task lists leads to a more complete list than any single estimator is likely to produce.
+    This approach will work for up to several dozen individual tasks. If you have more tasks than that, they might be too
+    detailed. You may want to break the problem into several subproblems and estimate them individually.
+</p>
+<p>
+    During this initial discussion, the team members also talk about their assumptions, estimation issues and questions
+    they have about the problem. As a result, the team will begin to converge on a shared set of assumptions and a common
+    task list. Retain this final task list to use as a starting point the next time you must estimate a similar project.
+</p>
+<p>
+    After this initial discussion, all participants modify their estimates concurrently (and silently) in the meeting room.
+    They might revise their task lists based on the information shared during the discussion, and they'll adjust individual
+    task estimates based on their new understanding of the task scope or changed assumptions. All estimators can add new
+    tasks to their forms and note any changes they wish to make to their initial task estimates. The net change for all
+    tasks equals the change in that participant's overall project estimate.
+</p>
+<p>
+    The moderator collects the revised overall estimates and plots them on the same chart, on the "Round 2" line. I've done
+    this on a whiteboard for easy visibility. As Figure 4 illustrates, the second round might lead to a narrower
+    distribution of estimates centered around a higher mean than the mean of the Round 1 values. Additional rounds should
+    further narrow the distribution. The cycle of revising the task list, discussing issues and assumptions and preparing
+    new estimates continues until the following conditions are met:
+</p>
+<ul>
+    <li>
+        you have completed four rounds
+    </li>
+    <li>
+        the estimates have converged to an acceptably narrow range (defined in advance)
+    </li>
+    <li>
+        the allotted meeting time was met (typically two hours)
+    </li>
+    <li>
+        all participants are unwilling to alter their latest estimates
+    </li>
+</ul>
+<div align="center">
+    <img alt="Estimation chart showing three rounds from a Wideband Delphi session." src="./../../../core.base_rup/guidances/guidelines/resources/wbimg8.jpg" />
+</div>
+<blockquote>
+    <i>After discussion of the initial estimates, all participants modify their estimates. The moderator collects the
+    revised overall estimates and plots them on the same chart, on the "Round 2" line. These later rounds might lead to a
+    narrower distribution of estimates centered around a higher mean than the mean of the Round 1 values.&nbsp;</i>
+</blockquote>
+<p>
+    The moderator keeps the group on track, time-boxing discussions to 15 or 20 minutes to avoid endless rambling. The
+    moderator should follow effective meeting facilitation practices, such as starting and ending on time, encouraging all
+    participants to contribute and maintaining an impartial and non-judgmental environment. While preserving the anonymity
+    of individual estimates is important for the first couple of rounds, the team members might agree at some point to put
+    all their cards on the table and reach closure through an open discussion. This gives them a chance to discuss tasks
+    for which their estimates vary substantially. Otherwise, though, the moderator should not identify the individual who
+    produced each final estimate until the session is completed.
+</p>
+<h4>
+    <a id="Assembling Tasks" name="Assembling Tasks"></a>Assembling Tasks
+</h4>
+<p>
+    The work isn't done when the estimation meeting concludes. Either the moderator or the project manager assembles the
+    project tasks and their individual estimates into a single master task list. This person also merges the individual
+    lists of assumptions, quality- and process-related tasks, overhead tasks and wait times.
+</p>
+<p>
+    The merging process involves removing duplicate tasks and reaching some reasonable resolution of different estimates
+    for individual tasks. "Reasonable" doesn't mean replacing the team's estimates with values the project manager prefers.
+    Large estimate differences for apparently similar tasks might indicate that estimators interpreted that task in
+    different ways. For example, two people might both have an task called "implement a class." However, one estimator
+    might have included unit testing and code review in the task, while the other meant just the coding effort. All
+    estimators should define their tasks clearly to minimize confusion during this merging step. The merging step should
+    retain the estimate range for each task, but if one estimator's task estimate was wildly different from that of the
+    other estimators, understand it and then perhaps discard or modify it.
+</p>
+<h4>
+    <a id="Review Results" name="Review Results"></a>Review Results
+</h4>
+<p>
+    In the final step, the estimation team reviews the summarized results and reaches agreement on the final outcome. The
+    project manager provides the other estimators with the overall task list, individual estimates, cumulative estimates,
+    assumption list and any other information. Bring the team back together for a 30- to 60-minute review meeting to bring
+    closure to the estimation task. This meeting also provides an opportunity for the team to contemplate this execution of
+    the Wideband Delphi process and suggest ways it can be improved for future applications.
+</p>
+<p>
+    The participants should make sure the final task list is as complete as possible. They might have thought of additional
+    tasks since the estimation meeting, which could be added to the task list now. Check to see whether tasks that had
+    wildly different individual estimates have been merged in a sensible way. The ultimate objective is to produce an
+    estimate range that allows the project manager and other key stakeholders to proceed with project planning and
+    execution at an acceptable confidence level.
+</p>
+<h4>
+    <a id="Completing the Estimation" name="Completing the Estimation"></a>Completing the Estimation
+</h4>
+<p>
+    The estimation process is completed when specified exit criteria are satisfied, at which point you can declare victory
+    and move on with your life. Typical Wideband Delphi exit criteria are that:
+</p>The overall task list has been assembled. 
+<p>
+    You have a summarized list of estimating assumptions.
+</p>
+<p>
+    The estimators have reached consensus on how their individual estimates were synthesized into a single set with an
+    acceptable range.
+</p>
+<p>
+    Now you must decide what to do with the data. You could simply average the final estimates to come up with a single
+    point estimate, which is what the person who requested the estimate probably wants to hear. However, a simple average
+    is likely to be too low, and there's merit in retaining the estimate range. Estimates are predictions of the future,
+    and the range reflects the inherent uncertainty of gazing into the crystal ball. You might present three numbers: the
+    average of the estimates as the planned case, the minimum value as the best case and the maximum as the worst case. Or
+    you could present the average value as the nominal expected outcome, plus the maximum-minus-the-average value, and
+    minus the average-minus-the-minimum value.
+</p>
+<p>
+    Each estimate has a certain probability of coming true, so a set of estimates forms a probability distribution. In
+    Chapter 6 of A Discipline for Software Engineering (Addison-Wesley, 1995), Watts Humphrey describes a mathematically
+    precise way to combine multiple estimates and their uncertainties to generate an overall estimate with upper and lower
+    prediction intervals. Another sophisticated approach is to perform a Monte Carlo simulation to generate a probability
+    distribution of possible estimate outcomes based on the final estimate values.
+</p>
+<p>
+    While the results of a Delphi session might not be what the movers and shakers want to hear, they can decide whether
+    they want to plan their project at a 10 percent confidence level, a 90 percent confidence level or somewhere
+    in-between. Be sure to compare the actual project results to your estimates to improve your future estimating accuracy.
+</p>
+<h3>
+    <a id="Doing It Again" name="Doing It Again"></a>Doing It Again (Iterating)
+</h3>
+<p>
+    One nice aspect of this method is that after an initial and rather rough estimate done for example during inception,
+    the estimates can be refined at each phase (or even at each iteration). The process can be faster if the same
+    estimators are available, starting where they left at the previous estimation cycle. More information about the problem
+    is available, some assumptions have been modified, an architecture is in place to help break down the effort.
+</p>
+<p>
+    The new estimate may have a narrower range, but is not necessarily within the range of the previous one: it may be
+    higher, or smaller. If higher, there is a clear risk signal to the project manager, risk that must be tackled at once.
+</p>
+<h3>
+    <a id="Wideband Delphi Evaluated" name="Wideband Delphi Evaluated"></a>Wideband Delphi Evaluated
+</h3>
+<p>
+    No estimation method is perfect; if it were, it would be called prediction, not estimation. However, the Wideband
+    Delphi technique incorporates some solid estimating principles. The team approach acknowledges the value of combining
+    multiple expert perspectives. The range of estimates produced reflects the variability intrinsic to the estimation
+    process.
+</p>
+<p>
+    Although it takes time and requires a panel of experienced estimators, Wideband Delphi removes some of the politics
+    from estimation and filters out extreme initial values.
+</p></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

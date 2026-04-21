@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html><head><link rel="stylesheet" href="https://s.brightspace.com/lib/fonts/0.6.1/fonts.css"></head><body style="color: rgb(32, 33, 34); font-family: undefined;"><p><span style="font-family: 'courier new', courier, sans-serif; color: #38761d;">// Register HttpClient service</span><br><span style="font-family: 'courier new', courier, sans-serif;">builder.Services.AddScoped(sp =&gt; new HttpClient { &nbsp;});</span></p>
+<p><span style="font-family: Lato, sans-serif;">OR</span></p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">string url = "<a href="https://studentfunctionmze.azurewebsites.net/">https://studentfunctionmze.azurewebsites.net/</a>";<br>builder.Services.AddScoped(<br>&nbsp; &nbsp; sp =&gt; new HttpClient { BaseAddress = new Uri(url) }<br>);</span></p>
+<p><span style="font-family: Lato, sans-serif;"></span></p></body></html>

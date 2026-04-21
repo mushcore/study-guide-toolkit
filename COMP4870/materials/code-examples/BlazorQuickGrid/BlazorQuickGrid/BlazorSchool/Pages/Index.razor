@@ -1,0 +1,107 @@
+@page "/"
+@inject HttpClient httpClient
+
+<h1>Students</h1>
+
+<div>
+    Items per page:
+    <select @bind="@pages.ItemsPerPage">
+        <option>5</option>
+        <option>10</option>
+        <option>15</option>
+        <option>20</option>
+        <option>25</option>
+    </select>
+</div>
+
+<br>
+
+<div class="grid">
+    @* ResizeableColumns allows columns to be resized via dragging
+    filteredStudents allows the list of students to be filtered
+    Pagination allows for paging, which saves resources by only rendering a small amount of a potentially huge database
+    *@
+    <QuickGrid Items="@filteredStudents" ResizableColumns="true" Pagination="@pages">
+        <PropertyColumn Property="@(s => s.StudentId)" Sortable="true">
+        </PropertyColumn>
+        <PropertyColumn Property="@(s => s.FirstName)" Sortable="true" title="First Name">
+            <ColumnOptions>
+                <div class="search-box">
+                    <input type="search" autofocus @bind="firstNameFilter" @bind:event="oninput"
+                        placeholder="Search for a first name..." />
+                </div>
+            </ColumnOptions>
+        </PropertyColumn>
+        <PropertyColumn Property="@(s => s.LastName)" Sortable="true" title="Last Name">
+            <ColumnOptions>
+                <div class="search-box">
+                    <input type="search" autofocus @bind="lastNameFilter" @bind:event="oninput"
+                        placeholder="Search for a last name..." />
+                </div>
+            </ColumnOptions>
+        </PropertyColumn>
+        <PropertyColumn Property="@(s => s.School)" Sortable="true">
+            <ColumnOptions>
+                <div class="search-box">
+                    <input type="search" autofocus @bind="schoolFilter" @bind:event="oninput"
+                        placeholder="Search for a school..." />
+                </div>
+            </ColumnOptions>
+        </PropertyColumn>
+    </QuickGrid>
+
+    <br>
+
+    <input type="text" autofocus @bind="updateStudent" @bind:event="oninput" placeholder="Enter a Student ID" />
+    <a class="btn btn-success btn-sm" href="/updatedelete/@updateStudent/edit">edit student</a>
+
+    <input type="text" autofocus @bind="deleteStudent" @bind:event="oninput" placeholder="Enter a Student ID" />
+    <a class="btn btn-success btn-sm" href="/updatedelete/@deleteStudent/del">delete student</a>
+</div>
+
+<Paginator Value="@pages"></Paginator>
+
+@code {
+    Student[]? students;
+
+    // Stores iQueryable Students
+    IQueryable<Student> iQueryableStudents;
+
+    string firstNameFilter = string.Empty;
+    string lastNameFilter = string.Empty;
+    string schoolFilter = string.Empty;
+
+    string updateStudent = string.Empty;
+
+    string deleteStudent = string.Empty;
+
+    // Filters for the queried students.
+    IQueryable<Student>? filteredStudents => iQueryableStudents?.Where(s => s.FirstName.Contains(firstNameFilter,
+    StringComparison.CurrentCultureIgnoreCase) && s.LastName.Contains(lastNameFilter,
+    StringComparison.CurrentCultureIgnoreCase) && s.School.Contains(schoolFilter,
+    StringComparison.CurrentCultureIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await load();
+        await cast();
+    }
+
+    protected async Task load()
+    {
+        students = await httpClient.GetFromJsonAsync<Student[]>($"{Constants.BaseUrl}api/students");
+    }
+
+    // Converts students to iQueryable format so they can be sorted/filtered
+    protected async Task cast()
+    {
+        iQueryableStudents = students.AsQueryable();
+    }
+
+    // Variable to determine the number of items per page
+    private PaginationState pages = new PaginationState
+        {
+            ItemsPerPage = 10
+        };
+
+}

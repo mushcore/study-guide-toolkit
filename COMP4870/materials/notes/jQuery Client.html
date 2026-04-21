@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html><head>
+</head>
+<body style="color: #494c4e;">
+<div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&lt;!DOCTYPE html&gt;</span><br><span style="font-family: 'courier new', courier, sans-serif;">&lt;html&gt;&lt;head&gt;</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&lt;script src="<a href="https://code.jquery.com/jquery-3.6.0.min.js">https://code.jquery.com/jquery-3.6.0.min.js</a>"&gt;&lt;/script&gt;</span><br><span style="font-family: 'courier new', courier, sans-serif;">&lt;/head&gt;</span><br><span style="font-family: 'courier new', courier, sans-serif;">&lt;body&gt;</span></div>
+<div></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&lt;h3&gt;Cors Request&lt;/h3&gt;</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&lt;form id="frmRegister"&gt;</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &lt;input type="text" id="email" placeholder="Email" /&gt;</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &lt;input type="password" id="password" placeholder="Password" value="P@$$w0rd"/&gt;</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &lt;button id="btnRegister"&gt;Register&lt;/button&gt;</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &lt;button id="btnLogin"&gt;Login&lt;/button&gt;</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&lt;/form&gt;</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&lt;p&gt;Note that password is defaulted to the value: P@$$w0rd &lt;/p&gt;</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&lt;button id="btnGetData"&gt;Get Data&lt;/button&gt;</span></div>
+</div>
+<div><br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&lt;pre id="preOutput"&gt;&lt;/pre&gt;</span></div>
+<div></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&lt;script&gt;</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">$(function () {</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;var baseUrl = '<a href="https://localhost:5001">https://localhost:5001</a>';</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;var accessToken = "";</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;var getWeatherData = function () {</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; var url = baseUrl + '/weatherforecast';</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; $.ajax(url, {</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;type: "GET",</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;headers: {</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "Authorization": "Bearer " + accessToken</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;},</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; })</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; .always(showResponse);</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; return false</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;}</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;var showResponse = function (object) {</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; $('#preOutput').text(JSON.stringify(object, null, 4))</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;}</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;$('#btnGetData').click(getWeatherData);</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;var register = function () {</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; var registerData = {</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;email: $("#email").val(),</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;password:$("#password").val()</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; }</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; $.ajax({</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;url: baseUrl + '/register',</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;type: 'POST',</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;data: JSON.stringify(registerData),</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;contentType: 'application/json',</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;datatype: 'json'</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; })</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; .always(showResponse);</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; return false;</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;}</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;$('#btnRegister').click(register);</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;var login = function () {</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; var loginData = {</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;username: $("#email").val(),</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;password:$("#password").val()</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; }</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; $.ajax({</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;url: baseUrl + '/login',</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;type: 'POST',</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;data: JSON.stringify(loginData),</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;contentType: 'application/json',</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;datatype: 'json'</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; })</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; .done(saveAccessToken)</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; .always(showResponse);</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; return false;</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;};</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;$("#btnLogin").click(login);</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;var saveAccessToken = function (data) {</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; accessToken = data.token;</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; console.log(accessToken);</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;};</span></div>
+<br>
+<div><span style="font-family: 'courier new', courier, sans-serif;">})</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&lt;/script&gt;</span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;"></span></div>
+<div><span style="font-family: 'courier new', courier, sans-serif;">&lt;/body&gt;&lt;/html&gt;</span></div>
+</div>
+</body></html>

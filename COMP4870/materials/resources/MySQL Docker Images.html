@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html><head>
+</head><body><h2><strong>On Windows, macOS Intel &amp; macOS M1 computer, use:</strong></h2>
+<p><span style="font-family: 'courier new', courier, sans-serif;">docker run -d -p 3333:3306 --name maria -e MYSQL_ROOT_PASSWORD=secret mariadb:10.7.3</span></p>
+<h2>Inspect MariaDB container</h2>
+<p><span style="font-family: 'courier new', courier, sans-serif;">docker exec -it maria bash</span><br><span style="font-family: 'courier new', courier, sans-serif;">mysql -u root -psecret</span><br><span style="font-family: 'courier new', courier, sans-serif;">create database school; &nbsp; &nbsp;</span><br><span style="font-family: 'courier new', courier, sans-serif;">show databases;</span><br><span style="font-family: 'courier new', courier, sans-serif;">exit</span><br><span style="font-family: 'courier new', courier, sans-serif;">exit</span></p>
+<h2>Pomelo Driver</h2>
+<p><span style="font-family: 'courier new', courier, sans-serif;">dotnet add package Pomelo.EntityFrameworkCore.MySql -v 7.0.0</span></p>
+<h2>ConnectionString</h2>
+<p><span style="font-family: 'courier new', courier, sans-serif;">server=localhost;userid=root;pwd=secret;port=3333;database=SkyDB;SslMode=none;allowpublickeyretrieval=True;</span></p>
+<h2>Program.cs / Pomelo</h2>
+<p><span style="font-family: 'courier new', courier, sans-serif;">var host = builder.Configuration["DBHOST"] ?? "localhost";</span><br><span style="font-family: 'courier new', courier, sans-serif;">var port = builder.Configuration["DBPORT"] ?? "3333";</span><br><span style="font-family: 'courier new', courier, sans-serif;">var password = builder.Configuration["DBPASSWORD"] ?? "secret";</span><br><span style="font-family: 'courier new', courier, sans-serif;">var db = builder.Configuration["DBNAME"] ?? "test-db";</span><br><span style="font-family: 'courier new', courier, sans-serif;">var user = builder.Configuration["DBUSER"] ?? "root";</span></p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">string connectionString = $"server={host}; userid={user}; pwd={password};"</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; &nbsp; &nbsp; + $"port={port}; database={db};SslMode=none;allowpublickeyretrieval=True;";</span></p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">var serverVersion = new MySqlServerVersion(new Version(10,7,3));</span></p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">builder.Services.AddDbContext&lt;ApplicationDbContext&gt;(options =&gt;</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; options.UseMySql(connectionString, serverVersion));</span></p>
+<p></p></body></html>

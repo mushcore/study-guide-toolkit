@@ -1,0 +1,2822 @@
+modules:
+  - id: ejb
+    name: EJB — session beans
+    topics:
+      - id: 4911-ejb-intro
+        name: EJB Intro
+        tags:
+          - ejb
+          - tech
+        prose: Cards covering EJB Intro.
+        cards:
+          - type: name
+            prompt: What are the three types of EJB components?
+            answer: |-
+              1. **Session Beans** (business logic — stateless, stateful, singleton)
+              2. **Message-Driven Beans** (async JMS consumers)
+              3. **Entity Beans / JPA Entities** (persistent objects)
+            explanation: |-
+              EJB 3.x groups server-side components into three families by *what they do*. **Session beans** hold
+              your service-layer methods (think "place an order"). **MDBs** are async JMS consumers triggered by
+              a message on a queue/topic. **Entity/JPA** classes describe rows in the database. The container
+              injects, pools, secures and transaction-wraps all three — you only write the annotated class.
+            example: |-
+              ```java
+              @Stateless public class OrderService { public void placeOrder(Order o) { ... } }  // session
+              @MessageDriven public class OrderMDB implements MessageListener { ... }            // MDB
+              @Entity public class Order { @Id Long id; ... }                                    // JPA entity
+              ```
+          - type: name
+            prompt: What services does the EJB container provide?
+            answer: |-
+              1. Transaction management
+              2. Security
+              3. Instance pooling
+              4. Concurrency
+              5. Persistence context management
+              6. Resource injection (JNDI/ENC)
+              7. Lifecycle callbacks
+              8. Interceptors
+              9. Remote invocation
+            explanation: |-
+              The restaurant-in-a-mall analogy: the container is the mall — it supplies the boring plumbing
+              (threads, TXs, security, DB pools, JNDI, crash recovery) so your bean class only has to hold the
+              *business* logic. Every cross-cutting concern listed here is declaratively triggered by an
+              annotation (`@TransactionAttribute`, `@RolesAllowed`, `@PersistenceContext`, `@EJB`, etc.), not
+              by you writing the plumbing by hand.
+            example: |-
+              ```java
+              @Stateless
+              @RolesAllowed("CLERK")                    // security
+              public class OrderService {
+                  @PersistenceContext EntityManager em; // persistence + injection
+                  @TransactionAttribute(REQUIRED)       // TX management
+                  public void place(Order o) { em.persist(o); }
+              }
+              ```
+          - type: name
+            prompt: What annotation indicates the no-interface view for an EJB?
+            answer: "`@LocalBean` — allows clients to invoke the bean class directly without defining a business interface."
+            explanation: |-
+              Pre-EJB-3.1 you always needed a business interface (`@Local` or `@Remote`). **`@LocalBean`** means
+              "the bean class itself IS the view" — clients just inject the bean type. It is implicit when the
+              bean implements *no* interface; you only write `@LocalBean` explicitly to keep the no-interface
+              view when you *also* add a `@Local` or `@Remote` interface.
+            example: |-
+              ```java
+              @Stateless
+              @LocalBean                              // no-interface view
+              public class GreetingService {
+                  public String hello() { return "hi"; }
+              }
+
+              // client:
+              @EJB GreetingService svc;               // injected directly, no interface needed
+              ```
+          - type: name
+            prompt: What is the difference between @Local and @Remote?
+            answer: >-
+              `@Local` = same JVM (pass by reference, faster). `@Remote` = different JVMs (pass by value/serialized,
+              network-accessible).
+            explanation: |-
+              `@Local` calls cross *no* process boundary, so arguments pass by reference — cheap, but any change
+              the callee makes is visible to the caller. `@Remote` calls go over RMI-IIOP, so every argument is
+              serialized (pass-by-value), which is slower and demands `Serializable` types. Default to `@Local`
+              unless a client actually lives in a different JVM.
+            example: |-
+              ```java
+              @Local  public interface OrderServiceLocal  { void place(Order o); }
+              @Remote public interface OrderServiceRemote { void place(Order o); }
+
+              @Stateless
+              public class OrderServiceBean implements OrderServiceLocal, OrderServiceRemote { ... }
+              ```
+      - id: 4911-session-beans
+        name: Session Beans
+        tags:
+          - session-beans
+          - tech
+        prose: Three distinct session bean flavors, each with different statefulness + concurrency semantics.
+        cards:
+          - type: name
+            prompt: A `@Stateless` session bean keeps \_\_\_ client state between invocations.
+            answer: "**no** — the pool can hand any instance to any client; nothing is retained between calls."
+            explanation: |-
+              Think *fast-food counter*: any cashier takes any order, nobody remembers you. Because instances
+              are interchangeable, the container pre-creates a pool and round-robins them — that's why SLSBs
+              scale horizontally. Any instance field you set is effectively garbage once the method returns;
+              if you *need* to remember something across calls, reach for `@Stateful` or a `@Singleton`.
+            example: |-
+              ```java
+              @Stateless
+              public class TaxCalc {
+                  private BigDecimal lastTotal;            // DO NOT rely on this
+                  public BigDecimal compute(Order o) { ... }
+              }
+              ```
+          - type: name
+            prompt: A `@Stateful` session bean holds \_\_\_ state for the duration of one client's conversation.
+            answer: "**conversational** (per-client). Container pins one instance to one client; may passivate when idle."
+            explanation: |-
+              SFSB = *personal banker*: one dedicated instance per client for the whole conversation. Because
+              it holds state, the container serializes the bean to disk (`@PrePassivate`) when idle and restores
+              it (`@PostActivate`) on return — so all instance fields (and referenced objects) must be
+              `Serializable`. The conversation ends when a method marked `@Remove` returns, the session times
+              out, or the client explicitly discards the reference.
+            example: |-
+              ```java
+              @Stateful
+              public class ShoppingCart {
+                  private List<Item> items = new ArrayList<>();
+                  public void add(Item i) { items.add(i); }
+                  @Remove public Order checkout() { ... }   // ends the conversation
+              }
+              ```
+          - type: name
+            prompt: A `@Singleton` session bean has \_\_\_ instance(s) shared across the whole application.
+            answer: "**one**. All clients share it; concurrency is controlled by `@Lock(READ/WRITE)` or BEAN-managed."
+            explanation: |-
+              *Shared bulletin board in the office lobby* — one instance, every client reads from it. Because
+              it is shared mutable state, the container serializes access via `@Lock` by default. Combine with
+              `@Startup` (eager init at deploy) and `@DependsOn("OtherBean")` (init order) for app-wide caches,
+              configuration, counters, or `@Schedule`-based timers.
+            example: |-
+              ```java
+              @Singleton
+              @Startup
+              @DependsOn("ConfigBean")
+              public class AppCache {
+                  private final Map<String,Object> cache = new ConcurrentHashMap<>();
+                  @Lock(READ)  public Object get(String k)         { return cache.get(k); }
+                  @Lock(WRITE) public void put(String k, Object v) { cache.put(k, v); }
+              }
+              ```
+          - type: name
+            prompt: What is the SLSB lifecycle?
+            answer: >-
+              **Does Not Exist** → (newInstance + @PostConstruct) → **Method-Ready Pool** → (method invoked) → back to
+              pool → (@PreDestroy) → **Does Not Exist**. *No passivation.*
+            explanation: |-
+              Only two real states: in the pool, or destroyed. Because no client state is retained, there's
+              nothing to serialize — `@PrePassivate` and `@PostActivate` are *not* used on an SLSB. Use
+              `@PostConstruct` for expensive one-time setup (cache a prepared statement, acquire a handle) and
+              `@PreDestroy` for cleanup. Do not assume pool instances are destroyed between calls — they're
+              reused.
+            example: |-
+              ```java
+              @Stateless
+              public class PricingService {
+                  @PostConstruct void init()    { /* warm up once per instance */ }
+                  @PreDestroy   void cleanup()  { /* release resources */ }
+                  public BigDecimal price(Sku s){ ... }
+              }
+              ```
+          - type: name
+            prompt: What is the SFSB lifecycle?
+            answer: >-
+              Does Not Exist → (@PostConstruct) → **Method-Ready** → (timeout / inactivity: @PrePassivate) → **Passive**
+              (serialized to disk) → (client call: @PostActivate) → Method-Ready → (@Remove / @PreDestroy / timeout) →
+              Does Not Exist.
+            explanation: |-
+              SFSB is the only bean type that **passivates**, because it is the only one with per-client state
+              worth preserving. Passivation = serialize to disk to free memory; activation = deserialize on next
+              client call. Because the JVM may serialize the bean, every non-transient field (and anything it
+              references) must be `Serializable` — a common midterm trap is a non-serializable field causing
+              silent activation failures.
+            example: |-
+              ```java
+              @Stateful
+              public class BookingWizard implements Serializable {
+                  private Date checkIn;                        // serializable
+                  @PrePassivate void beforeIdle() { /* close connections */ }
+                  @PostActivate void afterWake()  { /* reopen       */ }
+                  @Remove public void finish() { }
+              }
+              ```
+          - type: name
+            prompt: What annotation marks a method that ends the SFSB conversation?
+            answer: "`@Remove` on the method. After the method returns, the container removes the SFSB instance."
+            explanation: |-
+              `@Remove` is the conversational "checkout" — after the method returns normally, the container
+              discards the instance, releasing the memory (and any pinned resources). If the method throws an
+              *application* exception, you can set `@Remove(retainIfException=true)` to keep the bean alive so
+              the client can retry. `@Remove` is meaningless on SLSB or Singleton.
+            example: |-
+              ```java
+              @Stateful
+              public class Cart {
+                  private List<Item> items = new ArrayList<>();
+                  public void add(Item i) { items.add(i); }
+                  @Remove public Order checkout() { return new Order(items); }   // bean goes away after return
+              }
+              ```
+          - type: name
+            prompt: What annotation starts a singleton at deployment?
+            answer: >-
+              `@Startup` — tells container to instantiate singleton eagerly when the app deploys (not lazy on first
+              call).
+            explanation: |-
+              Without `@Startup` a singleton is lazy — its `@PostConstruct` runs on the first business-method
+              call, which means the first user pays the init cost and any early init errors surface late. With
+              `@Startup` it fires at deploy time, so config loading, cache warm-up, and timer registration
+              happen before any client can touch the app.
+            example: |-
+              ```java
+              @Singleton
+              @Startup
+              public class AppConfig {
+                  private Properties props;
+                  @PostConstruct void load() { props = readFromDisk(); }   // runs at deploy
+              }
+              ```
+          - type: name
+            prompt: What is @DependsOn used for?
+            answer: >-
+              Specifies which other singletons must be initialized BEFORE this one. `@DependsOn("ConfigBean")` ensures
+              ConfigBean's @PostConstruct runs first.
+            explanation: |-
+              Useful with `@Startup` singletons when one singleton reads data that another singleton loads.
+              Without `@DependsOn` the container picks an arbitrary init order, so a `@PostConstruct` that
+              touches a not-yet-initialized peer will NPE. You may list multiple dependencies:
+              `@DependsOn({"ConfigBean","MetricsBean"})`.
+            example: |-
+              ```java
+              @Singleton @Startup
+              public class ConfigBean { /* loads config */ }
+
+              @Singleton @Startup
+              @DependsOn("ConfigBean")
+              public class CacheBean {
+                  @EJB ConfigBean cfg;
+                  @PostConstruct void warm() { /* uses cfg — guaranteed ready */ }
+              }
+              ```
+          - type: name
+            prompt: What is @Lock(READ) vs @Lock(WRITE) on a singleton?
+            answer: >-
+              **@Lock(READ)** — many threads concurrently. **@Lock(WRITE)** — exclusive (only one thread, blocks all
+              others). Only applies when `@ConcurrencyManagement(CONTAINER)`, the default.
+            explanation: |-
+              Mirrors a classic *readers-writer lock*: many readers OR one writer. Default if neither is
+              specified is `@Lock(WRITE)` — safe but a throughput killer if you forget to mark read-only getters
+              as `@Lock(READ)`. A writer-locked method blocks *every* reader as well as other writers.
+            example: |-
+              ```java
+              @Singleton
+              public class Counter {
+                  private long count;
+                  @Lock(READ)  public long get()          { return count; }   // parallel
+                  @Lock(WRITE) public void inc()          { count++;      }   // exclusive
+              }
+              ```
+          - type: name
+            prompt: What does @AccessTimeout control on a singleton?
+            answer: >-
+              Max time (ms) a thread waits to acquire a @Lock before throwing ConcurrentAccessTimeoutException. Prevents
+              deadlock.
+            explanation: |-
+              Without a timeout, two slow writers + a queue of readers can stall the whole app. `@AccessTimeout`
+              caps how long a thread will wait; once exceeded, the container throws
+              `ConcurrentAccessTimeoutException` instead of hanging. Value `0` = fail immediately if lock busy;
+              `-1` = wait forever.
+            example: |-
+              ```java
+              @Singleton
+              public class SlowCache {
+                  @Lock(WRITE)
+                  @AccessTimeout(value = 5, unit = TimeUnit.SECONDS)
+                  public void refresh() { /* long I/O */ }      // caller waits max 5s
+              }
+              ```
+          - type: name
+            prompt: Difference between @ConcurrencyManagement(CONTAINER) and (BEAN)?
+            answer: >-
+              **CONTAINER** (default) — container serializes access via @Lock. **BEAN** — developer responsible, must
+              use synchronized / Lock manually. Bean-managed gives full control at the cost of complexity.
+            explanation: |-
+              CMC (the default) is the "safe" path: annotate methods and the container does the locking. BMC is
+              the escape hatch when coarse read/write locking is too blunt — e.g. you need a `ConcurrentHashMap`,
+              `ReentrantReadWriteLock`, or lock-free data structures for hot paths. In BMC mode `@Lock` is
+              ignored completely; you own thread safety end-to-end.
+            example: |-
+              ```java
+              @Singleton
+              @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
+              public class HotCounter {
+                  private final AtomicLong n = new AtomicLong();
+                  public long inc() { return n.incrementAndGet(); }   // no @Lock
+              }
+              ```
+          - type: name
+            prompt: Why does SLSB not need @PrePassivate / @PostActivate?
+            answer: >-
+              SLSBs have no client state. They're interchangeable from the pool. Container never needs to serialize
+              them. Only SFSBs passivate.
+            explanation: |-
+              Passivation only exists to save memory when an idle SFSB is holding conversational state. A
+              stateless pool instance has *nothing worth saving* — the container just shrinks the pool if memory
+              is tight, destroying extra instances outright (calling `@PreDestroy`, not `@PrePassivate`). A
+              common exam trap: "Which callback fires when an SLSB is idle?" — answer is none; pool shrinkage
+              fires `@PreDestroy`.
+            example: |-
+              ```java
+              @Stateless
+              public class MailService {
+                  @PostConstruct void init()   { }   // on add to pool
+                  @PreDestroy  void shutdown() { }   // on pool shrink — never @PrePassivate
+              }
+              ```
+      - id: 4911-mdb
+        name: MDB
+        tags:
+          - mdb
+          - tech
+        prose: Cards covering MDB.
+        cards:
+          - type: name
+            prompt: What annotation marks an MDB?
+            answer: "`@MessageDriven`. Bean implements javax.jms.MessageListener, overrides `onMessage(Message m)`."
+            explanation: |-
+              An MDB has no client — it wakes up because a *message* arrived. The container pulls the message
+              off the destination, picks a pooled MDB instance, and hands it to `onMessage`. There is no return
+              value and no interface for direct client invocation; MDBs are fire-and-forget consumers.
+            example: |-
+              ```java
+              @MessageDriven(activationConfig = {
+                  @ActivationConfigProperty(propertyName="destinationType",
+                                            propertyValue="javax.jms.Queue")
+              })
+              public class OrderMDB implements MessageListener {
+                  public void onMessage(Message m) { /* process */ }
+              }
+              ```
+          - type: name
+            prompt: Two JMS messaging models?
+            answer: |-
+              1. **Point-to-Point (Queue)** — 1:1, exactly one consumer
+              2. **Publish-Subscribe (Topic)** — 1:many, all subscribers receive each message
+            explanation: |-
+              Queue = *work list*: each message is delivered to exactly one consumer — great for load-balanced
+              task processing. Topic = *broadcast*: every subscriber gets a copy — great for event fan-out.
+              Bruce flagged Queue-vs-Topic as HIGH priority on the final, so know the difference cold.
+            example: |-
+              ```java
+              // Queue (Point-to-Point): one of N workers consumes each job
+              @ActivationConfigProperty(propertyName="destinationType", propertyValue="javax.jms.Queue")
+
+              // Topic (Pub-Sub): every subscriber receives each event
+              @ActivationConfigProperty(propertyName="destinationType", propertyValue="javax.jms.Topic")
+              ```
+          - type: name
+            prompt: How do you set destination type on an MDB?
+            answer: >-
+              `@ActivationConfigProperty(propertyName="destinationType", propertyValue="javax.jms.Topic")` inside
+              @MessageDriven activationConfig array.
+            explanation: |-
+              `activationConfig` is an array of name/value pairs the container passes to the JMS provider at
+              MDB deployment. Beyond `destinationType`, common entries are `destinationLookup` (JNDI name of the
+              queue/topic), `acknowledgeMode` (Auto/Dups-OK) and `messageSelector` (SQL-92-style filter on
+              message headers).
+            example: |-
+              ```java
+              @MessageDriven(activationConfig = {
+                @ActivationConfigProperty(propertyName="destinationType",   propertyValue="javax.jms.Queue"),
+                @ActivationConfigProperty(propertyName="destinationLookup", propertyValue="jms/OrderQueue"),
+                @ActivationConfigProperty(propertyName="messageSelector",   propertyValue="priority > 5")
+              })
+              public class OrderMDB implements MessageListener { ... }
+              ```
+          - type: name
+            prompt: Why is MDB like SLSB?
+            answer: >-
+              Stateless, pooled, same lifecycle (DoesNotExist → Method-Ready Pool). No passivation. Multiple instances
+              handle concurrent messages.
+            explanation: |-
+              Both are stateless, both use a container-managed pool, both fire `@PostConstruct`/`@PreDestroy`
+              only. The key difference is the *trigger*: SLSB is invoked synchronously via `@EJB` injection;
+              MDB is invoked asynchronously when a JMS message arrives. Because the pool size caps
+              concurrency, MDBs naturally process many messages in parallel.
+            example: |-
+              ```java
+              // Shared lifecycle: no passivation, no conversational state
+              @PostConstruct void init()    { /* open resources once */ }
+              @PreDestroy  void shutdown()  { /* close on pool shrink */ }
+              ```
+  - id: jpa
+    name: JPA — entities & persistence
+    topics:
+      - id: 4911-entitymanager
+        name: EntityManager
+        tags:
+          - jpa
+          - tech
+        prose: >-
+          EntityManager is the gateway between Java entities and the database. It maintains a Persistence Context (PC) —
+          the set of managed entities within a transaction.
+        cards:
+          - type: name
+            prompt: What does EntityManager.persist(e) do?
+            answer: >-
+              Makes the new entity managed, schedules INSERT for next flush/commit. Does NOT immediately write to DB.
+              Throws EntityExistsException if entity already has id and exists.
+            explanation: |-
+              `persist()` is the **New → Managed** transition only. The INSERT is queued on the persistence
+              context and flushed at the next `flush()` or at transaction commit. Calling `persist()` on a
+              *detached* entity is an error — use `merge()` instead. Cascade type `PERSIST` propagates the call
+              to related entities.
+            example: |-
+              ```java
+              Customer c = new Customer();        // New/Transient
+              c.setName("Alice");
+              em.persist(c);                      // now Managed, INSERT queued
+              // INSERT runs on flush() or commit, not here
+              ```
+          - type: name
+            prompt: When do you use merge() instead of persist()?
+            answer: >-
+              For DETACHED entities. persist() throws on detached. merge() copies state into a managed copy and returns
+              it. Use for entities returned from client / serialized across tiers.
+            explanation: |-
+              Key trap: `merge()` does **not** make the argument managed — it copies state into a new managed
+              instance and *returns* that. The parameter stays detached. Always assign the return value and keep
+              working with it. Use merge for entities that came back from a web tier, an RMI call, or were
+              detached when a previous TX ended.
+            example: |-
+              ```java
+              Customer detached = /* came back from client */;
+              detached.setEmail("new@x.com");
+              Customer managed = em.merge(detached);   // NEW managed copy returned
+              managed.setPhone("555");                 // changes go to managed
+              // detached is still detached — modifications to it are lost
+              ```
+          - type: name
+            prompt: What are the four entity states?
+            answer: |-
+              1. **New/Transient** (never persisted, no id)
+              2. **Managed** (in persistence context, tracked)
+              3. **Detached** (was managed, now outside PC)
+              4. **Removed** (scheduled for DELETE)
+            explanation: |-
+              The four states are a tiny state machine: `new → persist → Managed → remove → Removed`, and
+              Managed → Detached the moment the PC closes (TX commit / `em.clear()` / `em.detach(e)`). Only
+              Managed and Removed are *tracked*; dirty checks and cascades only fire on tracked objects. Lazy
+              loading fails on Detached because the PC is no longer watching.
+            example: |-
+              ```java
+              Customer c = new Customer();          // New
+              em.persist(c);                        // Managed
+              tx.commit();                          // Detached (PC closed)
+              c = em.merge(c);                      // Managed again (via copy)
+              em.remove(c);                         // Removed
+              ```
+          - type: name
+            prompt: What does flush() do?
+            answer: >-
+              Synchronizes PC state to database — writes pending INSERT/UPDATE/DELETE. Transaction remains open. Does
+              NOT commit.
+            explanation: |-
+              `flush()` forces the provider to emit queued SQL right now, so constraints, triggers, or generated
+              IDs materialize early. It does NOT commit — the transaction stays open and a rollback still undoes
+              the flushed changes. Use it when you need a DB-generated id before commit, or when a subsequent
+              native query must see pending modifications.
+            example: |-
+              ```java
+              em.persist(order);            // INSERT queued
+              em.flush();                   // INSERT runs now; order.id populated
+              em.createNativeQuery("UPDATE ...").executeUpdate();  // sees the order row
+              // TX still open; rollback would still undo everything
+              ```
+          - type: name
+            prompt: What's the difference between find() and getReference()?
+            answer: >-
+              **find()** — queries DB immediately, returns null if missing. **getReference()** — returns proxy, no DB
+              hit, throws EntityNotFoundException only when proxy accessed. Use for FK-only updates.
+            explanation: |-
+              `getReference()` is the "lazy" cousin of `find()`. The returned object is a proxy that defers the
+              SELECT until you actually touch a field other than the id. This is perfect when you only need the
+              id to set a FK on another entity — you skip a round trip. But if the row doesn't exist, the error
+              only surfaces when the proxy is first accessed, which makes bugs harder to trace.
+            example: |-
+              ```java
+              // Only need dept as an FK on employee — no SELECT needed
+              Department proxy = em.getReference(Department.class, deptId);
+              employee.setDepartment(proxy);          // FK set, zero DB reads
+              em.persist(employee);
+
+              Department real = em.find(Department.class, deptId);  // SELECT runs now
+              ```
+          - type: name
+            prompt: What annotation injects a container-managed EntityManager?
+            answer: >-
+              `@PersistenceContext`. By default: transaction-scoped. Add `type=PersistenceContextType.EXTENDED` for
+              SFSBs that span transactions.
+            explanation: |-
+              `@PersistenceContext` is *not* the same as `@Inject` or `@Resource` — it hooks the bean up to the
+              JPA persistence unit declared in `persistence.xml`. `unitName="…"` selects one when multiple PUs
+              exist. The injected `EntityManager` is safe to share across threads because the container
+              proxies it and looks up the current TX's PC on each call.
+            example: |-
+              ```java
+              @Stateless
+              public class OrderService {
+                  @PersistenceContext(unitName = "myPU")
+                  private EntityManager em;
+              }
+              ```
+          - type: name
+            prompt: Transaction-scoped vs Extended persistence context?
+            answer: >-
+              **Transaction-scoped** (default): lives for ONE transaction; entities detach when TX ends. **Extended**:
+              lives across multiple TXs in an SFSB; entities remain managed. Extended only valid in SFSBs.
+            explanation: |-
+              Transaction-scoped PCs are created at TX start and torn down at TX end — perfect for stateless
+              services. Extended PCs are tied to the SFSB's conversation: the same PC survives across multiple
+              method calls and TXs, which is how wizards and carts can repeatedly load, edit, and save the same
+              managed entity without re-merging. Using `EXTENDED` on an SLSB or Singleton is a deployment error.
+            example: |-
+              ```java
+              @Stateful
+              public class BookingWizard {
+                  @PersistenceContext(type = PersistenceContextType.EXTENDED)
+                  EntityManager em;   // survives every method call until @Remove
+              }
+              ```
+          - type: name
+            prompt: Why does em.remove(detachedEntity) throw an exception?
+            answer: >-
+              remove() requires a managed entity. On detached, throws IllegalArgumentException. First merge() to
+              reattach, THEN remove.
+            explanation: |-
+              `remove()` expects an entity that is currently in the persistence context — the PC is what
+              schedules the DELETE. A detached object is outside the PC, so the provider literally doesn't know
+              it exists. Pattern: `em.remove(em.merge(detached))`. Alternatively use `em.find()` to fetch the
+              managed version first.
+            example: |-
+              ```java
+              Customer detached = /* came from client */;
+              // em.remove(detached);                    // BOOM: IllegalArgumentException
+              em.remove(em.merge(detached));             // OK: merge first, then remove
+              ```
+          - type: name
+            prompt: Does calling find(Employee.class, 1) twice in the same PC return the same object?
+            answer: >-
+              Yes — same object reference. PC caches by identity. Two finds with the same PK return the same Java
+              instance (identity semantics).
+            explanation: |-
+              The PC is a *first-level cache* keyed by `(entity class, primary key)`. Guaranteed identity inside
+              the same PC is why you can safely compare with `==` and why dirty-checking works — there is only
+              one Java object representing each row. Across different PCs (or after detach) the guarantee is
+              gone, so always compare with `.equals()` there.
+            example: |-
+              ```java
+              Employee a = em.find(Employee.class, 1L);
+              Employee b = em.find(Employee.class, 1L);
+              assert a == b;           // true — same PC, same instance
+              ```
+          - type: name
+            prompt: What does em.refresh(entity) do?
+            answer: >-
+              Reloads managed entity from database, overwriting in-memory changes. Used to discard unsaved edits or grab
+              fresh data.
+            explanation: |-
+              `refresh()` re-reads the row and copies the DB state back into the managed instance, *throwing
+              away* any unflushed changes in memory. Use it to recover from an optimistic-lock failure, to pick
+              up values set by DB triggers, or to back out of a partially-edited entity.
+            example: |-
+              ```java
+              Employee e = em.find(Employee.class, 1L);
+              e.setSalary(BigDecimal.ZERO);   // bad edit, not yet committed
+              em.refresh(e);                  // discards the edit; e.salary = DB value
+              ```
+      - id: 4911-mapping
+        name: Mapping
+        tags:
+          - jpa
+          - tech
+        prose: >-
+          JPA entity mapping — `@Entity`, `@Table`, `@Id`, `@Column`, plus composite keys via `@IdClass` (multiple
+          `@Id` fields) or `@EmbeddedId` (one `@Embeddable` PK class). Recognize the two composite-key styles by name.
+        cards:
+          - type: name
+            prompt: What annotation marks a class as a JPA entity?
+            answer: "`@Entity`. Required. Class must also have: no-arg constructor, exactly one @Id, be top-level (not inner)."
+            explanation: |-
+              `@Entity` is what flips the class from "plain Java" to "row in a table." The structural rules
+              (no-arg ctor, non-final class, top-level, `@Id`) exist because the provider needs to reflectively
+              instantiate and proxy the class. Missing any one is a deploy-time failure — common midterm trap:
+              a class declared `final` or lacking the default constructor.
+            example: |-
+              ```java
+              @Entity
+              public class Customer {
+                  @Id private Long id;
+                  private String name;
+                  public Customer() {}                  // REQUIRED no-arg ctor
+                  public Customer(String name) { this.name = name; }
+              }
+              ```
+          - type: name
+            prompt: Is @Table required on an entity?
+            answer: >-
+              **No — it's optional.** Default table name = entity class name. Use @Table(name="...") to override.
+              (Midterm trap: watch for "@Table is required" T/F → FALSE.)
+            explanation: |-
+              "@Table is required" is a classic T/F bait — the answer is **FALSE**. Without `@Table`, JPA uses
+              the entity class name as the table name (often uppercased depending on provider/dialect).
+              `@Table` also lets you override schema, catalog, or add unique constraints, so you still reach
+              for it whenever the legacy DB name disagrees with your Java class name.
+            example: |-
+              ```java
+              @Entity                          // no @Table → table "Customer"
+              public class Customer { ... }
+
+              @Entity
+              @Table(name = "CUST_TBL", schema = "SALES",
+                     uniqueConstraints = @UniqueConstraint(columnNames = "email"))
+              public class Client { ... }      // table SALES.CUST_TBL
+              ```
+          - type: name
+            prompt: Which annotation marks a field to be excluded from persistence?
+            answer: >-
+              `@Transient`. Field never written to DB. Use for calculated / temp fields. (Fake distractors: @Virtual,
+              @Calculated — don't exist.)
+            explanation: |-
+              Do NOT confuse `@Transient` (JPA, skip this field) with Java's `transient` keyword (skip on
+              serialization). JPA will otherwise auto-map every non-static field. Classic use case: a derived
+              value like `fullName` computed from `firstName` + `lastName`, or a cached display value you don't
+              want round-tripped to the DB.
+            example: |-
+              ```java
+              @Entity
+              public class Employee {
+                  @Id Long id;
+                  String firstName;
+                  String lastName;
+                  @Transient String fullName;      // never written to DB
+                  @PostLoad void build() { fullName = firstName + " " + lastName; }
+              }
+              ```
+          - type: name
+            prompt: Which annotation maps a java.util.Date?
+            answer: >-
+              `@Temporal(TemporalType.DATE | TIME | TIMESTAMP)`. Required for java.util.Date / Calendar. NOT needed for
+              java.time.LocalDate (JPA 2.2+).
+            explanation: |-
+              `java.util.Date` carries date+time+timezone ambiguity, so JPA makes you disambiguate with
+              `@Temporal`: `DATE` (just date), `TIME` (just clock time), or `TIMESTAMP` (both). Omitting it on a
+              `java.util.Date` field is a deploy error. Modern code should prefer `java.time.LocalDate` /
+              `LocalDateTime` / `Instant`, which map natively without `@Temporal`.
+            example: |-
+              ```java
+              @Temporal(TemporalType.DATE)      private java.util.Date birthDate;      // DATE only
+              @Temporal(TemporalType.TIMESTAMP) private java.util.Date createdAt;      // full ts
+              private java.time.LocalDate hireDate;                                    // no @Temporal needed
+              ```
+          - type: name
+            prompt: Which annotation identifies the primary key?
+            answer: >-
+              `@Id`. Every entity must have exactly one @Id (simple) or use @IdClass / @EmbeddedId for composite. (Fake
+              distractors: @Identity, @PrimaryKey, @PK.)
+            explanation: |-
+              MCQ trap: `@Identity`, `@PrimaryKey`, and `@PK` don't exist in JPA — only `@Id`. Pair it with
+              `@GeneratedValue` to have the DB / provider allocate the value; otherwise you set it yourself
+              before `persist()`. Place `@Id` either on the field or the getter, but be consistent for all
+              entities in the class hierarchy (field vs property access is determined by where `@Id` lives).
+            example: |-
+              ```java
+              @Entity
+              public class Product {
+                  @Id
+                  @GeneratedValue(strategy = GenerationType.IDENTITY)
+                  private Long id;
+              }
+              ```
+          - type: name
+            prompt: Four strategies for @GeneratedValue?
+            answer: |-
+              1. `AUTO` (default, dialect chooses)
+              2. `IDENTITY` (auto-increment column)
+              3. `SEQUENCE` (database sequence, Oracle/Postgres)
+              4. `TABLE` (portable fallback, separate PK table)
+            explanation: |-
+              `AUTO` lets the provider pick whatever fits the database (often IDENTITY on MySQL, SEQUENCE on
+              Oracle/Postgres). `IDENTITY` means the DB allocates the id on INSERT — cheap but blocks JDBC
+              batching. `SEQUENCE` is generally fastest because the provider can pre-fetch a block of IDs.
+              `TABLE` fakes a sequence with a separate helper table — the most portable but also the slowest.
+            example: |-
+              ```java
+              @Id
+              @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emp_seq")
+              @SequenceGenerator(name = "emp_seq", sequenceName = "EMP_SEQ", allocationSize = 50)
+              private Long id;
+              ```
+          - type: name
+            prompt: Two ways to define a composite primary key?
+            answer: |-
+              1. **@IdClass** — external PK class (not annotated), @Id on multiple fields in entity that mirror PK class
+              2. **@EmbeddedId** — PK class annotated @Embeddable, single @EmbeddedId field in entity
+
+              Both need equals() + hashCode() and Serializable.
+            explanation: |-
+              Bruce flagged composite keys as HIGH priority. Both flavors produce the same table layout but
+              differ in Java shape: `@IdClass` keeps the PK fields inline on the entity (PK class mirrors them);
+              `@EmbeddedId` groups them into one embeddable value object and the entity has a single PK field.
+              The common failure mode is forgetting `Serializable` or a correct `equals/hashCode` on the PK
+              class — the PC uses identity equality, so broken `equals()` silently duplicates rows.
+            example: |-
+              ```java
+              // @IdClass style
+              public class EmpPK implements Serializable { Long dept; String empNo; /* equals+hashCode */ }
+              @Entity @IdClass(EmpPK.class)
+              public class Emp { @Id Long dept; @Id String empNo; }
+
+              // @EmbeddedId style
+              @Embeddable public class EmpPK2 implements Serializable { Long dept; String empNo; }
+              @Entity public class Emp2 { @EmbeddedId EmpPK2 id; }
+              ```
+          - type: name
+            prompt: "Difference: @Enumerated(ORDINAL) vs (STRING)?"
+            answer: >-
+              **ORDINAL** — stored as 0, 1, 2… (default; fragile if enum order changes). **STRING** — stored as name
+              (safe, uses more space). Prefer STRING.
+            explanation: |-
+              The default is `ORDINAL`, which stores the enum's position. Insert a new enum value in the middle
+              later — all existing rows silently shift meaning. `STRING` stores the enum name, so refactors are
+              safe (though renaming a constant is now breaking instead). Always prefer `STRING` in new code;
+              it's the classic exam "why is this data corrupted" scenario.
+            example: |-
+              ```java
+              public enum Status { NEW, PAID, SHIPPED }
+
+              @Enumerated(EnumType.STRING)        // stores "NEW" / "PAID" / "SHIPPED"
+              private Status status;
+              ```
+          - type: name
+            prompt: What does @Version do?
+            answer: >-
+              Optimistic locking. Numeric field auto-incremented on each UPDATE. If two clients read + update, second's
+              version mismatch triggers OptimisticLockException.
+            explanation: |-
+              `@Version` turns every UPDATE into a `WHERE id=? AND version=?` — if zero rows are affected
+              because someone else already incremented version, the provider throws `OptimisticLockException`.
+              This is "last write wins is wrong — detect it" semantics: no locks are held in the DB, contention
+              is detected at commit. Typically backed by a `long`, `int`, or `@Temporal` timestamp.
+            example: |-
+              ```java
+              @Entity
+              public class Account {
+                  @Id Long id;
+                  @Version private long version;    // auto-managed by JPA
+                  private BigDecimal balance;
+              }
+              ```
+          - type: name
+            prompt: "@Embedded vs @Entity — what's embedded?"
+            answer: >-
+              **@Embeddable** = not an entity, no table, columns flattened into parent table. Parent uses **@Embedded**
+              on the field. Use for value objects (Address, Money).
+            explanation: |-
+              An `@Embeddable` has no `@Id` and no table of its own — its columns live in the owner's table. It
+              models *value objects* (two Addresses with identical fields are "equal" with no separate identity).
+              Great for grouping related columns (Address, Money, DateRange) without the overhead of a second
+              table or FK. Use `@AttributeOverride` to rename columns when the same Embeddable appears twice.
+            example: |-
+              ```java
+              @Embeddable
+              public class Address { String street; String city; String zip; }
+
+              @Entity
+              public class Customer {
+                  @Id Long id;
+                  @Embedded Address shipping;         // columns flattened into CUSTOMER table
+              }
+              ```
+      - id: 4911-relationships
+        name: Relationships
+        tags:
+          - relationships
+          - tech
+        prose: "\"Technically difficult. He CAN ask hard questions here.\" — Bruce"
+        cards:
+          - type: name
+            prompt: A 1:1 unidirectional relationship uses `@OneToOne` plus \_\_\_ on the owning side.
+            answer: "`@JoinColumn`. Owning side holds the FK; inverse side is absent in unidirectional."
+            explanation: |-
+              The owning side of any relationship is the side that physically holds the FK column — `@JoinColumn`
+              is what declares that FK. In a *unidirectional* 1:1 only one class has the field, so that class is
+              automatically the owner. Without `@JoinColumn`, JPA still assumes a FK column exists and uses a
+              default name (`profile_id`).
+            example: |-
+              ```java
+              @Entity
+              public class User {
+                  @Id Long id;
+                  @OneToOne
+                  @JoinColumn(name = "PROFILE_ID")   // FK column in USER table
+                  private Profile profile;
+              }
+              @Entity public class Profile { @Id Long id; }   // no reference back
+              ```
+          - type: name
+            prompt: A 1:1 bidirectional relationship marks the inverse side with \_\_\_.
+            answer: "`@OneToOne(mappedBy=\"...\")`. The name points to the field on the owning side."
+            explanation: |-
+              `mappedBy` literally means "I am the *inverse* — the FK lives over there, on the field named X."
+              Without it, JPA assumes two independent relationships and creates a second FK column. The string
+              is the Java *field name* on the owning class, not the column name and not the class name.
+            example: |-
+              ```java
+              @Entity
+              public class User {
+                  @OneToOne @JoinColumn(name = "PROFILE_ID")
+                  private Profile profile;                            // OWNS
+              }
+              @Entity
+              public class Profile {
+                  @OneToOne(mappedBy = "profile")                     // inverse — points at User.profile
+                  private User user;
+              }
+              ```
+          - type: name
+            prompt: In a unidirectional 1:N, the FK usually sits on the \_\_\_ side when `@JoinColumn` is specified.
+            answer: "**many** side. Without @JoinColumn, JPA defaults to a separate join table."
+            explanation: |-
+              A unidirectional 1:N is the awkward case: the *one* side declares the relationship but the FK
+              naturally belongs on the *many* side (one cell can't store a list of ids). With `@JoinColumn`,
+              JPA puts the FK on the many-side table; without it, the default fallback is a join table with two
+              FK columns — often a surprise, which is why `@JoinColumn` is nearly always added explicitly.
+            example: |-
+              ```java
+              @Entity
+              public class Department {
+                  @Id Long id;
+                  @OneToMany
+                  @JoinColumn(name = "DEPT_ID")       // FK column lives in EMPLOYEE table
+                  private List<Employee> employees;
+              }
+              @Entity public class Employee { @Id Long id; }   // no back-reference
+              ```
+          - type: name
+            prompt: The annotation that declares an N:1 unidirectional relationship is \_\_\_.
+            answer: "`@ManyToOne` (typically paired with `@JoinColumn`)."
+            explanation: |-
+              N:1 is the "natural" direction — the many side has a single FK pointing at the one side, which is
+              exactly what a DB row looks like. `@ManyToOne` defaults to EAGER fetch, which is usually fine for
+              a single parent but can be surprising in large graphs; override with `fetch=LAZY` if needed.
+            example: |-
+              ```java
+              @Entity
+              public class Employee {
+                  @Id Long id;
+                  @ManyToOne
+                  @JoinColumn(name = "DEPT_ID")
+                  private Department department;        // FK column DEPT_ID on EMPLOYEE
+              }
+              ```
+          - type: name
+            prompt: In a bidirectional 1:N/N:1, the \_\_\_ side is the owning side.
+            answer: "**many (N)** side owns. The one-side uses `mappedBy`. Reason: the FK lives in the many-side table."
+            explanation: |-
+              This is Bruce's canonical high-priority card. The *many* side owns because that's where the FK
+              physically lives — 1:N doesn't fit in one cell. JPA only reads the owning side when deciding what
+              SQL to emit, so forgetting `mappedBy` on the one side yields a second FK or even a join table.
+              Always add a helper method that sets both sides in Java to keep the object graph consistent.
+            example: |-
+              ```java
+              @Entity
+              public class Department {
+                  @OneToMany(mappedBy = "department")          // inverse
+                  private List<Employee> employees = new ArrayList<>();
+              }
+              @Entity
+              public class Employee {
+                  @ManyToOne @JoinColumn(name = "DEPT_ID")     // OWNING — holds FK
+                  private Department department;
+              }
+              ```
+          - type: name
+            prompt: An M:N unidirectional relationship is declared with `@ManyToMany` plus \_\_\_ to name the link table.
+            answer: "`@JoinTable`. Specifies the join table + both join columns."
+            explanation: |-
+              M:N always needs a link table in relational storage (no other way to express many-to-many). In
+              a unidirectional M:N, only one side has the field and that side declares `@JoinTable` naming the
+              link table, the FK to itself (`joinColumns`), and the FK to the other entity
+              (`inverseJoinColumns`). Without `@JoinTable`, JPA auto-names the link table as the concatenation
+              of both entity names.
+            example: |-
+              ```java
+              @Entity
+              public class Student {
+                  @ManyToMany
+                  @JoinTable(
+                      name = "STUDENT_COURSE",
+                      joinColumns = @JoinColumn(name = "STUDENT_ID"),
+                      inverseJoinColumns = @JoinColumn(name = "COURSE_ID"))
+                  private List<Course> courses;
+              }
+              ```
+          - type: name
+            prompt: An M:N bidirectional relationship puts `mappedBy` on the \_\_\_ side.
+            answer: "**inverse** side. Owning side carries the `@JoinTable`; inverse just refers back."
+            explanation: |-
+              In bidirectional M:N, *either* class can own the relationship (no FK-location constraint since it
+              lives in the link table). Whichever side you put `@JoinTable` on becomes the owner; the other side
+              simply says `mappedBy="fieldName"`. Changes to the collection on the *inverse* side are ignored
+              at flush — only the owning side drives SQL.
+            example: |-
+              ```java
+              @Entity
+              public class Student {
+                  @ManyToMany                                    // OWNS
+                  @JoinTable(name = "STUDENT_COURSE", ...)
+                  private List<Course> courses;
+              }
+              @Entity
+              public class Course {
+                  @ManyToMany(mappedBy = "courses")              // inverse
+                  private List<Student> students;
+              }
+              ```
+          - type: name
+            prompt: Which side of a bidirectional relationship is the owning side?
+            answer: >-
+              The side **with @JoinColumn (or @JoinTable)** — the side that holds the foreign key. The other side uses
+              `mappedBy="..."` pointing to the owner's field.
+            explanation: |-
+              Remember the definition: *owner = holds the FK*. JPA reads only the owner's collection/reference
+              at flush to decide INSERT/UPDATE of the FK column. A bidirectional relationship that forgets
+              `mappedBy` is treated as two separate unidirectional ones — you'll see double rows in the join
+              table or an unexpected second FK column.
+            example: |-
+              ```java
+              @ManyToOne @JoinColumn(name="DEPT_ID")         // owner — holds FK
+              private Department department;
+
+              @OneToMany(mappedBy = "department")             // inverse — no FK here
+              private List<Employee> employees;
+              ```
+          - type: name
+            prompt: In a 1:N bidirectional relationship, which side owns?
+            answer: >-
+              The **MANY side** (with @ManyToOne + @JoinColumn) owns. The ONE side uses @OneToMany(mappedBy="..."). The
+              many side holds the FK.
+            explanation: |-
+              This is a direct consequence of "FK goes where it fits" — you can't store a list of ids in the
+              one-side row. Always add a helper on the one side that keeps both sides in sync, otherwise your
+              in-memory graph and the DB will disagree until the next reload.
+            example: |-
+              ```java
+              public class Department {
+                  @OneToMany(mappedBy = "department")
+                  private List<Employee> employees = new ArrayList<>();
+                  public void addEmployee(Employee e) {       // keep both sides consistent
+                      employees.add(e);
+                      e.setDepartment(this);
+                  }
+              }
+              ```
+          - type: name
+            prompt: What does mappedBy point to?
+            answer: >-
+              The field name on the owning side that holds the relationship. E.g. @OneToMany(mappedBy="employee") →
+              owning Employee class has a field named "employee".
+            explanation: |-
+              `mappedBy` takes the *Java field name* (or property name under property access) on the owning
+              class — never the column name, never the entity name. Typos produce `MappingException` at
+              deployment. Reading `mappedBy="x"` aloud as "I'm mapped by the field `x` on the other side" helps
+              remember the direction.
+            example: |-
+              ```java
+              @Entity public class Employee {
+                  @ManyToOne @JoinColumn(name="DEPT_ID")
+                  private Department department;              // <— field name
+              }
+              @Entity public class Department {
+                  @OneToMany(mappedBy = "department")          // points at Employee.department
+                  private List<Employee> employees;
+              }
+              ```
+          - type: name
+            prompt: Default fetch type for \*ToOne vs \*ToMany?
+            answer: "**@ManyToOne, @OneToOne** → EAGER. **@OneToMany, @ManyToMany** → LAZY. Override with fetch=FetchType.X."
+            explanation: |-
+              Rule of thumb: *single* = EAGER (loaded with the parent), *many* = LAZY (loaded only when the
+              collection is accessed). EAGER can silently pull half the schema across a deep object graph, so
+              in large apps you often flip `@ManyToOne` to LAZY. LAZY collections throw
+              `LazyInitializationException` if accessed after the PC closes — the usual fix is `JOIN FETCH`.
+            example: |-
+              ```java
+              @ManyToOne(fetch = FetchType.LAZY)                   // override default EAGER
+              private Department department;
+
+              @OneToMany(mappedBy = "department", fetch = FetchType.EAGER)
+              private List<Employee> employees;                    // override default LAZY
+              ```
+          - type: name
+            prompt: Six values of CascadeType?
+            answer: |-
+              1. ALL
+              2. PERSIST
+              3. MERGE
+              4. REMOVE
+              5. REFRESH
+              6. DETACH
+
+              Default = NONE (no cascade). Example: `@OneToMany(cascade=CascadeType.ALL)`.
+            explanation: |-
+              Cascade means "propagate this `EntityManager` operation to related entities." `ALL` bundles all
+              five (remember: PERSIST, MERGE, REMOVE, REFRESH, DETACH — `ALL` is a convenience alias, not a
+              separate behavior). Note: `CascadeType` does NOT include a "find" — find doesn't cascade. Apply
+              cascade with restraint: `CascadeType.REMOVE` on a big `@ManyToMany` can delete more than you want.
+            example: |-
+              ```java
+              @OneToMany(mappedBy = "order",
+                         cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+              private List<LineItem> items;
+              // em.persist(order) also persists items; em.remove(order) also removes items
+              ```
+          - type: name
+            prompt: What does orphanRemoval=true do?
+            answer: >-
+              When a child is removed from the parent collection, the orphan is deleted from the DB (not just unlinked).
+              Combines well with CascadeType.REMOVE for parent-child lifecycles.
+            explanation: |-
+              `CascadeType.REMOVE` fires only when you call `em.remove(parent)`. `orphanRemoval=true` is
+              stronger: when a child is simply pulled out of the parent's collection (`parent.getItems().remove
+              (item)`), JPA schedules a DELETE on that orphan at flush. Use it for strict parent-child
+              lifecycles where a child has no meaning without its parent.
+            example: |-
+              ```java
+              @OneToMany(mappedBy = "order",
+                         cascade = CascadeType.ALL,
+                         orphanRemoval = true)
+              private List<LineItem> items;
+
+              order.getItems().remove(item);    // at flush → DELETE FROM LINE_ITEM WHERE id = ?
+              ```
+          - type: name
+            prompt: To map 1:1 sharing primary keys, which annotation?
+            answer: >-
+              `@PrimaryKeyJoinColumn` — child uses parent's PK as its own PK (no separate FK column). @JoinColumn =
+              FK-style; @PrimaryKeyJoinColumn = shared-PK-style.
+            explanation: |-
+              A shared-PK 1:1 means the child's `@Id` value *is* the parent's `@Id` — there's no separate FK
+              column, the PK itself plays both roles. Classic use case: splitting a wide row into an "extras"
+              table without a surrogate FK. Contrast with `@JoinColumn`, which adds a dedicated FK column
+              distinct from the child's own PK.
+            example: |-
+              ```java
+              @Entity
+              public class Employee {
+                  @Id Long id;
+                  @OneToOne @PrimaryKeyJoinColumn
+                  private EmployeeDetail detail;
+              }
+              @Entity
+              public class EmployeeDetail {
+                  @Id Long id;              // same value as Employee.id — shared PK
+              }
+              ```
+          - type: name
+            prompt: Default mapping for @ManyToMany?
+            answer: >-
+              Join table with two FK columns. Join table name = concat of both entity names. Override with
+              `@JoinTable(name="...", joinColumns=..., inverseJoinColumns=...)`.
+            explanation: |-
+              Without `@JoinTable`, JPA invents the link table name as `STUDENT_COURSE` (owner first, then
+              inverse) and the FK column names as `<entity>_<pk>`. Explicit `@JoinTable` is the norm because
+              legacy DBs rarely match the default names and you often want a specific order or unique
+              constraint.
+            example: |-
+              ```java
+              @ManyToMany
+              @JoinTable(
+                  name = "STU_CRS",
+                  joinColumns        = @JoinColumn(name = "STU_ID"),
+                  inverseJoinColumns = @JoinColumn(name = "CRS_ID"))
+              private List<Course> courses;
+              ```
+          - type: name
+            prompt: "T/F: @JoinTable can map a 1:1 relationship?"
+            answer: >-
+              **TRUE.** @JoinTable can map any relationship (1:1, 1:N, N:N). Though unusual for 1:1 (normally
+              @JoinColumn).
+            explanation: |-
+              A junior-grade MCQ trap: `@JoinTable` is legal on *any* relationship type — the spec puts no
+              restriction on cardinality. It just tends to be overkill for 1:1 and 1:N where a single FK column
+              is simpler. You'd reach for it in 1:1 when you can't alter either existing table but can add a
+              new one.
+            example: |-
+              ```java
+              @OneToOne
+              @JoinTable(
+                  name = "USER_PROFILE_LINK",
+                  joinColumns        = @JoinColumn(name = "USER_ID"),
+                  inverseJoinColumns = @JoinColumn(name = "PROFILE_ID"))
+              private Profile profile;
+              ```
+          - type: name
+            prompt: Bidirectional relationships — why set both sides manually?
+            answer: >-
+              JPA only reads the owning side for persistence, but Java object graph needs both sides set for correct
+              in-memory traversal. Add convenience methods to keep them consistent.
+            explanation: |-
+              JPA's DB sync only cares about the owning side — it's what gets INSERT/UPDATED. But Java code that
+              navigates `dept.getEmployees()` or `emp.getDepartment()` relies on the in-memory graph. If you only
+              set one side, the graph is half-correct until the next reload. The standard pattern is a helper
+              that sets both sides atomically.
+            example: |-
+              ```java
+              public class Department {
+                  private List<Employee> employees = new ArrayList<>();
+                  public void addEmployee(Employee e) {
+                      employees.add(e);           // inverse side
+                      e.setDepartment(this);      // owning side — FK will be set here
+                  }
+              }
+              ```
+      - id: 4911-inheritance
+        name: Inheritance
+        tags:
+          - inheritance
+          - tech
+        prose: >-
+          Three JPA inheritance strategies — `SINGLE_TABLE` (default; one table + discriminator column), `JOINED`
+          (table per class joined by FK), and `TABLE_PER_CLASS` (full table per concrete class). Set via
+          `@Inheritance(strategy=…)` on the root entity.
+        cards:
+          - type: name
+            prompt: Three JPA inheritance strategies?
+            answer: |-
+              1. **SINGLE\_TABLE** (default — one table, discriminator column)
+              2. **JOINED** (table per class, FK joins)
+              3. **TABLE\_PER\_CLASS** (separate complete table per concrete type, no joins, UNIONs for polymorphic queries)
+            explanation: |-
+              Pick by tradeoff: `SINGLE_TABLE` is fastest because every query hits one table, but stuffs every
+              subclass's columns into a single wide schema with NULLs. `JOINED` is normalized but polymorphic
+              queries cost a join per level. `TABLE_PER_CLASS` avoids joins entirely but polymorphic queries
+              become `UNION ALL`s and id generation across tables gets awkward.
+            example: |-
+              ```java
+              @Entity
+              @Inheritance(strategy = InheritanceType.JOINED)
+              public abstract class Vehicle { @Id Long id; }
+
+              @Entity public class Car   extends Vehicle { int doors; }   // own table CAR
+              @Entity public class Truck extends Vehicle { int payload; } // own table TRUCK
+              ```
+          - type: name
+            prompt: Which annotation specifies the inheritance strategy?
+            answer: >-
+              `@Inheritance(strategy=InheritanceType.X)` on the root entity. (Fake distractors: @InheritanceStrategy,
+              @InheritanceType.)
+            explanation: |-
+              `@Inheritance` is placed only on the *root* entity; subclasses inherit the strategy implicitly.
+              Changing strategies later is painful because the schema is fundamentally different, so pick early.
+              MCQ trap: `@InheritanceStrategy` and `@InheritanceType` (without the strategy= inside @Inheritance)
+              do not exist as standalone annotations.
+            example: |-
+              ```java
+              @Entity
+              @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+              @DiscriminatorColumn(name = "KIND")
+              public abstract class Animal { @Id Long id; }
+
+              @Entity @DiscriminatorValue("DOG") public class Dog extends Animal {}
+              @Entity @DiscriminatorValue("CAT") public class Cat extends Animal {}
+              ```
+          - type: name
+            prompt: Role of @DiscriminatorColumn?
+            answer: >-
+              In SINGLE\_TABLE — column that identifies which subclass each row is. Default name=DTYPE, type=STRING.
+              Each subclass uses @DiscriminatorValue("X") to set its value.
+            explanation: |-
+              The discriminator is how the provider knows which Java class to instantiate for a row, since all
+              subclasses share one table. Defaults to a `DTYPE VARCHAR` column containing the entity class name.
+              Use `@DiscriminatorValue` to set compact codes ("D", "C") and `discriminatorType=INTEGER` if you
+              prefer numeric codes.
+            example: |-
+              ```java
+              @Entity
+              @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+              @DiscriminatorColumn(name = "ANIMAL_TYPE", discriminatorType = DiscriminatorType.STRING)
+              public abstract class Animal { @Id Long id; }
+
+              @Entity @DiscriminatorValue("DOG") public class Dog extends Animal { String breed; }
+              ```
+          - type: name
+            prompt: Pros/cons of SINGLE\_TABLE?
+            answer: >-
+              Pro: fast queries (no joins), simple schema. Con: many nullable columns (subclass-specific fields),
+              violates normalization, can't NOT NULL subclass fields.
+            explanation: |-
+              The DB can't enforce a NOT NULL on "dog breed" because cat rows legitimately leave it blank. This
+              pushes validation into the application layer. As the hierarchy grows, the table gets ever-wider
+              and ever-sparser. The upside is raw speed — `SELECT * FROM ANIMAL WHERE TYPE=?` is one access
+              path, no joins, no unions.
+            example: |-
+              ```text
+              ANIMAL
+              +----+------+------+-------+--------+
+              | id | DTYPE| name | breed | indoor |   ← only Dogs use 'breed', only Cats use 'indoor'
+              +----+------+------+-------+--------+
+              |  1 | DOG  | Rex  | Lab   | NULL   |
+              |  2 | CAT  | Tom  | NULL  | true   |
+              +----+------+------+-------+--------+
+              ```
+          - type: name
+            prompt: Pros/cons of JOINED?
+            answer: >-
+              Pro: normalized, subclass fields NOT NULL, no wasted space. Con: slower queries (joins), schema changes
+              harder.
+            explanation: |-
+              `JOINED` gives you proper normalization — each subclass gets its own table with only its own
+              fields, and the root table holds shared columns plus the discriminator/PK. Every polymorphic read
+              requires joining the subclass table, so it's heavier on reads; writes to a new subclass require
+              two INSERTs. Use when subclass data is substantial and NOT NULL integrity matters.
+            example: |-
+              ```text
+              ANIMAL         DOG                CAT
+              +----+-----+   +----+-------+     +----+--------+
+              | id | name|   | id | breed |     | id | indoor |
+              +----+-----+   +----+-------+     +----+--------+   ← FK joins ANIMAL.id
+              ```
+      - id: 4911-callbacks
+        name: Callbacks
+        tags:
+          - callbacks
+          - tech
+        prose: Hooks for entity lifecycle events.
+        cards:
+          - type: name
+            prompt: "Callback fired BEFORE the INSERT runs: \\_\\_\\_."
+            answer: "`@PrePersist`. Use for setting createdAt, validating, generating computed fields."
+            explanation: |-
+              Fires when the entity transitions New → Managed but *before* the INSERT reaches the DB, so any
+              fields you set here end up in the INSERT statement. Ideal for `createdAt`/`updatedAt`
+              timestamping and default value generation. Remember the rule: no `EntityManager` calls and no
+              access to other entities inside a callback.
+            example: |-
+              ```java
+              @Entity
+              public class Order {
+                  @Id Long id;
+                  private Date createdAt;
+                  @PrePersist void onCreate() { createdAt = new Date(); }   // in INSERT
+              }
+              ```
+          - type: name
+            prompt: "Callback fired AFTER INSERT returns (generated id now populated): \\_\\_\\_."
+            answer: "`@PostPersist`. Do NOT call EntityManager inside — re-entry is forbidden."
+            explanation: |-
+              `@PostPersist` runs *after* the INSERT, so the DB-generated id (from `@GeneratedValue`) is now
+              populated on the entity. Useful for logging or publishing an event. Re-entering the EntityManager
+              (e.g. to persist more entities) inside this hook is forbidden — the PC is mid-flush.
+            example: |-
+              ```java
+              @PostPersist
+              void logCreated() {
+                  log.info("Created Order id={}", id);   // id is set by now
+              }
+              ```
+          - type: name
+            prompt: "Callback fired BEFORE an UPDATE statement runs: \\_\\_\\_."
+            answer: "`@PreUpdate`. Use for audit updatedAt + change validation."
+            explanation: |-
+              Fires once per entity per flush, right before the UPDATE reaches the DB, so setting a field here
+              still makes it into the statement. Perfect for `updatedAt` maintenance or last-minute invariant
+              checks. Only fires for *dirty* entities — a managed entity that wasn't modified triggers no
+              UPDATE and therefore no `@PreUpdate`.
+            example: |-
+              ```java
+              @PreUpdate
+              void onUpdate() {
+                  this.updatedAt = new Date();            // goes into the UPDATE
+              }
+              ```
+          - type: name
+            prompt: "Callback fired AFTER an UPDATE commits: \\_\\_\\_."
+            answer: "`@PostUpdate`."
+            explanation: |-
+              Symmetric to `@PostPersist`: the UPDATE has been sent to the DB (but within the same TX).
+              Any change you make to the entity here won't be reflected in the statement that just ran. Usually
+              used for audit logging, cache invalidation, or firing domain events.
+            example: |-
+              ```java
+              @PostUpdate
+              void onAfterUpdate() {
+                  cache.evict(this.id);                   // stale cache invalidated
+              }
+              ```
+          - type: name
+            prompt: "Callback fired BEFORE a DELETE runs: \\_\\_\\_."
+            answer: "`@PreRemove`. Last chance to touch related state before row is gone."
+            explanation: |-
+              Your last opportunity to inspect the entity's state — after the DELETE the row is gone (well,
+              scheduled). Good for writing a tombstone record or notifying observers. As always, don't invoke
+              the `EntityManager` inside.
+            example: |-
+              ```java
+              @PreRemove
+              void beforeDelete() {
+                  log.warn("Removing Order {} total={}", id, total);
+              }
+              ```
+          - type: name
+            prompt: "Callback fired AFTER a DELETE commits: \\_\\_\\_."
+            answer: "`@PostRemove`."
+            explanation: |-
+              Fires after the DELETE statement reaches the DB within the same transaction. Often paired with
+              `@PreRemove` when you need both a "before" snapshot and an "after" confirmation. The entity
+              object still exists in memory, but is now in the *Removed* state.
+            example: |-
+              ```java
+              @PostRemove
+              void onDeleted() {
+                  metrics.increment("orders.deleted");
+              }
+              ```
+          - type: name
+            prompt: "Callback fired AFTER an entity is loaded from the database: \\_\\_\\_."
+            answer: "`@PostLoad`. Use for deriving transient fields from persistent ones."
+            explanation: |-
+              Fires after a SELECT has populated the entity, whether via `find()`, a JPQL query, or a
+              relationship fetch. Perfect for populating `@Transient` convenience fields (e.g. `fullName` from
+              first+last) or decrypting at rest. There is deliberately no `@PreLoad` — the provider controls
+              when loading starts.
+            example: |-
+              ```java
+              @Transient private String fullName;
+              @PostLoad void buildFullName() { fullName = firstName + " " + lastName; }
+              ```
+          - type: name
+            prompt: "Which lifecycle callback does JPA NOT define: @PreLoad, @PostLoad, @PrePersist?"
+            answer: >-
+              **@PreLoad does not exist.** Loading is initiated by the provider; there is no "before-load" hook. Only
+              @PostLoad.
+            explanation: |-
+              Classic MCQ trap. The full set is Pre/Post × Persist/Update/Remove plus **only** `@PostLoad`.
+              There's no `@PreLoad`, no `@PreFind`, no `@PreQuery`. Loading is provider-initiated and happens
+              inside the JDBC boundary — you get a callback only after the entity is fully populated.
+            example: |-
+              ```java
+              // Valid:
+              @PrePersist @PostPersist @PreUpdate @PostUpdate
+              @PreRemove  @PostRemove  @PostLoad
+              // Invalid (do not exist):
+              // @PreLoad, @PreFind, @PreFlush
+              ```
+          - type: name
+            prompt: Signature rules for entity callback methods?
+            answer: No parameters, void return, any visibility. Must NOT invoke EntityManager or call other entities.
+            explanation: |-
+              When the callback method is *inside* the entity itself it takes no parameters (the entity is
+              `this`). When the callback lives on an external `@EntityListeners` class, the signature must take
+              one `Object` parameter representing the entity being acted on. Either way, the no-EntityManager
+              rule is strict — re-entering mid-flush causes undefined behavior.
+            example: |-
+              ```java
+              @PrePersist void onCreate() { /* no params, void */ }             // on entity
+              public class AuditListener {
+                  @PrePersist public void log(Object entity) { /* one param */ }// on listener
+              }
+              ```
+          - type: name
+            prompt: External listener annotation?
+            answer: >-
+              `@EntityListeners(MyListener.class)` on entity. Listener class has @PrePersist etc. methods that take
+              Object (entity) parameter.
+            explanation: |-
+              External listeners keep cross-cutting logic (auditing, metrics) out of the entity class. You can
+              list multiple listeners; they fire in declaration order, then the entity's own callbacks. A
+              common pattern is a single `AuditListener` reused across every auditable entity.
+            example: |-
+              ```java
+              @Entity
+              @EntityListeners(AuditListener.class)
+              public class Order { @Id Long id; }
+
+              public class AuditListener {
+                  @PrePersist public void log(Object e) { System.out.println("Inserting: " + e); }
+              }
+              ```
+  - id: jpql
+    name: JPQL / queries & transactions
+    topics:
+      - id: 4911-jpql
+        name: JPQL
+        tags:
+          - jpql
+          - tech
+        prose: "\"Students struggle here. Fair game on final.\" — Bruce."
+        cards:
+          - type: name
+            prompt: Basic JPQL SELECT all employees?
+            answer: >-
+              `SELECT e FROM Employee e`. Alias required. Operates on entity names (Employee), not table names
+              (EMPLOYEES).
+            explanation: |-
+              JPQL operates on the *entity model*, not the SQL schema. `Employee` is the `@Entity` name (defaults
+              to class simple name), `e` is a mandatory alias. You never write the underlying table name and
+              you never write `SELECT *` — you select the entity itself, field paths, or constructor
+              expressions.
+            example: |-
+              ```java
+              TypedQuery<Employee> q = em.createQuery(
+                  "SELECT e FROM Employee e", Employee.class);
+              List<Employee> all = q.getResultList();
+              ```
+          - type: name
+            prompt: "Write JPQL: employees in Sales department?"
+            answer: >-
+              `SELECT e FROM Employee e WHERE e.department.name = :deptName`. Path navigation through relationship:
+              e.department.name.
+            explanation: |-
+              Dot navigation (`e.department.name`) traverses relationships without an explicit JOIN — JPQL
+              generates the necessary SQL INNER JOIN automatically. Works for any single-valued path. Use a
+              named parameter (`:deptName`) and `setParameter` so the provider can reuse the parsed plan and
+              avoid injection risk.
+            example: |-
+              ```java
+              List<Employee> emps = em.createQuery(
+                  "SELECT e FROM Employee e WHERE e.department.name = :deptName",
+                  Employee.class)
+                .setParameter("deptName", "Sales")
+                .getResultList();
+              ```
+          - type: name
+            prompt: How do FETCH JOIN solve the N+1 problem?
+            answer: >-
+              `SELECT b FROM Book b JOIN FETCH b.author` — loads books AND related authors in ONE SQL query. Without
+              FETCH, each book access triggers a separate author query (N+1).
+            explanation: |-
+              Plain `JOIN` lets you filter across a relationship but does NOT populate it. `JOIN FETCH` tells
+              the provider to *initialize* the associated entities in the same SQL, so subsequent field access
+              never triggers a follow-up query. Common fix for lazy collections; just know that you can't
+              `JOIN FETCH` more than one collection without risking a Cartesian explosion.
+            example: |-
+              ```java
+              // Without FETCH: 1 query for books + N queries for each author
+              List<Book> books = em.createQuery(
+                  "SELECT b FROM Book b JOIN FETCH b.author", Book.class).getResultList();
+              // Single SQL with INNER JOIN — authors preloaded.
+              ```
+          - type: name
+            prompt: Named parameter syntax vs positional?
+            answer: >-
+              Named: `:name`, set with `q.setParameter("name", val)`. Positional: `?1`, set with `q.setParameter(1,
+              val)`. Prefer named.
+            explanation: |-
+              Named parameters are self-documenting, reorder-safe, and can appear multiple times in the same
+              query. Positional parameters (`?1`) are legal but discouraged — rename anything and you
+              renumber. Hardcoding values into JPQL is the real sin (SQL injection + parse-cache misses).
+            example: |-
+              ```java
+              // Named — preferred
+              em.createQuery("SELECT e FROM Employee e WHERE e.salary > :min", Employee.class)
+                .setParameter("min", 50000).getResultList();
+
+              // Positional — legal but worse
+              em.createQuery("SELECT e FROM Employee e WHERE e.salary > ?1", Employee.class)
+                .setParameter(1, 50000);
+              ```
+          - type: name
+            prompt: How to paginate JPQL results (page 3, 10 per page)?
+            answer: "`q.setFirstResult(20).setMaxResults(10).getResultList()`. firstResult is 0-indexed; page 3 = offset 20."
+            explanation: |-
+              `setFirstResult` is a zero-based row offset; `setMaxResults` is the page size. Together they
+              become LIMIT/OFFSET (or the DB-specific equivalent). For deterministic paging you must ORDER
+              BY — otherwise the DB may return rows in a different order between pages and you'll see
+              duplicates or gaps.
+            example: |-
+              ```java
+              List<Employee> page3 = em.createQuery(
+                  "SELECT e FROM Employee e ORDER BY e.id", Employee.class)
+                .setFirstResult(20)          // page 3, 10 per page → offset 20
+                .setMaxResults(10)
+                .getResultList();
+              ```
+          - type: name
+            prompt: getResultList() vs getSingleResult()?
+            answer: >-
+              **getResultList()** — always returns List, empty if 0. **getSingleResult()** — expects exactly 1; throws
+              NoResultException (0) or NonUniqueResultException (2+).
+            explanation: |-
+              `getSingleResult()` is convenient but throws noisy runtime exceptions for 0 or 2+ rows. If the
+              "exactly one" expectation isn't guaranteed by your data, prefer `getResultList()` + a null check
+              or `.stream().findFirst()`. `executeUpdate()` is the third form, used only for bulk
+              UPDATE/DELETE JPQL — returns the affected row count.
+            example: |-
+              ```java
+              try {
+                  Employee e = em.createQuery("SELECT e FROM Employee e WHERE e.email = :x", Employee.class)
+                                 .setParameter("x", email).getSingleResult();
+              } catch (NoResultException ex)       { /* 0 rows */ }
+                catch (NonUniqueResultException ex){ /* 2+ rows */ }
+              ```
+          - type: name
+            prompt: Constructor expression syntax?
+            answer: >-
+              `SELECT new com.x.EmpDTO(e.id, e.name) FROM Employee e`. Fully qualified class. Must have matching
+              constructor. Returns DTO instances directly.
+            explanation: |-
+              Lets you project specific fields into a DTO without loading the full entity, which is great for
+              read-only views / API responses. Three requirements: fully qualified class name (no import
+              shortcut), a constructor whose parameter types match the SELECT list exactly, and the class
+              must be instantiable (public no-matter-what constructor).
+            example: |-
+              ```java
+              public record EmpSummary(Long id, String name) {}   // has matching ctor
+
+              List<EmpSummary> view = em.createQuery(
+                  "SELECT new com.x.EmpSummary(e.id, e.name) FROM Employee e", EmpSummary.class
+              ).getResultList();
+              ```
+          - type: name
+            prompt: Bulk UPDATE in JPQL?
+            answer: >-
+              `UPDATE Employee e SET e.salary = e.salary * 1.1 WHERE e.dept = :d`; call `q.executeUpdate()`. Returns row
+              count. Bypasses PC cache.
+            explanation: |-
+              Bulk UPDATE/DELETE ships a single SQL statement — no row-by-row dirty checking, no callbacks
+              (no `@PreUpdate`!), and managed entities already in the PC are **not** refreshed. Best practice:
+              run the bulk op then `em.clear()` (or re-fetch) to avoid stale cached entities that disagree with
+              the DB.
+            example: |-
+              ```java
+              int changed = em.createQuery(
+                  "UPDATE Employee e SET e.salary = e.salary * 1.1 WHERE e.department = :d")
+                .setParameter("d", dept)
+                .executeUpdate();               // number of rows affected
+              em.clear();                       // PC cache now stale — drop it
+              ```
+          - type: name
+            prompt: What is @NamedQuery?
+            answer: >-
+              `@NamedQuery(name="X", query="SELECT…")` on entity class. Pre-parsed at deploy, reused. Called via
+              `em.createNamedQuery("X", Employee.class)`.
+            explanation: |-
+              Named queries are validated at deployment, so a syntax typo fails fast instead of at runtime.
+              They're also pre-parsed and cached, which shaves parse-time off repeated invocations. Use
+              `@NamedQueries({@NamedQuery(...), ...})` to declare multiple on the same entity.
+            example: |-
+              ```java
+              @Entity
+              @NamedQuery(name = "Employee.findByDept",
+                          query = "SELECT e FROM Employee e WHERE e.department = :d")
+              public class Employee { ... }
+
+              em.createNamedQuery("Employee.findByDept", Employee.class)
+                .setParameter("d", dept).getResultList();
+              ```
+          - type: name
+            prompt: JPQL for cruises a customer has reserved (Cust N:N Res, Res N:1 Cruise)?
+            answer: >-
+              `SELECT DISTINCT c FROM Cruise c, Reservation r WHERE r.cruise = c AND :cust MEMBER OF r.customers` — or
+              with explicit JOIN: `SELECT DISTINCT c FROM Cruise c JOIN c.reservations r JOIN r.customers cu WHERE cu =
+              :cust`.
+            explanation: |-
+              The midterm walk-through from the lesson: start by asking *what* you select (Cruise), then *what
+              relationships* you traverse (Cruise → Reservations → Customers). `DISTINCT` is mandatory because
+              joining a collection multiplies rows — otherwise a cruise with multiple reservations for the same
+              customer appears multiple times. `MEMBER OF` is the JPQL idiom for "x is contained in that
+              collection field."
+            example: |-
+              ```java
+              List<Cruise> cruises = em.createQuery(
+                  "SELECT DISTINCT c FROM Cruise c " +
+                  "JOIN c.reservations r " +
+                  "JOIN r.customers cu " +
+                  "WHERE cu = :cust", Cruise.class)
+                .setParameter("cust", someCustomer)
+                .getResultList();
+              ```
+      - id: 4911-transactions
+        name: Transactions
+        tags:
+          - transactions
+          - tech
+        prose: >-
+          ACID properties (Quiz 4 hit each separately) Atomicity — all-or-nothing (Q8) Consistency — integrity of data
+          store (Q15) Isolation — no interference (Q10) Durability — persist after crash 6 Transaction Attributes — the
+          table AttributeCaller HAS TXCaller NO TX REQUIRED (default)Join caller's TXContainer creates new TX
+          REQUIRES_NEWSuspend caller, create NEW TXCreate new TX SUPPORTSJoin caller's TXRun without TX
+          NOT_SUPPORTEDSuspend caller, run without TXRun without TX MANDATORYJoin caller's TXThrows
+          EJBTransactionRequiredException NEVERThrows EJBExceptionRun without TX Quiz 4 transactions — memorize Q4:
+          "Does NOT propagate, runs WITHOUT TX" = NotSupported Q5: "Propagates if exists, else creates new" = Required
+          Q13: "Does NOT propagate, runs with NEW TX" = RequiresNew Rollback behavior System exception
+          (RuntimeException, EJBException) → auto-rollback + logged + wrapped in EJBException Application exception
+          (checked) → NO auto-rollback unless declared @ApplicationException(rollback=true) Programmatic:
+          sessionContext.setRollbackOnly() CMT vs BMT // Container-managed (default) @Stateless
+          @TransactionManagement(TransactionManagementType.CONTAINER) public class OrderService {
+          @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW) public void audit(Event e) { ... } } //
+          Bean-managed @Stateless @TransactionManagement(TransactionManagementType.BEAN) public class ManualTxBean {
+          @Resource UserTransaction utx; public void work() { utx.begin(); try { ...
+        cards:
+          - type: name
+            prompt: What does ACID stand for?
+            answer: |-
+              1. **A**tomicity (all-or-nothing)
+              2. **C**onsistency (integrity preserved)
+              3. **I**solation (no interference)
+              4. **D**urability (persisted after crash)
+            explanation: |-
+              Bruce's Quiz 4 tested each letter separately — know the one-liner for each. A = transfer
+              succeeds in full or rolls back completely. C = invariants (FKs, NOT NULL, check constraints) hold
+              before and after. I = concurrent TXs can't see each other's partial work. D = once commit
+              returns, the change survives power loss.
+            example: |-
+              ```java
+              // Classic atomicity example: money transfer
+              tx.begin();
+              accountA.withdraw(100);       // step 1
+              accountB.deposit(100);        // step 2 — either both or neither
+              tx.commit();                  // durable once this returns
+              ```
+          - type: name
+            prompt: Which ACID property = execute completely or not at all?
+            answer: "**Atomicity.**"
+            explanation: |-
+              Atomicity is the *all-or-nothing* guarantee. Any crash, exception, or rollback must unwind every
+              change made inside the TX boundary. It is what makes a multi-step business operation safe to
+              retry — partial state never leaks out.
+            example: |-
+              ```java
+              @TransactionAttribute(REQUIRED)
+              public void transfer(Account from, Account to, BigDecimal amt) {
+                  from.withdraw(amt);           // if either step fails
+                  to.deposit(amt);              // the whole TX rolls back — atomic
+              }
+              ```
+          - type: name
+            prompt: Which ACID property = no interference from other transactions?
+            answer: "**Isolation.**"
+            explanation: |-
+              Isolation means concurrent transactions see a consistent view — dirty/non-repeatable/phantom
+              reads depend on the configured isolation level, but at minimum no TX can observe another's
+              uncommitted state. Trade-off: higher isolation = more locking / MVCC overhead = less throughput.
+            example: |-
+              ```text
+              TX1 reads balance=100, starts update ...
+              TX2 reads balance=100  (still sees pre-TX1 value — isolated)
+              TX1 commits balance=90
+              TX2 now sees balance=90 (depending on isolation level)
+              ```
+          - type: name
+            prompt: Which ACID property = integrity of data store maintained?
+            answer: "**Consistency.**"
+            explanation: |-
+              Consistency means every TX takes the DB from one *valid* state to another — FKs, NOT NULL, CHECK
+              constraints, and app-level invariants all hold before and after. If a TX would break an invariant,
+              the container or DB rolls it back instead of persisting broken data.
+            example: |-
+              ```java
+              // A CHECK(balance >= 0) constraint enforces consistency:
+              account.setBalance(new BigDecimal("-50"));
+              em.flush();   // SQLException — DB rejects invalid state; TX rolls back
+              ```
+          - type: name
+            prompt: Which ACID property = changes survive after crash?
+            answer: "**Durability.**"
+            explanation: |-
+              Once `commit()` returns, the change is written to durable storage (typically fsync'd WAL/redo
+              log). A power loss a millisecond later must not erase it — on restart, recovery replays the log.
+              This is why commits are expensive compared to reads.
+            example: |-
+              ```java
+              em.persist(order);
+              tx.commit();          // fsync'd to WAL — survives a crash right here
+              // Crash. Reboot. Order is still there.
+              ```
+          - type: name
+            prompt: What is the default transaction attribute for EJB methods?
+            answer: "`REQUIRED`. Uses caller's TX if exists, else starts new one."
+            explanation: |-
+              `REQUIRED` is the attribute you get when you write no `@TransactionAttribute` at all on a CMT
+              method. It's the pragmatic default because it makes nested calls automatically cooperate —
+              outer + inner join the same TX, so rollback semantics are unified. Quiz 4 Q5 tested this
+              definition verbatim.
+            example: |-
+              ```java
+              @Stateless
+              public class OrderService {
+                  public void placeOrder(Order o) { ... }       // REQUIRED by default
+              }
+              ```
+          - type: name
+            prompt: REQUIRED — caller has TX vs no TX?
+            answer: >-
+              **Caller HAS TX:** method joins it. **Caller NO TX:** container creates new TX for method. Propagates if
+              exists, creates if not.
+            explanation: |-
+              The "make sure a TX is running" attribute. It never suspends and never throws — always leaves the
+              method inside *a* transaction, joining if present else creating. Works for 95% of business code.
+            example: |-
+              ```java
+              @TransactionAttribute(TransactionAttributeType.REQUIRED)
+              public void placeOrder(Order o) {
+                  em.persist(o);           // always in a TX, either inherited or new
+              }
+              ```
+          - type: name
+            prompt: REQUIRES\_NEW — caller has TX vs no TX?
+            answer: >-
+              **Caller HAS TX:** SUSPENDS caller's TX, starts NEW independent one. **Caller NO TX:** starts new TX.
+              ALWAYS runs in its own new TX.
+            explanation: |-
+              Always runs in its *own* TX, even when called from another TX. Classic use: writing an audit log
+              that must commit whether or not the outer business TX commits. **Exam trap** from the lesson:
+              students assume REQUIRES_NEW "protects" the outer TX — it does NOT. If the inner throws a
+              system exception that escapes, the outer still rolls back. Only a `try/catch` in the caller
+              protects it.
+            example: |-
+              ```java
+              @TransactionAttribute(REQUIRES_NEW)
+              public void audit(String event) {
+                  em.persist(new AuditEntry(event));   // commits independently of caller
+              }
+              ```
+          - type: name
+            prompt: SUPPORTS — caller has TX vs no TX?
+            answer: "**Caller HAS TX:** joins it. **Caller NO TX:** runs without TX. Uses TX if available, otherwise none."
+            explanation: |-
+              The "flexible" attribute: happy to participate in a TX if one exists, happy to run without if not.
+              Typically used for read-only methods where a caller may or may not care about TX context.
+              Beware: running without a TX disables dirty checking — changes won't be flushed.
+            example: |-
+              ```java
+              @TransactionAttribute(SUPPORTS)
+              public Customer load(Long id) { return em.find(Customer.class, id); }
+              ```
+          - type: name
+            prompt: NOT\_SUPPORTED — caller has TX vs no TX?
+            answer: "**Caller HAS TX:** SUSPENDS it, runs WITHOUT TX. **Caller NO TX:** runs without TX. Method NEVER has TX."
+            explanation: |-
+              Always runs *outside* any TX. If a TX was in progress, the container suspends it for the duration
+              of the call and resumes it after. Useful for legacy or non-transactional resources, or slow
+              operations you don't want holding locks. Quiz 4 Q4 = "does NOT propagate, runs WITHOUT TX" → this.
+            example: |-
+              ```java
+              @TransactionAttribute(NOT_SUPPORTED)
+              public void writeLogFile(String msg) { /* no DB — don't hold locks */ }
+              ```
+          - type: name
+            prompt: MANDATORY — caller has TX vs no TX?
+            answer: >-
+              **Caller HAS TX:** joins it. **Caller NO TX:** THROWS EJBTransactionRequiredException. Requires caller to
+              already be in TX.
+            explanation: |-
+              "I require that someone else already started a TX." Perfect for internal helper methods whose
+              behavior only makes sense inside a larger TX — calling them without one is a programming bug, and
+              the container surfaces that with `EJBTransactionRequiredException`.
+            example: |-
+              ```java
+              @TransactionAttribute(MANDATORY)
+              void reserveInventory(Item i) {
+                  // presumes caller already has a TX; else we throw
+              }
+              ```
+          - type: name
+            prompt: NEVER — caller has TX vs no TX?
+            answer: "**Caller HAS TX:** THROWS EJBException. **Caller NO TX:** runs without TX. Refuses to run in a TX context."
+            explanation: |-
+              The mirror image of MANDATORY — "I will not tolerate being in a TX." Rare; used for code that
+              calls non-transactional systems where enlisting a TX would be harmful or simply unsupported.
+              Violation throws `EJBException`, not `EJBTransactionRequiredException`.
+            example: |-
+              ```java
+              @TransactionAttribute(NEVER)
+              public void callLegacyNonXaSystem() { ... }
+              ```
+          - type: name
+            prompt: System exception vs application exception — what rolls back?
+            answer: >-
+              **System** (RuntimeException) → container auto-rolls-back, logs, wraps in EJBException. **Application**
+              (@ApplicationException or any checked) → NO auto-rollback unless @ApplicationException(rollback=true).
+            explanation: |-
+              System exceptions signal "the bean is broken" — container rolls back, logs, and wraps in
+              `EJBException`. Application exceptions signal "business-logic issue" (e.g. `InsufficientFundsException`)
+              and by default the TX is NOT rolled back — the caller can catch and retry. Override with
+              `@ApplicationException(rollback = true)` when a business exception should also roll back.
+            example: |-
+              ```java
+              @ApplicationException(rollback = true)
+              public class InsufficientFundsException extends Exception { }
+
+              public void withdraw(BigDecimal amt) throws InsufficientFundsException {
+                  if (balance.compareTo(amt) < 0) throw new InsufficientFundsException();
+              }
+              ```
+          - type: name
+            prompt: CMT vs BMT?
+            answer: >-
+              **Container-Managed Transactions** (default) — declarative via @TransactionAttribute. **Bean-Managed** —
+              use UserTransaction via @Resource, call begin/commit/rollback manually. Annotate with
+              @TransactionManagement(BEAN).
+            explanation: |-
+              CMT is almost always right: annotate and forget. BMT is for edge cases where you genuinely need
+              fine-grained control — e.g. committing mid-method, overlapping TXs, or integrating with
+              non-EJB transactional resources. BMT ignores `@TransactionAttribute` entirely, which is a common
+              source of confusion.
+            example: |-
+              ```java
+              @Stateless
+              @TransactionManagement(TransactionManagementType.BEAN)
+              public class ManualTxBean {
+                  @Resource UserTransaction utx;
+                  public void work() throws Exception {
+                      utx.begin();
+                      try { /* ... */ utx.commit(); }
+                      catch (Exception e) { utx.rollback(); throw e; }
+                  }
+              }
+              ```
+  - id: jee-infra
+    name: Java EE infrastructure
+    topics:
+      - id: 4911-security
+        name: Security
+        tags:
+          - security
+          - tech
+        prose: >-
+          EJB security is checked per method invocation, not once per session. When a client calls a business method,
+          the container intercepts the call before executing the bean code and asks two questions: (1) who is the
+          caller's Principal (carried in the invocation context from the authenticated login), and (2) does that
+          Principal hold any role listed in the method's @RolesAllowed?
+        cards:
+          - type: name
+            prompt: Declare roles a bean will use?
+            answer: "`@DeclareRoles({\"ADMIN\",\"USER\"})` at class level."
+            explanation: |-
+              `@DeclareRoles` announces to the container which role names this bean will reference — mostly
+              relevant for programmatic checks (`isCallerInRole`). Roles used by `@RolesAllowed` are discovered
+              automatically, so `@DeclareRoles` is only strictly needed when you use `isCallerInRole("FOO")`
+              without FOO appearing in a `@RolesAllowed`.
+            example: |-
+              ```java
+              @Stateless
+              @DeclareRoles({"ADMIN", "USER", "GUEST"})
+              public class AccountService {
+                  @Resource SessionContext ctx;
+                  public boolean canDelete() { return ctx.isCallerInRole("ADMIN"); }
+              }
+              ```
+          - type: name
+            prompt: Restrict method to specific role(s)?
+            answer: "`@RolesAllowed({\"ADMIN\"})` on method or class. @RolesAllowed({}) = nobody."
+            explanation: |-
+              `@RolesAllowed` on the class sets a default for all methods; method-level annotations override.
+              The container checks the caller's principal *per method invocation* — if not in one of the roles,
+              it throws `EJBAccessException` before the body runs. Empty array = `@DenyAll`.
+            example: |-
+              ```java
+              @Stateless
+              @RolesAllowed("USER")                               // class default
+              public class AccountService {
+                  @RolesAllowed({"ADMIN", "USER"}) public void view(Long id) { }
+                  @RolesAllowed("ADMIN")           public void delete(Long id) { } // overrides
+              }
+              ```
+          - type: name
+            prompt: "@PermitAll vs @DenyAll?"
+            answer: "**@PermitAll** — any authenticated user (overrides class-level). **@DenyAll** — no one can call."
+            explanation: |-
+              Both are shorthand. `@PermitAll` on a method carves out a public hole in a locked-down class —
+              any authenticated principal can invoke regardless of role. `@DenyAll` is its opposite for
+              internal/utility methods that should never be called from outside. MCQ trap: `@RolesAllowed({})`
+              with empty array is equivalent to `@DenyAll`.
+            example: |-
+              ```java
+              @Stateless
+              @RolesAllowed("ADMIN")
+              public class AdminService {
+                  @PermitAll public String ping()     { return "ok"; }    // anyone auth'd
+                  @DenyAll  public void   internal()  { }                  // blocked always
+              }
+              ```
+          - type: name
+            prompt: What does @RunAs do?
+            answer: >-
+              Executes the method under a DIFFERENT principal/role than the caller. Useful when a bean needs elevated
+              privileges to call downstream beans.
+            explanation: |-
+              `@RunAs("SYSTEM")` changes the propagated identity for *outgoing* calls the bean makes, not for
+              authorization of the inbound call. Classic use: a user-triggered action that must call a
+              locked-down audit or scheduling bean requiring a privileged role. Applies at class level.
+            example: |-
+              ```java
+              @Stateless
+              @RunAs("SYSTEM")                          // downstream calls use SYSTEM role
+              public class ScheduledJob {
+                  @EJB AuditService audit;
+                  public void run() { audit.log("job done"); }   // audit sees SYSTEM, not caller
+              }
+              ```
+          - type: name
+            prompt: Programmatic role check?
+            answer: >-
+              `sessionContext.isCallerInRole("ADMIN")` — returns boolean. `sessionContext.getCallerPrincipal()` —
+              returns Principal.
+            explanation: |-
+              Programmatic checks are for logic finer than an annotation can express — e.g. "admins can edit
+              any order, regular users can edit their own." Get the `SessionContext` via
+              `@Resource SessionContext ctx;`. The returned `Principal`'s `getName()` is typically the logged-
+              in username.
+            example: |-
+              ```java
+              @Stateless
+              public class OrderService {
+                  @Resource SessionContext ctx;
+                  public void edit(Order o) {
+                      if (!ctx.isCallerInRole("ADMIN") &&
+                          !o.getOwner().equals(ctx.getCallerPrincipal().getName()))
+                          throw new EJBAccessException();
+                  }
+              }
+              ```
+      - id: 4911-jndi-injection
+        name: JNDI/Injection
+        tags:
+          - jndi
+          - tech
+        prose: >-
+          Every container-managed resource — another bean, a DataSource, an EntityManager — is ultimately bound into the
+          server's JNDI tree at deploy time. Injection is convenience syntax: @EJB private PaymentService payment; tells
+          the container "at bean-creation time, look up PaymentService in JNDI and assign it to this field." The same
+          lookup is available programmatically through InitialContext.lookup(name); injection just hides the string.
+        cards:
+          - type: name
+            prompt: Inject another EJB?
+            answer: "`@EJB private MyBean bean;` — container resolves and injects reference."
+            explanation: |-
+              `@EJB` resolves by type by default — the container finds the matching bean in the JNDI tree and
+              assigns it at bean-creation time. When multiple beans implement the same interface, disambiguate
+              with `beanName="…"` or `lookup="java:global/..."`. Works on fields, setters, and constructor
+              parameters (in CDI-bridged environments).
+            example: |-
+              ```java
+              @Stateless
+              public class OrderService {
+                  @EJB private PaymentService payment;                 // by type
+                  @EJB(beanName = "PrimaryCache") private CacheBean p; // by name
+              }
+              ```
+          - type: name
+            prompt: Inject a resource (DataSource, Queue)?
+            answer: "`@Resource private DataSource ds;`. For JMS: `@Resource private ConnectionFactory cf;`."
+            explanation: |-
+              `@Resource` covers any container-managed *resource* — DataSources, JMS queues/topics, JMS
+              ConnectionFactories, TimerService, SessionContext, UserTransaction, env-entries. Use
+              `lookup="..."` or `name="..."` to pin to a specific JNDI name when ambiguity exists. Think
+              "`@EJB` for EJBs, `@Resource` for everything else in JNDI, `@PersistenceContext` for EntityManager."
+            example: |-
+              ```java
+              @Resource(lookup = "jdbc/myDS") private DataSource ds;
+              @Resource(lookup = "jms/OrderQueue") private Queue auditQueue;
+              @Resource private SessionContext ctx;            // container context
+              ```
+          - type: name
+            prompt: Three portable global JNDI name scopes?
+            answer: |-
+              1. `java:global/[app]/[module]/BeanName`
+              2. `java:app/[module]/BeanName`
+              3. `java:module/BeanName`
+
+              Plus `java:comp/env` (ENC) for local references.
+            explanation: |-
+              `java:global` is visible server-wide; `java:app` is visible within the same EAR; `java:module`
+              is visible within the same WAR/EJB-JAR; `java:comp/env` is the private Environment Naming
+              Context for the bean. Injection hides the string, but you'll see these names in logs and when
+              doing programmatic `InitialContext.lookup(...)`.
+            example: |-
+              ```java
+              // Equivalent ways to grab the same bean from code:
+              Context ctx = new InitialContext();
+              OrderService o1 = (OrderService) ctx.lookup(
+                  "java:global/myApp/myModule/OrderService");
+              OrderService o2 = (OrderService) ctx.lookup(
+                  "java:module/OrderService");
+              ```
+  - id: process
+    name: Unified Process & architecture
+    topics:
+      - id: 4911-rup-phases
+        name: RUP Phases
+        tags:
+          - process
+          - proc
+        prose: >-
+          Each iteration includes all workflows (req → analysis → design → impl → test). Number of iterations varies per
+          phase: Inception 1-2, Elaboration 2-3, Construction 3-5, Transition 1-2.
+        cards:
+          - type: name
+            prompt: "RUP phase order: Inception → \\_\\_\\_ → Construction → Transition."
+            answer: "**Elaboration**. Architecture baselined, ~80% of requirements captured here."
+            explanation: |-
+              Elaboration is the risk-reduction phase: you build *executable* slices of the architecturally
+              riskiest use cases to prove the design actually works. By end-of-phase (~LCA), the architecture
+              is locked and 80% of requirements are known so Construction can scale out. Skipping Elaboration
+              is the classic waterfall mistake the iterative process is designed to prevent.
+            example: |-
+              ```text
+              Elaboration iterations (2-3):
+                E1: tracer bullet — login + DB round-trip proven
+                E2: payment + persistence stack proven end-to-end
+                → LCA signed → architecture baseline locked
+              ```
+          - type: name
+            prompt: "RUP phase order: Inception → Elaboration → \\_\\_\\_ → Transition."
+            answer: "**Construction**. Build + integrate + test most functionality; ~50% of total effort."
+            explanation: |-
+              Construction sits between architecture-baseline (Elaboration/LCA) and deployment (Transition/PR).
+              By this point the risky pieces have been proven in Elaboration, so Construction is about
+              *volume* — turn the remaining use cases into working, integrated, tested code.
+            example: |-
+              ```text
+              Inception (~10%) → Elaboration (~30%) → Construction (~50%) → Transition (~10%)
+                  LCO              LCA                    IOC                  PR
+              ```
+          - type: name
+            prompt: "Milestone at the end of Inception: \\_\\_\\_."
+            answer: "**LCO** — Life-Cycle Objectives. Agrees on vision, scope, feasibility."
+            explanation: |-
+              LCO = "do we agree on *what* we're building and *why*?" It's a go/no-go gate where stakeholders
+              sign off on vision, scope, initial business case, and rough cost estimate. Failing LCO means
+              killing the project before it burns Elaboration money.
+            example: |-
+              ```text
+              Inception deliverables reviewed at LCO:
+              - Vision document
+              - Initial use-case model (~20%)
+              - Business case
+              - Risk list
+              ```
+          - type: name
+            prompt: "Milestone at the end of Elaboration: \\_\\_\\_."
+            answer: "**LCA** — Life-Cycle Architecture. Stable baseline + major risks mitigated."
+            explanation: |-
+              LCA says "the architecture is proven, the riskiest use cases have been implemented end-to-end,
+              and we can confidently plan Construction." Missing LCA = you enter Construction with untested
+              architecture = the RUP anti-pattern that iterative development is designed to avoid.
+            example: |-
+              ```text
+              Elaboration deliverables reviewed at LCA:
+              - Baselined architecture description
+              - ~80% of use cases captured
+              - Executable architecture (runs the hardest UCs)
+              - Refined risk list
+              ```
+          - type: name
+            prompt: "Milestone at the end of Construction: \\_\\_\\_."
+            answer: "**IOC** — Initial Operating Capability. Beta-ready build."
+            explanation: |-
+              IOC means "the product is good enough to put in front of real users for beta." All remaining
+              functionality is implemented, integrated, and tested to the level that external users can
+              meaningfully try it. Failing IOC pushes the beta release back.
+            example: |-
+              ```text
+              At IOC you typically have:
+              - All planned features coded + unit/integration tested
+              - Beta deployment packaged
+              - User docs drafted
+              ```
+          - type: name
+            prompt: "Milestone at the end of Transition: \\_\\_\\_."
+            answer: "**PR** — Product Release. Deployed, trained, handed off."
+            explanation: |-
+              PR = the project ends. The product is in production, users are trained, support is handed off to
+              ops / customer service, and the project team closes out. Post-mortem happens here.
+            example: |-
+              ```text
+              At PR you typically have:
+              - Production deployment
+              - Training materials + delivered training
+              - Support/ops handoff signed
+              - Final project retrospective
+              ```
+          - type: name
+            prompt: Primary focus of Inception?
+            answer: |-
+              1. Business case
+              2. Vision
+              3. Scope
+              4. Feasibility
+              5. Preliminary risks
+
+              Short phase (~10% of project). Output: LCO milestone.
+            explanation: |-
+              Inception is the *"should we do this?"* phase — tiny investment to answer it. Output is the LCO
+              milestone: a go/no-go decision backed by a vision doc, business case, scope sketch, and a first
+              pass at the risk list. If any of these don't close out, the project dies here instead of wasting
+              Construction-level money.
+            example: |-
+              ```text
+              Startup pitches "AI-powered coffee app":
+              Inception (1-2 iterations):
+                - Vision: peer-to-peer coffee recommendations
+                - Business case: $500k dev / 10k users year 1
+                - Scope: MVP = search + save + rate
+                - Risk: ML quality, user acquisition
+              → LCO signed → proceed to Elaboration
+              ```
+          - type: name
+            prompt: Which RUP phase has the greatest analysis workflow?
+            answer: >-
+              **Elaboration.** ~80% of requirements captured, architecture baselined. Longest phase of project by
+              duration.
+            explanation: |-
+              On the "hump chart," the Analysis & Design workflow peaks in Elaboration because this is when
+              the architecture is proven by building executable slices of the hardest use cases. Requirements
+              work also climbs here to reach ~80% captured, so Analysis & Design feeds off a stabilizing req set.
+            example: |-
+              ```text
+              Hump chart peaks:
+                Requirements  → Inception + Elaboration
+                Analysis/Des. → Elaboration      ← HIGHEST
+                Implementation→ Construction
+                Test          → Construction + Transition
+              ```
+          - type: name
+            prompt: Primary focus of Construction?
+            answer: >-
+              Implement remaining functionality, integrate, comprehensive testing. ~50% of project effort. Output: IOC
+              milestone.
+            explanation: |-
+              Construction is the "bulk build-out" phase and carries the largest slice of total effort (~50%).
+              Multiple iterations (3-5 typical) each deliver more working features on top of the baselined
+              architecture from Elaboration. Late-breaking architecture changes here are a red flag — they
+              should have surfaced earlier.
+            example: |-
+              ```text
+              Construction iterations (3-5):
+                C1: user login + search (2 weeks)
+                C2: save + rate + admin (2 weeks)
+                C3: payment + shipping (2 weeks)
+                C4: reports + hardening (2 weeks)
+              → IOC signed → beta release
+              ```
+          - type: name
+            prompt: What happens during Transition?
+            answer: |-
+              1. Beta release
+              2. User acceptance testing
+              3. Deployment
+              4. Training
+              5. Support handoff
+
+              Output: PR milestone (Product Release). Phase during which product moves to beta.
+            explanation: |-
+              Transition converts a feature-complete build (IOC) into a supported product (PR). Emphasis
+              shifts from writing code to validating the system with real users, cleaning up defects, packaging
+              documentation, training users/ops, and handing the baby to the support org. Short phase (~10%).
+            example: |-
+              ```text
+              Transition activities:
+                - Beta → gather feedback → bug-fix
+                - UAT with real customer reps
+                - Deploy to production environment
+                - Train end users + support staff
+                - Hand off to ops / close project
+              ```
+      - id: 4911-best-practices
+        name: Best Practices
+        tags:
+          - process
+          - proc
+        prose: >-
+          Waterfall: high risk sustained until late → problems surface near end → expensive fix. Iterative: risk reduced
+          continuously → problems surface early → course-correct cheaply.
+        cards:
+          - type: name
+            prompt: Six software best practices (RUP)?
+            answer: |-
+              1. Develop iteratively
+              2. Manage requirements
+              3. Use component-based architectures
+              4. Model visually (UML)
+              5. Verify quality
+              6. Control changes
+            explanation: |-
+              Each best practice maps to a common root cause of software project failure: waterfall-style late
+              discovery → iterative; requirement drift → traceability; monolithic coupling → components;
+              ambiguous specs → UML; defect surprise → continuous quality verification; chaos → config/change
+              control. Memorize the list — these and the nine workflows are frequent RUP exam fodder.
+            example: |-
+              ```text
+              Practice                          Addresses
+              1 Develop iteratively             → late risk discovery
+              2 Manage requirements             → scope creep / drift
+              3 Use component-based arch.       → brittle monoliths
+              4 Model visually (UML)            → spec ambiguity
+              5 Verify quality                  → late defect discovery
+              6 Control changes                 → uncontrolled modifications
+              ```
+          - type: name
+            prompt: Why iterative > waterfall (risk curve)?
+            answer: >-
+              Waterfall: risk stays high, problems found late (expensive to fix). Iterative: each iteration exposes +
+              mitigates risk early → steadily declining risk curve.
+            explanation: |-
+              In waterfall, requirements defects only surface during test (near the end), by which point they're
+              baked into the design + code + everything downstream. Iterative development exposes a slice of
+              risk every iteration, so problems are smaller and cheaper to fix. The risk curve shape — not the
+              total defects — is the real difference.
+            example: |-
+              ```text
+              Waterfall: risk ────────────────── STAYS HIGH ─── drops at test
+              Iterative: risk ╲╱╲╱╲╱╲╱╲╱ steady decline per iteration
+              ```
+          - type: name
+            prompt: Which practice addresses "brittle architectures"?
+            answer: "**Use Component-Based Architectures** — separates concerns, enables reuse, reduces coupling."
+            explanation: |-
+              Brittle = small change ripples everywhere. Component-based architecture hides implementation
+              behind interfaces, allowing parts to evolve independently. EJB itself embodies this: bean types
+              are components with well-defined contracts, injected via interface, versionable independently.
+            example: |-
+              ```java
+              // Brittle: direct coupling to SQL
+              // Better: swap-replaceable component behind interface
+              public interface PaymentGateway { void charge(...); }
+              @Stateless public class StripeGateway implements PaymentGateway { ... }
+              @Stateless public class PaypalGateway implements PaymentGateway { ... }
+              ```
+      - id: 4911-workflows
+        name: Workflows
+        tags:
+          - proc
+        prose: Cards covering Workflows.
+        cards:
+          - type: name
+            prompt: The nine RUP workflows split into six engineering plus three \_\_\_ workflows.
+            answer: "**supporting** (cross-cutting). Supporting = Configuration & Change Mgmt, Project Mgmt, Environment."
+            explanation: |-
+              The six *engineering* workflows produce the product (Business Modeling → Requirements → Analysis
+              & Design → Implementation → Test → Deployment). The three *supporting* workflows aren't about
+              building the product — they keep the team functioning (Config/Change Mgmt, Project Mgmt,
+              Environment). All nine run in *every* phase, just at different intensities.
+            example: |-
+              ```text
+              Engineering (6):        Supporting (3):
+              1 Business Modeling      7 Configuration & Change Mgmt
+              2 Requirements           8 Project Management
+              3 Analysis & Design      9 Environment
+              4 Implementation
+              5 Test
+              6 Deployment
+              ```
+          - type: name
+            prompt: >-
+              Engineering workflow sequence: Business Modeling → Requirements → \_\_\_ → Implementation → Test →
+              Deployment.
+            answer: "**Analysis & Design**."
+            explanation: |-
+              Analysis & Design sits between capturing what the user wants (Requirements) and writing the code
+              (Implementation). *Analysis* produces technology-independent BCE classes; *Design* refines them
+              into framework-specific classes (e.g. `@Entity`, JSF pages, EJBs). On the hump chart, this
+              workflow peaks in Elaboration.
+            example: |-
+              ```text
+              Book-a-flight use case:
+                Requirements  → UC narrative + main/alt flows
+                Analysis      → SearchFlights (boundary), BookingCtrl (control), Flight (entity)
+                Design        → JSF page + @Stateless BookingService + @Entity Flight
+                Implementation→ concrete Java + JSF code
+              ```
+          - type: name
+            prompt: "Supporting workflow responsible for tracking change requests + baselines: \\_\\_\\_."
+            answer: "**Configuration & Change Management**."
+            explanation: |-
+              C&CM owns the who-changed-what-when story: version control, branch strategy, change-request
+              tracking, baselines/releases. It is what makes "which version did the customer see?" answerable.
+              Distinct from Project Management (cost/schedule) and Environment (tooling infrastructure).
+            example: |-
+              ```text
+              CCM activities: Git/SVN discipline · PR reviews · release tagging ·
+                              change-request triage · baseline freeze before LCA
+              ```
+          - type: name
+            prompt: "Supporting workflow responsible for team tooling + process infrastructure: \\_\\_\\_."
+            answer: "**Environment**. Provides the tools/methods the team uses."
+            explanation: |-
+              Environment is the workflow that *sets up how you work*: CI server, IDEs, build tool, coding
+              standards, the RUP process itself. Easy to confuse with Deployment (which is *delivering the
+              product* to users). Environment = tooling for the team; Deployment = shipping to the customer.
+            example: |-
+              ```text
+              Environment deliverables:
+                - CI/CD pipeline
+                - Code style + lint rules
+                - Adopted UML tool
+                - Tailored RUP process
+              ```
+          - type: name
+            prompt: What is a "hump chart"?
+            answer: >-
+              Graph showing effort distribution of each workflow across all phases. E.g., requirements hump peaks in
+              Inception/Elaboration; implementation hump peaks in Construction.
+            explanation: |-
+              Each "hump" is one workflow's effort over time. The shape makes two RUP claims visually obvious:
+              (1) every workflow runs in every phase (no pure-waterfall steps), and (2) different workflows
+              peak in different phases (Requirements early, Implementation mid, Test late). Expect an exam
+              question asking which workflow peaks in which phase.
+            example: |-
+              ```text
+                         Incep | Elab | Constr | Trans
+              Requirements  ▂  |  ▅   |   ▃    |   ▁
+              Analysis/Des. ▁  |  ▆   |   ▂    |   ▁
+              Implementation▁  |  ▂   |   ▆    |   ▃
+              Test          ▁  |  ▂   |   ▅    |   ▅
+              Deployment    ▁  |  ▁   |   ▂    |   ▅
+              ```
+      - id: 4911-use-cases
+        name: Use Cases
+        tags:
+          - use-cases
+          - proc
+        prose: Cards covering Use Cases.
+        cards:
+          - type: name
+            prompt: How do use cases drive development?
+            answer: |-
+              They are primary artifact. Drive:
+              1. Analysis classes + use-case realizations
+              2. Design-level realizations
+              3. Implementation structure
+              4. Test cases
+              5. Iteration planning (prioritized UCs picked per iteration)
+            explanation: |-
+              "Use-case driven" is RUP's central commitment — one UC threads from requirements to analysis to
+              design to code to test to iteration plan. That's why the big-picture diagram in the lesson shows
+              the UC as the hub with arrows to all six workflows. Bruce specifically called out the big-picture
+              question as an exam failure mode: students get lost in details and miss this integrating idea.
+            example: |-
+              ```text
+              UC "Book Flight" →
+                Requirements:   UC narrative (main + alt flows)
+                Analysis:       BookFlightPage (B), BookCtrl (C), Flight (E)
+                Design:         JSF page, @Stateless BookService, @Entity Flight
+                Implementation: concrete code
+                Test:           one test per flow (main + alternates)
+                Plan:           scheduled in iteration 3 due to risk + value
+              ```
+          - type: name
+            prompt: Three class stereotypes in analysis model?
+            answer: |-
+              1. **Boundary** (UI / external interface)
+              2. **Control** (workflow orchestration)
+              3. **Entity** (persistent domain objects)
+
+              "BCE".
+            explanation: |-
+              BCE is a technology-independent way to classify analysis classes by *role*. Boundary faces the
+              outside world (UI widgets, external APIs), Entity holds persistent state (domain objects), and
+              Control orchestrates the flow between them for a given use case. In design, Boundary becomes JSF
+              pages, Entity becomes `@Entity`, Control becomes a `@Stateless` service.
+            example: |-
+              ```text
+              Book Flight UC analysis classes:
+                Boundary: BookFlightPage       ← UI (one per actor/UC)
+                Control:  BookFlightController ← orchestrates workflow
+                Entity:   Flight, Booking      ← domain model
+              ```
+          - type: name
+            prompt: Rule for number of Boundary classes per use case?
+            answer: >-
+              One Boundary per Actor-UseCase pair (each actor sees a different interface). Control classes: typically
+              one per use case. Entities: from domain model.
+            explanation: |-
+              If two actors participate in the same UC, you get two Boundaries because each actor has a
+              different view (e.g. Customer uses a web page; PaymentGateway talks to an adapter). Control = one
+              per UC by default because each UC has its own workflow. Entities come from the domain model, so
+              multiple UCs may share an Entity.
+            example: |-
+              ```text
+              UC "Book Flight" (actors: Customer, PaymentGateway):
+                Boundary (×2): BookFlightPage (Customer), PaymentAdapter (Gateway)
+                Control (×1):  BookFlightController
+                Entity (n):    Flight, Booking, Customer, Payment
+              ```
+          - type: name
+            prompt: Who is responsible for integrity of the analysis model?
+            answer: "**Architect / System Analyst.** (Quiz 4 answer: System Analyst — owns the analysis model as a whole.)"
+            explanation: |-
+              Quiz 4 Q18 gave the canonical answer as *System Analyst*. The role is responsible for ensuring
+              the analysis model stays consistent — naming, responsibilities, BCE stereotypes, use-case
+              realizations. Individual use-case realizations are authored by analysts but the overall model
+              integrity is a single role's responsibility.
+            example: |-
+              ```text
+              Artifact                          Responsible role
+              Analysis model (whole)            System Analyst
+              Use-case realization (one UC)     Use-case engineer / designer
+              Design model                      Architect
+              ```
+          - type: name
+            prompt: What diagram shows analysis objects interacting?
+            answer: >-
+              **Collaboration Diagram** (shows object interactions with links + messages; emphasizes structure over
+              time).
+            explanation: |-
+              Quiz 4 Q17 answer. A collaboration diagram (UML 1.x; renamed "communication diagram" in UML 2)
+              shows objects linked together with numbered messages flowing along those links — it highlights
+              structure (who is connected to whom) whereas a sequence diagram emphasizes *time* (vertical
+              lifeline ordering). Analysis-level use-case realizations typically use collaboration diagrams.
+            example: |-
+              ```text
+              (Customer) — 1: book(flight) → [BookFlightPage]
+                                2: process() ↓
+                              [BookFlightCtrl] — 3: save → [Booking]
+                                                 4: charge → [Payment]
+              ```
+      - id: 4911-architecture
+        name: Architecture
+        tags:
+          - architecture
+          - proc
+        prose: "Bruce: appeared on midterm, NOT on final. Keep light."
+        cards:
+          - type: name
+            prompt: 4+1 view model — name the five views?
+            answer: |-
+              1. **Logical** (structure)
+              2. **Process** (concurrency)
+              3. **Implementation** (code/modules)
+              4. **Deployment** (hardware)
+              5. **Use-Case** (the +1, ties others)
+
+              *Bruce: NOT on final — light knowledge only.*
+            explanation: |-
+              Kruchten's 4+1 view model documents architecture from four stakeholder perspectives plus a
+              cross-cutting use-case view that links them. Logical = class/package structure (developer).
+              Process = threads/processes (integrator). Implementation = modules/components (programmer).
+              Deployment = nodes/hardware (sysadmin). Bruce flagged this as midterm-only — *light* knowledge
+              is enough for the final.
+            example: |-
+              ```text
+              4+1 view        Audience         Diagram
+              Logical         developer        class / package
+              Process         integrator       activity / sequence
+              Implementation  programmer       component
+              Deployment      sysadmin         deployment
+              Use-case (+1)   everyone         use case
+              ```
+      - id: 4911-rup-concepts
+        name: RUP Concepts
+        tags:
+          - process
+          - proc
+        prose: Cards covering RUP Concepts.
+        cards:
+          - type: name
+            prompt: General term for any information created/used by workers?
+            answer: >-
+              **Artifact.** Documents, models, code, test plans, etc. — anything produced or consumed during the
+              process.
+            explanation: |-
+              RUP vocabulary: *workers* perform *activities* that produce/consume *artifacts*. An artifact is
+              the generic container — the Vision doc, a UML diagram, a Java source file, a test script, a
+              risk list all count. Understanding the term matters because exam questions often phrase
+              deliverables abstractly ("which artifact captures ...").
+            example: |-
+              ```text
+              Workflow          Typical artifacts
+              Requirements      Vision doc · Use-case model · SRS
+              Analysis/Design   Analysis model · Design model · architecture doc
+              Implementation    Source code · build scripts
+              Test              Test plan · test cases · defect log
+              ```
+          - type: name
+            prompt: Which requirements activity determines order of UC development across iterations?
+            answer: "**Prioritize Use Cases.** Drives iteration planning — highest-risk + highest-value UCs scheduled early."
+            explanation: |-
+              "Prioritize Use Cases" is the bridge from requirements to iteration planning. You order UCs by a
+              combination of risk (build risky ones early so failures are cheap) and business value (customers
+              want the high-value features) plus dependencies. This is why Elaboration iterations tackle the
+              architecturally riskiest UCs — proving them early de-risks Construction.
+            example: |-
+              ```text
+              UC                     Risk  Value  Iteration
+              User login             low   med    Construction 1
+              Flight search          med   high   Elaboration 2
+              Payment processing     HIGH  high   Elaboration 1   ← risky → scheduled first
+              Reports                low   low    Construction 4
+              ```
+  - id: soft-skills
+    name: Testing, EVMS & soft skills
+    topics:
+      - id: 4911-evms
+        name: EVMS
+        tags:
+          - evms
+          - proc
+        prose: >-
+          Note: some sources use CV = ACWP − BCWP (reversed convention). Stick with the convention in the course slides:
+          CV = BCWP − ACWP.
+        cards:
+          - type: name
+            prompt: What does BCWS / PV stand for?
+            answer: >-
+              **B**udgeted **C**ost of **W**ork **S**cheduled = **P**lanned **V**alue. Cost of work PLANNED through a
+              given date.
+            explanation: |-
+              BCWS is the *plan*: "by April 20, we said we'd have completed tasks totalling $100k of budgeted
+              work." It is a point on the planned spend curve, independent of what actually happened. The
+              baseline against which both progress (BCWP) and spend (ACWP) are compared.
+            example: |-
+              ```text
+              Plan at week 10: design done ($40k) + half of coding done ($60k)
+              → BCWS = $40k + $60k = $100k
+              ```
+          - type: name
+            prompt: What does BCWP / EV stand for?
+            answer: >-
+              **B**udgeted **C**ost of **W**ork **P**erformed = **E**arned **V**alue. Budgeted cost of work ACTUALLY
+              completed.
+            explanation: |-
+              BCWP measures *how much work has been finished*, priced at the budget rate (not actual cost).
+              It is "earned" value because the project earns the budgeted amount each time work is completed.
+              Compared against BCWS it tells schedule; compared against ACWP it tells cost efficiency.
+            example: |-
+              ```text
+              Week 10: design done ($40k budgeted) + 1/3 of coding done ($40k budgeted of $120k)
+              → BCWP = $40k + $40k = $80k earned
+              ```
+          - type: name
+            prompt: What does ACWP / AC stand for?
+            answer: "**A**ctual **C**ost of **W**ork **P**erformed. Actual cost incurred for completed work."
+            explanation: |-
+              ACWP is the *real money spent* on whatever work has been completed. Difference between ACWP and
+              BCWP tells you whether that completed work was over or under budget. ACWP includes salaries,
+              tools, licenses — every dollar actually paid, not estimated.
+            example: |-
+              ```text
+              Week 10: design + 1/3 coding completed — invoices totalled $90k
+              → ACWP = $90k  (BCWP = $80k → $10k over budget for work done)
+              ```
+          - type: name
+            prompt: Cost Variance (CV) formula?
+            answer: "**CV = BCWP − ACWP**. Positive = under budget. Negative = over budget."
+            explanation: |-
+              The course convention (and Bruce's slides) is **CV = BCWP − ACWP** — earned minus actual.
+              Mnemonic: "Earned beats Actual is good" → positive = under budget. Warning: some textbooks
+              reverse the convention; stick with the slides for this class.
+            example: |-
+              ```text
+              BCWP = $80k, ACWP = $90k
+              CV = 80 − 90 = −$10k  → OVER budget
+              ```
+          - type: name
+            prompt: Schedule Variance (SV) formula?
+            answer: "**SV = BCWP − BCWS**. Positive = ahead of schedule. Negative = behind."
+            explanation: |-
+              SV compares what we've *earned* against what we *planned* to earn by this date. Expressed in
+              dollars, not days, because EVMS abstracts schedule into "work completed" terms. Negative SV
+              means we've completed less than planned.
+            example: |-
+              ```text
+              BCWP = $80k, BCWS = $100k
+              SV = 80 − 100 = −$20k  → BEHIND schedule
+              ```
+          - type: name
+            prompt: CPI (Cost Performance Index) formula?
+            answer: "**CPI = BCWP / ACWP**. >1 = efficient. <1 = over budget."
+            explanation: |-
+              CPI is the *ratio* form of CV: how many dollars of budgeted work did we earn per dollar actually
+              spent? CPI = 0.9 means each $1 spent only produces $0.90 of earned work — we're 10% over
+              budget. Simple health indicator often reported on dashboards.
+            example: |-
+              ```text
+              BCWP = $80k, ACWP = $90k
+              CPI = 80 / 90 ≈ 0.89  → 11% over budget
+              ```
+          - type: name
+            prompt: SPI (Schedule Performance Index) formula?
+            answer: "**SPI = BCWP / BCWS**. >1 = ahead. <1 = behind."
+            explanation: |-
+              SPI is the ratio form of SV. SPI = 0.8 means we've earned only 80% of what we planned to earn by
+              this date — 20% behind schedule. Again expressed in work-completed terms, not calendar days.
+            example: |-
+              ```text
+              BCWP = $80k, BCWS = $100k
+              SPI = 80 / 100 = 0.8  → 20% behind schedule
+              ```
+          - type: name
+            prompt: What does EAC stand for?
+            answer: "**E**stimate **A**t **C**ompletion. Projected total cost at project end. **EAC = BAC / CPI**."
+            explanation: |-
+              EAC forecasts the final cost of the project assuming current cost efficiency (CPI) continues.
+              BAC = Budget At Completion (the total original budget). If CPI is 0.9, final cost is projected
+              to be BAC / 0.9 — about 11% over budget. A gold-standard executive-dashboard metric.
+            example: |-
+              ```text
+              BAC = $500k (original budget), CPI = 0.89
+              EAC = 500 / 0.89 ≈ $562k  → forecast $62k overrun
+              ```
+      - id: 4911-testing
+        name: Testing
+        tags:
+          - testing
+          - proc
+        prose: >-
+          Test levels Unit — individual components in isolation (white-box) Integration — component interactions System
+          — end-to-end, full behavior (black-box) Acceptance — user validation against requirements (black-box — Quiz 4
+          Q9) Test types (Quiz 4 tested) Performance — response time + processing time (Quiz 4 Q6) Load — concurrent
+          users / throughput Volume — large data Configuration — different environments / hardware / OS White-box vs
+          Black-box White-box: knows internal code (unit tests) Black-box: tests I/O behavior only (system, acceptance)
+        cards:
+          - type: name
+            prompt: Which test verifies response + processing time?
+            answer: >-
+              **Performance test.** (Other types: volume = data load, configuration = different envs, load = concurrent
+              users.)
+            explanation: |-
+              Quiz 4 Q6 answer. **Performance** = individual response/processing time under expected load.
+              **Load** = many concurrent users / throughput. **Volume** = large data sizes. **Configuration**
+              = different environments / hardware / OS. Don't confuse performance with load — a system can be
+              fast at low concurrency and collapse under real load.
+            example: |-
+              ```text
+              Type            Asks...
+              Performance     "How fast does one user's checkout complete?"
+              Load            "Can 1000 users check out simultaneously?"
+              Volume          "Does search work with 10M rows?"
+              Configuration   "Does it run on RHEL 8 AND Windows Server?"
+              ```
+          - type: name
+            prompt: User acceptance tests are usually what type?
+            answer: >-
+              **Black-box tests** — exercise system externally, no internal knowledge. (White-box = unit tests with code
+              visibility.)
+            explanation: |-
+              Quiz 4 Q9 answer. UAT is black-box because users validate the system against the requirements
+              (use cases) without caring about the implementation. White-box testing is the opposite — tests
+              written with visibility into the code, typically at unit level (branch/path coverage).
+            example: |-
+              ```text
+              Black-box (input → output):         White-box (code visibility):
+                System test                         Unit test
+                Acceptance test                     Branch/path coverage
+                Performance test
+              ```
+          - type: name
+            prompt: Four main test levels?
+            answer: |-
+              1. Unit (components isolated, white-box)
+              2. Integration (component interactions)
+              3. System (end-to-end, black-box)
+              4. Acceptance (user validation against requirements)
+            explanation: |-
+              The levels ladder up in scope: a *unit* is one method/class in isolation, *integration* is
+              several units working together, *system* is the full app end-to-end in a prod-like environment,
+              and *acceptance* is the user's validation that requirements are met. Unit tests are white-box;
+              system and acceptance are black-box; integration is usually grey-box.
+            example: |-
+              ```text
+              Level        Scope                               Written by
+              Unit         single class / method               developers
+              Integration  multiple units + DB / messaging     developers + QA
+              System       full stack end-to-end               QA
+              Acceptance   use-case main + alt flows           users / product
+              ```
+      - id: 4911-mbti
+        name: MBTI
+        tags:
+          - mbti
+          - proc
+        prose: Quiz 4 was saturated with MBTI questions — high probability on final.
+        cards:
+          - type: name
+            prompt: Four MBTI dimensions?
+            answer: |-
+              1. **E/I** (Extraversion/Introversion — attitude to world)
+              2. **S/N** (Sensing/Intuition — perception)
+              3. **T/F** (Thinking/Feeling — judging function)
+              4. **J/P** (Judging/Perceiving — lifestyle)
+            explanation: |-
+              Bruce hammered MBTI on Quiz 4 — high probability on the final. Memorize the dimension labels
+              *and* their meaning tags: E/I = attitude, S/N = perception, T/F = judging function, J/P =
+              outer-world lifestyle. The tricky trap is that "Perceiving" (J/P pole) is NOT the same as a
+              "perceiving function" (S or N).
+            example: |-
+              ```text
+              Dimension   Poles              Tag
+              E/I         Extra / Intro      attitude toward the world
+              S/N         Sensing / iNt.     perception function
+              T/F         Think / Feel       judging function
+              J/P         Judge / Perceive   outer-world lifestyle
+              ```
+          - type: name
+            prompt: Which dimension is an "attitude toward the world"?
+            answer: >-
+              **Introversion / Extraversion.** (J/P = attitude toward outer world lifestyle; S/N = perception; T/F =
+              judging.)
+            explanation: |-
+              E/I is the "where does your energy come from / how do you engage the world" dimension. J/P is a
+              related but different axis ("outer-world *lifestyle*"). If a question says "attitude toward the
+              world" — answer is E/I. If it says "attitude toward the *outer* world" specifically with a
+              lifestyle slant — that's J/P. Read carefully.
+            example: |-
+              ```text
+              Keyword in question            Dimension
+              "attitude toward the world"    E / I
+              "outer-world lifestyle"        J / P
+              "perception"                   S / N
+              "judging function"             T / F
+              ```
+          - type: name
+            prompt: People who prefer Perceiving…?
+            answer: "**Enjoy surprises.** Flexible, open-ended, adaptive. (Judging = decide quickly, tight schedules.)"
+            explanation: |-
+              Perceivers (P) like keeping options open, adapt well to change, and genuinely *enjoy surprises*.
+              Judgers (J) are the mirror: want closure, deadlines, structure. "Perceiving" the lifestyle (P on
+              J/P axis) is distinct from "perceiving functions" (S and N on the S/N axis) — easy to trip up on.
+            example: |-
+              ```text
+              Preference   Behavior            Phrase
+              Perceiving   flexible, adaptive  "enjoy surprises"
+              Judging      plan-driven         "decide quickly"
+              ```
+          - type: name
+            prompt: People who prefer Feeling…?
+            answer: "**Are fair.** Value-driven, empathetic. (Thinking = analytical, objective.)"
+            explanation: |-
+              Feelers make decisions using values and empathy — the slides use the tag "fair." Thinkers decide
+              via logic and objective criteria. Both are *judging* functions (they decide); they just decide
+              differently.
+            example: |-
+              ```text
+              Feeling  → "Are fair" (values + empathy)
+              Thinking → analytical, objective, criteria-driven
+              ```
+          - type: name
+            prompt: People who prefer Judging…?
+            answer: "**Decide quickly.** Want closure, schedules, structure."
+            explanation: |-
+              J on the J/P axis manifests as plan-driven behavior: close decisions early, stick to schedules,
+              prefer structure. Pair with E/I for team dynamics — an ISTJ will plan meticulously in
+              solitude; an ESTJ will drive group closure visibly.
+            example: |-
+              ```text
+              Situation: project planning meeting
+                Judging type: "Let's lock the schedule today"
+                Perceiving:   "Let's keep options open a bit longer"
+              ```
+          - type: name
+            prompt: People who prefer Intuition…?
+            answer: >-
+              **Like solving new complex problems.** Pattern-oriented, future-focused. (Sensing = details, facts,
+              practical.)
+            explanation: |-
+              Intuitives (N) think in patterns, abstractions, future possibilities — the slides tag them
+              "like solving new complex problems." Sensors (S) trust facts, details, the here and now. Both
+              are *perceiving* functions (how you gather information).
+            example: |-
+              ```text
+              Intuition (N) → "Like solving new complex problems" (patterns, future)
+              Sensing   (S) → details, facts, practical, concrete
+              ```
+          - type: name
+            prompt: Which is a "judging function"?
+            answer: >-
+              **Thinking** (and Feeling). Judging functions DECIDE. (Perceiving functions = Sensing + Intuition: they
+              GATHER info.)
+            explanation: |-
+              The "function" terminology is separate from the J/P axis — that's Bruce's trap question.
+              *Judging functions* = Thinking + Feeling (both decide). *Perceiving functions* = Sensing +
+              Intuition (both gather info). The J/P *axis* just names which of those two function types a
+              person prefers to show externally.
+            example: |-
+              ```text
+              Function type   Members          What they do
+              Judging         Thinking, Feel.  DECIDE
+              Perceiving      Sensing, Intu.   GATHER info
+              ```
+          - type: name
+            prompt: Which is a "perceiving function"?
+            answer: "**Sensing** (and Intuition). Perceiving functions GATHER info."
+            explanation: |-
+              Sensing and Intuition are the two ways people *perceive* (gather information). Sensing trusts
+              concrete facts; Intuition trusts patterns/possibilities. Do not confuse "perceiving function"
+              (S or N) with the J/P axis pole "Perceiving" — Bruce deliberately sets this as a trap.
+            example: |-
+              ```text
+              Perceiving functions (gather information):
+                Sensing   — facts, details, concrete
+                Intuition — patterns, possibilities, abstract
+              ```
+          - type: name
+            prompt: People who prefer Extraversion…?
+            answer: >-
+              **Prefer face-to-face communication.** Think out loud, energized by people. (Introverts: think before
+              responding, prefer written communication.)
+            explanation: |-
+              The slides' short tag for Extraversion is *"face-to-face communication."* Introverts prefer
+              written/async and need time to formulate responses. Team-building implication: mixing E and I
+              typists on a team means supporting both real-time and async modes of work.
+            example: |-
+              ```text
+              Extravert (E) — "face-to-face communication", thinks out loud
+              Introvert (I) — reflective, prefers written async, needs time to respond
+              ```

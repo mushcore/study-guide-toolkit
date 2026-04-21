@@ -1,0 +1,1177 @@
+modules:
+  - id: fs-perms
+    name: Filesystem & permissions
+    topics:
+      - id: 4915-filesystem
+        name: Filesystem
+        tags:
+          - filesystem
+          - fundamentals
+        prose: Flashcards covering Filesystem.
+        cards:
+          - type: name
+            prompt: What is the Unix root directory?
+            answer: '`/` — a single forward slash. Not `/root` (that''s root user''s home).'
+          - type: name
+            prompt: Inode contents?
+            answer: |-
+              1. Owner
+              2. Group
+              3. Permissions
+              4. Timestamps (atime/mtime/ctime)
+              5. Size
+              6. Link count
+              7. File type
+              8. Data-block pointers
+
+              **NOT filename.**
+          - type: name
+            prompt: Why can't hard links cross filesystems?
+            answer: Inode numbers are unique only within a single filesystem.
+          - type: name
+            prompt: To link a file such that it exists even after original is deleted, which type?
+            answer: '**Hard link**. Soft/symbolic would dangle if target deleted.'
+          - type: name
+            prompt: Which permission set belongs to a symbolic link?
+            answer: Real systems show `lrwxrwxrwx` — type `l`, all rwx. On midterm Q32, the closest option was `lrwxrwxrw-` (typo in original exam — last x dropped).
+          - type: name
+            prompt: Name the 7 Unix file types shown in ls -l first char.
+            answer: |-
+              1. `-` plain
+              2. `d` directory
+              3. `b` block
+              4. `c` character
+              5. `l` symlink
+              6. `s` socket
+              7. `p` named pipe
+          - type: name
+            prompt: What two entries does every directory contain?
+            answer: '`.` (self) and `..` (parent).'
+          - type: name
+            prompt: 'You mounted Windows D: at /mnt/win. How do you cd to D:\\work\\faxes in Linux?'
+            answer: '`cd /mnt/win/work/faxes`.'
+          - type: name
+            prompt: Linux command to create a directory?
+            answer: '`mkdir`.'
+          - type: name
+            prompt: 'T/F: Linux can read files on partitions formatted for DOS/OS2/Windows?'
+            answer: TRUE — with appropriate filesystem drivers (vfat, ntfs-3g, etc.).
+      - id: 4915-permissions
+        name: Permissions
+        tags:
+          - permissions
+          - fundamentals
+        prose: '10-char ls display: [type][u][g][o]. Each rwx triplet = 3 bits.'
+        cards:
+          - type: name
+            prompt: Make jack owner of all files under /home/jack/candy?
+            answer: '`chown -R jack /home/jack/candy`. Capital -R, not -r.'
+          - type: name
+            prompt: '`chmod 755 file` — owner/group/other?'
+            answer: owner rwx (7=4+2+1), group r-x (5=4+0+1), other r-x (5=4+0+1).
+          - type: name
+            prompt: umask 022 — new file and dir permissions?
+            answer: File 644 (666 & ~022), dir 755 (777 & ~022).
+      - id: 4915-chroot
+        name: chroot
+        tags:
+          - containers
+          - kubernetes
+        prose: Flashcards covering chroot.
+        cards:
+          - type: name
+            prompt: What does chroot do?
+            answer: Changes apparent root directory for a process — filesystem-level jail.
+      - id: 4915-umask
+        name: umask
+        tags:
+          - permissions
+          - sysadmin
+        prose: '10-char ls display: [type][u][g][o]. Each rwx triplet = 3 bits.'
+        cards:
+          - type: name
+            prompt: Calculate directory perms with umask 027.
+            answer: 777 & ~027 = 750. Owner rwx, group r-x, other nothing.
+      - id: 4915-flags
+        name: Flags
+        tags:
+          - shell
+        prose: Flashcards covering Flags.
+        cards:
+          - type: name
+            prompt: Can you combine single-letter flags? Example?
+            answer: Yes. `ls -r -x` same as `ls -rx`. Most commands accept combined short options.
+      - id: 4915-setgid
+        name: setgid
+        tags:
+          - permissions
+          - fundamentals
+        prose: Flashcards covering setgid.
+        cards:
+          - type: name
+            prompt: What does setgid do on a file vs a directory?
+            answer: 'On a file: process runs with the file''s group GID. On a directory: new files inherit the directory''s group (collaboration pattern).'
+      - id: 4915-setuid
+        name: setuid
+        tags:
+          - permissions
+          - fundamentals
+        prose: Flashcards covering setuid.
+        cards:
+          - type: name
+            prompt: What does setuid do?
+            answer: 'Executable runs with the file owner''s UID regardless of who launched it. Classic example: /usr/bin/passwd runs as root.'
+      - id: 4915-hard-link
+        name: Hard link
+        tags:
+          - filesystem
+          - fundamentals
+        prose: 'An inode holds: owner, group, modes, timestamps (atime/mtime/ctime), size, link count, type, data-block pointers. NOT filename.'
+        cards:
+          - type: name
+            prompt: Can you tell which of two hard-linked files is the 'original'?
+            answer: No. Both are equal directory entries pointing to the same inode. There is no 'original' after the link is made.
+      - id: 4915-soft-link
+        name: Soft link
+        tags:
+          - filesystem
+          - fundamentals
+        prose: 'An inode holds: owner, group, modes, timestamps (atime/mtime/ctime), size, link count, type, data-block pointers. NOT filename.'
+        cards:
+          - type: name
+            prompt: How do you create a soft link?
+            answer: '`ln -s target linkname`. Creates a new file whose content is the pathname of the target.'
+      - id: 4915-storage
+        name: Storage
+        tags:
+          - fundamentals
+        prose: Flashcards covering Storage.
+        cards:
+          - type: name
+            prompt: 'Performance difference: rotating disk vs SSD for file access?'
+            answer: Rotating (HDD) slower due to seek time. SSD much faster but has **limited write cycles** per cell.
+      - id: 4915-fstab
+        name: fstab
+        tags:
+          - filesystem
+          - sysadmin
+        prose: Flashcards covering fstab.
+        cards:
+          - type: name
+            prompt: Basic fstab fields you MUST know?
+            answer: |-
+              1. Device
+              2. Mount point
+              3. Filesystem type
+              4. Options
+
+              (Per instructor: NOT the last 2 — dump and fsck pass.)
+      - id: 4915-acl
+        name: ACL
+        tags:
+          - permissions
+          - fundamentals
+        prose: Flashcards covering ACL.
+        cards:
+          - type: name
+            prompt: Do you need ACL (Access Control List) details on the exam?
+            answer: No. Instructor said ACL details not needed.
+  - id: shell-text
+    name: Shell, redirection & text processing
+    topics:
+      - id: 4915-shell
+        name: Shell
+        tags:
+          - shell
+        prose: Process substitution &lt;(cmd), &gt;(cmd) is a bash feature beyond basic 7.
+        cards:
+          - type: name
+            prompt: What does Ctrl+D do at a shell prompt?
+            answer: End of input / log out of shell. (Midterm Q15.)
+          - type: name
+            prompt: What does `cd ~` do?
+            answer: Change to your account's home directory.
+          - type: name
+            prompt: By default, Linux command arguments are separated by what?
+            answer: Spaces or tabs (white space, per default IFS).
+          - type: name
+            prompt: How do you run a bash command in the background?
+            answer: 'Terminate with `&`. Example: `long_task &`.'
+          - type: name
+            prompt: Which command changes your login shell?
+            answer: '`chsh`.'
+          - type: name
+            prompt: What's the Linux account with special admin privileges called?
+            answer: Superuser (also known as root).
+          - type: name
+            prompt: Which command sends a signal to a process?
+            answer: '`kill`. (Despite the name, it can send any signal, not just SIGKILL.)'
+          - type: name
+            prompt: What is a Unix PPID?
+            answer: Parent Process ID.
+          - type: name
+            prompt: How to find currently defined aliases?
+            answer: '`alias` — run with no arguments.'
+          - type: name
+            prompt: Command to display value of variable myvar?
+            answer: '`echo $myvar` (or `echo "$myvar"` to preserve spaces).'
+          - type: name
+            prompt: What does a pipe `|` do?
+            answer: Connects stdout of one process to stdin of the next.
+          - type: name
+            prompt: Bring background job number 2 to foreground?
+            answer: '`fg %2`.'
+          - type: name
+            prompt: Which command pushes a directory on the stack?
+            answer: '`pushd`.'
+      - id: 4915-text-utils
+        name: Text utils
+        tags:
+          - fundamentals
+        prose: Flashcards covering Text utils.
+        cards:
+          - type: name
+            prompt: What does `grep` do?
+            answer: Reads through files and displays lines matching a pattern.
+          - type: name
+            prompt: Correct command to search for word 'superman' in SuperHeroes?
+            answer: '`grep -w superman SuperHeroes`. `-w` matches whole word.'
+          - type: name
+            prompt: What does `tr` do?
+            answer: Maps (translates) one string of characters to another. Also deletes with `-d`.
+          - type: name
+            prompt: What does `tr -d '\r'` convert?
+            answer: Deletes carriage returns — converts DOS/Windows text files (CRLF) to Unix (LF).
+          - type: name
+            prompt: Which command displays the last part of a file?
+            answer: '`tail`.'
+          - type: name
+            prompt: Which command counts lines/words/chars in a file?
+            answer: '`wc`. `wc -l` for just line count.'
+          - type: name
+            prompt: What does `less` do?
+            answer: Displays a text file one screen at a time — interactive pager.
+          - type: name
+            prompt: 'Which is NOT a regex metacharacter: $, ^, =, .?'
+            answer: '`=` is not a regex metacharacter.'
+      - id: 4915-find
+        name: Find
+        tags:
+          - text-processing
+          - fundamentals
+        prose: 'Instructor: grep with * — quote the pattern: grep "pattern" *. Unquoted, shell glob expands * to filenames, first becomes pattern.'
+        cards:
+          - type: name
+            prompt: Locate a file named foo with no idea of location — command?
+            answer: '`find / -name foo`. Must specify start path; search entire tree.'
+          - type: name
+            prompt: Find .tmp files and delete them with find?
+            answer: '`find /path -name ''*.tmp'' -type f -delete` or `-exec rm {} \;`.'
+      - id: 4915-redirection
+        name: Redirection
+        tags:
+          - redirection
+          - shell
+        prose: 'Order trap: cmd &gt; f 2&gt;&amp;1 works (redirect stdout, then merge stderr into it). cmd 2&gt;&amp;1 &gt; f does NOT — stderr goes to terminal, only stdout goes to f.'
+        cards:
+          - type: name
+            prompt: Command to send output to a file AND stdout?
+            answer: '`tee`. `cmd | tee file`.'
+          - type: name
+            prompt: Command directing stdout to outfile and stderr to errfile?
+            answer: '`make FreeCiv >outfile 2>errfile`. (1> is same as >; 0 is stdin.)'
+          - type: name
+            prompt: 'T/F: Redirecting output to a file can destroy an existing file without error.'
+            answer: '**TRUE**. No warning unless noclobber set.'
+          - type: name
+            prompt: 'T/F: If you accidentally overwrite a file using redirection, you get a warning.'
+            answer: '**FALSE**. Silent destruction by default.'
+          - type: name
+            prompt: Output of `cat x y 1>hold 2>&1; cat hold` if x missing, y='This is y'?
+            answer: '```bash cat: x: No such file or directory This is y ``` stderr merged into stdout before both redirect into hold.'
+          - type: name
+            prompt: 'T/F: Process stores exit status of last command in `$?`?'
+            answer: TRUE.
+          - type: name
+            prompt: Three main shell redirection operators?
+            answer: '`>` stdout to file (overwrite); `>>` stdout to file (append); `<` stdin from file.'
+      - id: 4915-quoting
+        name: Quoting
+        tags:
+          - shell
+        prose: Backslash at end of line escapes the newline — continue long command on next line.
+        cards:
+          - type: name
+            prompt: person=jenny. Output of `echo '$person'`?
+            answer: '`$person` — literal. Single quotes suppress parameter expansion.'
+      - id: 4915-globbing
+        name: Globbing
+        tags:
+          - shell
+        prose: Flashcards covering Globbing.
+        cards:
+          - type: name
+            prompt: 'Files: libby1-12.jpg + libby1.txt. What matches `libby1*.jpg`?'
+            answer: '`libby1.jpg, libby10.jpg, libby11.jpg, libby12.jpg`. Matches libby1 + any chars + .jpg.'
+          - type: name
+            prompt: What matches `libby[6-8].jpg`?
+            answer: '`libby6.jpg, libby7.jpg, libby8.jpg` — char class single char.'
+          - type: name
+            prompt: Why is `grep *` dangerous without quotes?
+            answer: 'Shell globs `*` to filenames first; first filename becomes grep''s pattern. Always quote: `grep "pattern" *`.'
+      - id: 4915-bit-bucket
+        name: Bit bucket
+        tags:
+          - fundamentals
+        prose: Flashcards covering Bit bucket.
+        cards:
+          - type: name
+            prompt: Name of the Linux bit-bucket?
+            answer: '`/dev/null`.'
+      - id: 4915-grep
+        name: grep
+        tags:
+          - text-processing
+          - fundamentals
+        prose: 'Instructor: grep with * — quote the pattern: grep "pattern" *. Unquoted, shell glob expands * to filenames, first becomes pattern.'
+        cards:
+          - type: name
+            prompt: Command to display lines in current dir files that do NOT contain bb/bB/Bb/BB?
+            answer: '`grep -vi bb *`. -v invert, -i ignore case.'
+          - type: name
+            prompt: Command to case-insensitive count of lines matching 'error' in log?
+            answer: '`grep -ic error log`. -i ignore case, -c count.'
+      - id: 4915-filter
+        name: Filter
+        tags:
+          - text-processing
+          - shell
+        prose: Kernel firewall. Packet walks through tables → chains → rules.
+        cards:
+          - type: name
+            prompt: In `who | sort | lpr`, what is sort an example of?
+            answer: A **filter** — reads from stdin, transforms, writes to stdout.
+      - id: 4915-history
+        name: History
+        tags:
+          - shell
+          - fundamentals
+        prose: 'Instructor said: "only vague idea needed. No deep dates."'
+        cards:
+          - type: name
+            prompt: Who developed the Linux kernel?
+            answer: Linus Torvalds.
+          - type: name
+            prompt: Two key names associated with Linux and GNU?
+            answer: '**Linus Torvalds** (Linux kernel, 1991) and **Richard Stallman** (GNU project, Free Software Foundation).'
+      - id: 4915-editor
+        name: Editor
+        tags:
+          - editor
+          - fundamentals
+        prose: Flashcards covering Editor.
+        cards:
+          - type: name
+            prompt: 'T/F: Linux can run some programs developed for other OS like Windows/DOS?'
+            answer: TRUE — with emulation layers (Wine, DOSBox, etc.).
+      - id: 4915-stderr
+        name: stderr
+        tags:
+          - redirection
+          - shell
+        prose: Flashcards covering stderr.
+        cards:
+          - type: name
+            prompt: How do you redirect stderr to a file?
+            answer: '`2>` — example `cmd 2> err.log`. Merge with stdout: `2>&1`.'
+      - id: 4915-grep-recursive
+        name: grep recursive
+        tags:
+          - text-processing
+          - fundamentals
+        prose: 'Instructor: grep with * — quote the pattern: grep "pattern" *. Unquoted, shell glob expands * to filenames, first becomes pattern.'
+        cards:
+          - type: name
+            prompt: Flag to make grep search recursively through directories?
+            answer: '`-r` (or `-R`). Also available as separate command `rgrep` on some systems.'
+      - id: 4915-dev-null
+        name: /dev/null
+        tags:
+          - redirection
+          - fundamentals
+        prose: 'An inode holds: owner, group, modes, timestamps (atime/mtime/ctime), size, link count, type, data-block pointers. NOT filename.'
+        cards:
+          - type: name
+            prompt: What is `/dev/null`?
+            answer: Bit bucket — character special file. Discards all writes; reads return EOF immediately.
+      - id: 4915-dev-zero
+        name: /dev/zero
+        tags:
+          - fundamentals
+        prose: 'An inode holds: owner, group, modes, timestamps (atime/mtime/ctime), size, link count, type, data-block pointers. NOT filename.'
+        cards:
+          - type: name
+            prompt: What does `/dev/zero` return when read?
+            answer: 'An infinite stream of null bytes (0x00). Used to create zero-filled files: `dd if=/dev/zero of=file bs=1M count=10`.'
+  - id: processes-scheduling
+    name: Processes & scheduling
+    topics:
+      - id: 4915-pipes
+        name: Pipes
+        tags:
+          - redirection
+          - shell
+        prose: 'Order trap: cmd &gt; f 2&gt;&amp;1 works (redirect stdout, then merge stderr into it). cmd 2&gt;&amp;1 &gt; f does NOT — stderr goes to terminal, only stdout goes to f.'
+        cards:
+          - type: name
+            prompt: What does `cat file | more` do?
+            answer: Pipes stdout of cat into stdin of more — displays file one screen at a time via the pager.
+      - id: 4915-background
+        name: Background
+        tags:
+          - processes
+          - shell
+        prose: Flashcards covering Background.
+        cards:
+          - type: name
+            prompt: How do you put a process in the background when starting it?
+            answer: Append `&`. Example `long_task &` — returns control immediately.
+  - id: networking
+    name: Networking
+    topics:
+      - id: 4915-networking
+        name: Networking
+        tags:
+          - networking
+          - network
+        prose: Flashcards covering Networking.
+        cards:
+          - type: name
+            prompt: Secure technology for serving files over internet?
+            answer: '`sftp` (SSH-based). ftp, http, rsh all less secure.'
+          - type: name
+            prompt: Which command connects to remote Linux and securely runs programs?
+            answer: '`ssh`. rlogin, telnet, rsh are insecure.'
+          - type: name
+            prompt: What forwards a port through an encrypted connection?
+            answer: '`ssh` (with `-L` local or `-R` remote forwarding).'
+          - type: name
+            prompt: 'T/F: rsh, rlogin, rcp all have security risks.'
+            answer: '**TRUE**. Cleartext, .rhosts spoofable.'
+          - type: name
+            prompt: File listing hosts denied network service access?
+            answer: '`/etc/hosts.deny`.'
+          - type: name
+            prompt: Daemon managing a machine's DNS?
+            answer: '`named` (part of BIND).'
+          - type: name
+            prompt: What describes `odyssey.infosys.bcit.ca`?
+            answer: Fully Qualified hostname (FQDN).
+          - type: name
+            prompt: Service to offer remote mounting of Linux partitions on a Linux-only network?
+            answer: '**NFS**. (SMB for Windows, NIS for user/group info, DNS for names.)'
+      - id: 4915-nfs
+        name: NFS
+        tags:
+          - networking
+          - network
+        prose: Linux-to-Linux file sharing. NOT for Windows (use Samba).
+        cards:
+          - type: name
+            prompt: Config file defining NFS exports?
+            answer: '`/etc/exports`.'
+          - type: name
+            prompt: Ports needed for NFS?
+            answer: 111 (portmap/rpcbind), 2049 (NFS).
+          - type: name
+            prompt: Command to list exports from a remote NFS server?
+            answer: '`showmount -e server`.'
+      - id: 4915-samba
+        name: Samba
+        tags:
+          - networking
+          - network
+        prose: Linux ↔ Windows file/print sharing via SMB/CIFS.
+        cards:
+          - type: name
+            prompt: Samba main config file?
+            answer: '`/etc/samba/smb.conf`.'
+          - type: name
+            prompt: Command to set a Samba password for a user?
+            answer: '`smbpasswd -a username`.'
+          - type: name
+            prompt: Command to validate smb.conf syntax?
+            answer: '`testparm`.'
+      - id: 4915-nis
+        name: NIS
+        tags:
+          - networking
+          - network
+        prose: Centralized maps for passwd/group/hosts/services. NIS domain is SEPARATE from DNS domain.
+        cards:
+          - type: name
+            prompt: Is the NIS domain the same as the DNS domain?
+            answer: No. NIS domain is independent — set separately in /etc/sysconfig/network (NISDOMAIN) or via domainname.
+          - type: name
+            prompt: Command to initialize an NIS master?
+            answer: '`ypinit -m`.'
+      - id: 4915-ldap
+        name: LDAP
+        tags:
+          - networking
+          - network
+        prose: Centralized maps for passwd/group/hosts/services. NIS domain is SEPARATE from DNS domain.
+        cards:
+          - type: name
+            prompt: LDAP server daemon name?
+            answer: '`slapd`.'
+          - type: name
+            prompt: LDAP ports?
+            answer: 389 (LDAP), 636 (LDAPS / TLS).
+      - id: 4915-sendmail
+        name: Sendmail
+        tags:
+          - networking
+          - network
+        prose: Sendmail is an MTA (Mail Transfer Agent). It listens on port 25 (SMTP), queues mail, and hands off to an MDA for final delivery.
+        cards:
+          - type: name
+            prompt: Sendmail is classified as which type of mail agent — MUA, MTA, or MDA?
+            answer: '**MTA** (Mail Transfer Agent). Accepts SMTP on port 25, routes, queues.'
+          - type: name
+            prompt: Which port does sendmail listen on?
+            answer: '**25** (SMTP).'
+          - type: name
+            prompt: Which file do you edit to configure sendmail — `sendmail.cf` or `sendmail.mc`?
+            answer: '`sendmail.mc`. The `.cf` is generated from it by `m4` via `cd /etc/mail && make`.'
+          - type: name
+            prompt: After editing `/etc/aliases`, what command must you run before changes take effect?
+            answer: '`newaliases`. Rebuilds the hashed `/etc/aliases.db` that sendmail actually reads.'
+          - type: name
+            prompt: Command to list messages currently queued by sendmail?
+            answer: '`mailq` (equivalent to `sendmail -bp`). Queue lives in `/var/spool/mqueue/`.'
+          - type: name
+            prompt: Sendmail is running but rejects external mail. Which line in `sendmail.mc` is the cause?
+            answer: '`DAEMON_OPTIONS(\`Port=smtp,Addr=127.0.0.1, Name=MTA'')dnl` — `Addr=127.0.0.1` binds loopback only. Remove it, `make`, restart.'
+      - id: 4915-dns
+        name: DNS
+        tags:
+          - networking
+          - network
+        prose: Daemon named. Package bind, tools in bind-utils (dig, host, nslookup).
+        cards:
+          - type: name
+            prompt: What does an A record map?
+            answer: Hostname → IPv4 address.
+          - type: name
+            prompt: What's a CNAME record?
+            answer: 'Alias: one hostname → another (canonical) hostname.'
+          - type: name
+            prompt: What's a PTR record?
+            answer: 'Reverse DNS: IP → hostname.'
+          - type: name
+            prompt: What's an MX record?
+            answer: Mail exchanger for the domain.
+          - type: name
+            prompt: Command to validate DNS zone files?
+            answer: '`named-checkconf` (global config) and `named-checkzone zonename file` (per-zone).'
+      - id: 4915-iptables
+        name: iptables
+        tags:
+          - networking
+          - network
+        prose: Kernel firewall. Packet walks through tables → chains → rules.
+        cards:
+          - type: name
+            prompt: Three iptables tables?
+            answer: |-
+              1. filter
+              2. nat
+              3. mangle
+          - type: name
+            prompt: Five chains (filter + nat)?
+            answer: |-
+              1. INPUT (filter)
+              2. OUTPUT (filter)
+              3. FORWARD (filter)
+              4. PREROUTING (nat)
+              5. POSTROUTING (nat)
+          - type: name
+            prompt: Write a rule to allow incoming TCP port 22 from 10.0.0.0/8.
+            answer: '`iptables -A INPUT -p tcp --dport 22 -s 10.0.0.0/8 -j ACCEPT`.'
+          - type: name
+            prompt: Difference between DROP and REJECT targets?
+            answer: DROP silently discards. REJECT sends ICMP error back to sender.
+      - id: 4915-apache
+        name: Apache
+        tags:
+          - networking
+          - network
+        prose: Daemon httpd. Config /etc/httpd/conf/httpd.conf.
+        cards:
+          - type: name
+            prompt: Apache default DocumentRoot on RHEL/Fedora?
+            answer: '`/var/www/html`.'
+          - type: name
+            prompt: Command to create a new Apache password file?
+            answer: '`htpasswd -c /etc/httpd/passwd user`. Omit -c to add to existing.'
+          - type: name
+            prompt: Command to list Apache VirtualHosts?
+            answer: '`httpd -S`.'
+      - id: 4915-ssh
+        name: SSH
+        tags:
+          - networking
+          - sysadmin
+        prose: 'ssh-keygen -t rsa -b 4096 # creates ~/.ssh/id_rsa (600) and id_rsa.pub ssh-copy-id user@remote # appends pubkey to remote ~/.ssh/authorized_keys (600) Perm rules (ssh refuses if too loose): ~/.ssh=700, private key=600, authorized_keys=600.'
+        cards:
+          - type: name
+            prompt: Generate an RSA SSH key pair?
+            answer: '`ssh-keygen -t rsa -b 4096`. Creates ~/.ssh/id\_rsa (600) and id\_rsa.pub.'
+          - type: name
+            prompt: Deploy your public key to remote server?
+            answer: '`ssh-copy-id user@remote`.'
+          - type: name
+            prompt: Required permissions for ~/.ssh and authorized\_keys?
+            answer: ~/.ssh=700, authorized\_keys=600. Private keys=600.
+          - type: name
+            prompt: Forward local port 8080 through bastion to internal:80?
+            answer: '`ssh -L 8080:internal:80 user@bastion`.'
+          - type: name
+            prompt: 'Difference: -L vs -R in ssh?'
+            answer: |-
+              1. `-L` local forward (access remote service through local port)
+              2. `-R` remote forward (expose local service on remote port)
+      - id: 4915-ftp
+        name: FTP
+        tags:
+          - networking
+          - sysadmin
+        prose: Flashcards covering FTP.
+        cards:
+          - type: name
+            prompt: Active vs passive FTP — who initiates data connection?
+            answer: 'Active: server connects to client. Passive: client connects to server (firewall-friendly).'
+      - id: 4915-hostname
+        name: hostname
+        tags:
+          - networking
+          - fundamentals
+        prose: Flashcards covering hostname.
+        cards:
+          - type: name
+            prompt: What does the `hostname` command do?
+            answer: Displays the name of the machine you're currently logged into.
+      - id: 4915-dhcp
+        name: DHCP
+        tags:
+          - networking
+          - network
+        prose: Flashcards covering DHCP.
+        cards:
+          - type: name
+            prompt: How does DHCP work, conceptually?
+            answer: |-
+              DORA sequence:
+              1. **Discover** — client broadcasts DHCP Discover
+              2. **Offer** — server replies with Offer (IP, mask, gateway, DNS, lease)
+              3. **Request** — client requests
+              4. **Ack** — server acks
+
+              Lease expires and renews.
+      - id: 4915-dns-scope
+        name: DNS scope
+        tags:
+          - networking
+          - network
+        prose: Daemon named. Package bind, tools in bind-utils (dig, host, nslookup).
+        cards:
+          - type: name
+            prompt: For DNS records on the exam, do you need IPv6?
+            answer: '**No**. IPv4 only per instructor. Know A records, not AAAA.'
+      - id: 4915-nfs-use
+        name: NFS use
+        tags:
+          - networking
+          - network
+        prose: Linux-to-Linux file sharing. NOT for Windows (use Samba).
+        cards:
+          - type: name
+            prompt: When is NFS safe to use?
+            answer: Only **behind firewalls**. NFS has minimal authentication by default — exposing it on the internet is dangerous.
+  - id: package-mgmt
+    name: Package management & boot
+    topics:
+      - id: 4915-runlevels
+        name: Runlevels
+        tags:
+          - boot
+          - sysadmin
+        prose: Flashcards covering Runlevels.
+        cards:
+          - type: name
+            prompt: Linux System V run level 3 — what does it do?
+            answer: Enters multi-user text mode (full services, no GUI).
+          - type: name
+            prompt: Linux configured for graphics boot — which run level?
+            answer: 5 (multi-user graphical).
+          - type: name
+            prompt: Run level 0?
+            answer: Halt / power off.
+          - type: name
+            prompt: Run level 6?
+            answer: Reboot.
+      - id: 4915-boot
+        name: Boot
+        tags:
+          - boot
+          - sysadmin
+        prose: BIOS POST → MBR/GRUB → kernel → init/systemd (PID 1) → /etc/rc.d/rc.sysinit (mount /proc, swap on, fsck+mount fstab) → rc N (execute /etc/rc.d/rcN.d/Kxx* stop scripts, then Sxx* start) → login.
+        cards:
+          - type: name
+            prompt: First program run when Linux is booting (PID 1)?
+            answer: '`init` (or `systemd` on modern distros).'
+          - type: name
+            prompt: First place to look for a Linux daemon executable?
+            answer: '`/usr` (specifically /usr/sbin for system daemons; /sbin for rescue-essential).'
+          - type: name
+            prompt: What is `init`?
+            answer: 'First user-space process (PID 1), started by kernel at boot. Modern systems: systemd.'
+      - id: 4915-pam
+        name: PAM
+        tags:
+          - auth
+          - sysadmin
+        prose: Flashcards covering PAM.
+        cards:
+          - type: name
+            prompt: What is Linux-PAM?
+            answer: Pluggable Authentication Modules — modular authentication system configurable per-service in /etc/pam.d/ without recompiling apps.
+  - id: kubernetes
+    name: Kubernetes & containers
+    topics:
+      - id: 4915-k8s
+        name: K8s
+        tags:
+          - kubernetes
+        prose: Flashcards covering K8s.
+        cards:
+          - type: name
+            prompt: Agent on K8s nodes that implements control-plane commands?
+            answer: '`kubelet`.'
+          - type: name
+            prompt: Executable image format used in Kubernetes?
+            answer: '`OCI` (Open Container Initiative).'
+          - type: name
+            prompt: Most common way to run a K8s app?
+            answer: '`Deployment`.'
+          - type: name
+            prompt: What does Kubernetes use to *maintain* its state? (Quiz 4 Q5 wording — etcd is NOT in the options)
+            answer: '`kube-controller-manager` — the keyed Quiz 4 answer. The manager runs reconcile loops that drive actual state toward desired state.'
+          - type: name
+            prompt: Raw state *data* for a K8s cluster is persisted where?
+            answer: '`etcd` — distributed key-value store. Distinct from Quiz 4 Q5, which asks what *maintains* state (controller-manager).'
+          - type: name
+            prompt: YAML section specifying container image?
+            answer: '`spec`.'
+          - type: name
+            prompt: K8s object running one pod on every node?
+            answer: '`DaemonSet`.'
+          - type: name
+            prompt: What happens when a K8s node fails?
+            answer: |-
+              **All of:**
+              1. kubelet stops reporting healthy
+              2. New pods not scheduled there
+              3. Existing pods scheduled for deletion
+              4. Pods rescheduled to other nodes
+          - type: name
+            prompt: Reason for the pause container?
+            answer: Helps set up Linux namespaces and cgroups for a pod — holds namespaces open so other containers can join them.
+          - type: name
+            prompt: K8s component that *stores* raw cluster state data?
+            answer: '`etcd`. (Contrast: `kube-controller-manager` *maintains* state via reconcile loops — Quiz 4 Q5.)'
+          - type: name
+            prompt: K8s object that runs a task to completion?
+            answer: '`Job` (CronJob for scheduled).'
+          - type: name
+            prompt: What is a Deployment vs ReplicaSet?
+            answer: Deployment manages ReplicaSets + adds rolling-update/rollback. You generally create Deployments, not ReplicaSets directly.
+      - id: 4915-namespaces
+        name: Namespaces
+        tags:
+          - kubernetes
+        prose: Kernel mechanism to hide resources from processes outside the namespace. K8s pods and containers are built on these.
+        cards:
+          - type: name
+            prompt: Name the 8 Linux namespace types.
+            answer: |-
+              1. PID
+              2. NET
+              3. MNT
+              4. UTS
+              5. IPC
+              6. USER
+              7. CGROUP
+              8. TIME
+          - type: name
+            prompt: What does the NET namespace isolate?
+            answer: 'Network stack: interfaces, routing tables, iptables rules, sockets.'
+          - type: name
+            prompt: What does the UTS namespace isolate?
+            answer: Hostname and NIS domain.
+          - type: name
+            prompt: Command to create new namespaces?
+            answer: '`unshare`. Example: `unshare --pid --net bash`.'
+          - type: name
+            prompt: Command to enter existing namespaces of a PID?
+            answer: '`nsenter -t PID -p -n -m`.'
+      - id: 4915-cgroups
+        name: cgroups
+        tags:
+          - kubernetes
+        prose: cgroups (Control Groups) = kernel feature to LIMIT and ACCOUNT resource usage (CPU, memory, I/O, pids). Namespaces isolate; cgroups meter.
+        cards:
+          - type: name
+            prompt: What do cgroups do?
+            answer: Limit, account, and isolate resource usage (CPU, memory, I/O, pids).
+          - type: name
+            prompt: cgroups v1 vs v2 structure?
+            answer: 'v1: separate hierarchy per subsystem (cpu, memory, etc.). v2: unified hierarchy — single tree.'
+      - id: 4915-qos
+        name: QoS
+        tags:
+          - kubernetes
+        prose: cgroups (Control Groups) = kernel feature to LIMIT and ACCOUNT resource usage (CPU, memory, I/O, pids). Namespaces isolate; cgroups meter.
+        cards:
+          - type: name
+            prompt: Pod with requests=limits for CPU and memory — QoS class?
+            answer: '`Guaranteed`. Last evicted under pressure.'
+          - type: name
+            prompt: Pod with no requests and no limits — QoS class?
+            answer: '`BestEffort`. First evicted under memory pressure.'
+          - type: name
+            prompt: Pod with some requests/limits but not matching — QoS class?
+            answer: '`Burstable`. Evicted after BestEffort but before Guaranteed.'
+      - id: 4915-cni
+        name: CNI
+        tags:
+          - kubernetes
+        prose: CNI = Container Network Interface. Plugin spec for configuring pod network.
+        cards:
+          - type: name
+            prompt: What does CNI stand for?
+            answer: Container Network Interface. Plugin spec for wiring pods to networks.
+          - type: name
+            prompt: Which CNI uses BGP L3 routing by default?
+            answer: '`Calico` (can also run IPIP/VXLAN overlay when BGP isn''t viable).'
+          - type: name
+            prompt: Which CNI uses eBPF?
+            answer: '`Cilium`.'
+      - id: 4915-k8s-services
+        name: K8s Services
+        tags:
+          - kubernetes
+          - editor
+        prose: Flashcards covering K8s Services.
+        cards:
+          - type: name
+            prompt: Default K8s Service type?
+            answer: '`ClusterIP` — internal only.'
+          - type: name
+            prompt: Service type exposing on every node's IP:port?
+            answer: '`NodePort` (30000-32767).'
+      - id: 4915-k8s-yaml
+        name: K8s YAML
+        tags:
+          - kubernetes
+        prose: Flashcards covering K8s YAML.
+        cards:
+          - type: name
+            prompt: Four top-level keys in a Pod YAML?
+            answer: |-
+              1. `apiVersion`
+              2. `kind`
+              3. `metadata`
+              4. `spec`
+      - id: 4915-k8s-probes
+        name: K8s probes
+        tags:
+          - kubernetes
+        prose: Flashcards covering K8s probes.
+        cards:
+          - type: name
+            prompt: Difference between readiness and liveness probe?
+            answer: 'Readiness: is pod ready for traffic? Failure removes from Service endpoints. Liveness: is pod still alive? Failure restarts container.'
+      - id: 4915-k8s-dns
+        name: K8s DNS
+        tags:
+          - networking
+          - kubernetes
+        prose: Flashcards covering K8s DNS.
+        cards:
+          - type: name
+            prompt: Cluster DNS addon name?
+            answer: '`CoreDNS`.'
+      - id: 4915-container
+        name: Container
+        tags:
+          - kubernetes
+        prose: Pod = smallest deployable K8s unit. 1+ containers sharing NET, IPC, UTS namespaces + storage volumes.
+        cards:
+          - type: name
+            prompt: What is a container image?
+            answer: 'Layered read-only template for a container: filesystem snapshot + metadata (entrypoint, env, labels). OCI-standard. Pulled from registry, run as container with a writable layer on top.'
+  - id: scripting
+    name: Bash scripting & regex
+    topics:
+      - id: 4915-shell-params
+        name: Shell params
+        tags:
+          - shell
+        prose: Process substitution &lt;(cmd), &gt;(cmd) is a bash feature beyond basic 7.
+        cards:
+          - type: name
+            prompt: Which var refers to the entire argument list?
+            answer: '`$@` (also `$*`, but they differ when quoted).'
+          - type: name
+            prompt: What is `$?`?
+            answer: Exit status of last command. 0=success, non-zero=error.
+          - type: name
+            prompt: What is `$$`?
+            answer: PID of the current shell.
+          - type: name
+            prompt: What is `$!`?
+            answer: PID of the most recent background command.
+          - type: name
+            prompt: Difference between `"$@"` and `"$*"`?
+            answer: '`"$@"` expands to separate words per arg. `"$*"` joins all args into one string (separated by first IFS char).'
+          - type: name
+            prompt: Which var holds count of positional arguments?
+            answer: '`$#`.'
+      - id: 4915-expansions
+        name: Expansions
+        tags:
+          - shell
+        prose: Process substitution &lt;(cmd), &gt;(cmd) is a bash feature beyond basic 7.
+        cards:
+          - type: name
+            prompt: In order, name the 7 shell expansions.
+            answer: |-
+              1. Brace
+              2. Tilde
+              3. Parameter
+              4. Arithmetic
+              5. Command
+              6. Word splitting
+              7. Pathname (glob)
+          - type: name
+            prompt: Output of `echo {$HOME,$USER}` given HOME=/home/u, USER=u?
+            answer: '`/home/u u`. Brace happens BEFORE variable expansion, so braces generate literal `$HOME $USER` first, then those expand.'
+      - id: 4915-function-precedence
+        name: Function precedence
+        tags:
+          - scripting
+          - shell
+        prose: 'Instructor said this explicitly: exam WILL have you write a C function.'
+        cards:
+          - type: name
+            prompt: Order of bash name resolution?
+            answer: |-
+              1. Alias
+              2. Keyword
+              3. Function
+              4. Builtin
+              5. $PATH
+          - type: name
+            prompt: How to bypass alias/function and use builtin?
+            answer: '`builtin name`. Or use full path for external.'
+      - id: 4915-bash-scripting
+        name: Bash scripting
+        tags:
+          - scripting
+          - shell
+        prose: 'Instructor said this explicitly: exam WILL have you write a C function.'
+        cards:
+          - type: name
+            prompt: Which bash file test returns true if file exists?
+            answer: '`-e`.'
+          - type: name
+            prompt: Which bash file test returns true if it's a directory?
+            answer: '`-d`.'
+          - type: name
+            prompt: Comment character in bash?
+            answer: '`#`. Rest of line ignored.'
+          - type: name
+            prompt: Which exit status indicates success in bash?
+            answer: '`0`.'
+          - type: name
+            prompt: Which builtin reads and executes another script in current shell?
+            answer: '`source` (or `.`). (Not exec — exec replaces the shell process.)'
+          - type: name
+            prompt: 'Which is NOT a valid Linux/Unix shell: sh, tcsh, ksh, bash, jsh?'
+            answer: '`jsh` (not a standard shell).'
+          - type: name
+            prompt: What must be done before a shell script runs by name alone?
+            answer: Change permissions to include executable — `chmod +x script`.
+      - id: 4915-bash-vs-c
+        name: Bash vs C
+        tags:
+          - scripting
+          - shell
+        prose: 'Instructor said this explicitly: exam WILL have you write a C function.'
+        cards:
+          - type: name
+            prompt: Key difference between bash and C function definitions?
+            answer: '**C has formal parameters in the signature** (`int add(int a, int b)`). **Bash does NOT** — args accessed via `$1, $2, "$@"`.'
+      - id: 4915-startup-files
+        name: Startup files
+        tags:
+          - archives
+          - shell
+        prose: Flashcards covering Startup files.
+        cards:
+          - type: name
+            prompt: Login shell startup file order?
+            answer: '`/etc/profile` → then first existing of `~/.bash_profile`, `~/.bash_login`, `~/.profile`.'
+          - type: name
+            prompt: Non-login interactive shell startup file?
+            answer: '`~/.bashrc`.'
+      - id: 4915-export
+        name: Export
+        tags:
+          - shell
+        prose: Flashcards covering Export.
+        cards:
+          - type: name
+            prompt: Purpose of `export VAR=value`?
+            answer: Make VAR available to child processes (environment variable). Plain `VAR=x` is local to current shell.
+      - id: 4915-shell-startup
+        name: Shell startup
+        tags:
+          - shell
+          - archives
+        prose: Process substitution &lt;(cmd), &gt;(cmd) is a bash feature beyond basic 7.
+        cards:
+          - type: name
+            prompt: Which file is sourced for login shells system-wide?
+            answer: '`/etc/profile`.'
+      - id: 4915-vs
+        name: $* vs $@
+        tags:
+          - shell
+        prose: Flashcards covering $* vs $@.
+        cards:
+          - type: name
+            prompt: Quoted `"$*"` vs `"$@"` — difference with example?
+            answer: 'Given `set -- ''one two'' ''three''`: `"$@"` expands to 2 separate words `one two` and `three`. `"$*"` joins into one string `one two three`. Use `"$@"` in functions.'
+      - id: 4915-bash-recognize
+        name: Bash recognize
+        tags:
+          - scripting
+          - shell
+        prose: 'Instructor said this explicitly: exam WILL have you write a C function.'
+        cards:
+          - type: name
+            prompt: Features identifying bash specifically (vs sh)?
+            answer: Bourne Again Shell. Supports arrays, `[[ ]]`, brace expansion, process substitution `<(...)`, `${var:-default}` param expansion beyond POSIX sh.
+      - id: 4915-flow-control
+        name: Flow control
+        tags:
+          - scripting
+          - shell
+        prose: Flashcards covering Flow control.
+        cards:
+          - type: name
+            prompt: Bash flow control constructs?
+            answer: |-
+              1. `if/elif/else/fi`
+              2. `for var in list; do ... done`
+              3. `while cond; do ... done`
+              4. `until cond; do ... done`
+              5. `case word in pattern) ... ;; esac`
+      - id: 4915-perl
+        name: Perl
+        tags:
+          - scripting
+          - shell
+        prose: Flashcards covering Perl.
+        cards:
+          - type: name
+            prompt: Is Perl on the exam?
+            answer: No. Instructor explicitly said perl is not tested.
+  - id: misc
+    name: Misc / editors / misc topics
+    topics:
+      - id: 4915-linux-basics
+        name: Linux basics
+        tags:
+          - fundamentals
+        prose: Kernel mechanism to hide resources from processes outside the namespace. K8s pods and containers are built on these.
+        cards:
+          - type: name
+            prompt: Who started Linux and when?
+            answer: Linus Torvalds, 1991. Kernel 1.0 released 1994.
+          - type: name
+            prompt: Why was UNIX rewritten in C in 1973?
+            answer: Portability. Assembly ties code to one CPU; C compiles on any architecture.
+          - type: name
+            prompt: What Linux command displays the system manual?
+            answer: '`man`. (Not disp, info, sysman.)'
+          - type: name
+            prompt: Which Unix command lists directory contents?
+            answer: '`ls`. (Not dir, cat, joe, rm.)'
+      - id: 4915-users
+        name: Users
+        tags:
+          - sysadmin
+        prose: Flashcards covering Users.
+        cards:
+          - type: name
+            prompt: How many fields in /etc/passwd and what are they?
+            answer: |-
+              7 fields:
+              1. Username
+              2. `x` (pw placeholder)
+              3. UID
+              4. GID
+              5. GECOS
+              6. Home
+              7. Shell
+          - type: name
+            prompt: Which file contains actual password hashes?
+            answer: '`/etc/shadow` (root-only, 600).'
+          - type: name
+            prompt: Add a user with home directory created?
+            answer: '`useradd -m username`.'
+      - id: 4915-control-plane
+        name: Control plane
+        tags:
+          - kubernetes
+        prose: Deployment (most common app, Quiz 4 Q4) wraps ReplicaSet → manages pods with rolling updates. DaemonSet runs one pod per node (Quiz 4 Q8).
+        cards:
+          - type: name
+            prompt: What does kube-scheduler do?
+            answer: Watches unscheduled pods, filters+scores nodes, binds pod to a node.
+          - type: name
+            prompt: What does kube-controller-manager do?
+            answer: Runs controllers (Deployment, ReplicaSet, Node, Job, etc.) that reconcile actual state to desired state.
+          - type: name
+            prompt: Purpose of kube-proxy?
+            answer: Implements Kubernetes Service routing on each node via iptables or IPVS rules.
+          - type: name
+            prompt: What is CRI?
+            answer: Container Runtime Interface — API between kubelet and container runtime (containerd, CRI-O).
+      - id: 4915-tar-simple
+        name: tar simple
+        tags:
+          - archives
+          - fundamentals
+        prose: Flashcards covering tar simple.
+        cards:
+          - type: name
+            prompt: 'Three core tar commands: create, list, extract?'
+            answer: |-
+              1. **Create**: `tar -cf archive.tar files`
+              2. **List**: `tar -tf archive.tar`
+              3. **Extract**: `tar -xf archive.tar`

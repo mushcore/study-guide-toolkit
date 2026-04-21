@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<html><head>
+</head><body><p><span style="font-family: 'courier new', courier, sans-serif;">docker run --cap-add SYS_PTRACE -e ACCEPT_EULA=1 -e MSSQL_SA_PASSWORD=SqlPassword! -p 1444:1433 --name azsql -d mcr.microsoft.com/azure-sql-edge</span></p>
+<p>OR</p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">docker run --cap-add SYS_PTRACE -e ACCEPT_EULA=1 -e MSSQL_SA_PASSWORD=SqlPassword! -p 1444:1433 --name azsql -d mcr.microsoft.com/mssql/server:2022-latest</span></p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">"ConnectionStrings": {</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp;"DefaultConnection": "Server=tcp:127.0.0.1,1444;Database=SchoolDB;UID=sa;PWD=SqlPassword!;TrustServerCertificate=True;"</span><br><span style="font-family: 'courier new', courier, sans-serif;">},</span></p></body></html>

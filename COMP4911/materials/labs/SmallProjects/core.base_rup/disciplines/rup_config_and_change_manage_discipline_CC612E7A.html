@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Discipline: Configuration &amp; Change Management</title>
+<meta name="uma.type" content="Discipline">
+<meta name="uma.name" content="rup_config_and_change_manage_discipline">
+<meta name="uma.presentationName" content="Configuration &amp; Change Management">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<link rel="StyleSheet" href="./../../css/default.css" type="text/css">
+<script src="./../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../';
+					var imgPath = './../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_4U33kAILEdq-_NKqZM1EhA", "_nB0hwAITEdqu-LkyOdB8SQ", "_yeA1xNnmEdmO6L4XMImrsA"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_kC0pcN7GEdm8G6yT7-Wdqw", "_yeA1xNnmEdmO6L4XMImrsA"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo, '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="_yeA1xNnmEdmO6L4XMImrsA"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Discipline: Configuration &amp; Change Management</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../images/discipline.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This Discipline explains how to control and synchronize the evolution of the set of Work Products composing a software system.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Reference Workflows</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/capabilitypatterns/configuration_change_management_5C81A290.html" guid="{C85C9CC0-AD92-46C9-85BA-4C0672D6571E}">Configuration &amp; Change Management</a>
+</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Tasks</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/tasks/confirm_duplicate_or_rejected_cr_8AB600B7.html" guid="{23EFB27B-DADC-483B-BF97-5B05089E3E56}">Confirm Duplicate or Rejected CR</a>
+</li>
+<li>
+<a href="./../../core.base_rup/tasks/review_change_request_E7D91346.html" guid="{1CD358DF-3FFC-4281-B3EF-8E3CD76C5900}">Review Change Requests</a>
+</li>
+<li>
+<a href="./../../core.base_rup/tasks/setup_cm_environment_78ABEDF9.html" guid="{FC91D0C9-759E-4D3D-86D8-22D7B26AA0F6}">Set Up Configuration Management (CM) Environment</a>
+</li>
+<li>
+<a href="./../../core.base_rup/tasks/submit_change_request_29FC7F2E.html" guid="{1393CA8E-5CA4-4494-93FE-587F51931896}">Submit Change Request</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Introduction" name="Introduction"></a><a id="Purpose" name="Purpose"></a><a id="Simultaneous Update" name="Simultaneous Update"></a><a id="Limited Notification" name="Limited Notification"></a><a id="Multiple Versions" name="Multiple Versions"></a><a id="Relation to Other Disciplines" name="Relation to Other Disciplines"></a> 
+<p>
+    A CM System is essential for controlling the numerous Work Products produced by the many people who work on a common
+    project. Control helps avoid costly confusion, and ensures that resultant Work Products are not in conflict due to some
+    of the following kinds of problems:
+</p>
+<ul>
+    <li>
+        <a href="#Simultaneous Update">Simultaneous Update</a>
+    </li>
+    <li>
+        <a href="#Limited Notification">Limited Notification</a>
+    </li>
+    <li>
+        <a href="#Multiple Versions">Multiple Versions</a>
+    </li>
+</ul>
+<p>
+    <a id="Simultaneous Update" name="Simultaneous Update">Simultaneous Update</a>
+</p>
+<blockquote>
+    <p>
+        When two or more team members work separately on the same work work product, the last one to make changes destroys
+        the work of the former. The basic problem is that if a system does not support simultaneous update this leads to
+        serial changes and slows down the development process. However, with simultaneous update, the challenge is to
+        detect that updates have occurred simultaneously and to resolve any integration issues when these changes are
+        incorporated
+    </p>
+</blockquote>
+<p>
+    <a id="Limited Notification" name="Limited Notification">Limited Notification</a>
+</p>
+<blockquote>
+    <p>
+        When a problem is fixed in work products shared by several developers, and some of them are not notified of the
+        change.
+    </p>
+</blockquote>
+<p>
+    <a id="Multiple Versions" name="Multiple Versions">Multiple Versions</a>
+</p>
+<blockquote>
+    <p>
+        Most large programs are developed in evolutionary releases. One release could be in customer use, while another is
+        in test, and the third is still in development. If problems are found in any one of the versions, fixes need to be
+        propagated between them. Confusion can arise leading to costly fixes and re-work unless changes are carefully
+        controlled and monitored.
+    </p>
+</blockquote>
+<p>
+    A CM System is useful for managing multiple variants of evolving software systems, tracking which versions are used in
+    given software builds, performing builds of individual programs or entire releases according to user-defined version
+    specifications, and enforcing site-specific development policies.
+</p>
+<p>
+    Some of the direct benefits provided by a CM System are that it:
+</p>
+<ul>
+    <li>
+        supports development methods
+    </li>
+    <li>
+        maintains product integrity
+    </li>
+    <li>
+        ensures completeness and correctness of the configured product
+    </li>
+    <li>
+        provides a stable environment within which to develop the product
+    </li>
+    <li>
+        restricts changes to work products based on project policies
+    </li>
+    <li>
+        provides an audit trail on why, when and by whom any work products was changed
+    </li>
+</ul>
+<p>
+    In addition, a CM System stores detailed 'accounting' data on the development process itself: who created a particular
+    version (and when, and why), what versions of sources went into a particular build, and other relevant information.
+</p>
+<p>
+    An organization's CM System is used throughout the product's lifecycle, from inception to deployment. As an
+    organization's asset repository, the CM system contains current and historical versions of source files of
+    requirements, design and implementation artifacts that define a particular version of a system or a system component
+</p>
+<p>
+    The product directory structure represented in the CM System, contains all the artifacts required to implement the
+    product. As such, the Configuration & Change Management (CCM) discipline is related to all the other process
+    disciplines as it serves as a repository for their resultant sets of work products.These include:
+</p>
+<blockquote>
+    <ul>
+        <li>
+            <a class="elementLinkWithType" href="./../../core.base_rup/domains/requirements_58267518.html" guid="_KVkLoN7HEdm8G6yT7-Wdqw">Domain: Requirements</a>,
+        </li>
+        <li>
+            <a class="elementLinkWithType" href="./../../core.base_rup/domains/analysis_and_design_BD3BBB1D.html" guid="_kjFBYN7HEdm8G6yT7-Wdqw">Domain: Analysis and Design</a>,
+        </li>
+        <li>
+            <a class="elementLinkWithType" href="./../../core.base_rup/domains/implementation_442FA5B0.html" guid="_M6RHkN7IEdm8G6yT7-Wdqw">Domain: Implementation</a>,
+        </li>
+        <li>
+            <a class="elementLinkWithType" href="./../../core.base_rup/domains/test_FBB424F8.html" guid="_SPvXcN7IEdm8G6yT7-Wdqw">Domain: Test</a>,
+        </li>
+        <li>
+            <a class="elementLinkWithType" href="./../../core.base_rup/domains/deployment_CD08466A.html" guid="_7CnosP_FEdmAzesbYywanQ">Domain: Deployment</a>,
+        </li>
+        <li>
+            <a class="elementLinkWithType" href="./../../core.base_rup/domains/configuration_ _change_management_121DC50A.html" guid="_wgltAP_IEdmAzesbYywanQ">Domain: Configuration & Change Management </a> ,
+        </li>
+        <li>
+            <a class="elementLinkWithType" href="./../../core.base_rup/domains/project_management_7C2F57A0.html" guid="_C49xgP_UEdmVCcs_BRqacA">Domain: Project Management </a> ,
+        </li>
+        <li>
+            <a class="elementLinkWithType" href="./../../core.base_rup/domains/environment_53C41220.html" guid="_5JJn0P_UEdmVCcs_BRqacA">Domain: Environment</a><b>.</b>
+        </li>
+    </ul>
+</blockquote><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">More Information</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Concepts</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/guidances/concepts/configuration_and_change_request_management_CDEBF750.html" guid="1.3564691989508223E-304">Configuration and Change Request Management</a>
+</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Guidelines</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/guidances/guidelines/important_decisions_in_configuration_change_management_3798119B.html" guid="4.634602406965372E-305">Important Decisions in Configuration & Change Management</a>
+</li>
+</ul>
+</td>
+</tr>
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Supporting Materials</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../core.base_rup/guidances/supportingmaterials/manage_change_63A0327F.html" guid="9.443126080601602E-306">Change Management</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

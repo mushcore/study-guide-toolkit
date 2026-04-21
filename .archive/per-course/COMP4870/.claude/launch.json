@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "w09-blazor",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "materials/labs/W09 gRPC/GrpcBasics/BlazorGrpcClient/BlazorGrpcClient.csproj", "--launch-profile", "http"],
+      "port": 5220
+    },
+    {
+      "name": "study-guide",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "generated/study-guide"],
+      "port": 8765
+    }
+  ]
+}

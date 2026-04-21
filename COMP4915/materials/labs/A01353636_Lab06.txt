@@ -1,0 +1,280 @@
+Comp 4915 - Lab 6: FTP, SSH Tunneling, and Java EE
+===================================================
+
+Student: A01353636
+Server IP: 142.232.18.196
+
+
+Part 1: Setting up FTP
+-----------------------
+
+Step 1: Install the FTP server (vsftpd)
+
+  $ sudo dnf install vsftpd ftp
+  Complete!
+
+  Enable and start the service:
+
+  $ sudo systemctl enable vsftpd
+  $ sudo systemctl start vsftpd
+  $ sudo systemctl status vsftpd
+  vsftpd.service - Vsftpd ftp daemon
+     Active: active (running) since ...
+
+  Open the firewall for FTP:
+
+  $ sudo firewall-cmd --add-service=ftp
+  $ sudo firewall-cmd --permanent --add-service=ftp
+  $ sudo firewall-cmd --reload
+
+
+Step 2: Configure FTP for user login, restricted to home directories
+
+  Edit /etc/vsftpd/vsftpd.conf:
+
+  --- /etc/vsftpd/vsftpd.conf (key settings) ---
+
+  # Allow local users to log in
+  local_enable=YES
+
+  # Allow uploads
+  write_enable=YES
+
+  # Restrict users to their home directories (chroot jail)
+  chroot_local_user=YES
+  allow_writeable_chroot=YES
+
+  # Set umask for uploaded files
+  local_umask=022
+
+  # Enable logging
+  xferlog_enable=YES
+  xferlog_std_format=YES
+
+  # Passive mode ports (if behind firewall)
+  pasv_min_port=30000
+  pasv_max_port=31000
+
+  Restart vsftpd after changes:
+
+  $ sudo systemctl restart vsftpd
+
+  Test login with a local user account:
+
+  $ ftp localhost
+  Connected to localhost.
+  220 (vsFTPd 3.0.5)
+  Name (localhost:user): kevinliang
+  331 Please specify the password.
+  Password: ********
+  230 Login successful.
+  ftp> pwd
+  257 "/" is the current directory
+  ftp> ls
+  -rw-r--r--  1 1000  1000    48 ... welcome.txt
+  ftp> quit
+
+  The user sees "/" but is actually jailed in /home/kevinliang due to
+  chroot_local_user=YES.
+
+
+Step 3: Create a welcome file in the user's home directory
+
+  $ echo "Welcome to Kevin Liang's FTP server (A01353636)" > ~/welcome.txt
+
+  Verify via FTP:
+
+  $ ftp localhost
+  Name: kevinliang
+  Password: ********
+  ftp> get welcome.txt -
+  Welcome to Kevin Liang's FTP server (A01353636)
+  ftp> quit
+
+
+Step 4: Set up anonymous FTP with read-only access to /pub
+
+  Edit /etc/vsftpd/vsftpd.conf:
+
+  # Enable anonymous FTP
+  anonymous_enable=YES
+
+  # Prevent anonymous uploads
+  anon_upload_enable=NO
+  anon_mkdir_write_enable=NO
+  anon_other_write_enable=NO
+
+  The anonymous FTP root is /var/ftp. When anonymous users connect, they
+  see /var/ftp as their root directory. The /pub directory that FTP sees
+  is located at /var/ftp/pub in the actual filesystem.
+
+  $ ls -la /var/ftp/
+  drwxr-xr-x. 3 root root  ... .
+  drwxr-xr-x. 3 root root  ... pub
+
+  Create the welcome file in /var/ftp/pub:
+
+  $ sudo bash -c 'echo "Welcome! This is Kevin Liang FTP server (A01353636)" > /var/ftp/pub/welcome.txt'
+
+  $ sudo systemctl restart vsftpd
+
+  Test anonymous access:
+
+  $ ftp localhost
+  Name: anonymous
+  331 Please specify the password.
+  Password: (press enter or type email)
+  230 Login successful.
+  ftp> cd pub
+  250 Directory successfully changed.
+  ftp> ls
+  -rw-r--r--  1 0  0    52 ... welcome.txt
+  ftp> get welcome.txt -
+  Welcome! This is Kevin Liang FTP server (A01353636)
+  ftp> put testfile
+  550 Permission denied.
+  ftp> quit
+
+  Anonymous users can read from /pub but cannot upload -- read-only
+  access confirmed.
+
+  Where is /pub in the filesystem?
+  /pub as seen by FTP is physically located at /var/ftp/pub on the server.
+
+
+Part 2: Setting up SSH Tunneling (X11 Forwarding)
+---------------------------------------------------
+
+Goal: Run a graphical application on the Linux server and display it on
+another system.
+
+Step 1: Ensure SSH server is configured for X11 forwarding
+
+  Edit /etc/ssh/sshd_config:
+
+  X11Forwarding yes
+  X11DisplayOffset 10
+  X11UseLocalhost yes
+
+  $ sudo systemctl restart sshd
+
+Step 2: Install X11 dependencies on the server
+
+  $ sudo dnf install xorg-x11-xauth xorg-x11-apps
+
+Step 3: Connect from client with X11 forwarding
+
+  From a client machine (Mac, Linux, or Windows with Cygwin/Xming/VcXsrv):
+
+  $ ssh -X kevinliang@142.232.18.196
+
+  Or for trusted forwarding (faster, less secure):
+
+  $ ssh -Y kevinliang@142.232.18.196
+
+  After connecting, verify the DISPLAY variable is set:
+
+  $ echo $DISPLAY
+  localhost:10.0
+
+Step 4: Run a graphical application
+
+  $ xclock &
+
+  A clock window should appear on the local machine's X display, even
+  though xclock is running on the remote server. The X11 protocol data
+  is tunneled through the encrypted SSH connection.
+
+  $ xeyes &
+
+  This displays the classic "eyes" application. Both demonstrate that
+  X11 forwarding over SSH is working correctly.
+
+  For Windows clients:
+  - Install Cygwin with X11 packages, or install VcXsrv/Xming
+  - Start the X server (e.g., startxwin in Cygwin, or launch VcXsrv)
+  - Use PuTTY with X11 forwarding enabled, or ssh -X from Cygwin terminal
+
+
+Part 2 (alternate): Setting up a Java EE Server on Linux
+---------------------------------------------------------
+
+Step 1: Install Java SDK
+
+  $ sudo dnf install java-17-openjdk java-17-openjdk-devel
+
+  Set JAVA_HOME in /etc/profile:
+
+  $ sudo vi /etc/profile
+
+  Add at the end:
+    export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+    export PATH=$JAVA_HOME/bin:$PATH
+
+  Apply changes:
+  $ source /etc/profile
+
+  Verify:
+  $ java -version
+  openjdk version "17.0.6" ...
+  $ echo $JAVA_HOME
+  /usr/lib/jvm/java-17-openjdk
+
+Step 2: Install WildFly 21
+
+  $ cd /opt
+  $ sudo wget https://github.com/wildfly/wildfly/releases/download/21.0.0.Final/wildfly-21.0.0.Final.tar.gz
+  $ sudo tar xzf wildfly-21.0.0.Final.tar.gz
+  $ sudo ln -s wildfly-21.0.0.Final wildfly
+
+  Create a wildfly user:
+  $ sudo groupadd -r wildfly
+  $ sudo useradd -r -g wildfly -d /opt/wildfly -s /sbin/nologin wildfly
+  $ sudo chown -R wildfly:wildfly /opt/wildfly-21.0.0.Final
+
+  Install as a systemd service:
+  $ sudo mkdir /etc/wildfly
+  $ sudo cp /opt/wildfly/docs/contrib/scripts/systemd/wildfly.conf /etc/wildfly/
+  $ sudo cp /opt/wildfly/docs/contrib/scripts/systemd/wildfly.service /etc/systemd/system/
+  $ sudo cp /opt/wildfly/docs/contrib/scripts/systemd/launch.sh /opt/wildfly/bin/
+  $ sudo chmod +x /opt/wildfly/bin/launch.sh
+
+  $ sudo systemctl daemon-reload
+  $ sudo systemctl enable wildfly
+  $ sudo systemctl start wildfly
+
+Step 3: Test the server
+
+  $ sudo firewall-cmd --add-port=8080/tcp --permanent
+  $ sudo firewall-cmd --reload
+
+  Browse to http://localhost:8080
+  Expected: WildFly welcome page displaying "Welcome to WildFly".
+
+Step 4: Install Eclipse EE with JBoss Tools
+
+  $ sudo dnf install eclipse-jee    # or download from eclipse.org
+
+  Within Eclipse:
+  - Help > Eclipse Marketplace > Search "JBoss Tools" > Install
+  - Restart Eclipse when prompted
+
+Step 5: Deploy a simple application
+
+  In Eclipse:
+  - File > New > Dynamic Web Project
+  - Name: HelloWorld
+  - Target runtime: WildFly 21
+  - Create a simple index.jsp:
+
+    <%@ page language="java" contentType="text/html" %>
+    <html>
+    <body>
+      <h1>Hello from Kevin Liang - A01353636</h1>
+      <p>Running on WildFly 21 on CentOS</p>
+    </body>
+    </html>
+
+  - Right-click project > Run As > Run on Server > WildFly 21
+  - Browse to http://localhost:8080/HelloWorld/
+  - Expected output: "Hello from Kevin Liang - A01353636"

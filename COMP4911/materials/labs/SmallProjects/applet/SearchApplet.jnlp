@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp href="SearchApplet.jnlp" spec="1.0+">
+    <information>
+        <title>Applet Search</title>
+        <vendor>IBM Corporation</vendor>
+    </information>
+    <resources>
+		<j2se version="1.6+"/>
+        <jar href="SearchApplet.jar" />
+		<jar href="../search/epf-web-search.jar" />
+		<jar href="../search/lucene-core-1.9.1.jar" />
+		<jar href="../search/icu4j_3_4.jar" />
+    </resources>
+	<security>
+		<all-permissions /> 
+	</security>
+    <applet-desc 
+         name="Applet Search"
+         main-class="com.ibm.rmc.search.SearchApplet"
+         width="1"
+         height="1">
+     </applet-desc>
+     <update check="background"/>
+</jnlp>

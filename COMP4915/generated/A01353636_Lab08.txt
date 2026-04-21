@@ -1,0 +1,202 @@
+Comp 4915 - Lab 8: Apache and Shell Scripts
+============================================
+
+
+Part 1: Setting up Apache
+--------------------------
+
+Step 1: Install Apache
+
+  $ sudo dnf install httpd mod_ssl
+  $ sudo systemctl enable httpd
+  $ sudo systemctl start httpd
+
+  Open firewall:
+  $ sudo firewall-cmd --add-service=http --permanent
+  $ sudo firewall-cmd --add-service=https --permanent
+  $ sudo firewall-cmd --reload
+
+
+Step 3: Create home page
+
+  --- /var/www/html/index.html ---
+
+  <!DOCTYPE html>
+  <html>
+  <head><title>Kevin Liang - A01353636</title></head>
+  <body>
+      <h1>Kevin Liang</h1>
+      <h2>Student ID: A01353636</h2>
+      <p>Welcome to my COMP 4915 Lab 8 web server.</p>
+      <p><a href="/protected/">Access Protected Page</a></p>
+  </body>
+  </html>
+
+
+Step 4: Password-protected second page
+
+  $ sudo mkdir /var/www/html/protected
+
+  --- /var/www/html/protected/index.html ---
+
+  <!DOCTYPE html>
+  <html>
+  <body>
+      <h1>Congratulations!</h1>
+      <h2>Kevin Liang - A01353636</h2>
+      <p>You have successfully authenticated.</p>
+  </body>
+  </html>
+
+  Create password file:
+  $ sudo htpasswd -cb /etc/httpd/.htpasswd fred password
+
+  --- /var/www/html/protected/.htaccess ---
+
+  AuthType Basic
+  AuthName "Restricted Access"
+  AuthUserFile /etc/httpd/.htpasswd
+  Require valid-user
+
+  Enable .htaccess in /etc/httpd/conf/httpd.conf:
+
+  <Directory "/var/www/html">
+      AllowOverride AuthConfig
+      Require all granted
+  </Directory>
+
+  $ sudo systemctl restart httpd
+
+  Test: http://localhost/protected/ prompts for credentials.
+  Enter fred / password -- protected page displays.
+
+
+Step 5: Enable user home directories with html subdirectory
+
+  In /etc/httpd/conf.d/userdir.conf, change:
+    UserDir disabled
+  To:
+    UserDir html
+
+  Ensure directory block:
+  <Directory "/home/*/html">
+      AllowOverride FileInfo AuthConfig Limit
+      Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+      Require method GET POST OPTIONS
+  </Directory>
+
+  $ sudo setsebool -P httpd_enable_homedirs on
+  $ mkdir ~/html
+  $ chmod 711 ~
+  $ chmod 755 ~/html
+
+  Create test page in ~/html/index.html:
+  <h1>Kevin Liang's User Page</h1>
+
+  $ sudo systemctl restart httpd
+
+  Test: http://localhost/~kevinliang/
+
+
+Part 2: Shell Scripts
+----------------------
+
+1. Function to add execute permission:
+
+   addx() {
+       if [ $# -eq 0 ]; then
+           echo "Usage: addx filename" >&2
+           return 1
+       fi
+       chmod u+x "$1"
+   }
+
+   a. Useful when you write new scripts and need to make them executable
+      before running.
+
+   b. Revised for multiple filenames:
+
+      addx() {
+          if [ $# -eq 0 ]; then
+              echo "Usage: addx file [file ...]" >&2
+              return 1
+          fi
+          for file in "$@"; do
+              chmod u+x "$file"
+          done
+      }
+
+   c. Add to ~/.bashrc to make it available every login.
+
+   d. Run ". ~/.bashrc" to make it available in the current shell now.
+
+
+2. Script to compare file permissions:
+
+   #!/bin/bash
+   if [ $# -ne 2 ]; then
+       echo "Usage: $0 file1 file2" >&2
+       exit 1
+   fi
+
+   perm1=$(ls -l "$1" | cut -d' ' -f1)
+   perm2=$(ls -l "$2" | cut -d' ' -f1)
+
+   if [ "$perm1" = "$perm2" ]; then
+       echo "Permissions are identical: $perm1"
+   else
+       echo "$1: $perm1"
+       echo "$2: $perm2"
+   fi
+
+
+3. Function to split colon-separated list:
+
+   splitcolon() {
+       echo "$1" | tr ':' '\n'
+   }
+
+
+4. Rewritten bundle script with optional filename arguments:
+
+   #!/bin/bash
+   echo '#!/bin/bash'
+   echo '# Shell archive created by bundle'
+   echo ''
+
+   for file in "$@"; do
+       echo "if [ \$# -eq 0 ] || echo \" \$* \" | grep -q \" $file \"; then"
+       echo "    echo \"Extracting $file\""
+       echo "    cat > '$file' << 'BUNDLED_END_OF_FILE_MARKER'"
+       cat "$file"
+       echo "BUNDLED_END_OF_FILE_MARKER"
+       echo "fi"
+       echo ""
+   done
+
+   Usage:
+   $ bundle test1.c test2.c > srcshell
+   $ bash srcshell                    # extracts all
+   $ bash srcshell test1.c            # extracts only test1.c
+
+
+5. Function to find maximum filename length in a directory:
+
+   maxfilelen() {
+       if [ ! -d "$1" ]; then
+           echo "Error: '$1' is not a directory" >&2
+           return 1
+       fi
+
+       local max=0
+       for file in "$1"/*; do
+           if [ -e "$file" ]; then
+               name=$(basename "$file")
+               len=${#name}
+               if [ $len -gt $max ]; then
+                   max=$len
+               fi
+           fi
+       done
+       echo "$max"
+   }

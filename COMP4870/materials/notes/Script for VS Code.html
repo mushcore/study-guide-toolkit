@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html><head>
+</head><body><p>mkdir AspcoreMvc</p>
+<p>cd AspCoreMvc</p>
+<p>dotnet new --help</p>
+<p>dotnet new mvc</p>
+<p>dotnet run</p>
+<p>dotnet watch run</p>
+<p>** <a href="https://gavilan.blog/2018/04/28/asp-net-core-2-doing-scaffolding-with-dotnet-cli-aspnet-codegenerator/">https://gavilan.blog/2018/04/28/asp-net-core-2-doing-scaffolding-with-dotnet-cli-aspnet-codegenerator/</a></p>
+<p>dotnet tool install -g dotnet-aspnet-codegenerator</p>
+<p>dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design</p>
+<p><span style="color: rgb(74, 143, 0);">============================== To update the tool ===================================</span></p>
+<p>dotnet tool update -g dotnet-aspnet-codegenerator</p>
+<p><span style="color: rgb(74, 143, 0);">================================ code generator syntax ===============================</span></p>
+<p>dotnet aspnet-codegenerator [arguments] [-p|--project] [-n|--nuget-package-dir] [-c|--configuration] [-tfm|--target-framework] [-b|--build-base-path] [--no-build]</p>
+<p>================================ Code Generator Help ================================</p>
+<p>dotnet aspnet-codegenerator --help OR dotnet aspnet-codegenerator -h</p>
+<p>dotnet aspnet-codegenerator controller --help</p>
+<p><span style="color: rgb(74, 143, 0);">==============================================================================</span></p>
+<p>dotnet aspnet-codegenerator controller -name ExampleController -actions -api -outDir Controllers</p>
+<p>NOTE:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; -outDir output directory</p>
+<p>dotnet aspnet-codegenerator controller -name PeopleController -actions -nv -m Person -dc ApplicationDbContext -outDir Controllers</p>
+<p>NOTE:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; -nv no view&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;-dc database context</p>
+<p>dotnet aspnet-codegenerator view -h</p>
+<p>dotnet aspnet-codegenerator view myView Empty -udl -outDir Views/Home</p>
+<p>NOTE:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; -udl use default layout</p>
+<p>dotnet aspnet-codegenerator view Create Create -outDir Views/Person -udl -m Person</p>
+<p>Create create view<br>Create create template<br><span style="color: rgb(74, 143, 0);">=============================================================================</span></p>
+<p>dotnet aspnet-codegenerator view Bogus Empty -udl -outDir Views/Home</p>
+<p>dotnet aspnet-codegenerator controller -name ProcessController -outDir Controllers</p>
+<p>dotnet aspnet-codegenerator view Index Empty -udl -outDir Views/Process</p>
+<p>&lt;ul&gt;<br>@foreach (var item in Model)<br>{<br>&nbsp; &nbsp; &lt;li&gt;&lt;a asp-controller="Process" <br>&nbsp; &nbsp; asp-action="Display" <br>&nbsp; &nbsp; asp-route-id="@item.Id"&gt;@item.ProcessName&lt;/a&gt;&lt;/li&gt;<br>}<br>&lt;/ul&gt;</p>
+<p>dotnet aspnet-codegenerator view Display Empty -udl -outDir Views/Process</p>
+<p>public IActionResult Display(int id) {<br>&nbsp; &nbsp; Process osProcess = Process.GetProcessById(id);<br>&nbsp; &nbsp; return View(osProcess);<br>}</p>
+<p><span style="color: rgb(74, 143, 0);">=============================================================================</span></p>
+<p>&lt;partial name="_PartialName" /&gt;</p></body></html>

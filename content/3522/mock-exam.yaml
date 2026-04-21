@@ -1,0 +1,755 @@
+duration_seconds: 5400
+pass_mark: 0.5
+questions:
+  # ============ True / False (reflects real exam section 1) ============
+  - id: state-q-01
+    type: MCQ
+    topic: "State pattern"
+    marks: 1
+    tags: [true-false, pretest]
+    bloom: remember
+    source: "DesignPatternsTable p.3, Week 10 Slides"
+    question: "TRUE or FALSE: In the State design pattern, state objects are completely independent and unaware of each other."
+    choices: ["TRUE", "FALSE"]
+    correct: 1
+    rationale: "FALSE. State objects typically know about other state classes — they instantiate the next state in their transition logic (e.g., `Red.next()` creates `Green()`). The description of 'independent and unaware of each other' fits Observer pattern, where observers are independent peers. This is a canonical exam trap — distractor C in the past final's T/F Q7. The rationale for TRUE being wrong: State requires state objects to coordinate transitions; independence would break the state machine."
+
+  - id: decorator-q-01
+    type: MCQ
+    topic: "Decorator vs Proxy"
+    marks: 1
+    tags: [true-false, pretest]
+    bloom: understand
+    source: "Dec 2024 Final T/F Q3"
+    question: "TRUE or FALSE: The Decorator and Proxy patterns have similar structures but very different intents."
+    choices: ["TRUE", "FALSE"]
+    correct: 0
+    rationale: "TRUE. Both wrap an object that implements the same interface as the wrapped object. Decorator adds behavior (each layer contributes a slice of functionality, stackable as A(B(C()))). Proxy controls access (caching, auth, logging, lazy load) and typically has one proxy per concern. The structural similarity is what makes them confusable on the exam; the intent is what distinguishes them. FALSE would require the structures to differ — they don't."
+
+  - id: dip-q-01
+    type: MCQ
+    topic: "DIP"
+    marks: 1
+    tags: [true-false, pretest]
+    bloom: remember
+    source: "Dec 2024 Final T/F Q2, Week 3 Slides"
+    question: "TRUE or FALSE: The Dependency Inversion Principle states that both high-level and low-level modules should depend on abstractions, not concrete implementations."
+    choices: ["TRUE", "FALSE"]
+    correct: 0
+    rationale: "TRUE. DIP rule 1 says high-level modules should not depend on low-level modules; both should depend on abstractions. Rule 2 adds: abstractions should not depend on details; details should depend on abstractions. FALSE would contradict the core statement of DIP. Note the common distractor flip 'Abstractions depend on details' which IS false — so a T/F statement with that wording would require a FALSE answer."
+
+  - id: range-q-01
+    type: MCQ
+    topic: "Ranges"
+    marks: 1
+    tags: [true-false, pretest]
+    bloom: analyze
+    source: "finalexamsmerge.pdf T/F"
+    question: "TRUE or FALSE: The function range() in Python returns a generator object that lazily evaluates its values."
+    choices: ["TRUE", "FALSE"]
+    correct: 1
+    rationale: "FALSE. range() returns a range OBJECT — a lazy sequence. It IS lazy (values are computed on demand), but it is NOT a generator. Range objects are indexable (`range(10)[5] == 5`), have a known length (`len(range(10)) == 10`), and can be iterated multiple times — all properties generators lack. The 'lazy' half of the statement is true; the 'generator' half makes the full claim false."
+
+  - id: staticmethod-q-01
+    type: MCQ
+    topic: "Language decorators"
+    marks: 1
+    tags: [true-false]
+    bloom: understand
+    source: "Dec 2024 Final T/F Q1"
+    question: "TRUE or FALSE: The @staticmethod decorator allows a method to access class-level variables."
+    choices: ["TRUE", "FALSE"]
+    correct: 1
+    rationale: "FALSE. @staticmethod methods receive neither `self` nor `cls` — they are just functions namespaced inside a class. @classmethod is the decorator that receives `cls` and can access class-level variables. A static method can only access class variables by hard-coded class name, which couples it to the specific class. This distinction is tested directly — don't confuse the three method decorators."
+
+  - id: args-q-01
+    type: MCQ
+    topic: "Exceptions"
+    marks: 1
+    tags: [true-false]
+    bloom: remember
+    source: "finalexamsmerge.pdf T/F"
+    question: "TRUE or FALSE: The args attribute of an exception contains a tuple of all arguments passed to the exception during initialization."
+    choices: ["TRUE", "FALSE"]
+    correct: 0
+    rationale: "TRUE. Every exception instance stores its positional constructor arguments in `self.args` as a tuple. `raise ValueError('bad', 42)` produces an exception with `e.args == ('bad', 42)`. This is a stable, testable Python behavior. Custom exceptions inherit the behavior by calling `super().__init__(*args)`."
+
+  - id: json-dumps-q-01
+    type: MCQ
+    topic: "JSON"
+    marks: 1
+    tags: [true-false]
+    bloom: remember
+    source: "finalexamsmerge.pdf T/F"
+    question: "TRUE or FALSE: The json.dumps() method can be used to directly write a Python dictionary to a .json file."
+    choices: ["TRUE", "FALSE"]
+    correct: 1
+    rationale: "FALSE. json.dumps() (with 's') returns a JSON-encoded STRING — it does not touch files. To write to a file, use json.dump() (without 's') with an open file object: `json.dump(obj, f)`. Mnemonic: no-s writes (to file), with-s string. Same convention applies to pickle module (dump vs dumps)."
+
+  - id: python-obj-q-01
+    type: MCQ
+    topic: "Classes & Objects"
+    marks: 1
+    tags: [true-false]
+    bloom: remember
+    source: "Dec 2024 Final T/F Q3"
+    question: "TRUE or FALSE: In Python, everything — including functions, classes, and modules — is an object."
+    choices: ["TRUE", "FALSE"]
+    correct: 0
+    rationale: "TRUE. Python's data model is uniformly object-oriented. Integers, strings, functions, classes, modules, even type itself are objects with attributes and methods. This is why you can pass functions as arguments, assign classes to variables, and introspect everything via dir() and type(). This property is what enables decorators, metaclasses, and Python's dynamic nature."
+
+  - id: profiling-q-01
+    type: MCQ
+    topic: "Profiling"
+    marks: 1
+    tags: [true-false]
+    bloom: analyze
+    source: "finalexamsmerge.pdf T/F"
+    question: "TRUE or FALSE: Profiling is a static program analysis technique that allows developers to analyze code performance without running the program."
+    choices: ["TRUE", "FALSE"]
+    correct: 1
+    rationale: "FALSE. Profiling is DYNAMIC analysis — it measures an actual execution. cProfile.run('...') actually executes the code and collects timing and call-count statistics. Static analysis (linting, type checking, code scanning) inspects code without running it. Confusing the two costs you a mark on an easy-looking T/F question."
+
+  # ============ MCQ — pattern identification ============
+  - id: state-q-02
+    type: MCQ
+    topic: "State pattern"
+    marks: 2
+    tags: [pattern-identification]
+    bloom: apply
+    source: "finalexamsmerge.pdf Q1"
+    question: "A TrafficLight class holds a `state` attribute. Each concrete state (Red, Yellow, Green) has a `next(traffic_light)` method that prints a transition and calls `traffic_light.change_state(NextState())`. Which design pattern does this implement?"
+    choices:
+      - "Strategy — different algorithms chosen at runtime"
+      - "Chain of Responsibility — request passed between handlers"
+      - "State — behavior encapsulated per state with transitions"
+      - "Observer — subject notifying components of changes"
+    correct: 2
+    rationale: "State pattern. Three signals: (1) each concrete state encapsulates behavior specific to one mode, (2) state classes trigger their own transitions by calling change_state on the context, (3) the context delegates behavior via self.state.next(self). Distractors: Strategy has no state-to-state transitions (strategies are swapped externally); Chain of Responsibility has a _successor reference and failing/forwarding logic absent here; Observer has attach/detach/notify, absent here. The canonical past-exam traffic-light identification question."
+
+  - id: strategy-q-01
+    type: MCQ
+    topic: "Strategy pattern"
+    marks: 2
+    tags: [pattern-identification, pretest]
+    bloom: apply
+    source: "finalexamsmerge.pdf Q4 Duck simulator"
+    question: "A Duck class holds `_fly_behavior` and `_quack_behavior` attributes, each injected at construction. `duck.perform_fly()` delegates to `self._fly_behavior.fly()`. Different ducks (MallardDuck, RubberDuck) are constructed with different behavior objects. Which pattern?"
+    choices:
+      - "Observer"
+      - "Bridge"
+      - "State"
+      - "Strategy"
+    correct: 3
+    rationale: "Strategy. Behaviors are plugged in as objects (composition not inheritance), swappable per-instance and at runtime. Distractors: Observer requires a subject/observer split and notify mechanism — absent. Bridge would require TWO independent hierarchies (Shape + Renderer) — here only behaviors, not abstractions+implementations, are varied. State requires transitions triggered by state objects — absent. The Duck example is Head First's canonical Strategy illustration."
+
+  - id: state-vs-strategy-q-01
+    type: MCQ
+    topic: "State vs Strategy"
+    marks: 2
+    tags: [pattern-comparison]
+    bloom: analyze
+    source: "Dec 2024 Final Q10"
+    question: "What is the key difference between State and Strategy?"
+    choices:
+      - "State uses inheritance; Strategy uses composition"
+      - "Strategy alters behavior by inheritance; State by composition"
+      - "State allows transitions between states that change the context's state; Strategy isolates different behaviors without internal transitions"
+      - "State and Strategy are functionally identical — only naming conventions differ"
+    correct: 2
+    rationale: "State allows state-to-state transitions (Red transitions to Green inside Red.next()). Strategy has no internal transitions — the client picks a strategy, the context delegates, and the algorithm stays fixed until the client swaps it. Distractor A and B misstate the mechanism — both patterns use composition for delegation. D is false — the patterns have the same class structure but different dynamic behavior (transitions vs. no transitions)."
+
+  - id: decorator-q-02
+    type: MCQ
+    topic: "Decorator pattern"
+    marks: 2
+    tags: [pattern-output]
+    bloom: apply
+    source: "Dec 2024 Final Q14"
+    question: "Given Coffee.cost() = 5, MilkDecorator adds 2, SugarDecorator adds 1, CaramelDecorator adds 3. What do these two prints output in order?\n```\nx = CaramelDecorator(SugarDecorator(MilkDecorator(Coffee())))\nprint(x.cost())\nprint(CaramelDecorator(CaramelDecorator(SugarDecorator(MilkDecorator(Coffee())))).cost())\n```"
+    choices:
+      - "10, 13"
+      - "11, 14"
+      - "11, 11"
+      - "8, 11"
+    correct: 1
+    rationale: "First expression: 5 (Coffee) + 2 (Milk) + 1 (Sugar) + 3 (Caramel) = 11. Second: 5 + 2 + 1 + 3 + 3 = 14 (two Caramels, each adding 3). Python does NOT deduplicate decorator instances — each wrapping adds its own contribution. Distractor C (11, 11) assumes caramel is deduped — false. A and D have arithmetic errors. This is the most commonly botched past-exam output question — walk the cost() chain layer by layer, bottom up."
+
+  - id: proxy-q-01
+    type: MCQ
+    topic: "Proxy pattern"
+    marks: 2
+    tags: [pattern-correctness, pretest]
+    bloom: analyze
+    source: "finalexamsmerge.pdf Q8"
+    question: "Which DatabaseProxy implementation is correct for enforcing access control over a SensitiveDatabase?"
+    choices:
+      - "Proxy has read_data(username) that returns the database read unconditionally; also exposes get_database() getter for convenience."
+      - "Proxy has read_data(username) that only returns the database read if username is in an _authorized_users list, else prints 'Access denied'. No getter exposes the real database."
+      - "Proxy has read_data(username) with the access check AND exposes get_database() for advanced clients."
+      - "Proxy has get_database() only; clients read via proxy.get_database().read_data()."
+    correct: 1
+    rationale: "Option B is the only correct Proxy. Option A has no access check at all — not a protection proxy, just a delegating wrapper. Option C adds the check but leaks the real subject via get_database() — a client can bypass the check by calling proxy.get_database().read_data() directly. Option D has ONLY the getter, which means clients always access the database without checks. The Proxy must (1) have a check, (2) never expose the wrapped object. The exam hinges on spotting the leaky getter."
+
+  - id: chain-q-01
+    type: MCQ
+    topic: "Chain of Responsibility"
+    marks: 2
+    tags: [pattern-output]
+    bloom: apply
+    source: "finalexamsmerge.pdf Q3"
+    question: "Chain built as: `level1 = Level1Support(); level2 = Level2Support(level1); level3 = Level3Support(level2)`. Each handler processes only its matching severity ('low', 'medium', 'high'). Request has severity='low'. Call `level3.handle_request(Request)`. Output order?"
+    choices:
+      - "Level3Support cannot handle. Level2Support cannot handle. Level 1 Support: Handling request."
+      - "Level 1 Support: Handling request. Level2Support cannot handle. Level3Support cannot handle."
+      - "Level3Support cannot handle. Level 2 Support: Handling request."
+      - "Level1Support cannot handle. Level2Support cannot handle. Level 3 Support: Handling request."
+    correct: 0
+    rationale: "Cascade starts at the caller (level3) and flows along _successor references downward. Level3 checks severity=='high', false, forwards. Level2 checks 'medium', false, forwards. Level1 checks 'low', true, processes. Distractors: B reverses the chain (would only occur if called on level1). C skips level 1 (wrong — level 1 handles 'low', not 2). D reverses the entire cascade. Key: `self._successor` points from higher-tier handlers down to lower, not the other way around."
+
+  - id: observer-q-01
+    type: MCQ
+    topic: "Observer pattern"
+    marks: 2
+    tags: [pattern-identification]
+    bloom: understand
+    source: "DesignPatternsTable p.1, Quiz 7"
+    question: "Which design pattern is MOST suitable when one object's state change must automatically trigger updates in multiple unknown reactors, without the source importing the reactors?"
+    choices:
+      - "Mediator"
+      - "Chain of Responsibility"
+      - "Observer"
+      - "Strategy"
+    correct: 2
+    rationale: "Observer. The subject maintains a list of observers and broadcasts on change — reactors subscribe and unsubscribe at runtime, and the subject never imports concrete reactors. Mediator (A) is for asymmetric peer-to-peer coordination, not broadcast. Chain of Responsibility (B) passes one request to one handler, not a broadcast. Strategy (D) is for swapping one algorithm, not notifying many reactors. Key phrase: 'unknown reactors' = dynamic subscription = Observer."
+
+  - id: mediator-q-01
+    type: MCQ
+    topic: "Mediator pattern"
+    marks: 2
+    tags: [pattern-scenario]
+    bloom: apply
+    source: "finalexamsmerge.pdf dashboard MCQ"
+    question: "In which software design would the Mediator pattern be MOST appropriate?"
+    choices:
+      - "A real-time multiplayer game server where all player objects directly update each other's positions and scores in shared memory."
+      - "A modular dashboard where widgets (charts, filters, status panels) update one another based on user actions, but must remain independent and reusable."
+      - "A text processing utility where each function (tokenizer, stemmer, parser) passes data linearly to the next via pipeline."
+      - "A filesystem monitoring tool where file watchers trigger logging operations using observer callbacks."
+    correct: 1
+    rationale: "Mediator centralizes asymmetric coordination between peer components that should stay decoupled. The dashboard (B) fits: widgets need to react to each other's state changes without referencing each other, and mediator's notify(sender, event) routes selectively. A is direct peer coupling (no mediator). C is a pipeline (Chain of Responsibility). D is Observer (broadcast callbacks). Mediator's tell: 'peers need to update one another but should stay reusable independently.'"
+
+  - id: mediator-q-02
+    type: MCQ
+    topic: "Mediator vs Observer"
+    marks: 2
+    tags: [pattern-comparison]
+    bloom: analyze
+    source: "Dec 2024 Final Q9"
+    question: "How does the Mediator pattern differ from Observer in its primary goal?"
+    choices:
+      - "Mediator focuses on dynamic one-way communication; Observer centralizes communication among objects."
+      - "Mediator aims to reduce mutual dependencies between components; Observer establishes dynamic one-way communication."
+      - "Mediator uses composition; Observer relies on inheritance."
+      - "Mediator always acts as a publisher; Observer requires no publisher."
+    correct: 1
+    rationale: "Mediator reduces N² peer-to-peer coupling into N-to-1 (each component knows only the mediator). Observer establishes a one-way broadcast from subject to observers. Option A reverses this. C is false — both use composition. D is nonsense — Observer REQUIRES a subject (publisher). The key insight: Mediator = peer coordination through center; Observer = state-change broadcast."
+
+  - id: facade-q-01
+    type: MCQ
+    topic: "Facade vs Mediator"
+    marks: 2
+    tags: [pattern-comparison]
+    bloom: analyze
+    source: "Dec 2024 Final Q11"
+    question: "How does Facade differ from Mediator in its relationship to the underlying subsystem?"
+    choices:
+      - "Facade allows direct communication between components; Mediator does not."
+      - "Mediator defines a simplified interface to a subsystem; Facade eliminates subsystem dependencies."
+      - "Facade does not introduce new functionality to a subsystem; Mediator coordinates component interactions."
+      - "Facade increases coupling between subsystems; Mediator decreases coupling."
+    correct: 2
+    rationale: "Facade is a simplified entry point — it doesn't add behavior to the subsystem, just hides complexity. Mediator actively coordinates: it routes messages between components and contains routing logic. Option A reverses the direction (Facade restricts direct access, Mediator is the direct path for coordinated comms). B reverses the roles (Mediator is not about simplifying subsystem access — that's Facade's job). D is false — both patterns aim to reduce coupling."
+
+  - id: bridge-q-01
+    type: MCQ
+    topic: "Bridge pattern"
+    marks: 2
+    tags: [pattern-identification]
+    bloom: analyze
+    source: "finalexamsmerge.pdf Q9"
+    question: "In the code below, which class is the Abstraction and which is the Implementation?\n```\nclass Shape: def draw(self): pass\nclass Renderer: def render_circle(self, r): pass\nclass Circle(Shape):\n    def __init__(self, r, renderer): self.r = r; self.renderer = renderer\n    def draw(self): self.renderer.render_circle(self.r)\nclass RasterRenderer(Renderer): ...\n```"
+    choices:
+      - "Abstraction: Shape. Implementation: Renderer."
+      - "Abstraction: Renderer. Implementation: Shape."
+      - "Abstraction: Circle. Implementation: RasterRenderer."
+      - "Abstraction: RasterRenderer. Implementation: Circle."
+    correct: 0
+    rationale: "In Bridge, the Abstraction is the client-facing high-level hierarchy (Shape) that holds a reference to the Implementation (Renderer) and delegates platform-specific work. Circle is a 'refined abstraction' (Shape subclass); RasterRenderer is a 'concrete implementation' (Renderer subclass). Distractor B reverses the two hierarchies. C mislabels concrete vs abstract levels. D is doubly wrong. The key phrase is 'Abstraction controls Implementation' — the Shape calls methods on Renderer, not the reverse."
+
+  - id: singleton-q-01
+    type: MCQ
+    topic: "Singleton pattern"
+    marks: 2
+    tags: [pattern-identification]
+    bloom: remember
+    source: "DesignPatternsTable p.7"
+    question: "Which design pattern ensures a class has only one instance and provides a global point of access to it?"
+    choices:
+      - "Factory"
+      - "Singleton"
+      - "Builder"
+      - "Abstract Factory"
+    correct: 1
+    rationale: "Singleton — both halves of the definition matter. Factory (A) creates objects without restricting instance count. Builder (C) constructs complex objects step by step — nothing about single-instance. Abstract Factory (D) produces families of related products. Common Singleton implementations in Python: override __new__, use a metaclass, apply a decorator, or rely on module-level variables."
+
+  - id: factory-q-01
+    type: MCQ
+    topic: "Factory pattern"
+    marks: 2
+    tags: [pattern-drawback]
+    bloom: analyze
+    source: "finalexamsmerge.pdf MCQ"
+    question: "Which best illustrates a disadvantage of using the Factory Pattern in a large-scale system?"
+    choices:
+      - "The use of constructors is strictly prohibited in client code."
+      - "The system becomes overly reliant on subclassing and inheritance."
+      - "The number of classes may grow quickly due to the need for one factory per product."
+      - "It cannot be used in combination with other design patterns."
+    correct: 2
+    rationale: "Class proliferation is the canonical Factory drawback: each new product type may require its own factory class, multiplying class count without necessarily reducing coupling. Option A is too strong — constructors aren't prohibited, just encapsulated in the factory. B is partially true but not Factory-specific. D is false — Factory combines freely with Strategy, Decorator, Observer, etc. The exam specifically asks for the 'best' illustration, and class count growth is the most cited issue."
+
+  - id: builder-q-01
+    type: MCQ
+    topic: "Builder pattern"
+    marks: 2
+    tags: [pattern-identification]
+    bloom: remember
+    source: "finalexamsmerge.pdf MCQ Q1"
+    question: "Which design pattern constructs complex objects step by step?"
+    choices:
+      - "Builder"
+      - "Abstract Factory"
+      - "Singleton"
+      - "Factory"
+    correct: 0
+    rationale: "Builder. Named after its step-by-step construction signature — a Builder class has reset(), build_step_A(), build_step_B(), get_result(). Optional Director encodes named recipes. Abstract Factory (B) produces whole families of objects in one call — not step-by-step. Singleton (C) is about instance count. Factory (D) produces one object per call — no step decomposition. The phrase 'step by step' in the question maps directly to Builder."
+
+  - id: chain-q-02
+    type: MCQ
+    topic: "Chain of Responsibility"
+    marks: 2
+    tags: [pattern-role]
+    bloom: understand
+    source: "Dec 2024 Final Q6"
+    question: "What is the typical role of the base handler class in the Chain of Responsibility pattern?"
+    choices:
+      - "To define a subscription mechanism for request notifications."
+      - "To forward requests to the next handler by default."
+      - "To act as a factory for creating handlers."
+      - "To store the client's request data persistently."
+    correct: 1
+    rationale: "The base handler's template-method role is to hold the _successor reference and contain the forwarding logic. Concrete handlers override can_handle + process; the base provides the 'if I can't, pass it along' default. Option A is Observer's attach/detach. C is Factory. D is a separate data-storage concern, not CoR's job. The base handler is the 'chain plumbing' — it knows how to forward, not how to process."
+
+  - id: strategy-q-02
+    type: MCQ
+    topic: "Strategy pattern"
+    marks: 2
+    tags: [pattern-drawback]
+    bloom: analyze
+    source: "Dec 2024 Final Q7"
+    question: "What is a common drawback of the Strategy pattern?"
+    choices:
+      - "It introduces tight coupling between the context and strategy objects."
+      - "It requires the client to know and select the appropriate strategy."
+      - "It makes it difficult to extend the behavior of an object."
+      - "It enforces a static behavior for all context objects."
+    correct: 1
+    rationale: "Strategy decouples the context from algorithms via an interface, but the CLIENT still has to know about concrete strategies to construct and inject them. Strategy doesn't hide the variants — that's what Factory adds. Option A is the opposite of truth (Strategy reduces coupling). C is false — extension is easy (new strategy class). D is false — runtime swapping is Strategy's main feature. The drawback here is the visibility of the variant ecosystem to clients."
+
+  - id: decorator-vs-proxy-q-01
+    type: MCQ
+    topic: "Decorator vs Proxy"
+    marks: 2
+    tags: [pattern-comparison]
+    bloom: analyze
+    source: "Dec 2024 Final Q8"
+    question: "How does Decorator differ from Proxy in terms of structure and purpose?"
+    choices:
+      - "Proxy is based on inheritance, while Decorator relies on composition."
+      - "Decorator manages the lifecycle of its service object, while Proxy does not."
+      - "Proxy typically controls access or permissions, while Decorator enhances functionality without modifying the interface."
+      - "Both Decorator and Proxy are interchangeable patterns used for encapsulating objects."
+    correct: 2
+    rationale: "Correct answer captures both differences: Proxy gatekeeps (caching / auth / logging); Decorator adds behavior. Both use composition and implement the same interface as the wrapped object. Option A is false — both use composition. B inverts lifecycle ownership (Proxy often manages the real subject's lifecycle; Decorator wraps existing instances). D is false — the patterns share structure but have clearly distinct intents, not interchangeable."
+
+  - id: solid-srp-q-01
+    type: MCQ
+    topic: "SOLID - SRP"
+    marks: 2
+    tags: [solid, pretest]
+    bloom: analyze
+    source: "finalexamsmerge.pdf MCQ"
+    question: "What design principle is most clearly violated when a class like `Character` directly handles all weapon attack logic?"
+    choices:
+      - "Dependency Inversion Principle"
+      - "Interface Segregation Principle"
+      - "Single Responsibility Principle"
+      - "Liskov Substitution Principle"
+    correct: 2
+    rationale: "SRP: Character has many reasons to change — any weapon's attack mechanics force an edit. Extract WeaponStrategy; Character delegates. DIP (A) is about abstraction layers — weapon logic isn't a layer violation, just a responsibility pile-up. ISP (B) would apply if Character had many unused method stubs. LSP (D) is about substitutability of subclasses — unrelated. The signal is 'directly handles all' — multiple concerns in one class = SRP."
+
+  - id: solid-ocp-q-01
+    type: MCQ
+    topic: "SOLID - OCP"
+    marks: 2
+    tags: [solid]
+    bloom: apply
+    source: "Week 14 review"
+    question: "A take_damage() method branches with if-elif on self._type ('Troll', 'Evil Turtle', 'Human Underling'). Which SOLID principle should you apply to refactor?"
+    choices:
+      - "Open/Closed Principle — extend via subclasses, not by editing the if-chain"
+      - "Law of Demeter"
+      - "Liskov Substitution Principle"
+      - "Single Responsibility Principle"
+    correct: 0
+    rationale: "OCP. The if-chain requires editing the method for each new type — closed for modification is violated. Refactor: make Enemy an ABC, each type a subclass overriding take_damage. Adding a new enemy = new class, zero edits. Law of Demeter (B) is about method-call chains, not type-branching. LSP (C) is about subclass compatibility. SRP (D) is a weaker fit — this is more about extensibility (OCP) than responsibility count. 'Object Inversion Principle' (sometimes on quizzes) does not exist."
+
+  - id: solid-dip-q-01
+    type: MCQ
+    topic: "SOLID - DIP"
+    marks: 2
+    tags: [solid]
+    bloom: analyze
+    source: "Week 14 review"
+    question: "Which statement about the Dependency Inversion Principle is FALSE?"
+    choices:
+      - "Low-level modules should not depend on high-level modules."
+      - "Abstractions depend on details."
+      - "High-level modules should not depend on low-level modules."
+      - "High-level and low-level modules should depend on abstractions."
+    correct: 1
+    rationale: "B is the false one — it inverts DIP's rule 2, which says 'Abstractions should NOT depend on details; DETAILS should depend on abstractions.' A is true (rule 1 corollary — neither direction between high/low). C is true (rule 1). D is true (the positive statement of rule 1). DIP's fundamental inversion is that BOTH high-level and low-level point up at abstractions, not at each other."
+
+  - id: solid-lsp-q-01
+    type: MCQ
+    topic: "SOLID - LSP"
+    marks: 2
+    tags: [solid]
+    bloom: understand
+    source: "practiceGuidedQuestion-sol.pdf"
+    question: "A FreeShipping subclass of ShippingStrategy throws an exception if weight exceeds 10 kg, while StandardShipping never throws. Which principle is violated?"
+    choices:
+      - "SRP"
+      - "OCP"
+      - "LSP"
+      - "DIP"
+    correct: 2
+    rationale: "LSP. A FreeShipping instance is not substitutable for a generic ShippingStrategy — code that expects any strategy to return a number now sometimes gets exceptions. Subclasses must honor the base's contract (same preconditions, at-least-as-strong postconditions, no new exceptions). SRP (A) isn't about runtime substitutability. OCP (B) is about extension vs modification. DIP (D) is about abstraction layers. LSP explicitly covers 'subclass surprise' — weakening the contract breaks Liskov."
+
+  - id: lod-q-01
+    type: MCQ
+    topic: "Law of Demeter"
+    marks: 2
+    tags: [design-principle]
+    bloom: apply
+    source: "Week 14 review"
+    question: "`obj.getX().getY().getZ().doSomething()` — which design principle is violated?"
+    choices:
+      - "SRP"
+      - "Law of Demeter"
+      - "Open/Closed Principle"
+      - "DIP"
+    correct: 1
+    rationale: "Law of Demeter — the caller 'talks to strangers' by reaching through multiple objects. LoD permits calls on self, parameters, locally-created objects, and direct member attributes. The dot chain here violates by reaching into getX's return value, then its return value, and so on. Refactor by adding a top-level method on obj that handles the chain internally. Other SOLID principles don't specifically address chain depth."
+
+  - id: isp-q-01
+    type: MCQ
+    topic: "SOLID - ISP"
+    marks: 2
+    tags: [solid]
+    bloom: understand
+    source: "Week 3 Slides"
+    question: "A Worker interface with methods work(), eat(), sleep() forces a Robot(Worker) subclass to stub out eat() and sleep(). Which principle addresses this?"
+    choices:
+      - "Interface Segregation Principle — split into smaller interfaces"
+      - "Single Responsibility Principle"
+      - "Open/Closed Principle"
+      - "Dependency Inversion Principle"
+    correct: 0
+    rationale: "ISP: clients (subclasses) should not be forced to implement methods they don't use. Split Worker into Workable, Feedable, Sleepable; Human implements all three, Robot implements only Workable. SRP (B) is about class responsibility count, not interface fatness. OCP (C) is about extension without modification. DIP (D) is about abstraction layers. The stub-method smell is ISP's exact trigger."
+
+  # ============ MCQ — output prediction ============
+  - id: iterator-q-01
+    type: MCQ
+    topic: "Iterator protocol"
+    marks: 2
+    tags: [output-trace]
+    bloom: apply
+    source: "finalexamsmerge.pdf Q13"
+    question: "What is the output?\n```\nclass SomeIterator:\n    def __init__(self, limit): self.current = limit\n    def __iter__(self): return self\n    def __next__(self):\n        if self.current >= 1:\n            result = self.current**2\n            self.current -= 2\n            return result\n        raise StopIteration\n\nfor x in SomeIterator(5): print(x)\n```"
+    choices:
+      - "25, 16, 9, 4, 1"
+      - "25, 9, 1"
+      - "1, 4, 9, 16, 25"
+      - "1, 9, 25"
+    correct: 1
+    rationale: "Step is -2, not -1. Trace: current=5 → yield 25, current=3 → yield 9, current=1 → yield 1, current=-1 → StopIteration. Output: 25, 9, 1. Distractor A assumes step=-1 (wrong). C reverses the direction (wrong — starts at 5, counts down). D is close but missing 9 and starts wrong. Mechanically walk __next__ calls — don't pattern-match."
+
+  - id: generators-q-01
+    type: MCQ
+    topic: "Generators"
+    marks: 2
+    tags: [output-trace, pretest]
+    bloom: apply
+    source: "finalexamsmerge.pdf Q6"
+    question: "What is the output of this pipeline?\n```\ndef src():\n    for i in range(10): yield i\ndef f1(nums):\n    for n in nums: yield n * 2\ndef f2(nums):\n    for n in nums:\n        if n % 2 == 0: yield n\n\nfor r in f2(f1(src())): print(r)\n```"
+    choices:
+      - "0, 4, 8, 12, 16"
+      - "0, 2, 4, 6, 8, 10, 12, 14, 16, 18"
+      - "0, 2, 4, 6, 8"
+      - "0, 4, 8, 12, 16, 20"
+    correct: 1
+    rationale: "src yields 0..9. f1 doubles each → 0, 2, 4, 6, 8, 10, 12, 14, 16, 18. f2 filters even → all ten are even, so all ten pass through. Distractor A applies f2 with mod 4 instead of mod 2 (wrong — check code). C truncates arbitrarily. D extends beyond 18 (wrong — src stops at 9). Generators compose lazily; trace the pipeline end-to-end for each source value."
+
+  - id: async-q-01
+    type: MCQ
+    topic: "asyncio"
+    marks: 2
+    tags: [timing]
+    bloom: analyze
+    source: "finalexamsmerge.pdf async Q"
+    question: "Given two Observer coroutines each sleeping 0.5s, and `await asyncio.gather(subject.notify('x'), subject.notify('y'))` where each notify visits 2 observers. Roughly how long does the main coroutine take?"
+    choices:
+      - "~2.0 seconds (all serialized)"
+      - "~1.0 seconds (notifies serialized, observers parallel)"
+      - "~0.5-0.6 seconds (all concurrent via gather)"
+      - "~0.1 seconds"
+    correct: 2
+    rationale: "asyncio.gather schedules both notify() coroutines concurrently. Each observer's sleep runs during the same event-loop wall-time window. Total ≈ slowest observer's sleep ≈ 0.5-0.6s including event loop overhead. Option A assumes sequential awaits (not gather). B assumes partial parallelism (notifies serialized inside each call but gather is parallel). D is way off. Rule: gather's total ≈ slowest single coroutine, not sum."
+
+  - id: inheritance-q-01
+    type: MCQ
+    topic: "Inheritance"
+    marks: 2
+    tags: [output-trace]
+    bloom: apply
+    source: "Dec 2024 Final T/F Q5"
+    question: "What does `Child('Alice', 10).greet()` print?\n```\nclass Parent:\n    def __init__(self, name): self.name = name\n    def greet(self): return f'Hello, I am {self.name}.'\nclass Child(Parent):\n    def __init__(self, name, age):\n        super().__init__(name); self.age = age\n    def greet(self):\n        return f'{super().greet()} I am {self.age} years old.'\n```"
+    choices:
+      - "Hello, I am Alice. I am 10 years old."
+      - "Hello, I am Alice."
+      - "I am 10 years old."
+      - "Alice is 10 years old."
+    correct: 0
+    rationale: "super().greet() calls Parent.greet() which returns 'Hello, I am Alice.' Child's greet appends ' I am 10 years old.' via f-string. Final output combines both. Distractor B ignores Child's override. C ignores super() call. D uses different wording than the code. Key: super().__init__(name) sets self.name correctly BEFORE greet is called, so 'Alice' prints, not an error."
+
+  - id: comprehensions-q-01
+    type: MCQ
+    topic: "Comprehensions"
+    marks: 2
+    tags: [output-trace]
+    bloom: apply
+    source: "Dec 2024 Final T/F Q4"
+    question: "What is the output?\n```\nx = [[i * j for j in range(1, 2)] for i in range(1, 3)]\nprint(x)\n```"
+    choices:
+      - "[[1], [2]]"
+      - "[[1, 2]]"
+      - "[[1], [2], [3]]"
+      - "[1, 2]"
+    correct: 0
+    rationale: "Trace outer-to-inner. Outer i in range(1, 3) → i = 1, 2. For each i, inner [i*j for j in range(1, 2)] = [i*1] = [i] (range(1,2) has only j=1). So the outer list contains [1] then [2]. Result: [[1], [2]]. Distractor B assumes inner runs range(1,3). C adds an extra element (wrong — outer has 2 iterations). D flattens incorrectly. Nested comprehensions: inner builds each sub-list, outer wraps into main list."
+
+  - id: decorator-q-03
+    type: MCQ
+    topic: "Decorator pattern"
+    marks: 2
+    tags: [pattern-correctness]
+    bloom: analyze
+    source: "finalexamsmerge.pdf Notifier refactor"
+    question: "Which statement about the Decorator pattern is TRUE?"
+    choices:
+      - "A class hierarchy where each subclass overrides the base method with additional prints is a valid Decorator."
+      - "Decorator requires the wrapper class to hold a reference to the wrapped object (composition), not just inheritance."
+      - "Decorator is identical to Proxy in both structure and intent."
+      - "Decorator must use multiple inheritance to stack behaviors."
+    correct: 1
+    rationale: "The structural requirement for Decorator is a stored reference to the wrapped object (self.wrapped = wrapped) — composition. The wrapper's methods call through self.wrapped.method() and add their own slice. Option A describes plain inheritance (no stacking, subclass-per-combination explosion). C: Decorator and Proxy share structure but differ in INTENT. D: Python Decorator doesn't require multiple inheritance — it stacks via constructor nesting, not class composition."
+
+  - id: file-storage-q-01
+    type: MCQ
+    topic: "Decorator pattern"
+    marks: 2
+    tags: [pattern-scenario]
+    bloom: apply
+    source: "finalexamsmerge.pdf"
+    question: "You're developing a file storage service where files must be encrypted and compressed before writing, and the process reversed on reading. Which pattern offers the most flexible solution for combining these behaviors?"
+    choices:
+      - "Proxy"
+      - "Facade"
+      - "Bridge"
+      - "Decorator"
+    correct: 3
+    rationale: "Decorator. Each transformation (encryption, compression) wraps the previous file stream, same interface (`read/write`), stackable at runtime: `EncryptionDecorator(CompressionDecorator(FileStream()))`. New transformations = new decorator classes, no edits. Proxy (A) is for access control, not behavior stacking. Facade (B) simplifies an existing subsystem, no stacking. Bridge (C) is for two orthogonal hierarchies. The 'flexible combining' cue is Decorator's signature use case."
+
+  - id: mi-q-01
+    type: MCQ
+    topic: "Multiple inheritance"
+    marks: 2
+    tags: [mro]
+    bloom: analyze
+    source: "Week 5 Slides"
+    question: "Given `class C(A, B): pass` where A and B are unrelated base classes, and both define method m(). Calling C().m() invokes which version?"
+    choices:
+      - "A.m() — leftmost parent first in MRO"
+      - "B.m() — rightmost parent first"
+      - "Neither — ambiguity error"
+      - "Both — C inherits both and must override"
+    correct: 0
+    rationale: "Python's MRO places A before B because A is listed first in the class declaration (left-to-right for the direct bases, plus C3 linearization for ancestors). `C.__mro__ == (C, A, B, object)`. Option B would be true in some languages (e.g., old .NET) but not Python. C is false — Python resolves this deterministically, no error. D is misleading — C inherits both, but method lookup finds A first and stops."
+
+  - id: abc-q-01
+    type: MCQ
+    topic: "Abstract base class"
+    marks: 2
+    tags: [oop, abc]
+    bloom: understand
+    source: "Week 2 Slides"
+    question: "What happens when you try to instantiate a subclass of an ABC that did NOT override all @abstractmethod methods?"
+    choices:
+      - "The object is created but calls to unimplemented methods raise NotImplementedError"
+      - "TypeError is raised at instantiation time"
+      - "The subclass silently inherits abstract method bodies (usually `pass`)"
+      - "A warning is printed but instantiation succeeds"
+    correct: 1
+    rationale: "ABC enforces the contract at instantiation, not first-call. `class C(ABC): @abstractmethod def m(self): pass; class D(C): pass; D()` raises `TypeError: Can't instantiate abstract class D with abstract method m`. This is what distinguishes ABC from plain inheritance. Distractor A is the Java behavior (compile-time warning, runtime NPE). C is false — abstract methods prevent instantiation. D is incorrect — Python fails hard, not soft."
+
+  # ============ MCQ — Chain output cascade ============
+  - id: chain-q-03
+    type: MCQ
+    topic: "Chain of Responsibility"
+    marks: 2
+    tags: [output-trace]
+    bloom: apply
+    source: "finalexamsmerge.pdf Q3 variation"
+    question: "If the client calls `level1.handle_request(Request('low'))` directly on the same Level1Support < Level2Support < Level3Support chain, what prints?"
+    choices:
+      - "Level3Support cannot handle. Level2Support cannot handle. Level 1 Support: Handling request."
+      - "Level 1 Support: Handling request."
+      - "Level1Support cannot handle. Level2Support cannot handle. Level 3 Support: Handling request."
+      - "Nothing — calling on level1 skips the chain."
+    correct: 1
+    rationale: "level1 checks severity=='low' — TRUE, processes immediately. No cascade happens because level1 has no _successor (it's the bottom of the chain as constructed). This is the critical reading: the cascade direction is along _successor pointers, not along construction order. Since level1 is wrapped by level2 which is wrapped by level3, level1._successor is None. Output: only Level 1 Support: Handling request."
+
+  # ============ Additional concept-variability pairs ============
+  - id: observer-q-02
+    type: MCQ
+    topic: "Observer pattern"
+    marks: 2
+    tags: [pattern-identification]
+    bloom: analyze
+    source: "DesignPatternsTable p.1"
+    question: "A stock-price service maintains a list of subscribers (email alerts, dashboard tiles, trading algorithms). On every price change, it calls update() on each subscriber in sequence. Which pattern?"
+    choices:
+      - "Mediator"
+      - "Observer"
+      - "Chain of Responsibility"
+      - "Strategy"
+    correct: 1
+    rationale: "Observer — one subject, many homogeneous reactors, one broadcast on change. Distinguishing signals: (1) the subject maintains a SUBSCRIBER LIST, (2) all subscribers receive the SAME update call, (3) no routing logic in the subject (just a loop). Mediator (A) would have asymmetric routing — different subscribers get different messages. CoR (C) would pass one request along until handled, not broadcast. Strategy (D) is one algorithm at a time, not many reactors."
+
+  - id: proxy-q-02
+    type: MCQ
+    topic: "Proxy pattern"
+    marks: 2
+    tags: [pattern-scenario]
+    bloom: apply
+    source: "DesignPatternsTable p.6"
+    question: "You want to add caching to an expensive DB query object without modifying it or the callers. Which pattern fits best?"
+    choices:
+      - "Decorator — wrap with a caching layer"
+      - "Proxy — caching proxy forwards on miss, returns cache on hit"
+      - "Mediator — centralize caching logic"
+      - "Observer — notify callers of cached results"
+    correct: 1
+    rationale: "Proxy. A caching proxy has the same interface as the real DB object, intercepts calls, returns cached results on hit or forwards on miss. Option A (Decorator) could also work structurally, but caching is a classic PROXY variant (Caching Proxy) and the intent is control/interception, not behavior addition. Distinction: Decorator adds observable behavior; Proxy changes access/control without altering behavior visibility. Intent > structure when picking."
+
+  - id: singleton-q-02
+    type: MCQ
+    topic: "Singleton"
+    marks: 2
+    tags: [implementation]
+    bloom: apply
+    source: "Week 9 Slides"
+    question: "Which Python approach does NOT produce a Singleton?"
+    choices:
+      - "Override __new__ to return a cached _instance class variable"
+      - "Module-level variable (imported from the module)"
+      - "A regular class with an __init__ that prints 'initialized'"
+      - "A decorator that caches instances in a dict keyed by class"
+    correct: 2
+    rationale: "A regular class with no instance-count restriction allows multiple instantiations — each call produces a new object. Options A, B, and D all enforce single-instance semantics. A uses __new__ override (most common pedagogical example); B relies on Python's module caching (sys.modules); D wraps the class so construction returns the cached instance. The 'initialized' print is a red herring — it doesn't limit instance count."
+
+  - id: abstract-factory-q-01
+    type: MCQ
+    topic: "Abstract Factory"
+    marks: 2
+    tags: [pattern-comparison]
+    bloom: understand
+    source: "DesignPatternsTable p.8"
+    question: "How does Abstract Factory differ from Factory Method?"
+    choices:
+      - "Abstract Factory produces one product per call; Factory Method produces families."
+      - "Factory Method has one abstract creation method; Abstract Factory has multiple, one per product type."
+      - "Abstract Factory cannot use inheritance."
+      - "They are synonymous — the names are interchangeable."
+    correct: 1
+    rationale: "Factory Method: one product, one abstract method. Abstract Factory: multiple products, multiple abstract methods — a concrete factory produces a family of matching products. Option A reverses this. C is false — both rely on inheritance. D is false — the patterns are distinct and both appear in the DesignPatternsTable. The distinguishing test: if you need 'chair AND sofa AND table in the same style', Abstract Factory; if you need 'one User instance of the right subtype', Factory Method."
+
+  - id: iterator-q-02
+    type: MCQ
+    topic: "Iterator protocol"
+    marks: 2
+    tags: [protocol]
+    bloom: remember
+    source: "Week 5 Slides"
+    question: "Which TWO methods must a Python class implement to be a full iterator?"
+    choices:
+      - "__init__ and __next__"
+      - "__iter__ and __next__"
+      - "__iter__ and __call__"
+      - "__enter__ and __exit__"
+    correct: 1
+    rationale: "__iter__ returns the iterator (usually self); __next__ returns the next value or raises StopIteration. Both required. Option A misses __iter__ — without it, `for x in obj` fails with TypeError. C confuses iterator with callable. D is the context-manager protocol (for `with`). This is a definition question — memorize the two dunders."
+
+  - id: lambda-q-01
+    type: MCQ
+    topic: "Lambda"
+    marks: 1
+    tags: [syntax]
+    bloom: understand
+    source: "Week 6 Slides"
+    question: "What does a Python lambda expression consist of?"
+    choices:
+      - "A single statement, including assignments."
+      - "Multiple expressions separated by semicolons."
+      - "A single expression — no statements, assignments, or return."
+      - "A function body with indented statements."
+    correct: 2
+    rationale: "Lambdas are single-expression anonymous functions. `lambda x, y: x + y` — the body is ONE expression, implicitly returned. Option A is false — no statements or assignments. B is false — single expression only. D describes `def` functions, not lambdas. When logic is more complex, switch to a named `def`."
+
+  - id: polymorphism-q-01
+    type: MCQ
+    topic: "Polymorphism + Duck typing"
+    marks: 2
+    tags: [oop]
+    bloom: understand
+    source: "Week 2 Slides"
+    question: "In Python duck typing, what makes two objects 'compatible' for a given operation?"
+    choices:
+      - "They share a common base class"
+      - "They implement the same interface explicitly"
+      - "They expose the same methods needed by the calling code"
+      - "They have identical attribute names"
+    correct: 2
+    rationale: "Duck typing: 'if it walks like a duck and quacks like a duck, it IS a duck'. Python checks method availability at call time, not inheritance. Option A describes nominal typing (Java-style). B describes explicit interface-realization. D is too weak — attribute names alone don't guarantee behavior. 'Expose the same methods' captures Python's approach: as long as the required methods are callable, types are compatible."

@@ -1,0 +1,1105 @@
+modules:
+  - id: patterns-behavioral
+    name: "Design Patterns — Behavioral"
+    topics:
+      - id: state
+        name: "State pattern"
+        tags: [pattern, behavioral, state]
+        prose: |
+          State encapsulates each operating mode of an object in its own class.
+          The context delegates to the current state, which decides both
+          behavior and the next transition.
+        source: "DesignPatternsTable p.3, Week 10 Slides"
+        priority: high
+        cards:
+          - type: name
+            prompt: "What pattern replaces an if/elif chain on `self._mode` with a class per mode?"
+            answer: "State"
+            source: "Week 10 Slides"
+            bloom: remember
+            explanation: "State isolates mode-specific behavior in concrete state classes, satisfying OCP — adding a new mode is a new class, not an edit."
+            example: "TrafficLight with Red / Green / Yellow, each with its own `next(traffic_light)` method that transitions the context."
+          - type: cloze
+            prompt: "In the State pattern, the {{context}} holds a reference to the current state and delegates behavior to it."
+            answer: "context"
+            source: "DesignPatternsTable p.3"
+            bloom: understand
+            explanation: "The context is the object whose behavior varies with state; it exposes a `change_state()` method that state objects call to transition."
+            example: "class TrafficLight: def switch(self): self.state.next(self) — the TrafficLight is the context."
+          - type: name
+            prompt: "In the State pattern, which object decides the next state transition?"
+            answer: "The current concrete state"
+            source: "DesignPatternsTable"
+            bloom: understand
+            explanation: "Red decides to transition to Green, Green to Yellow, and so on. The context is passive — it just holds whichever state ref was assigned."
+            example: "class Red(State): def next(self, tl): tl.change_state(Green())"
+          - type: predict
+            lang: python
+            prompt: "Given TrafficLight initialized to Red(), what does this print?"
+            code: |
+              tl = TrafficLight()  # starts Red
+              tl.switch()  # Red -> Green
+              tl.switch()  # Green -> Yellow
+              tl.switch()  # Yellow -> Red
+              tl.switch()  # Red -> Green
+            answer: "Red->Green, Green->Yellow, Yellow->Red, Red->Green (cycles)"
+            source: "finalexamsmerge.pdf Q1"
+            bloom: apply
+            explanation: "Each call to switch delegates to state.next(self), which prints the transition and calls change_state on the context."
+            example: "The traffic-light cycle is a canonical State example in the course."
+          - type: name
+            prompt: "TRUE or FALSE: In State, state objects are independent and unaware of each other."
+            answer: "FALSE — that describes Observer"
+            source: "finalexamsmerge.pdf T/F Q7"
+            bloom: analyze
+            explanation: "State objects typically know about other state classes because they instantiate the next state in their transitions, AND often hold a back-reference to the context."
+            example: "Red.next(tl) instantiates Green — Red knows Green exists."
+
+      - id: strategy
+        name: "Strategy pattern"
+        tags: [pattern, behavioral, strategy]
+        prose: |
+          Strategy defines a family of interchangeable algorithms.
+          The context holds a strategy reference and delegates the work,
+          letting the algorithm change at runtime without subclassing.
+        source: "DesignPatternsTable p.3, Week 9-10 Slides"
+        priority: high
+        cards:
+          - type: name
+            prompt: "Which design pattern lets you swap an algorithm at runtime without altering the context?"
+            answer: "Strategy"
+            source: "DesignPatternsTable"
+            bloom: remember
+            explanation: "Strategy injects an algorithm object into the context; swapping = assigning a new strategy instance."
+            example: "cart.set_shipping_strategy(ExpressShipping()) changes shipping calculation without touching ShoppingCart code."
+          - type: cloze
+            prompt: "Strategy favors {{composition}} over inheritance — the context has-a strategy rather than is-a subclass."
+            answer: "composition"
+            source: "Week 9-10 Slides"
+            bloom: understand
+            explanation: "Composition decouples algorithm choice from class hierarchy, avoiding subclass explosion when you need many behavior combinations."
+            example: "Duck(FlyWithWings(), Quack()) vs FlyingQuackingMallardDuck subclass."
+          - type: predict
+            lang: python
+            prompt: "Which pattern is in use here?"
+            code: |
+              class Duck:
+                  def __init__(self, fly_behavior, quack_behavior):
+                      self._fly = fly_behavior
+                      self._quack = quack_behavior
+                  def perform_fly(self):
+                      self._fly.fly()
+              mallard = Duck(FlyWithWings(), Quack())
+            answer: "Strategy"
+            source: "finalexamsmerge.pdf Q4"
+            bloom: apply
+            explanation: "Behaviors are injected as separate objects (fly/quack), swappable at runtime — classic Strategy."
+            example: "Not State (no transitions), not Observer (no notify), not Bridge (no independent implementation hierarchy varying with context)."
+          - type: name
+            prompt: "Canonical drawback of Strategy, per the exam?"
+            answer: "Client must know and select the appropriate strategy"
+            source: "Dec 2024 Final Q7"
+            bloom: analyze
+            explanation: "Strategy decouples the context from algorithms, but the client still imports and constructs concrete strategies — it doesn't hide them."
+            example: "Whoever calls cart.set_shipping_strategy(StandardShipping()) must know StandardShipping exists."
+
+      - id: chain-of-responsibility
+        name: "Chain of Responsibility"
+        tags: [pattern, behavioral, chain]
+        prose: |
+          Chain of Responsibility links handlers in a chain. Each handler
+          either processes the request or forwards it to its successor.
+          The sender doesn't know which handler will ultimately respond.
+        source: "DesignPatternsTable p.2, Week 8 Slides"
+        priority: high
+        cards:
+          - type: name
+            prompt: "Which pattern passes a request along a chain until a handler accepts it?"
+            answer: "Chain of Responsibility"
+            source: "DesignPatternsTable"
+            bloom: remember
+            explanation: "Each handler decides 'can I handle?' and either processes or forwards via its _successor reference."
+            example: "Level1 → Level2 → Level3 support escalation."
+          - type: cloze
+            prompt: "The base handler's default role is to {{forward to the next handler}} when it can't process the request itself."
+            answer: "forward to the next handler"
+            source: "Dec 2024 Final Q6"
+            bloom: understand
+            explanation: "The base class holds the _successor-forwarding template; concrete handlers only override can_handle + process."
+            example: "if self._can_handle(req): self._process_request(req) elif self._successor: self._successor.handle_request(req)"
+          - type: predict
+            lang: python
+            prompt: "Chain is level3 = Level3(Level2(Level1())). Request severity='low'. What prints from level3.handle_request(req)?"
+            code: |
+              level3.handle_request(Request("printer", "low"))
+              # Level3 checks severity=="high" — no
+              # forwards to Level2, which checks "medium" — no
+              # forwards to Level1, which checks "low" — yes
+            answer: "Level3 cannot handle. Level2 cannot handle. Level 1 Support: Handling request."
+            source: "finalexamsmerge.pdf Q3"
+            bloom: apply
+            explanation: "Cascade direction is along _successor refs, which point from higher-level handlers to lower."
+            example: "If you called level1.handle_request directly, only Level1 would check — no cascade."
+
+      - id: observer
+        name: "Observer pattern"
+        tags: [pattern, behavioral, observer, pub-sub]
+        prose: |
+          Observer establishes a one-to-many dependency: a subject maintains
+          a list of observers and notifies all of them on state change.
+          Observers react independently without knowing about each other.
+        source: "DesignPatternsTable p.1, Week 9 Slides"
+        priority: high
+        cards:
+          - type: name
+            prompt: "Which pattern notifies multiple objects automatically when a subject's state changes?"
+            answer: "Observer"
+            source: "DesignPatternsTable"
+            bloom: remember
+            explanation: "Subject.notify() loops over attached observers and calls each one's update() — broadcast-style dependency inversion."
+            example: "Game's Player dies → HighScore, SaveSystem, UIOverlay all receive update() without Player knowing them."
+          - type: cloze
+            prompt: "Observers in the Observer pattern are {{independent}} of each other — they do not communicate peer-to-peer."
+            answer: "independent"
+            source: "DesignPatternsTable p.1"
+            bloom: understand
+            explanation: "If observers needed to coordinate with each other, Mediator would be the right pattern."
+            example: "EmailAlert and DashboardTile both receive the price update but never reference each other."
+          - type: name
+            prompt: "Key difference between Observer and Mediator?"
+            answer: "Observer broadcasts uniformly to all; Mediator routes selectively between peers"
+            source: "Dec 2024 Final Q9"
+            bloom: analyze
+            explanation: "Observer: subject → list of observers, one event, same notification. Mediator: peers ↔ central coordinator with custom routing logic."
+            example: "Dashboard widgets updating each other selectively based on which one fired = Mediator. Stock price change broadcasting to all subscribers = Observer."
+
+      - id: mediator
+        name: "Mediator pattern"
+        tags: [pattern, behavioral, mediator]
+        prose: |
+          Mediator centralizes the communication between a set of components.
+          Components hold a single reference to the mediator; the mediator
+          decides how each event routes to which component.
+        source: "DesignPatternsTable p.4, Week 11 Slides"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "Pattern name: 'dashboard widgets need to update one another based on user actions but should remain independent'"
+            answer: "Mediator"
+            source: "finalexamsmerge.pdf MCQ"
+            bloom: apply
+            explanation: "Peer-to-peer asymmetric coordination = Mediator. Observer would be right if all widgets reacted identically to one broadcast."
+            example: "ConcreteMediator inspects sender and event type, calls the appropriate component method."
+          - type: cloze
+            prompt: "Mediator collapses N-to-N peer coupling into {{N-to-1}} coupling with a central coordinator."
+            answer: "N-to-1"
+            source: "Week 11 Slides"
+            bloom: understand
+            explanation: "Each component holds only the mediator reference; new components attach at runtime without modifying existing ones."
+            example: "5 widgets in a chat room: without mediator = 5*4 = 20 references; with mediator = 5 refs to the room."
+          - type: name
+            prompt: "Mediator vs Facade — what's the direction difference?"
+            answer: "Facade is one-way client→subsystem; Mediator is two-way components↔mediator"
+            source: "DesignPatternsTable"
+            bloom: analyze
+            explanation: "Facade simplifies access to a subsystem; the subsystem components don't call the facade. Mediator components actively call the mediator."
+            example: "VideoConverter.convertVideo() = Facade. ChatRoom.notify(sender, msg) called from User.send() = Mediator."
+
+      - id: iterator-pattern
+        name: "Iterator pattern"
+        tags: [pattern, behavioral, iterator]
+        prose: |
+          The Iterator pattern provides sequential access to elements without
+          exposing the underlying representation. In Python, implemented via
+          the __iter__ / __next__ dunder protocol.
+        source: "DesignPatternsTable, Week 5 Slides"
+        priority: low
+        cards:
+          - type: cloze
+            prompt: "A Python iterator must implement {{__iter__}} and {{__next__}} — the former returns self, the latter raises StopIteration when done."
+            answer: "__iter__, __next__"
+            source: "Week 5 Slides"
+            bloom: remember
+            explanation: "for-loops call iter() once and then next() in a loop, terminating on StopIteration."
+            example: "class Count: def __iter__(self): return self; def __next__(self): if self.n >= self.limit: raise StopIteration; self.n += 1; return self.n"
+          - type: predict
+            lang: python
+            prompt: "Output of this iterator when limit=5?"
+            code: |
+              class SomeIterator:
+                  def __init__(self, limit):
+                      self.current = limit
+                  def __iter__(self):
+                      return self
+                  def __next__(self):
+                      if self.current >= 1:
+                          result = self.current ** 2
+                          self.current -= 2
+                          return result
+                      raise StopIteration
+              for x in SomeIterator(5): print(x)
+            answer: "25, 9, 1"
+            source: "finalexamsmerge.pdf Q13"
+            bloom: apply
+            explanation: "Step is -2, not -1. current=5→yield 25, 3→yield 9, 1→yield 1, -1→StopIteration."
+            example: "Not 25,16,9,4,1 — that would be step=-1."
+
+  - id: patterns-creational-structural
+    name: "Design Patterns — Creational & Structural"
+    topics:
+      - id: decorator-pattern
+        name: "Decorator pattern"
+        tags: [pattern, structural, decorator]
+        prose: |
+          Decorator wraps an object in another of the same interface, adding
+          behavior via composition. Stackable — A(B(C())) nests wrappers.
+        source: "DesignPatternsTable p.5"
+        priority: high
+        cards:
+          - type: name
+            prompt: "Which pattern adds behavior to an object dynamically by wrapping it, without subclassing combinations?"
+            answer: "Decorator"
+            source: "DesignPatternsTable p.5"
+            bloom: remember
+            explanation: "Each decorator wraps an instance of the same interface and adds one slice of behavior; stacking decorators combines behavior."
+            example: "Whip(Mocha(Coffee())) — Coffee, Coffee+Mocha, Coffee+Mocha+Whip."
+          - type: cloze
+            prompt: "A Decorator MUST use {{composition}} — it holds a reference to the wrapped object, not just inherit from it."
+            answer: "composition"
+            source: "finalexamsmerge.pdf Notifier refactor"
+            bloom: understand
+            explanation: "Pure inheritance without a stored reference creates subclass-per-combination explosion; the stored ref is the pattern's structural requirement."
+            example: "class EmailDecorator(Notifier): def __init__(self, notifier): self._notifier = notifier"
+          - type: predict
+            lang: python
+            prompt: "Output of nested decorator cost()?"
+            code: |
+              # Coffee=5, Milk=+2, Sugar=+1, Caramel=+3
+              x = CaramelDecorator(SugarDecorator(MilkDecorator(Coffee())))
+              print(x.cost())   # 5+2+1+3 = 11
+              print(CaramelDecorator(CaramelDecorator(SugarDecorator(MilkDecorator(Coffee())))).cost())
+              # 5+2+1+3+3 = 14
+            answer: "11, 14"
+            source: "Dec 2024 Final Q14"
+            bloom: apply
+            explanation: "Python does NOT dedupe decorator types — each instance adds its own cost. Stacking Caramel twice = +3 twice."
+            example: "cost chain unwinds recursively through each wrapper's self._coffee.cost() + surcharge."
+          - type: name
+            prompt: "TRUE or FALSE: Decorator and Proxy have similar structures but different intents."
+            answer: "TRUE"
+            source: "Dec 2024 Final Q3"
+            bloom: analyze
+            explanation: "Both wrap an object implementing the same interface. Decorator adds behavior; Proxy controls access."
+            example: "Same wrap-and-delegate shape, different purpose."
+
+      - id: proxy
+        name: "Proxy pattern"
+        tags: [pattern, structural, proxy, access-control]
+        prose: |
+          Proxy presents the same interface as a real subject while controlling
+          access to it — auth, caching, logging, lazy load.
+        source: "DesignPatternsTable p.6"
+        priority: high
+        cards:
+          - type: name
+            prompt: "Which pattern provides the same interface as a real subject while controlling access to it?"
+            answer: "Proxy"
+            source: "DesignPatternsTable p.6"
+            bloom: remember
+            explanation: "Proxies route every client call through a gatekeeping layer before (or instead of) touching the real subject."
+            example: "CachedProxy, ProtectionProxy, LoggingProxy — all implement same interface, different concerns."
+          - type: name
+            prompt: "What breaks a Proxy that enforces access control?"
+            answer: "Any method returning the wrapped real subject (e.g. get_database())"
+            source: "finalexamsmerge.pdf Q8"
+            bloom: analyze
+            explanation: "A getter on the proxy lets clients bypass the gate entirely by calling methods directly on the returned real subject."
+            example: "Past-exam Option A and C both exposed get_database() — only Option B (without) was correct."
+          - type: cloze
+            prompt: "A Caching Proxy stores the result of the first call; subsequent calls {{return the cache}} without touching the real subject."
+            answer: "return the cache"
+            source: "finalexamsmerge.pdf Q15"
+            bloom: understand
+            explanation: "Reduces load on expensive real subjects by memoizing identical requests."
+            example: "if self._cache is None: self._cache = self._real.request() else: return self._cache"
+          - type: name
+            prompt: "Key difference Proxy vs Decorator?"
+            answer: "Proxy controls access; Decorator adds functionality"
+            source: "Dec 2024 Final Q8"
+            bloom: analyze
+            explanation: "Same wrapping structure — different intent. Proxy gatekeeps; Decorator extends."
+            example: "Both expose the same interface as the wrapped object."
+
+      - id: bridge
+        name: "Bridge pattern"
+        tags: [pattern, structural, bridge]
+        prose: |
+          Bridge decouples an abstraction from its implementation so the two
+          can vary independently. Two separate inheritance hierarchies meet
+          at one composition reference.
+        source: "DesignPatternsTable p.7"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "Which pattern separates a large class into two hierarchies that vary independently, connected by composition?"
+            answer: "Bridge"
+            source: "DesignPatternsTable p.7"
+            bloom: remember
+            explanation: "Abstraction hierarchy + Implementation hierarchy + a has-a bridge reference."
+            example: "Shape abstraction + Renderer implementation, Circle(Shape) holds a Renderer."
+          - type: predict
+            lang: python
+            prompt: "In Shape + Renderer Bridge code, which is Abstraction, which is Implementation?"
+            code: |
+              class Shape: def draw(self): pass
+              class Renderer: def render_circle(self, r): pass
+              class Circle(Shape):
+                  def __init__(self, r, renderer):
+                      self.r = r; self.renderer = renderer
+                  def draw(self): self.renderer.render_circle(self.r)
+              class RasterRenderer(Renderer): ...
+            answer: "Abstraction: Shape. Implementation: Renderer."
+            source: "finalexamsmerge.pdf Q9"
+            bloom: apply
+            explanation: "Shape is client-facing; Renderer is delegated-to. Abstraction controls Implementation."
+            example: "Circle is a refined Abstraction; RasterRenderer is a concrete Implementation."
+
+      - id: singleton
+        name: "Singleton pattern"
+        tags: [pattern, creational, singleton]
+        prose: |
+          Singleton guarantees one instance of a class with global access.
+          Python: override __new__, use a decorator, or rely on module-level.
+        source: "DesignPatternsTable p.7"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "Which pattern ensures one instance with global access?"
+            answer: "Singleton"
+            source: "DesignPatternsTable"
+            bloom: remember
+            explanation: "Both halves of the definition matter — 'one instance' alone isn't Singleton without global access."
+            example: "SaveSystem, Config, Logger — shared across the whole program."
+          - type: cloze
+            prompt: "In Python, the simplest Singleton is the {{module}} — imports are cached, so module-level variables are de facto single instances."
+            answer: "module"
+            source: "Week 9 Slides"
+            bloom: understand
+            explanation: "Python modules are loaded once and cached in sys.modules; subsequent imports return the same module object."
+            example: "Just `import my_singleton_module; my_singleton_module.state` — no class needed."
+          - type: name
+            prompt: "What's the downside of heavy Singleton use?"
+            answer: "Global mutable state — hidden coupling, test pollution"
+            source: "Week 9 Slides"
+            bloom: analyze
+            explanation: "Singletons couple unrelated code through shared state, break isolated testing, and obscure dependencies."
+            example: "Prefer dependency injection when practical."
+
+      - id: factory
+        name: "Factory pattern"
+        tags: [pattern, creational, factory]
+        prose: |
+          Factory encapsulates object creation in a method. Client depends on
+          the abstract product and the factory, never on concrete products.
+        source: "DesignPatternsTable p.8"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "Which pattern encapsulates object creation so the client depends only on a base class / interface?"
+            answer: "Factory"
+            source: "DesignPatternsTable p.8"
+            bloom: remember
+            explanation: "The factory handles the 'which concrete class?' decision, keeping client code decoupled from concrete products."
+            example: "UserFactory.create('guest') returns Guest, UserFactory.create('member') returns Member — client holds only User."
+          - type: name
+            prompt: "Canonical drawback of Factory in large systems?"
+            answer: "Class count grows — one factory per product"
+            source: "finalexamsmerge.pdf MCQ"
+            bloom: analyze
+            explanation: "If every product gets its own factory, you've multiplied classes without reducing coupling. Use Abstract Factory for related groups."
+            example: "UserFactory + PostFactory + CommentFactory + LikeFactory for a forum."
+
+      - id: abstract-factory
+        name: "Abstract Factory"
+        tags: [pattern, creational, abstract-factory]
+        prose: |
+          Abstract Factory produces families of related products. Client
+          receives a factory and asks for each product; products are
+          guaranteed to match the family.
+        source: "DesignPatternsTable p.8"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "Which pattern produces families of related products via one factory interface?"
+            answer: "Abstract Factory"
+            source: "DesignPatternsTable p.8"
+            bloom: remember
+            explanation: "Factory Method produces one product; Abstract Factory produces N matching products per concrete factory."
+            example: "VictorianFurniture.create_chair() + .create_sofa() — both Victorian, guaranteed."
+          - type: cloze
+            prompt: "Abstract Factory is Factory Method extended to produce {{families of related}} products in matching sets."
+            answer: "families of related"
+            source: "DesignPatternsTable"
+            bloom: understand
+            explanation: "Consistency across multiple product types is the win — clients can't accidentally mix families."
+            example: "ModernFactory returns ModernChair + ModernSofa; VictorianFactory returns VictorianChair + VictorianSofa."
+
+      - id: builder
+        name: "Builder pattern"
+        tags: [pattern, creational, builder]
+        prose: |
+          Builder constructs complex objects step by step. A Director may
+          encode canonical recipes; the Builder implements the steps.
+        source: "DesignPatternsTable p.9"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "Which pattern constructs complex objects step by step?"
+            answer: "Builder"
+            source: "finalexamsmerge.pdf MCQ Q1"
+            bloom: remember
+            explanation: "Moves multi-parameter construction into a separate builder class with named step methods."
+            example: "PizzaBuilder.set_size('L').add_topping('Mozzarella').get_result()"
+          - type: name
+            prompt: "What role does the Director play in Builder?"
+            answer: "Encodes canonical recipes — predefined step sequences"
+            source: "DesignPatternsTable p.9"
+            bloom: understand
+            explanation: "Director is optional; clients can use Builder directly. Director centralizes named recipes (margherita, hawaiian) so clients don't repeat step sequences."
+            example: "PizzaDirector.make_margherita() calls set_size + add_topping in a fixed order."
+
+      - id: facade
+        name: "Facade pattern"
+        tags: [pattern, structural, facade]
+        prose: |
+          Facade is a simplified interface hiding subsystem complexity.
+          Clients depend only on the facade, not the subsystem's internals.
+        source: "DesignPatternsTable p.6"
+        priority: low
+        cards:
+          - type: name
+            prompt: "Which pattern wraps a complex subsystem in a simpler unified interface?"
+            answer: "Facade"
+            source: "DesignPatternsTable p.6"
+            bloom: remember
+            explanation: "Hides subsystem complexity behind one class's API. Subsystem components don't know about the facade."
+            example: "VideoConverter.convert(file, format) orchestrates CodecFactory, BitrateReader, AudioMixer internally."
+          - type: name
+            prompt: "Facade vs Mediator — how do they differ?"
+            answer: "Facade = one-way client→subsystem; Mediator = two-way components↔mediator"
+            source: "Dec 2024 Final Q11"
+            bloom: analyze
+            explanation: "Facade doesn't introduce new subsystem behavior; subsystem components don't call it. Mediator coordinates peer components that actively call it."
+            example: "Facade is an adapter/entrance; Mediator is a traffic director."
+
+      - id: lazy-init
+        name: "Lazy Initialization"
+        tags: [pattern, creational, lazy-init]
+        prose: |
+          Lazy Initialization defers construction of an expensive object
+          until it is first needed, then caches for reuse.
+        source: "DesignPatternsTable p.9"
+        priority: low
+        cards:
+          - type: cloze
+            prompt: "Lazy Initialization checks if the field is {{None}} and constructs the object only on first access."
+            answer: "None"
+            source: "DesignPatternsTable p.9"
+            bloom: remember
+            explanation: "Avoids paying construction cost until confirmed necessary; subsequent accesses return the cached instance."
+            example: "def access_core(self): if self._core is None: self._core = Core(); return self._core"
+          - type: name
+            prompt: "Python's built-in for lazy-init via a property?"
+            answer: "functools.cached_property"
+            source: "Python docs"
+            bloom: understand
+            explanation: "Decorator that computes once on first access and caches the value on the instance."
+            example: "@cached_property\\n def core(self): return Core()"
+
+  - id: solid-coupling
+    name: "SOLID + Coupling + Design Principles"
+    topics:
+      - id: solid-srp
+        name: "SRP — Single Responsibility"
+        tags: [solid, srp]
+        prose: "A class should have one reason to change — one responsibility, one axis of change."
+        source: "Week 3 Slides"
+        priority: high
+        cards:
+          - type: name
+            prompt: "SOLID: which principle says 'a class should have one reason to change'?"
+            answer: "Single Responsibility Principle (SRP)"
+            source: "Week 3 Slides"
+            bloom: remember
+            explanation: "SRP is about axes of change — if shipping rates and email templates change for unrelated reasons, they belong in separate classes."
+            example: "ShoppingCart doing items + shipping + tax + email = 4 axes, refactor to delegate."
+          - type: name
+            prompt: "Which SOLID principle is violated when Character class handles all weapon attack logic directly?"
+            answer: "Single Responsibility Principle"
+            source: "finalexamsmerge.pdf"
+            bloom: analyze
+            explanation: "Character becomes responsible for every weapon's mechanics — multiple reasons to change, tangled code."
+            example: "Extract WeaponStrategy; Character delegates attack behavior."
+      - id: solid-ocp
+        name: "OCP — Open/Closed"
+        tags: [solid, ocp]
+        prose: "Software entities should be open for extension, closed for modification."
+        source: "Week 3 Slides"
+        priority: high
+        cards:
+          - type: cloze
+            prompt: "OCP: software entities should be {{open for extension}}, {{closed for modification}}."
+            answer: "open for extension, closed for modification"
+            source: "Week 3 Slides"
+            bloom: remember
+            explanation: "New requirements add new classes, not edits to existing ones."
+            example: "Add new Enemy subclass, not new elif branch in take_damage()."
+          - type: name
+            prompt: "Quiz: if-elif chain on self._type in take_damage(). Apply which SOLID principle?"
+            answer: "Open/Closed Principle"
+            source: "Week 14 review"
+            bloom: apply
+            explanation: "Extend by adding new subclasses overriding take_damage, rather than modifying the existing class."
+            example: "Replace if-chain with Enemy ABC + Troll / EvilTurtle / HumanUnderling concrete classes."
+      - id: solid-lsp
+        name: "LSP — Liskov Substitution"
+        tags: [solid, lsp]
+        prose: "Subclasses must be substitutable for their base class without breaking calling code."
+        source: "Week 3 Slides"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "SOLID: which principle requires subclasses to honor the base's contract?"
+            answer: "Liskov Substitution Principle"
+            source: "Week 3 Slides"
+            bloom: remember
+            explanation: "S can replace T wherever T is expected. Subclass cannot narrow inputs, widen outputs, or throw new exceptions."
+            example: "FreeShipping that raises on heavy packages breaks LSP — standard shipping never raised."
+      - id: solid-isp
+        name: "ISP — Interface Segregation"
+        tags: [solid, isp]
+        prose: "Clients shouldn't depend on interfaces they don't use."
+        source: "Week 3 Slides"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "SOLID: which principle says 'many small interfaces beat one fat interface'?"
+            answer: "Interface Segregation Principle"
+            source: "Week 3 Slides"
+            bloom: remember
+            explanation: "Fat interfaces force subclasses to implement methods they don't need — stub code is a smell."
+            example: "Split Worker (work/eat/sleep) into Workable + Feedable + Sleepable; Robot implements only Workable."
+      - id: solid-dip
+        name: "DIP — Dependency Inversion"
+        tags: [solid, dip, abstraction]
+        prose: "High-level + low-level modules should both depend on abstractions, not each other."
+        source: "Week 3 Slides, Week 14 review"
+        priority: high
+        cards:
+          - type: cloze
+            prompt: "DIP rule 1: High-level modules should NOT depend on {{low-level modules}} — both should depend on {{abstractions}}."
+            answer: "low-level modules; abstractions"
+            source: "Week 3 Slides"
+            bloom: remember
+            explanation: "The dependency arrow inverts: both sides point up at a shared abstraction."
+            example: "UI and TextFile both depend on DataSource; UI doesn't import TextFile."
+          - type: cloze
+            prompt: "DIP rule 2: {{Abstractions}} should not depend on {{details}}; details should depend on abstractions."
+            answer: "Abstractions; details"
+            source: "Week 3 Slides"
+            bloom: remember
+            explanation: "The abstraction stays stable; implementations extend it."
+            example: "DataSource interface doesn't know TextFile exists; TextFile inherits from DataSource."
+          - type: name
+            prompt: "Which of these is FALSE regarding DIP?"
+            answer: "Abstractions depend on details (FALSE — inverse of rule 2)"
+            source: "Week 14 review quiz"
+            bloom: analyze
+            explanation: "The three TRUE statements: low-level not depend on high-level, high-level not depend on low-level, both depend on abstractions."
+            example: "DIP inverts the natural arrow — details depend on abstractions, not the reverse."
+      - id: law-of-demeter
+        name: "Law of Demeter"
+        tags: [law-of-demeter, coupling]
+        prose: "Each unit should only talk to its direct friends — no train-wreck chains."
+        source: "Week 3 Slides, Week 14 review"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "Which design principle is violated by obj.getX().getY().getZ().doSomething()?"
+            answer: "Law of Demeter"
+            source: "Week 14 review"
+            bloom: apply
+            explanation: "Caller knows too much about obj's internal structure — obj should expose a direct method instead."
+            example: "customer.get_wallet().get_money(amt) → customer.get_money(amt)."
+          - type: cloze
+            prompt: "Law of Demeter allows a method to call on self, its parameters, {{objects it creates}}, and {{direct member attributes}}."
+            answer: "objects it creates; direct member attributes"
+            source: "Week 3 Slides"
+            bloom: understand
+            explanation: "Four categories of permitted callees. Anything reached via a method-call chain on a callee violates."
+            example: "self._customer.get_money() OK; self._customer.get_wallet().get_money() NOT OK."
+      - id: coupling-cohesion
+        name: "Coupling & cohesion"
+        tags: [coupling, cohesion]
+        prose: "Low coupling, high cohesion — loose externally, tight internally."
+        source: "Week 3 Slides, Quiz 3"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "What design quality goal pairs 'low X, high Y' where X = dependencies between classes and Y = internal class unity?"
+            answer: "Low coupling, high cohesion"
+            source: "Week 3 Slides"
+            bloom: remember
+            explanation: "Coupling = inter-class dependency; cohesion = intra-class unity. Good design minimizes the first, maximizes the second."
+            example: "A Cart with tightly-related methods (items, total, checkout) is cohesive; importing 10 concrete classes makes it highly coupled."
+          - type: name
+            prompt: "What pattern breaks two-way coupling between two classes?"
+            answer: "Introduce an interface or mediator"
+            source: "Week 3 Slides"
+            bloom: analyze
+            explanation: "Cyclic A→B and B→A dependencies mean changes to either break the other. An abstraction both depend on breaks the cycle."
+            example: "Or use Mediator pattern to centralize peer communication."
+      - id: uml-diagrams
+        name: "UML diagrams & notation"
+        tags: [uml, notation]
+        prose: "Know class-diagram shapes for the UML-draw exam question."
+        source: "Week 3 Slides, Quiz 3"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "UML: what symbol represents inheritance (is-a)?"
+            answer: "Solid arrow with hollow triangle pointing at base class"
+            source: "Week 3 Slides"
+            bloom: remember
+            explanation: "The open triangle head is the universal 'extends' / 'is-a' signifier in UML class diagrams."
+            example: "Circle —△→ Shape means Circle inherits from Shape."
+          - type: name
+            prompt: "UML: what symbol represents composition (strong has-a, shared lifetime)?"
+            answer: "Solid line with filled (black) diamond on the owner side"
+            source: "Week 3 Slides"
+            bloom: remember
+            explanation: "Filled diamond = composition (part dies with whole). Hollow diamond = aggregation (part survives whole)."
+            example: "Car ♦— Engine: engine belongs to car, dies with it."
+          - type: cloze
+            prompt: "UML: a {{dashed arrow with hollow triangle}} represents interface realization (a class implements an interface)."
+            answer: "dashed arrow with hollow triangle"
+            source: "Week 3 Slides"
+            bloom: remember
+            explanation: "Solid+triangle = inheritance from concrete class; dashed+triangle = realization of interface."
+            example: "Circle --△--> Drawable means Circle implements Drawable interface."
+
+  - id: oop-foundations
+    name: "OOP Foundations"
+    topics:
+      - id: abc-abstract
+        name: "Abstract base classes"
+        tags: [oop, abc, abstractmethod]
+        prose: "ABC + @abstractmethod is Python's way to enforce an interface contract."
+        source: "Week 2 Slides"
+        priority: high
+        cards:
+          - type: cloze
+            prompt: "Python's abstract base classes are imported via `from abc import {{ABC, abstractmethod}}`."
+            answer: "ABC, abstractmethod"
+            source: "Week 2 Slides"
+            bloom: remember
+            explanation: "Inherit from ABC and decorate methods with @abstractmethod; instantiation fails until all are overridden."
+            example: "class Shape(ABC):\\n    @abstractmethod\\n    def area(self): pass"
+          - type: name
+            prompt: "What happens if you instantiate an ABC subclass that hasn't overridden all @abstractmethod methods?"
+            answer: "TypeError at construction time"
+            source: "Week 2 Slides"
+            bloom: understand
+            explanation: "The enforcement is at __init__ time, not at the first missing method call — fails early, clearly."
+            example: "class Circle(Shape): pass; Circle()  # TypeError: Can't instantiate abstract class"
+      - id: iterators-proto
+        name: "Iterator protocol"
+        tags: [iterator, protocol]
+        prose: "Any object with __iter__ and __next__ is an iterator; __next__ raises StopIteration when done."
+        source: "Week 5 Slides"
+        priority: high
+        cards:
+          - type: cloze
+            prompt: "The two dunder methods of Python's iterator protocol are {{__iter__}} and {{__next__}}."
+            answer: "__iter__, __next__"
+            source: "Week 5 Slides"
+            bloom: remember
+            explanation: "__iter__ returns the iterator (usually self); __next__ returns the next value or raises StopIteration."
+            example: "for x in obj: calls iter(obj) once, then next(iterator) in a loop."
+          - type: name
+            prompt: "What exception signals the end of iteration in Python's iterator protocol?"
+            answer: "StopIteration"
+            source: "Week 5 Slides"
+            bloom: remember
+            explanation: "The for-loop catches StopIteration internally to terminate cleanly. Any other exception propagates."
+            example: "def __next__(self): if self.n >= self.limit: raise StopIteration"
+      - id: inheritance-super
+        name: "Inheritance and super()"
+        tags: [inheritance, super]
+        prose: "super() delegates to the parent class; critical for cooperative multiple inheritance."
+        source: "Week 2 Slides"
+        priority: mid
+        cards:
+          - type: predict
+            lang: python
+            prompt: "What does Child('Alice', 10).greet() print?"
+            code: |
+              class Parent:
+                  def __init__(self, name): self.name = name
+                  def greet(self): return f"Hello, I am {self.name}."
+              class Child(Parent):
+                  def __init__(self, name, age):
+                      super().__init__(name)
+                      self.age = age
+                  def greet(self):
+                      return f"{super().greet()} I am {self.age} years old."
+            answer: "Hello, I am Alice. I am 10 years old."
+            source: "Dec 2024 Final T/F Q5"
+            bloom: apply
+            explanation: "super().greet() calls Parent.greet() which returns 'Hello, I am Alice.'; Child appends ' I am 10 years old.'"
+            example: "Delegating to super keeps parent init logic centralized; Child.greet extends parent's output."
+      - id: multiple-inheritance
+        name: "Multiple inheritance + MRO"
+        tags: [multiple-inheritance, mro, diamond]
+        prose: "Python resolves diamond inheritance via C3 linearization — inspect via __mro__."
+        source: "Week 5 Slides"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "What algorithm does Python use to linearize multiple inheritance into a method resolution order?"
+            answer: "C3 linearization"
+            source: "Week 5 Slides"
+            bloom: remember
+            explanation: "Produces a consistent order that respects 'children before parents' and 'left-to-right in the class declaration'."
+            example: "class C(A, B): C.__mro__ = (C, A, B, object)"
+      - id: decorators-lang
+        name: "Language decorators"
+        tags: [decorators, staticmethod, classmethod, property]
+        prose: "@staticmethod / @classmethod / @property modify method signatures; distinct from the Decorator pattern."
+        source: "Week 2 Slides, Dec 2024 Final Q1"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "TRUE or FALSE: @staticmethod allows a method to access class-level variables."
+            answer: "FALSE — that's @classmethod (takes cls)"
+            source: "Dec 2024 Final Q1"
+            bloom: analyze
+            explanation: "@staticmethod takes neither self nor cls — no access to instance OR class attributes. Use @classmethod for class-level access via cls."
+            example: "class M:\\n    x = 10\\n    @classmethod\\n    def show(cls): return cls.x  # works\\n    @staticmethod\\n    def bad(): return M.x  # only by hard-coded name"
+          - type: cloze
+            prompt: "{{@classmethod}} receives `cls` as its first argument; {{@staticmethod}} receives neither self nor cls."
+            answer: "@classmethod; @staticmethod"
+            source: "Week 2 Slides"
+            bloom: remember
+            explanation: "The first argument convention is how Python distinguishes the three method types at bind time."
+            example: "@classmethod def from_json(cls, data): return cls(**data) — alternative constructor."
+      - id: polymorphism-duck
+        name: "Polymorphism + duck typing"
+        tags: [polymorphism, duck-typing]
+        prose: "Same method call, different behavior. Python uses duck typing — if it has the method, it counts."
+        source: "Week 2 Slides"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "What is the 'duck test' in Python duck typing?"
+            answer: "If it has the methods you need, it's compatible — no inheritance required"
+            source: "Week 2 Slides"
+            bloom: understand
+            explanation: "Python doesn't check is-a relationships at runtime; it calls the method and trusts it exists. AttributeError fires at call time if it doesn't."
+            example: "def make_it_quack(x): x.quack() works for any object with a quack() method, regardless of class."
+      - id: classes-objects
+        name: "Classes, objects, privacy"
+        tags: [oop, class, object, privacy]
+        prose: "Everything in Python is an object — classes, methods, modules. Privacy is convention (underscore prefixes)."
+        source: "Week 2 Slides, Dec 2024 Final T/F Q3"
+        priority: low
+        cards:
+          - type: name
+            prompt: "TRUE or FALSE: Everything in Python is an object."
+            answer: "TRUE"
+            source: "Dec 2024 Final T/F Q3"
+            bloom: remember
+            explanation: "Classes, functions, modules, integers, even True/False are objects with types and attributes."
+            example: "type(int) is type; (3).__add__(4) == 7; functions have __name__, __doc__."
+          - type: cloze
+            prompt: "Python's name-mangling rule: an attribute `__x` inside class `A` becomes {{_A__x}} externally."
+            answer: "_A__x"
+            source: "Week 2 Slides"
+            bloom: understand
+            explanation: "Prevents accidental override in subclasses but doesn't truly hide the attribute — it's still accessible via the mangled name."
+            example: "class A: def __init__(self): self.__secret = 1; a = A(); a._A__secret  # works"
+      - id: protocols
+        name: "Protocols (typing.Protocol)"
+        tags: [protocols, structural-typing]
+        prose: "typing.Protocol enables structural duck typing — compatibility by shape, not inheritance."
+        source: "Week 5 Slides"
+        priority: low
+        cards:
+          - type: name
+            prompt: "Which Python module provides structural typing via duck-type-compatible interfaces?"
+            answer: "typing (Protocol)"
+            source: "Week 5 Slides"
+            bloom: remember
+            explanation: "typing.Protocol (PEP 544) lets type checkers accept classes that have the right methods, even without inheriting from the Protocol."
+            example: "class Quackable(Protocol): def quack(self) -> None: ..."
+
+  - id: functional-python
+    name: "Functional Python + Profiling"
+    topics:
+      - id: generators-yield
+        name: "Generators + yield"
+        tags: [generators, yield, lazy]
+        prose: "yield makes a function a generator — lazy, one-shot iterator."
+        source: "Week 6 Slides"
+        priority: high
+        cards:
+          - type: cloze
+            prompt: "A function containing {{yield}} is a generator; calling it returns a generator object, not the function's result."
+            answer: "yield"
+            source: "Week 6 Slides"
+            bloom: remember
+            explanation: "The body doesn't execute until you iterate; each yield suspends execution and returns a value."
+            example: "def gen(): yield 1; yield 2 — next(gen()) returns 1, next again returns 2."
+          - type: predict
+            lang: python
+            prompt: "Output of this pipeline?"
+            code: |
+              def src():
+                  for i in range(10): yield i
+              def f1(nums):
+                  for n in nums: yield n * 2
+              def f2(nums):
+                  for n in nums:
+                      if n % 2 == 0: yield n
+              for r in f2(f1(src())): print(r)
+            answer: "0, 2, 4, 6, 8, 10, 12, 14, 16, 18"
+            source: "finalexamsmerge.pdf Q6"
+            bloom: apply
+            explanation: "src yields 0..9 → f1 doubles to 0,2,4,..,18 → f2 filters even — all are even, so all pass."
+            example: "Not 'doubled then filter odd' — filter is for even numbers, and doubling makes ALL numbers even."
+      - id: asyncio
+        name: "asyncio basics"
+        tags: [async, asyncio, gather]
+        prose: "Cooperative concurrency. await yields; gather runs coroutines concurrently."
+        source: "Week 12 Slides"
+        priority: mid
+        cards:
+          - type: cloze
+            prompt: "{{asyncio.gather}} runs multiple coroutines concurrently and awaits all of them."
+            answer: "asyncio.gather"
+            source: "Week 12 Slides"
+            bloom: remember
+            explanation: "Returns a list of results when all coroutines complete. Total wall time ≈ slowest coroutine, not sum."
+            example: "results = await asyncio.gather(fetch_a(), fetch_b()) — both run in parallel."
+          - type: name
+            prompt: "Each observer sleeps 0.5s. With asyncio.gather(notify1, notify2), roughly how long does it take (not 1s, not 2s)?"
+            answer: "≈ 0.6 seconds — runs concurrently"
+            source: "finalexamsmerge.pdf async Q"
+            bloom: apply
+            explanation: "gather schedules both notifies to run in the event loop simultaneously; sleeps overlap."
+            example: "Sequential awaits would take 1.0+ seconds; concurrent gather takes ~0.5-0.6."
+      - id: profiling
+        name: "Profiling (cProfile)"
+        tags: [profiling, cprofile, performance]
+        prose: "cProfile measures function calls and times; ncalls format 'N/M' means N total calls, M primitive."
+        source: "Week 6 Slides, Week 14 review"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "cProfile shows ncalls = 70/4 for a function. How many recursive calls were there?"
+            answer: "66 (70 total minus 4 primitive)"
+            source: "Week 14 review"
+            bloom: apply
+            explanation: "Primitive = non-recursive calls. Recursive calls = total − primitive."
+            example: "70 total invocations; only 4 were top-level calls, 66 were self-recursive."
+          - type: name
+            prompt: "TRUE or FALSE: Profiling is a static program analysis technique that works without running the program."
+            answer: "FALSE — profiling is dynamic (measures actual execution)"
+            source: "finalexamsmerge.pdf T/F"
+            bloom: analyze
+            explanation: "Static analysis (linting, type checking) inspects code without running it. Profiling REQUIRES execution to measure timings and call counts."
+            example: "cProfile.run('...') executes the code and collects runtime stats."
+      - id: lambda
+        name: "Lambda expressions"
+        tags: [lambda, functions]
+        prose: "Single-expression anonymous function: lambda args: expr."
+        source: "Week 6 Slides"
+        priority: low
+        cards:
+          - type: cloze
+            prompt: "A lambda can contain a single {{expression}}, not statements; no assignment, no return keyword."
+            answer: "expression"
+            source: "Week 6 Slides"
+            bloom: remember
+            explanation: "Use def for multi-line or statement-heavy logic; lambdas are for tiny throwaways."
+            example: "sorted(items, key=lambda p: p[1])"
+      - id: functions-first-class
+        name: "Functions as first-class objects"
+        tags: [functions, first-class, callable]
+        prose: "Functions can be stored, passed, returned. __call__ makes any object callable."
+        source: "Week 6 Slides"
+        priority: low
+        cards:
+          - type: cloze
+            prompt: "An object with a {{__call__}} method can be invoked like a function."
+            answer: "__call__"
+            source: "Week 6 Slides"
+            bloom: understand
+            explanation: "Enables stateful callables — classes that act as functions carrying state between invocations."
+            example: "class Counter: def __call__(self): self.n += 1; return self.n"
+      - id: threading-basic
+        name: "Threading basics"
+        tags: [threading, concurrency, race]
+        prose: "ThreadPoolExecutor runs callables in OS threads. Shared-state writes without locks produce races."
+        source: "Week 12 Slides"
+        priority: low
+        cards:
+          - type: predict
+            lang: python
+            prompt: "FakeDatabase.value starts at 0. Two threads each read it into local_copy, add 1, store back. Final value?"
+            code: |
+              def update(self, name):
+                  local_copy = self.value
+                  local_copy += 1
+                  time.sleep(0.1)
+                  self.value = local_copy
+              # 2 threads submitted
+            answer: "1, not 2 — classic race condition"
+            source: "finalexamsmerge.pdf FakeDatabase Q"
+            bloom: apply
+            explanation: "Both threads read 0, compute 1 locally, each write 1 back. The second write overwrites the first."
+            example: "Fix with threading.Lock() around the read-modify-write block."
+
+  - id: python-advanced
+    name: "Python Advanced Language Features"
+    topics:
+      - id: exceptions-with
+        name: "Exceptions and `with`"
+        tags: [exceptions, context-manager, try-except]
+        prose: "try/except/finally/else catches errors; with guarantees cleanup via __enter__/__exit__."
+        source: "Week 4 Slides, Dec 2024 Final Q4-5"
+        priority: mid
+        cards:
+          - type: name
+            prompt: "TRUE or FALSE: The args attribute of an exception contains a tuple of all arguments passed during initialization."
+            answer: "TRUE"
+            source: "finalexamsmerge.pdf T/F"
+            bloom: remember
+            explanation: "Exception.__init__ stores its positional args in self.args for inspection."
+            example: "try: raise ValueError('bad', 42)\\n except ValueError as e: e.args == ('bad', 42)"
+          - type: predict
+            lang: python
+            prompt: "Will these two unit tests pass or fail?"
+            code: |
+              def safe_divide(x, y):
+                  try: return x / y
+                  except ZeroDivisionError: return None
+              # test1: with self.assertRaises(ZeroDivisionError): safe_divide(5, 0)
+              # test2: self.assertIsNone(safe_divide(10, 2))
+            answer: "Both FAIL"
+            source: "Dec 2024 Final Q4-5"
+            bloom: analyze
+            explanation: "test1: safe_divide catches the exception internally, so assertRaises never sees it. test2: safe_divide(10, 2) returns 5.0, not None."
+            example: "assertIsNone(5.0) is False → test2 fails."
+      - id: comprehensions
+        name: "Comprehensions"
+        tags: [comprehensions, list, dict, set]
+        prose: "List/dict/set/gen comprehensions — concise collection construction from iterables."
+        source: "Week 5 Slides"
+        priority: mid
+        cards:
+          - type: predict
+            lang: python
+            prompt: "What is the output?"
+            code: |
+              x = [[i * j for j in range(1, 2)] for i in range(1, 3)]
+              print(x)
+            answer: "[[1], [2]]"
+            source: "Dec 2024 Final T/F Q4"
+            bloom: apply
+            explanation: "Outer i in (1, 2). Inner j in (1,). For each i, inner = [i*1] = [i]. So [[1], [2]] — NOT [[1, 2]]."
+            example: "Nested comprehensions evaluate outer-to-inner; the INNER builds a list, the OUTER wraps into another list."
+          - type: name
+            prompt: "Comprehension to produce [(len(w), w) for each word in words]?"
+            answer: "[(len(w), w) for w in words]"
+            source: "finalexamsmerge.pdf short Q"
+            bloom: apply
+            explanation: "Tuple comprehension: ensure parens around the tuple, brackets for the list."
+            example: "words=['apple','banana'] → [(5,'apple'),(6,'banana')]"
+      - id: slicing-ranges
+        name: "Slicing + ranges"
+        tags: [slicing, ranges]
+        prose: "seq[start:stop:step]; range() returns a range object (NOT a generator)."
+        source: "Week 4 Slides"
+        priority: low
+        cards:
+          - type: name
+            prompt: "TRUE or FALSE: range() returns a generator object that lazily evaluates values."
+            answer: "FALSE — returns a range object (lazy sequence, indexable, reusable)"
+            source: "finalexamsmerge.pdf T/F"
+            bloom: analyze
+            explanation: "range is a lazy SEQUENCE — has __len__, is indexable, can be iterated multiple times. Generators have none of these."
+            example: "r = range(5); r[3] == 3; len(r) == 5; iteration repeats fine."
+          - type: name
+            prompt: "TRUE or FALSE: range(0) and range(5, 0) both return empty sequences."
+            answer: "TRUE"
+            source: "finalexamsmerge.pdf T/F"
+            bloom: remember
+            explanation: "range(0) has no start, empty. range(5, 0) has start > stop with default step +1, also empty."
+            example: "For range(5, 0, -1), step is negative, so result is [5, 4, 3, 2, 1]."
+      - id: unit-testing
+        name: "Unit testing"
+        tags: [testing, unittest, assertions]
+        prose: "unittest.TestCase subclasses with test_ methods; assertRaises / assertEqual / assertIsNone."
+        source: "Week 4 Slides"
+        priority: mid
+        cards:
+          - type: cloze
+            prompt: "{{self.assertRaises(ExceptionType)}} as a context manager verifies the block raises the expected exception."
+            answer: "self.assertRaises(ExceptionType)"
+            source: "Week 4 Slides"
+            bloom: remember
+            explanation: "If the block raises the expected exception (or subclass), the test passes. If it raises a different exception or nothing, the test fails."
+            example: "with self.assertRaises(ValueError): int('not a number')"
+      - id: function-overloading-args
+        name: "Function overloading + *args/**kwargs"
+        tags: [functions, args, kwargs]
+        prose: "Python has no true overloading; simulate with defaults, *args, **kwargs, @singledispatch."
+        source: "Week 4 Slides"
+        priority: low
+        cards:
+          - type: cloze
+            prompt: "{{*args}} collects variadic positional arguments as a tuple; {{**kwargs}} collects keyword arguments as a dict."
+            answer: "*args; **kwargs"
+            source: "Week 4 Slides"
+            bloom: remember
+            explanation: "Asterisks in function definitions pack; asterisks at call sites unpack."
+            example: "def f(*args, **kwargs): print(args, kwargs); f(1, 2, x=3) → (1,2) {'x':3}"
+      - id: enums
+        name: "Enums"
+        tags: [enum, constants]
+        prose: "enum.Enum creates named constants bound to a class."
+        source: "Week 5 Slides"
+        priority: low
+        cards:
+          - type: cloze
+            prompt: "Auto-assigned enum values use `{{auto()}}` in place of explicit integer values."
+            answer: "auto()"
+            source: "Week 5 Slides"
+            bloom: remember
+            explanation: "Use auto() when values are internal and just need to be distinct; use explicit values (200, 404) when they map to external protocols."
+            example: "class Status(Enum): ACTIVE = auto(); INACTIVE = auto()"
+      - id: file-json
+        name: "File handling + JSON"
+        tags: [files, json]
+        prose: "json.dumps returns a string; json.dump writes to a file. Same for loads/load."
+        source: "Week 4 Slides"
+        priority: low
+        cards:
+          - type: name
+            prompt: "TRUE or FALSE: json.dumps() can be used to directly write a Python dictionary to a .json file."
+            answer: "FALSE — dumps returns a STRING; use json.dump() (no 's') to write to a file"
+            source: "finalexamsmerge.pdf T/F"
+            bloom: remember
+            explanation: "Mnemonic: no-s writes (to file), with-s string. Same pattern for pickle and similar modules."
+            example: "json.dumps({'a': 1}) returns '{\\\"a\\\": 1}'; json.dump({'a': 1}, f) writes to file f."

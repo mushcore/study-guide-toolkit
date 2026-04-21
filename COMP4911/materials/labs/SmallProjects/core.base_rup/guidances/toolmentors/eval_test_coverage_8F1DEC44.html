@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Evaluating Test Coverage Using Rational TestFactory</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="eval_test_coverage">
+<meta name="uma.presentationName" content="Evaluating Test Coverage Using Rational TestFactory">
+<meta name="uma.category" content="Tool:rup_test_factory:Rational TestFactory">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational TestFactory">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{D4C656B2-68B7-4C88-B999-FA80AA417C6C}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_9U7IkDIEEdqwaNnSEheSAg", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{D4C656B2-68B7-4C88-B999-FA80AA417C6C}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{D4C656B2-68B7-4C88-B999-FA80AA417C6C}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{D4C656B2-68B7-4C88-B999-FA80AA417C6C}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Evaluating Test Coverage Using Rational TestFactory</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to use Rational TestFactory to evaluate UI-based test coverage and code-based test coverage for a script that was automatically generated in TestFactory. </td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_test_factory_3EDA2115.html" guid="{FBA5098E-2CA8-483D-814D-DE3E876426B1}">Rational TestFactory</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/analyze_runtime_behavior_B2DD7652.html" guid="{5131A5BB-5B95-499E-A68B-788A2F0957C3}">Analyze Runtime Behavior</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/tasks/determine_test_results_630C9EC9.html" guid="{74E51E86-ECAB-4A61-9A88-FD358EE6F2B1}">Determine Test Results</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/tasks/execute_test_suite_492795DE.html" guid="{6B420194-5EB7-4A12-A061-09FAA5DC18DE}">Execute Test Suite</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    Overview
+</h3>
+<p>
+    After you have generated test scripts automatically in Rational TestFactory, you can review the test coverage
+    information for each test script. For information about using a Pilot to generate test scripts, see <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/toolmentors/generate_test_scripts_71EF254E.html" guid="{19F8AE86-E40A-42F5-8B81-673C306F5C35}">Tool Mentor: Generating Test Scripts Automatically</a>.
+</p>
+<p>
+    This tool mentor is applicable when running Windows 98/2000/NT 4.0.
+</p>
+<p>
+    To use Rational TestFactory to evaluate test coverage:
+</p>
+<ul>
+    <li>
+        <a href="#Review coverage">Review test coverage information</a>.
+    </li>
+</ul>
+<h3>
+    <a id="Review coverage" name="Review coverage">Review test coverage information</a>
+</h3>
+<p>
+    When a test script is the selected object in the left pane of the Rational TestFactory main window, the <b>Coverage</b>
+    tab in the right pane contains the test coverage information for the script.
+</p>
+<p>
+    Rational TestFactory calculates the UI-based test coverage value as the percent of unique controls in the application
+    (or applet) that the test script touches, relative to the number of controls to which the Pilot has access.
+</p>
+<p>
+    Rational TestFactory calculates the code-based test coverage value as the percent of the source code that a test script
+    touches, relative to <i>all</i> the source code in the application-under-test. If you have access to the source files
+    of the AUT, you can use the Coverage Browser in TestFactory to review the code in a source file and examine which lines
+    of code the test script touches.
+</p>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;&nbsp; Refer to the following
+    topics in Rational TestFactory online Help:
+</p>
+<ul>
+    <li>
+        <i>Scripts: What they are and how they work</i>
+    </li>
+    <li>
+        <i>Review coverage results for a script</i>
+    </li>
+    <li>
+        <i>Code coverage for scripts in a Java application or applet</i>
+    </li>
+</ul><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

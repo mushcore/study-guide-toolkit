@@ -1,0 +1,215 @@
+@page "/students"
+@rendermode InteractiveServer
+@inject StudentRemote.StudentRemoteClient _grpcClient
+
+<PageTitle>Students</PageTitle>
+
+<h1>Students</h1>
+
+@if (!string.IsNullOrEmpty(statusMessage))
+{
+    <div class="alert @(statusIsOk ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+        @statusMessage
+        <button type="button" class="btn-close" @onclick="() => statusMessage = string.Empty"></button>
+    </div>
+}
+
+<h3>Add New Student</h3>
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="row g-2">
+            <div class="col-md-3">
+                <input type="text" class="form-control" placeholder="First Name" @bind="newFirstName" />
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" placeholder="Last Name" @bind="newLastName" />
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" placeholder="School" @bind="newSchool" />
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary" @onclick="AddStudent">Add Student</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3>All Students</h3>
+<button class="btn btn-secondary mb-3" @onclick="LoadStudents">Refresh List</button>
+
+@if (students == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (students.Count == 0)
+{
+    <p>No students found.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>School</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in students)
+            {
+                <tr>
+                    @if (editingStudentId == student.StudentId)
+                    {
+                        <td>@student.StudentId</td>
+                        <td><input type="text" class="form-control" @bind="editFirstName" /></td>
+                        <td><input type="text" class="form-control" @bind="editLastName" /></td>
+                        <td><input type="text" class="form-control" @bind="editSchool" /></td>
+                        <td>
+                            <button class="btn btn-success btn-sm" @onclick="UpdateStudent">Save</button>
+                            <button class="btn btn-secondary btn-sm" @onclick="CancelEdit">Cancel</button>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@student.StudentId</td>
+                        <td>@student.FirstName</td>
+                        <td>@student.LastName</td>
+                        <td>@student.School</td>
+                        <td>
+                            <button class="btn btn-info btn-sm" @onclick="() => GetStudentDetails(student.StudentId)">Details</button>
+                            <button class="btn btn-warning btn-sm" @onclick="() => StartEdit(student)">Edit</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => DeleteStudent(student.StudentId)">Delete</button>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (selectedStudent != null)
+{
+    <div class="card mt-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Student Details (via GetStudentInfo RPC)</strong>
+            <button class="btn btn-sm btn-outline-secondary" @onclick="ClearDetails">Close</button>
+        </div>
+        <div class="card-body">
+            <p><strong>ID:</strong> @selectedStudent.StudentId</p>
+            <p><strong>First Name:</strong> @selectedStudent.FirstName</p>
+            <p><strong>Last Name:</strong> @selectedStudent.LastName</p>
+            <p><strong>School:</strong> @selectedStudent.School</p>
+        </div>
+    </div>
+}
+
+@code {
+    private List<StudentModel>? students;
+    private string newFirstName = string.Empty;
+    private string newLastName = string.Empty;
+    private string newSchool = string.Empty;
+
+    private int editingStudentId = -1;
+    private string editFirstName = string.Empty;
+    private string editLastName = string.Empty;
+    private string editSchool = string.Empty;
+
+    private StudentModel? selectedStudent;
+
+    private string statusMessage = string.Empty;
+    private bool statusIsOk = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStudents();
+    }
+
+    private async Task LoadStudents()
+    {
+        var reply = await _grpcClient.RetrieveAllStudentsAsync(new Empty());
+        students = reply.Items.ToList();
+    }
+
+    private async Task AddStudent()
+    {
+        if (string.IsNullOrWhiteSpace(newFirstName) || string.IsNullOrWhiteSpace(newLastName) || string.IsNullOrWhiteSpace(newSchool))
+        {
+            statusMessage = "Please fill in all fields.";
+            statusIsOk = false;
+            return;
+        }
+
+        var newStudent = new StudentModel
+        {
+            FirstName = newFirstName,
+            LastName = newLastName,
+            School = newSchool
+        };
+
+        var reply = await _grpcClient.InsertStudentAsync(newStudent);
+        statusMessage = reply.Result;
+        statusIsOk = reply.IsOk;
+
+        if (reply.IsOk)
+        {
+            newFirstName = string.Empty;
+            newLastName = string.Empty;
+            newSchool = string.Empty;
+            await LoadStudents();
+        }
+    }
+
+    private void StartEdit(StudentModel student)
+    {
+        editingStudentId = student.StudentId;
+        editFirstName = student.FirstName;
+        editLastName = student.LastName;
+        editSchool = student.School;
+    }
+
+    private void CancelEdit()
+    {
+        editingStudentId = -1;
+    }
+
+    private async Task UpdateStudent()
+    {
+        var updateModel = new StudentModel
+        {
+            StudentId = editingStudentId,
+            FirstName = editFirstName,
+            LastName = editLastName,
+            School = editSchool
+        };
+
+        var reply = await _grpcClient.UpdateStudentAsync(updateModel);
+        statusMessage = reply.Result;
+        statusIsOk = reply.IsOk;
+
+        editingStudentId = -1;
+        await LoadStudents();
+    }
+
+    private async Task DeleteStudent(int studentId)
+    {
+        var lookupModel = new StudentLookupModel { StudentId = studentId };
+        var reply = await _grpcClient.DeleteStudentAsync(lookupModel);
+        statusMessage = reply.Result;
+        statusIsOk = reply.IsOk;
+        await LoadStudents();
+    }
+
+    private async Task GetStudentDetails(int studentId)
+    {
+        var lookupModel = new StudentLookupModel { StudentId = studentId };
+        selectedStudent = await _grpcClient.GetStudentInfoAsync(lookupModel);
+    }
+
+    private void ClearDetails()
+    {
+        selectedStudent = null;
+    }
+}

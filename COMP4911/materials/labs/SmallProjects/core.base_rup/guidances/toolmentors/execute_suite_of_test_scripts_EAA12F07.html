@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Executing a Test Suite Using Rational TestFactory</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="execute_suite_of_test_scripts">
+<meta name="uma.presentationName" content="Executing a Test Suite Using Rational TestFactory">
+<meta name="uma.category" content="Tool:rup_test_factory:Rational TestFactory">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational TestFactory">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{ED7B74BA-112A-4A6A-9E2A-9B8958AF7293}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_9U7IkDIEEdqwaNnSEheSAg", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{ED7B74BA-112A-4A6A-9E2A-9B8958AF7293}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{FBA5098E-2CA8-483D-814D-DE3E876426B1}", "{ED7B74BA-112A-4A6A-9E2A-9B8958AF7293}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{ED7B74BA-112A-4A6A-9E2A-9B8958AF7293}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Executing a Test Suite Using Rational TestFactory</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to use Rational TestFactory to create and run a Test Suite. </td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_test_factory_3EDA2115.html" guid="{FBA5098E-2CA8-483D-814D-DE3E876426B1}">Rational TestFactory</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/execute_test_suite_492795DE.html" guid="{6B420194-5EB7-4A12-A061-09FAA5DC18DE}">Execute Test Suite</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/tasks/implement_test_suite_94F58DEC.html" guid="{1C759E0D-B364-4095-A7CF-CD9E39301689}">Implement Test Suite</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    Overview
+</h3>
+<p>
+    A "Test Suite" is the Rational TestFactory element that lets you arrange and execute a suite of Test Scripts. This
+    TestFactory element lets you organize Test Scripts, execute them in a batch as a Suite, and then analyze their
+    code-based test coverage.
+</p>
+<p>
+    This tool mentor is applicable when running Windows 98/2000/NT 4.0.
+</p>
+<p>
+    To use Rational TestFactory to execute a suite of Test Scripts:
+</p>
+<ol>
+    <li>
+        <a href="#Create Test Suite">Create a Test Suite of Test Scripts</a>
+    </li>
+    <li>
+        <a href="#Execute Test Suite">Execute the Test Suite</a>
+    </li>
+</ol>
+<h3>
+    1.&nbsp;&nbsp; <a id="Create Test Suite" name="Create Test Suite">Create a Test Suite of test scripts</a>
+</h3>
+<p>
+    A Test Suite object is a container to which you add the Test Scripts that you want to run as a batch. The Test Suite
+    can include Test Scripts recorded in Rational Robot as well as Test Scripts generated in Rational TestFactory.
+</p>
+<ul>
+    <li>
+        To create Test Scripts in Robot, see Tool Mentor: Implementing Test Scripts Using Rational Robot.
+    </li>
+    <li>
+        To generate Test Scripts in TestFactory, see <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/toolmentors/generate_test_scripts_71EF254E.html" guid="{19F8AE86-E40A-42F5-8B81-673C306F5C35}">Tool Mentor: Implementing Generated Test Scripts Using Rational TestFactory</a>.
+    </li>
+</ul>
+<p>
+    Test Suites are used to organize and execute groups of best scripts, defect scripts, and scripts created against a
+    specific Build of the application-under-test (AUT). The Test Scripts that you include in the Test Suite remain linked
+    to the Test Suite object. You can execute the Test Suite as a regression Test Suite on future builds of the AUT.
+</p>
+<p>
+    Rational TestFactory provides two methods for creating a Test Suite:
+</p>
+<ul>
+    <li>
+        You can let TestFactory create the Test Suite automatically with selected Test Scripts.
+    </li>
+    <li>
+        You can manually add a Test Suite object to the application map and then populate the Test Suite with Test Scripts.
+    </li>
+</ul>
+<p>
+    If you want to analyze the code-based test coverage for the Test Scripts in the suite, you must instrument the AUT
+    before you run the Test Suite. Rational TestFactory calculates code-based test coverage for Test Scripts only if the
+    application is instrumented.
+</p>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;Refer to the following topics in
+    Rational TestFactory online Help:
+</p>
+<ul>
+    <li>
+        T<i>est Suites: What they are and how they work</i>
+    </li>
+    <li>
+        <i>Working with Test Suites</i>
+    </li>
+    <li>
+        <i>Viewing code coverage for a Robot script</i>
+    </li>
+    <li>
+        <i>Instrumenting the application-under-test</i>
+    </li>
+</ul>
+<h3>
+    2.&nbsp;&nbsp; <a id="Execute Test Suite" name="Execute Test Suite">Execute the Test Suite</a>
+</h3>
+<p>
+    When you execute a Test Suite, Rational TestFactory executes each Test Script in the Test Suite in the order in which
+    it appears in the Test Suite list. If the order of the Test Scripts is important, you can reorder them before running
+    the Test Suite.
+</p>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />&nbsp;Refer to the <i>Run a Test Suite
+    manually</i> topic in Rational TestFactory online Help.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

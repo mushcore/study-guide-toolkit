@@ -1,0 +1,1239 @@
+duration_seconds: 7200
+questions:
+  - id: q1
+    type: MCQ
+    topic: Session Beans
+    marks: 2
+    question: Which annotation indicates that a Singleton session bean should be instantiated when the application is deployed?
+    correct: 1
+    rationale: >-
+      @Startup forces container to instantiate at deploy time rather than first-call. @DependsOn controls init ORDER
+      between singletons.
+    choices:
+      - "@PostConstruct"
+      - "@Startup"
+      - "@DependsOn"
+      - "@Eager"
+      - "@EarlyInit"
+  - id: q2
+    type: MCQ
+    topic: Session Beans
+    marks: 2
+    question: Which of the following describes the concurrency behaviour of a Singleton session bean method annotated with @Lock(READ)?
+    correct: 1
+    rationale: READ lock = many readers concurrently, WRITE = exclusive. READ blocks ONLY while a WRITE is active.
+    choices:
+      - Only one thread at a time
+      - Multiple concurrent readers; exclusive writer
+      - No concurrency control
+      - No access during WRITE lock only
+      - Strict serialized access
+  - id: q3
+    type: MCQ
+    topic: EntityManager
+    marks: 2
+    question: Which of the following will re-attach a detached entity to the persistence context?
+    correct: 3
+    rationale: merge() returns a managed COPY. persist() throws on detached. attach()/reattach() don't exist.
+    choices:
+      - persist()
+      - attach()
+      - reattach()
+      - merge()
+      - refresh()
+  - id: q4
+    type: MCQ
+    topic: Mapping
+    marks: 2
+    question: What attribute indicates that a field of an entity bean should not be persisted to the database?
+    correct: 1
+    rationale: "@Transient. Others are fake distractors (classic trap)."
+    choices:
+      - "@Virtual"
+      - "@Transient"
+      - "@NoPersist"
+      - "@Skip"
+      - "@Exclude"
+  - id: q5
+    type: MCQ
+    topic: Mapping
+    marks: 2
+    question: According to the text, which of the following is true of the @Table annotation?
+    correct: 2
+    rationale: Optional. Default table name = class name. Use @Table(name="...") to override.
+    choices:
+      - Required for every entity
+      - Default table name = property name
+      - Optional; defaults to class name
+      - Cannot be overridden
+      - Only usable with @IdClass
+  - id: q6
+    type: MCQ
+    topic: Relationships
+    marks: 2
+    question: In a one-to-many bidirectional relationship between entity beans, the owning side is
+    correct: 1
+    rationale: MANY side holds the FK → is the owning side. ONE side uses @OneToMany(mappedBy="...").
+    choices:
+      - The ONE side (uses @OneToMany)
+      - The MANY side (uses @ManyToOne + @JoinColumn)
+      - Whichever side is declared first
+      - Always @OneToMany with @JoinTable
+      - Neither side
+  - id: q7
+    type: MCQ
+    topic: Relationships
+    marks: 2
+    question: Which CascadeType causes a DELETE operation on a parent entity to propagate to its child entities?
+    correct: 2
+    rationale: >-
+      CascadeType.REMOVE (or ALL). orphanRemoval deletes orphans on removal from collection — a related but different
+      mechanism.
+    choices:
+      - CascadeType.PERSIST
+      - CascadeType.MERGE
+      - CascadeType.REMOVE
+      - CascadeType.REFRESH
+      - orphanRemoval only
+  - id: q8
+    type: MCQ
+    topic: Inheritance
+    marks: 2
+    question: What is the default entity inheritance strategy in Jakarta Persistence?
+    correct: 2
+    rationale: SINGLE\_TABLE — all subclasses in one table with a discriminator column. Fast queries, simple schema.
+    choices:
+      - JOINED
+      - TABLE\_PER\_CLASS
+      - SINGLE\_TABLE
+      - MAPPED\_SUPERCLASS
+      - NONE
+  - id: q9
+    type: MCQ
+    topic: JPQL
+    marks: 2
+    question: Which JPQL clause is used to eagerly fetch a related entity in the same query, avoiding the N+1 select problem?
+    correct: 2
+    rationale: JOIN FETCH eagerly loads a related entity in the same SQL query.
+    choices:
+      - SELECT DISTINCT
+      - LEFT JOIN
+      - JOIN FETCH
+      - WHERE EXISTS
+      - ORDER BY
+  - id: q10
+    type: MCQ
+    topic: JPQL
+    marks: 2
+    question: Which method on the Query interface is used to execute an UPDATE or DELETE JPQL statement?
+    correct: 2
+    rationale: executeUpdate() returns affected row count. Only for INSERT/UPDATE/DELETE.
+    choices:
+      - getResultList()
+      - getSingleResult()
+      - executeUpdate()
+      - commit()
+      - run()
+  - id: q11
+    type: MCQ
+    topic: Transactions
+    marks: 2
+    question: Which transaction attribute does not propagate the transaction scope from the caller, and runs the annotated method with a new transaction?
+    correct: 1
+    rationale: "REQUIRES\\_NEW: ALWAYS runs in a new TX, suspending any caller TX. Quiz 4 Q13."
+    choices:
+      - REQUIRED
+      - REQUIRES\_NEW
+      - SUPPORTS
+      - NOT\_SUPPORTED
+      - MANDATORY
+  - id: q12
+    type: MCQ
+    topic: Transactions
+    marks: 2
+    question: Which ACID property requires a transaction to execute completely or not at all?
+    correct: 0
+    rationale: Atomicity. Quiz 4 Q8.
+    choices:
+      - Atomicity
+      - Consistency
+      - Isolation
+      - Durability
+  - id: q13
+    type: MCQ
+    topic: Transactions
+    marks: 2
+    question: Which transaction attribute requires that the caller have an existing transaction (throwing an exception if not), and runs the annotated method in the caller's transaction?
+    correct: 3
+    rationale: MANDATORY = caller must already be in TX. If not, EJBTransactionRequiredException.
+    choices:
+      - REQUIRED
+      - REQUIRES\_NEW
+      - SUPPORTS
+      - MANDATORY
+      - NEVER
+  - id: q14
+    type: MCQ
+    topic: Security
+    marks: 2
+    question: Which annotation is used to declare the role names that a bean will reference?
+    correct: 1
+    rationale: "@DeclareRoles lists every role name the bean will reference. @RolesAllowed grants access to a specific method."
+    choices:
+      - "@RolesAllowed"
+      - "@DeclareRoles"
+      - "@Security"
+      - "@PermitAll"
+      - "@RunAs"
+  - id: q15
+    type: MCQ
+    topic: Callbacks
+    marks: 2
+    question: Which entity lifecycle callback is invoked after an entity has been loaded from the database?
+    correct: 1
+    rationale: "@PostLoad. There is no @PreLoad in JPA."
+    choices:
+      - "@PreLoad"
+      - "@PostLoad"
+      - "@AfterFetch"
+      - "@PostPersist"
+      - "@PostUpdate"
+  - id: q16
+    type: MCQ
+    topic: RUP Phases
+    marks: 2
+    question: During what Unified Process phase is the architecture baseline established?
+    correct: 1
+    rationale: Elaboration — milestone = LCA (Life-Cycle Architecture).
+    choices:
+      - Inception
+      - Elaboration
+      - Construction
+      - Transition
+      - All of them
+  - id: q17
+    type: MCQ
+    topic: EVMS
+    marks: 2
+    question: In EVMS, cost variance is defined to be
+    correct: 1
+    rationale: CV = BCWP − ACWP. Positive = under budget.
+    choices:
+      - BCWP − BCWS
+      - BCWP − ACWP
+      - BAC − ACWP
+      - ACWP − BCWS
+      - BAC / CPI
+  - id: q18
+    type: MCQ
+    topic: Use Cases
+    marks: 2
+    question: According to the text, the three class stereotypes used in analysis modelling are
+    correct: 2
+    rationale: Boundary (UI), Control (workflow), Entity (domain data). "BCE".
+    choices:
+      - Data / Logic / View
+      - Model / View / Controller
+      - Boundary / Control / Entity
+      - Actor / Use Case / System
+      - Presenter / Service / Repository
+  - id: q19
+    type: MCQ
+    topic: MBTI
+    marks: 2
+    question: Which of the following is a judging function?
+    correct: 3
+    rationale: Judging functions = Thinking + Feeling (they decide). Perceiving functions = Sensing + Intuition (they gather).
+    choices:
+      - Sensing
+      - Intuition
+      - Perceiving
+      - Thinking
+      - Extraversion
+  - id: q20
+    type: MCQ
+    topic: Testing
+    marks: 2
+    question: What type of test verifies the response time and processing time?
+    correct: 2
+    rationale: Performance tests. Quiz 4 Q6.
+    choices:
+      - Volume
+      - Configuration
+      - Performance
+      - Load
+      - Acceptance
+  - id: q21
+    type: MCQ
+    topic: Mapping
+    marks: 1
+    question: For an entity defined using annotations, @Table is required.
+    correct: 1
+    rationale: FALSE. @Table is OPTIONAL. Default table name = class name. Quiz 4 Q19.
+    choices:
+      - "True"
+      - "False"
+  - id: q22
+    type: MCQ
+    topic: Relationships
+    marks: 1
+    question: "@JoinTable can be used to map a one-to-one relationship."
+    correct: 0
+    rationale: TRUE. @JoinTable works for any relationship type. Unusual for 1:1 but legal. Quiz 4 Q20.
+    choices:
+      - "True"
+      - "False"
+  - id: q23
+    type: MCQ
+    topic: EntityManager
+    marks: 1
+    question: Two calls to EntityManager.find() with the same primary key in the same persistence context will return two different Java object references.
+    correct: 1
+    rationale: FALSE. Same Java reference (PC has identity-cached).
+    choices:
+      - "True"
+      - "False"
+  - id: q24
+    type: MCQ
+    topic: Session Beans
+    marks: 1
+    question: A stateless session bean defines @PrePassivate and @PostActivate callback methods.
+    correct: 1
+    rationale: FALSE. Only SFSBs passivate (they hold conversational state). SLSBs have no state to serialize.
+    choices:
+      - "True"
+      - "False"
+  - id: q25
+    type: MCQ
+    topic: Transactions
+    marks: 1
+    question: The default transaction attribute for a container-managed EJB business method is Required.
+    correct: 0
+    rationale: TRUE. REQUIRED = use caller's TX or create new one.
+    choices:
+      - "True"
+      - "False"
+  - id: q26
+    type: MCQ
+    topic: JPQL
+    marks: 1
+    question: The getSingleResult() method on the Query interface returns null when no matching entity is found.
+    correct: 1
+    rationale: FALSE. Throws NoResultException. Use getResultList() + check isEmpty() for nullable expectations.
+    choices:
+      - "True"
+      - "False"
+  - id: q27
+    type: MCQ
+    topic: RUP
+    marks: 1
+    question: A benefit of the traditional waterfall software development lifecycle is that risks are generally eliminated in the early stages of development.
+    correct: 1
+    rationale: FALSE. Waterfall delays risk discovery until integration → problems surface late. Iterative reduces risk early.
+    choices:
+      - "True"
+      - "False"
+  - id: q28
+    type: MCQ
+    topic: Callbacks
+    marks: 1
+    question: Entity callback methods are permitted to invoke EntityManager operations on other entities.
+    correct: 1
+    rationale: FALSE. Entity callbacks must NOT call EM or access other entities — undefined behavior.
+    choices:
+      - "True"
+      - "False"
+  - id: q29
+    type: SHORT
+    topic: Relationships
+    marks: 3
+    question: Describe how to determine the owning side in a one-to-many bidirectional relationship.
+    correct: >-
+      The owning side is the MANY side — it uses @ManyToOne + @JoinColumn (holds the foreign key). The ONE side uses
+      @OneToMany(mappedBy="ownerField") and is the inverse side. The JPA provider only consults the owning side for
+      persistence; the inverse is for Java object graph navigation.
+    rationale: >-
+      Key terms: MANY side owns, @ManyToOne, @JoinColumn, FK, inverse side uses mappedBy. Common mistake:
+      putting @JoinColumn on the ONE side. mappedBy value = FIELD name on owning side, not class name.
+  - id: q30
+    type: SHORT
+    topic: Inheritance
+    marks: 3
+    question: What are the three ways to map an inheritance hierarchy in JPA?
+    correct: >-
+      (1) SINGLE_TABLE (default) — one table for entire hierarchy with a discriminator column. (2) JOINED — one table
+      per class with foreign-key join from subclass to superclass. (3) TABLE_PER_CLASS — separate complete table per
+      concrete subclass; parent columns duplicated.
+    rationale: >-
+      Must name all three strategies. Note SINGLE_TABLE is the DEFAULT and requires a discriminator column
+      (@DiscriminatorColumn). Strategy declared via @Inheritance(strategy=InheritanceType.X) on the root entity.
+  - id: q31
+    type: SHORT
+    topic: Use Cases
+    marks: 3
+    question: What are the three class stereotypes used in analysis modeling?
+    correct: >-
+      Boundary (UI / external interface), Control (workflow orchestration for a use case), Entity (persistent domain
+      objects / important state).
+    rationale: >-
+      Mnemonic: BCE. Boundary = edge/UI, Control = coordinator per UC, Entity = long-lived domain data.
+      Watch for confusion with MVC — stereotypes are an analysis abstraction, not an implementation pattern.
+  - id: q32
+    type: SHORT
+    topic: RUP
+    marks: 3
+    question: Name the four phases of the Unified Process and their milestones.
+    correct: >-
+      Inception → LCO (Life-Cycle Objectives); Elaboration → LCA (Life-Cycle Architecture); Construction → IOC (Initial
+      Operating Capability); Transition → PR (Product Release).
+    rationale: >-
+      Must pair each phase with its correct milestone. Order matters. Inception = vision/business case;
+      Elaboration = architecture baseline; Construction = build remaining features; Transition = beta → GA.
+  - id: q33
+    type: SHORT
+    topic: JPQL
+    marks: 3
+    question: >-
+      Given Customer—(n:n)—Reservation—(n:1)—Cruise, write a JPQL query that returns all Cruises for which a given :cust
+      Customer has a Reservation.
+    correct: >-
+      SELECT DISTINCT c FROM Cruise c, Reservation r WHERE r.cruise = c AND :cust MEMBER OF r.customers &nbsp;—&nbsp; OR
+      equivalently: SELECT DISTINCT c FROM Cruise c JOIN c.reservations r JOIN r.customers cu WHERE cu = :cust. DISTINCT
+      avoids duplicates.
+    rationale: >-
+      DISTINCT is critical — without it, a cruise appears once per reservation. MEMBER OF works against
+      a collection-valued association. Use named parameters (:cust), not positional. Either cartesian-WHERE
+      or explicit JOIN form accepted.
+  - id: q34
+    type: SHORT
+    topic: EVMS
+    marks: 3
+    question: Given BCWS=$10,000, BCWP=$8,000, ACWP=$12,000, compute CV and SV. Interpret each.
+    correct: >-
+      CV = BCWP − ACWP = 8,000 − 12,000 = −$4,000 (over budget). SV = BCWP − BCWS = 8,000 − 10,000 = −$2,000 (behind
+      schedule). Negative values indicate problems in both cost and schedule.
+    rationale: >-
+      Formulas: CV = BCWP − ACWP, SV = BCWP − BCWS. Sign convention: negative = bad (over budget / behind).
+      Remember BCWP (earned value) is always the first term. Interpret both numbers, not just compute.
+  - id: q35
+    type: SHORT
+    topic: Use Cases
+    marks: 10
+    question: >-
+      Discuss how use cases drive the development process in the Unified Process. Explain how use cases drive analysis
+      and design, test, and iteration planning.
+    correct: >-
+      <strong>Model Answer Outline (connect everything — Bruce: students fail big-picture):</strong>
+
+      <ul>
+
+      <li><strong>Use cases are the central artifact</strong> of RUP — they link requirements all the way to test.</li>
+
+      <li><strong>Requirements</strong>: UCs capture actor-system interactions; they ARE the functional
+      requirements.</li>
+
+      <li><strong>Analysis</strong>: each UC decomposed into analysis classes (Boundary/Control/Entity); each UC has a
+      realization in the analysis model (class + collaboration diagrams).</li>
+
+      <li><strong>Design</strong>: analysis model refined into design classes; each UC has a design-level realization
+      using sequence diagrams to show object interactions over time.</li>
+
+      <li><strong>Implementation</strong>: design classes → code components. UCs guide integration (build in UC-sized
+      increments).</li>
+
+      <li><strong>Test</strong>: every UC → test cases. Main flow + alternate flows → positive + negative tests.
+      Acceptance tests map directly to UCs.</li>
+
+      <li><strong>Iteration planning</strong>: UCs prioritized (risk + value + dependency). Each iteration delivers a
+      set of UCs end-to-end (mini-waterfall). UC selection drives WHAT architecture work happens WHEN.</li>
+
+      <li><strong>Traceability</strong>: single thread runs from requirements → design → code → test — all anchored to a
+      UC.</li>
+
+      </ul>
+    rationale: >-
+      10-mark essay: hit all four drivers (analysis/design, test, iteration planning) with a sentence of
+      explanation each, then add traceability as the unifying idea. Weak answers only describe WHAT a UC is;
+      strong answers show HOW it flows through every workflow. Name the artifacts (analysis classes, sequence
+      diagrams, test cases).
+  - id: q36
+    type: SHORT
+    topic: Transactions
+    marks: 10
+    question: >-
+      Compare and contrast the six EJB transaction attributes. For each, describe what happens when the caller has an
+      active transaction vs no transaction.
+    correct: >-
+      <strong>Model answer outline:</strong>
+
+      <table><thead><tr><th>Attribute</th><th>Caller HAS TX</th><th>Caller NO TX</th><th>Typical
+      use</th></tr></thead><tbody>
+
+      <tr><td>REQUIRED (default)</td><td>Join caller's TX</td><td>Container creates new TX</td><td>Default — business
+      method</td></tr>
+
+      <tr><td>REQUIRES_NEW</td><td>Suspend caller; create new independent TX</td><td>Create new TX</td><td>Audit log
+      that must commit separately</td></tr>
+
+      <tr><td>SUPPORTS</td><td>Join caller's TX</td><td>Run without TX</td><td>Read-only method</td></tr>
+
+      <tr><td>NOT_SUPPORTED</td><td>Suspend caller; run without TX</td><td>Run without TX</td><td>Legacy non-TX
+      code</td></tr>
+
+      <tr><td>MANDATORY</td><td>Join caller's TX</td><td>Throws EJBTransactionRequiredException</td><td>Private helper
+      expecting a TX</td></tr>
+
+      <tr><td>NEVER</td><td>Throws EJBException</td><td>Run without TX</td><td>Methods that must not be
+      TX-bound</td></tr>
+
+      </tbody></table>
+
+      <p>Also mention: declared via <code class="inline">@TransactionAttribute</code> under CMT. System exceptions
+      (RuntimeException) auto-rollback; application exceptions do NOT unless declared <code
+      class="inline">@ApplicationException(rollback=true)</code>. Can call <code
+      class="inline">ctx.setRollbackOnly()</code> to force rollback programmatically.</p>
+    rationale: >-
+      10-mark essay: table each of six attributes × two caller states (has TX / no TX). Don't forget NEVER
+      and MANDATORY throw exceptions in the "wrong" state. Bonus points: mention CMT vs BMT, rollback
+      semantics (system vs app exception), setRollbackOnly(). Partial credit if student misses one attribute
+      but gets TX-propagation logic right.
+  - id: q37
+    type: SHORT
+    topic: Relationships
+    marks: 10
+    question: >-
+      Annotate the two classes below so they form a 1:N BIDIRECTIONAL relationship where each Department has many
+      Employees, using FK column DEPT\_ID in the Employee table. Department.id should be auto-generated. public class
+      Department {     private Long id;     private String name;     private List<Employee> employees;     //
+      getters/setters... } public class Employee {     private Long id;     private String name;     private Department
+      department;     // getters/setters... }
+    correct: |-
+      <pre class="language-java">@Entity
+      @Table(name = "DEPARTMENT")
+      public class Department {
+          @Id
+          @GeneratedValue(strategy = GenerationType.AUTO)
+          private Long id;
+
+          @Column(name = "NAME")
+          private String name;
+
+          @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+          private List&lt;Employee&gt; employees = new ArrayList&lt;&gt;();
+          // getters/setters...
+      }
+
+      @Entity
+      @Table(name = "EMPLOYEE")
+      public class Employee {
+          @Id
+          @GeneratedValue(strategy = GenerationType.AUTO)
+          private Long id;
+
+          @Column(name = "NAME")
+          private String name;
+
+          @ManyToOne
+          @JoinColumn(name = "DEPT_ID")
+          private Department department;
+          // getters/setters...
+      }</pre>
+    rationale: >-
+      **Bruce's grading checklist:** -   @Entity on BOTH classes (students forget the Entity itself) -   @Id on PK field
+      -   @GeneratedValue on auto-gen id -   MANY side owns → Employee has @ManyToOne + @JoinColumn(name="DEPT\_ID") -
+      ONE side is inverse → Department has @OneToMany(mappedBy="department") -   mappedBy value is FIELD name on owning
+      side ("department"), NOT class name -   Common mistake: putting @JoinColumn on the ONE side — it belongs on the
+      owning MANY side
+  - id: q38
+    type: MCQ
+    topic: EntityManager
+    marks: 2
+    question: Which EntityManager method writes changes from a detached/unmanaged entity back to the database?
+    correct: 2
+    rationale: >-
+      merge() copies the state of a detached entity into a managed copy and schedules UPDATE. update()/delete()
+      don't exist on EntityManager. refresh() goes the OTHER direction (DB → entity).
+    choices:
+      - EntityManager.update()
+      - EntityManager.refresh()
+      - EntityManager.merge()
+      - Cabin.update()
+      - PersistenceContext.update()
+  - id: q39
+    type: MCQ
+    topic: EntityManager
+    marks: 2
+    question: Which EntityManager method removes an entity from the database?
+    correct: 0
+    rationale: >-
+      remove() schedules DELETE at flush. executeUpdate() is a Query method, not EntityManager. clear() detaches
+      everything in the PC without touching the DB. delete() doesn't exist.
+    choices:
+      - EntityManager.remove()
+      - EntityManager.executeUpdate()
+      - EntityManager.clear()
+      - PersistenceContext.delete()
+      - EntityManager.delete()
+  - id: q40
+    type: MCQ
+    topic: EntityManager
+    marks: 2
+    question: Which call requests the persistence context to push pending updates to the database?
+    correct: 4
+    rationale: >-
+      EntityManager.flush() synchronizes the PC with the DB (SQL runs, TX not yet committed). PersistenceContext
+      is not a directly-called object in JPA; EntityManager owns the API. update()/saveUpdates() don't exist.
+    choices:
+      - EntityManager.update()
+      - PersistenceContext.flush()
+      - PersistenceContext.saveUpdates()
+      - PersistenceContext.update()
+      - EntityManager.flush()
+  - id: q41
+    type: MCQ
+    topic: EntityManager
+    marks: 2
+    question: If Cabin is an entity class, which statement creates a NEW instance ready to be persisted?
+    correct: 4
+    rationale: >-
+      Entities are plain Java objects — you instantiate them with `new`. entityManager.persist() is then called
+      to make the instance managed. persist() does NOT return an instance (void). entityManager.new(...) is fake.
+    choices:
+      - Cabin myCabin = entityManager.persist(Cabin.class);
+      - Cabin myCabin = new Entity(Cabin.class);
+      - Cabin myCabin = entityManager.new(Cabin.class);
+      - Cabin myCabin = connection.new(Cabin.class);
+      - Cabin myCabin = new Cabin();
+  - id: q42
+    type: MCQ
+    topic: Mapping
+    marks: 2
+    question: Which annotation maps a java.util.Date property to a SQL date/time column?
+    correct: 3
+    rationale: >-
+      @Temporal(TemporalType.DATE|TIME|TIMESTAMP) is required on java.util.Date / Calendar because SQL doesn't
+      know which date precision to pick. Not needed for java.time.LocalDate etc. in JPA 2.2+.
+    choices:
+      - "@Date"
+      - "@DateType"
+      - "@Type"
+      - "@Temporal"
+      - "@Mapping"
+  - id: q43
+    type: MCQ
+    topic: Mapping
+    marks: 2
+    question: Which is the correct syntax to map an entity to a table named FRED?
+    correct: 4
+    rationale: >-
+      @Table(name="FRED") on the class — no semicolon (annotation, not a statement); uses `name=` attribute,
+      not a positional String; lowercase keyword. @Table(value=...) doesn't exist.
+    choices:
+      - '@Table(value="FRED")'
+      - '@Table(name="FRED");'
+      - '@Table("FRED")'
+      - '@Table("FRED");'
+      - '@Table(name="FRED")'
+  - id: q44
+    type: MCQ
+    topic: Mapping
+    marks: 2
+    question: The entity inheritance strategy is declared using which annotation?
+    correct: 3
+    rationale: >-
+      @Inheritance(strategy = InheritanceType.X) on the root entity. InheritanceType is the enum; the annotation
+      itself is @Inheritance. @InheritanceType / @InheritanceStrategy / @Strategy are distractors.
+    choices:
+      - "@EntityInheritance"
+      - "@InheritanceType"
+      - "@Strategy"
+      - "@Inheritance"
+      - "@InheritanceStrategy"
+  - id: q45
+    type: MCQ
+    topic: Mapping
+    marks: 2
+    question: One or more fields that make up an entity's primary key are identified by which annotation?
+    correct: 0
+    rationale: >-
+      @Id on a single field, or @IdClass / @EmbeddedId for composite keys. @PK / @Identity / @PrimaryKey are
+      not JPA. @Entity has no primaryKey attribute.
+    choices:
+      - "@Id"
+      - "@PK"
+      - "@PrimaryKey"
+      - '@Entity(primaryKey = "...")'
+      - "@Identity"
+  - id: q46
+    type: MCQ
+    topic: Mapping
+    marks: 2
+    question: To map a 1:1 relationship using primary-key join columns, which annotation is added alongside @OneToOne?
+    correct: 4
+    rationale: >-
+      @PrimaryKeyJoinColumn indicates the PK of each row IS the FK to the other table — no separate FK column.
+      @JoinColumn uses a distinct FK column. @ForeignKey is a DDL hint, not a mapping strategy.
+    choices:
+      - "@JoinColumn"
+      - "@ForeignKey"
+      - "@OneToOne"
+      - "@Id"
+      - "@PrimaryKeyJoinColumn"
+  - id: q47
+    type: MCQ
+    topic: Relationships
+    marks: 2
+    question: Which return types are valid for the collection accessor on the "many" side of a @OneToMany?
+    correct: 4
+    rationale: >-
+      JPA supports Collection, List, Set, and Map as collection-valued association types. Pick the one whose
+      semantics match (Set = no dups, Map = keyed lookup, List = ordered). Map requires @MapKey.
+    choices:
+      - Collection only
+      - List only
+      - Set only
+      - Map only
+      - All of the above
+  - id: q48
+    type: MCQ
+    topic: Persistence
+    marks: 2
+    question: Which data MUST be defined in persistence.xml?
+    correct: 0
+    rationale: >-
+      persistence-unit name is mandatory (`<persistence-unit name="X">`). Transaction type defaults to JTA on
+      EE. Data source, properties, description are optional or provider-supplied.
+    choices:
+      - persistence-unit name
+      - persistence-unit transaction type
+      - persistence-unit data source
+      - persistence-unit properties
+      - persistence-unit description
+  - id: q49
+    type: MCQ
+    topic: Persistence
+    marks: 2
+    question: What XML file is required by the Jakarta Persistence specification?
+    correct: 3
+    rationale: >-
+      persistence.xml is the deployment descriptor (in META-INF/). orm.xml is OPTIONAL (replaces annotations).
+      entity.xml / entityManager.xml / ejb.xml are not JPA files.
+    choices:
+      - ORM.xml
+      - entityManager.xml
+      - entity.xml
+      - persistence.xml
+      - ejb.xml
+  - id: q50
+    type: MCQ
+    topic: JPQL
+    marks: 2
+    question: |
+      Given CustomerBean (1)↔(n) OrderBean and OrderBean (1)↔(n) LineitemsBean, which JPQL returns the SET of customers that have orders?
+    correct: 4
+    rationale: >-
+      SELECT DISTINCT c FROM Customer c, Order o WHERE c.custnum = o.custnum — JPQL selects entity aliases, not
+      table columns, and DISTINCT is required to avoid dup rows (one per matching order). Option A selects
+      unaliased "Customer" which is illegal in JPQL.
+    choices:
+      - SELECT DISTINCT Customer FROM Order
+      - SELECT o.custnum FROM Order o, Customer c WHERE c.custnum = o.custnum
+      - SELECT c FROM Customer c, Order o WHERE c.custnum = o.custnum
+      - SELECT Customer FROM Order
+      - SELECT DISTINCT c FROM Customer c, Order o WHERE c.custnum = o.custnum
+  - id: q51
+    type: MCQ
+    topic: JPQL
+    marks: 2
+    question: Which expression is equivalent to `p.discount NOT BETWEEN 10 AND 15`?
+    correct: 2
+    rationale: >-
+      BETWEEN x AND y is INCLUSIVE on both ends, so NOT BETWEEN 10 AND 15 = `<10 OR >15`. Off-by-one trap:
+      options using `>= 15` would exclude 15, but 15 is outside the range so it must be included in the NOT set.
+    choices:
+      - p.discount < 10 OR p.discount >= 15
+      - p.discount <= 10 OR p.discount > 15
+      - p.discount < 10 OR p.discount > 15
+      - p.discount <= 10 OR p.discount >= 15
+      - p.discount < 10 OR p.discount = 15
+  - id: q52
+    type: MCQ
+    topic: RUP
+    marks: 2
+    question: Which is NOT a core aspect of the Unified Process?
+    correct: 3
+    rationale: >-
+      Three UP pillars: use-case driven, architecture-centric, iterative & incremental. "Object-oriented" is a
+      paradigm UP happens to use, not a defining aspect.
+    choices:
+      - Architecture-centric
+      - Iterative
+      - Use-case driven
+      - Object-oriented
+      - All of the above are main aspects
+  - id: q53
+    type: MCQ
+    topic: RUP Phases
+    marks: 2
+    question: Compared to later iterations, early iterations in the Unified Process focus primarily on
+    correct: 2
+    rationale: >-
+      Early iterations (Inception/Elaboration) attack REQUIREMENTS and RISK — prove the architecture, retire
+      the hardest unknowns first. Feature-adding is Construction; detailed planning is continuous.
+    choices:
+      - Adding functionality for the external release
+      - Building models representing the system in a particular state
+      - Achieving increased knowledge of requirements and risks
+      - Ensuring testability in later phases
+      - Achieving a detailed plan for the rest of the project
+  - id: q54
+    type: MCQ
+    topic: RUP Phases
+    marks: 2
+    question: During which phase are most use cases specified in detail AND the system architecture designed?
+    correct: 1
+    rationale: >-
+      Elaboration. Analysis workflow peaks here; architecture is baselined (LCA milestone). Inception = vision
+      only; Construction = build; Transition = deploy.
+    choices:
+      - Transition
+      - Elaboration
+      - Inception
+      - Requirements
+      - Construction
+  - id: q55
+    type: MCQ
+    topic: Architecture
+    marks: 2
+    question: Which is NOT one of the "4+1 View" models of software architecture?
+    correct: 3
+    rationale: >-
+      4+1 = Logical, Process, Deployment, Implementation (+ Use Case as the unifying "+1"). There is no "Test
+      View" in Kruchten's 4+1.
+    choices:
+      - Logical View
+      - Use Case View
+      - Deployment View
+      - Test View
+      - Process View
+  - id: q56
+    type: MCQ
+    topic: Architecture
+    marks: 2
+    question: The model that is MOST complete in the architecture baseline is the
+    correct: 1
+    rationale: >-
+      Design model — arch baseline (end of Elaboration) has an executable architectural prototype and the
+      design model is the richest artifact at that point. Use-case and analysis models are still partial.
+    choices:
+      - analysis model
+      - design model
+      - use case model
+      - deployment model
+      - procedure model
+  - id: q57
+    type: MCQ
+    topic: Design
+    marks: 2
+    question: Design subsystems and design classes represent ______ of subsystems and classes in the implementation.
+    correct: 0
+    rationale: >-
+      Abstractions. Design is a higher-level view; implementation is the realization. "Realizations" goes the
+      other direction (impl realizes design).
+    choices:
+      - Abstractions
+      - Actualizations
+      - Realizations
+      - Implementations
+      - Reifications
+  - id: q58
+    type: MCQ
+    topic: Use Cases
+    marks: 2
+    question: What is an "actor" in the UML?
+    correct: 3
+    rationale: >-
+      Someone or something OUTSIDE the system that interacts with it. Actors can be humans OR other systems.
+      A role, not a specific person.
+    choices:
+      - A sequence of actions or operations the system performs
+      - A person who fills a user or administrative role
+      - Someone who performs a workflow in building a system
+      - Someone or something outside the system that interacts with it
+      - A person or system who directs others to follow procedures
+  - id: q59
+    type: MCQ
+    topic: Use Cases
+    marks: 2
+    question: Use-case realizations most frequently include
+    correct: 1
+    rationale: >-
+      Sequence diagrams show how objects collaborate over time to realize a use case. Collaboration diagrams
+      are an alternative. Process/deployment diagrams sit at different abstraction levels.
+    choices:
+      - Process diagrams
+      - Sequence diagrams
+      - Deployment diagrams
+      - Event lists
+      - Object diagrams
+  - id: q60
+    type: MCQ
+    topic: Use Cases
+    marks: 2
+    question: What diagram type describes how analysis objects interact?
+    correct: 2
+    rationale: >-
+      Collaboration diagram (now called communication diagram in UML 2) shows object-to-object messages during
+      a use-case realization in the ANALYSIS model. Class diagrams show structure, not interaction.
+    choices:
+      - Class diagram
+      - Object diagram
+      - Collaboration diagram
+      - Package diagrams
+      - Visit or event diagrams
+  - id: q61
+    type: MCQ
+    topic: Use Cases
+    marks: 2
+    question: Use cases are a major input into
+    correct: 4
+    rationale: >-
+      Use cases seed test cases, iteration plans, subsystems, and analysis classes. They are the central thread
+      through the UP — "use-case driven" means EVERY workflow consumes them.
+    choices:
+      - finding and specifying test cases
+      - planning development iterations
+      - finding and specifying subsystems
+      - finding and specifying classes
+      - all of the above
+  - id: q62
+    type: MCQ
+    topic: Testing
+    marks: 2
+    question: Tests used for system acceptance are usually
+    correct: 4
+    rationale: >-
+      Black box tests — acceptance testing validates user-visible behavior against use cases without knowledge
+      of internals. White/grey box = structural tests; unit tests run far earlier.
+    choices:
+      - white box tests
+      - unit tests
+      - grey box tests
+      - swirly, knobby sorts of tests
+      - black box tests
+  - id: q63
+    type: MCQ
+    topic: Testing
+    marks: 2
+    question: Using ______, test cases can be identified BEFORE design of the system begins.
+    correct: 3
+    rationale: >-
+      Use-cases. They exist at the requirements stage (Inception/early Elaboration) and directly spawn
+      acceptance test cases. Test plans/procedures come later.
+    choices:
+      - Test plans
+      - Test procedures
+      - Architecture descriptions
+      - Use-cases
+      - Deployment models
+  - id: q64
+    type: MCQ
+    topic: EVMS
+    marks: 2
+    question: Which EVMS metric answers "how much did the work-done cost at a given time?"
+    correct: 2
+    rationale: >-
+      ACWP = Actual Cost of Work Performed (what we've actually spent on the completed work). BCWP = earned
+      value; BCWS = planned value; BAC/EAC = totals.
+    choices:
+      - BAC
+      - EAC
+      - ACWP
+      - BCWP
+      - BCWS
+  - id: q65
+    type: MCQ
+    topic: EVMS
+    marks: 2
+    question: Which EVMS metric answers "how much do we NOW expect the total job to cost?"
+    correct: 2
+    rationale: >-
+      EAC = Estimate At Completion (revised total). BAC = original baseline total. ACWP = costs to date
+      (not a forecast).
+    choices:
+      - BAC
+      - BCWS
+      - EAC
+      - ACWP
+      - BCWP
+  - id: q66
+    type: MCQ
+    topic: MBTI
+    marks: 2
+    question: Which MBTI preference is a "perceiving function" (gathers information)?
+    correct: 1
+    rationale: >-
+      Perceiving functions = Sensing + iNtuition (how you take in information). Judging functions = Thinking +
+      Feeling (how you decide). Extraversion/Introversion are attitudes.
+    choices:
+      - Thinking
+      - Sensing
+      - Feeling
+      - Perceiving (the attitude)
+      - Judging (the attitude)
+  - id: q67
+    type: MCQ
+    topic: MBTI
+    marks: 2
+    question: People who prefer Intuition tend to
+    correct: 3
+    rationale: >-
+      Intuitives like big-picture/novel problems, patterns, future possibilities. Sensors prefer details,
+      practical, standard approaches.
+    choices:
+      - show details of work first
+      - prefer standard ways to solve problems
+      - make few errors in fact
+      - like solving new complex problems
+      - prefer things with a practical bent
+  - id: q68
+    type: MCQ
+    topic: Project Management
+    marks: 2
+    question: Which of the following is the BEST example of a software project risk?
+    correct: 2
+    rationale: >-
+      A risk is a potential future problem with uncertain outcome. "System MAY fail to meet performance
+      specs" is a classic risk statement. Real-time / AI / rehost are CONSTRAINTS (already known); civil
+      unrest is an external threat, not a SOFTWARE risk.
+    choices:
+      - The project is real-time
+      - The system must be rehosted onto different hardware
+      - The system may fail to meet its performance specifications
+      - The project requires difficult AI programming
+      - The project may be interrupted by civil unrest
+  - id: q69
+    type: MCQ
+    topic: RUP
+    marks: 1
+    question: A benefit of the waterfall lifecycle is that risks are generally eliminated in the early stages.
+    correct: 1
+    rationale: >-
+      FALSE. Waterfall hides risks — they surface only at integration/test. Iterative models reduce risk early
+      by prototyping architecture and hitting hard problems first.
+    choices:
+      - "True"
+      - "False"
+  - id: q70
+    type: MCQ
+    topic: Mapping
+    marks: 1
+    question: "@JoinColumn can be used to map a many-to-many relationship between entity beans."
+    correct: 1
+    rationale: >-
+      FALSE. M:N needs a JOIN TABLE (two FK columns), so @JoinTable is used. @JoinColumn is a single FK column
+      — fine for M:1 / 1:1, wrong for M:N.
+    choices:
+      - "True"
+      - "False"
+  - id: q71
+    type: MCQ
+    topic: Architecture
+    marks: 1
+    question: A collaboration diagram resembles a class diagram but shows instances and messages instead of classes and associations.
+    correct: 0
+    rationale: >-
+      TRUE. Collaboration/communication diagram focuses on the object-level interaction in context of a use
+      case realization — nodes are instances, links are messages.
+    choices:
+      - "True"
+      - "False"
+  - id: q72
+    type: MCQ
+    topic: Analysis
+    marks: 1
+    question: The analysis model is usually less formal than the design model.
+    correct: 0
+    rationale: >-
+      TRUE. Analysis is exploratory/conceptual (BCE stereotypes, loose); design adds implementation-level rigor
+      (interfaces, types, sequence detail).
+    choices:
+      - "True"
+      - "False"
+  - id: q73
+    type: MCQ
+    topic: RUP
+    marks: 1
+    question: According to the UP, an architecture baseline is a set of models that do NOT involve executable code.
+    correct: 1
+    rationale: >-
+      FALSE. The architecture baseline (end of Elaboration) includes an EXECUTABLE architectural prototype —
+      running code that validates the key architectural decisions, not just diagrams.
+    choices:
+      - "True"
+      - "False"
+  - id: q74
+    type: MCQ
+    topic: Analysis
+    marks: 1
+    question: It is usually necessary to consider nonfunctional requirements BEFORE the analysis stage.
+    correct: 0
+    rationale: >-
+      TRUE. NFRs (performance, security, scalability) shape architecture and must be captured during
+      requirements — they constrain analysis/design decisions.
+    choices:
+      - "True"
+      - "False"
+  - id: q75
+    type: SHORT
+    topic: EVMS
+    marks: 3
+    question: What does ACWP stand for, and what does it measure?
+    correct: >-
+      Actual Cost of Work Performed. It measures the actual money spent to date on the work that has actually
+      been completed (as opposed to BCWS = planned cost of planned work, or BCWP = planned cost of work
+      actually done).
+    rationale: >-
+      Full marks require the expansion AND the "what it measures" contrast with BCWP/BCWS. Common confusion:
+      ACWP vs BCWP — remember ACWP = Actual cost, BCWP = Budgeted cost (both of work performed).
+  - id: q76
+    type: SHORT
+    topic: EntityManager
+    marks: 3
+    question: What are the two types of persistence context in JPA, and how do they differ?
+    correct: >-
+      (1) Transaction-scoped — created at TX start, closed at TX end (default in container-managed EMs); entities
+      detach when TX ends. (2) Extended — outlives a single TX, spans multiple user interactions (used with
+      Stateful Session Beans); entities stay managed across calls until the SFSB is removed.
+    rationale: >-
+      Name both types, give lifetime, give canonical use-case. Extended PC + SFSB is the classic
+      conversational-state pattern.
+  - id: q77
+    type: SHORT
+    topic: Relationships
+    marks: 3
+    question: Describe how to determine the owning side in a ONE-to-ONE bidirectional relationship.
+    correct: >-
+      There is no automatic "many side rule" in 1:1 — the developer designates one side as owning by placing
+      @JoinColumn (or @PrimaryKeyJoinColumn) there. The OTHER side then uses @OneToOne(mappedBy="fieldName")
+      to point back. The owning side holds the FK; the inverse side is read-only from JPA's perspective.
+    rationale: >-
+      Key distinction from 1:N: in 1:1 the choice is arbitrary — pick whichever side makes more sense
+      conceptually. Must mention mappedBy and @JoinColumn / @PrimaryKeyJoinColumn.
+  - id: q78
+    type: SHORT
+    topic: RUP
+    marks: 3
+    question: Which Unified Process activity during requirements capture determines the order of use-case development across iterations?
+    correct: >-
+      "Prioritize use cases" (a.k.a. planning iteration content). Use cases are ranked by risk, architectural
+      significance, and stakeholder value — the architect and project manager drive this activity so each
+      iteration tackles the most critical UCs first.
+    rationale: >-
+      Accept wording like "prioritize the use cases" / "use-case prioritization". Must tie to risk +
+      architectural significance for full marks.
+  - id: q79
+    type: SHORT
+    topic: RUP
+    marks: 3
+    question: "Define \"artifact\" as used in the Unified Process."
+    correct: >-
+      An artifact is a general term for any information item created, produced, changed, or used by workers
+      while developing a system. Examples: use-case model, analysis model, design model, source code, test
+      plans, iteration plans — anything worth tracking and versioning.
+    rationale: >-
+      Must convey generality (ANY info item) AND give 1-2 concrete examples. "Just code/diagrams" is too narrow.
+  - id: q80
+    type: SHORT
+    topic: Relationships
+    marks: 10
+    question: >-
+      Annotate the Cruise and Reservation classes below to form a 1:N BIDIRECTIONAL relationship (one Cruise,
+      many Reservations) using a foreign key column named CRUISE_NAME on the Reservation table. id fields are
+      auto-generated. public class Cruise { private int id; private String name; private Ship ship; private
+      Collection&lt;Reservation&gt; reservations = new ArrayList&lt;&gt;(); } public class Reservation { private int id;
+      private Date date; private double amountPaid; private Cruise cruise; }
+    correct: |-
+      <pre class="language-java">@Entity
+      public class Cruise implements java.io.Serializable {
+          @Id
+          @GeneratedValue(strategy = GenerationType.AUTO)
+          private int id;
+
+          private String name;
+
+          @OneToOne
+          private Ship ship;
+
+          @OneToMany(mappedBy = "cruise")
+          private Collection&lt;Reservation&gt; reservations = new ArrayList&lt;&gt;();
+          // ...
+      }
+
+      @Entity
+      public class Reservation implements java.io.Serializable {
+          @Id
+          @GeneratedValue(strategy = GenerationType.AUTO)
+          private int id;
+
+          @Temporal(TemporalType.DATE)
+          private Date date;
+
+          private double amountPaid;
+
+          @ManyToOne
+          @JoinColumn(name = "CRUISE_NAME")
+          private Cruise cruise;
+          // ...
+      }</pre>
+    rationale: >-
+      Grading checklist: @Entity on BOTH; @Id + @GeneratedValue on int ids; @Temporal on java.util.Date (often
+      missed); Reservation (many side) OWNS with @ManyToOne + @JoinColumn(name="CRUISE_NAME"); Cruise has
+      @OneToMany(mappedBy="cruise") — mappedBy value matches the FIELD name on the owning side, NOT class name.
+      Ship reference should get @OneToOne / @ManyToOne. Common errors: @JoinColumn on the one side; missing
+      mappedBy; wrong mappedBy string.
+  - id: q81
+    type: SHORT
+    topic: Architecture
+    marks: 10
+    question: >-
+      Describe, in point form, what an "architecture" is according to the Unified Process, and how it is
+      described (i.e. what artifacts are produced).
+    correct: >-
+      <strong>Model answer outline:</strong>
+
+      <ul>
+
+      <li><strong>Definition</strong>: architecture = the organization of the software system; key structural
+      elements and their interfaces; collaborations among them; composition into progressively larger subsystems;
+      architectural style guiding the organization.</li>
+
+      <li><strong>Architecture is captured through the "4+1" view model:</strong>
+
+        <ul>
+
+          <li><em>Use-Case View</em> — the "+1"; architecturally significant UCs that drive everything else.</li>
+
+          <li><em>Logical View</em> — design model (subsystems, classes, key collaborations).</li>
+
+          <li><em>Process View</em> — concurrency, processes/threads, synchronization.</li>
+
+          <li><em>Implementation View</em> — components, packaging, source code organization.</li>
+
+          <li><em>Deployment View</em> — physical nodes, hardware, distribution.</li>
+
+        </ul>
+
+      </li>
+
+      <li><strong>Baselined at end of Elaboration (LCA milestone)</strong> with an executable architectural
+      prototype demonstrating the significant decisions.</li>
+
+      <li><strong>Key artifact</strong>: Software Architecture Document (SAD) containing all five views plus
+      architecturally significant requirements + rationale.</li>
+
+      </ul>
+    rationale: >-
+      10-mark essay: must name all five views (4+1) with a short description of each; connect to LCA
+      milestone; mention executable prototype; name the SAD artifact. Partial credit for listing views without
+      descriptions.

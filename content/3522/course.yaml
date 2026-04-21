@@ -1,0 +1,19 @@
+id: "3522"
+code: "COMP 3522"
+name: "Object Oriented Programming 2"
+exam: "2026-04-21T13:00:00-07:00"
+room: "SW05-1840"
+format: "5 T/F + 15 MCQ + 1 UML Draw + 1 Output Trace + 1 Guided Coding (2 parts) · 90 min · 51 marks · paper exam"
+instructor: "Jeffrey Yim"
+notes: |
+  Cumulative final, weighted toward post-midterm material (design patterns).
+  Paper exam — handwritten. Two double-sided 8.5×11" cheat sheets allowed
+  (Arial ≥10pt, hand-written or printed). Submit cheat sheet WITH the exam.
+  In-person, SW05-1840.
+
+  Pre-midterm topics (Python fundamentals, OOP, SOLID, exceptions, generators,
+  profiling, multiple inheritance) are tested *indirectly* — every pattern Q
+  requires writing classes, ABCs, super(), polymorphism.
+
+  Resources: refactoring.guru/design-patterns/python (instructor-recommended),
+  geeksforgeeks/tutorialspoint for syntax lookups.

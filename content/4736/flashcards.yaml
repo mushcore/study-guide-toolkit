@@ -1,0 +1,2177 @@
+modules:
+  - id: ipc-sync
+    name: IPC & Synchronization
+    topics:
+      - id: 4736-ipc1-sem
+        name: IPC1/Sem
+        tags:
+          - ipc
+          - sync
+        prose: Race conditions, mutual exclusion, and semaphores for coordinating concurrent processes.
+        cards:
+          - type: name
+            prompt: What is a **race condition**?
+            answer: Two or more processes access shared data and the final result depends on the timing of their execution.
+            explanation: >-
+              Races appear only when an operation is non-atomic — read, modify, write can interleave with another
+              process's read, modify, write, and the interleavings produce different outcomes. The fix is
+              serialization via mutual exclusion or hardware atomicity.
+            example: |-
+              Counter: two threads each do `x = x + 1` on shared x = 0.
+              Interleaving read(0) / read(0) / write(1) / write(1) → x = 1,
+              not 2. Same code without interleaving → x = 2.
+            source: "Part 6/7, Slide 4; research-ipc1-semaphore.md §1"
+            bloom: understand
+          - type: name
+            prompt: What is a **critical region**?
+            answer: >-
+              The part of a program that accesses shared data and must not be executed by more than one process at a
+              time.
+            explanation: >-
+              Critical regions are the smallest unit of code that needs mutual exclusion. The goal of every mutex,
+              semaphore, and monitor is to enforce "only one process inside the CR at a time" without blocking
+              processes that are not competing for the same CR.
+            example: |-
+              Bank transfer: `balance -= amount; other.balance += amount`.
+              Two transfers on the same account must serialize.
+              The two-line block is the critical region.
+            source: "Part 6/7, Slide 5; research-ipc1-semaphore.md §1"
+            bloom: understand
+          - type: cloze
+            prompt: >-
+              Mutual-exclusion condition #1: no two processes simultaneously in their {{critical region (aka critical
+              section)}}.
+            answer: critical region (aka critical section)
+            explanation: >-
+              This is the *goal* of mutual exclusion, stated as a requirement. All four conditions together define
+              what a correct solution must satisfy — any candidate failing #1 allows races.
+            example: |-
+              Peterson's satisfies #1 (only one passes the wait loop).
+              Lock variable without atomicity violates #1 (both can read 0).
+            source: "Part 6/7, Slide 6; research-ipc1-semaphore.md §2"
+            bloom: remember
+          - type: cloze
+            prompt: "Mutual-exclusion condition #2: no assumption about {{CPU speed}} or {{number of CPUs}}."
+            answer: CPU speed, number of CPUs
+            explanation: >-
+              Correctness must not depend on relative CPU speeds or process count. Solutions that rely on
+              "process A will always be faster" fail on different hardware; those that rely on disabling interrupts
+              fail on multiprocessors.
+            example: |-
+              Disabling interrupts works on uniprocessor → breaks on SMP
+              (one CPU can interrupt-disable, another keeps running).
+              Violates condition #2.
+            source: "Part 6/7, Slide 6; research-ipc1-semaphore.md §2"
+            bloom: remember
+          - type: cloze
+            prompt: >-
+              Mutual-exclusion condition #3: a process {{outside}} its critical region cannot {{block}} another from
+              entering.
+            answer: outside, block
+            explanation: >-
+              This is the subtle requirement. A process idling (or running non-critical code) must never force another
+              process to wait. This is precisely what strict alternation violates — turn-taking forces waiting even
+              when the other process is nowhere near its CR.
+            example: |-
+              Strict alternation: turn = 0. Process 0 never enters its CR.
+              Process 1 is perpetually blocked waiting its turn.
+              Condition #3 violated.
+            source: "Part 6/7, Slide 6; research-ipc1-semaphore.md §2, §3"
+            bloom: remember
+          - type: cloze
+            prompt: >-
+              Mutual-exclusion condition #4: no process should wait {{forever (= no starvation)}} to enter its critical
+              region.
+            answer: forever (= no starvation)
+            explanation: >-
+              Bounded waiting. Even if other processes keep entering their CR, every waiting process must
+              eventually get a turn. Satisfied by fair schedulers and by semaphore queues (FIFO wake). Violated by
+              purely-priority-based wake policies if a high-priority stream monopolizes.
+            example: |-
+              TSL with spin lock: under heavy contention a process may
+              never win the race. Requires bounded-waiting queue on top.
+            source: "Part 6/7, Slide 6; research-ipc1-semaphore.md §2"
+            bloom: remember
+          - type: name
+            prompt: "Semaphore operation `P(s)`: what happens if s > 0? If s == 0?"
+            answer: "If s > 0: atomically decrement s. If s == 0: block until another process calls V(s)."
+            explanation: >-
+              `P` ("proberen", test) is the gate. If the counter shows a resource is available, grab it by
+              decrementing. If not, sleep — the OS maintains a queue of blocked processes per semaphore and wakes
+              one when `V` is called later.
+            example: |-
+              sem_t s; sem_init(&s, 0, 1);    // binary semaphore
+              P(s);   // s=1 → decrement to 0, continue
+              // ... critical region ...
+              V(s);   // s=0 → increment to 1 (wake waiter if any)
+            source: "Part 6/7, Slide 38; Semaphore supplement; research-ipc1-semaphore.md §4"
+            bloom: understand
+          - type: name
+            prompt: "Semaphore operation `V(s)`: what does it do?"
+            answer: Atomically increment s; if any processes are blocked on s, wake one (OS picks).
+            explanation: >-
+              `V` ("verhogen", increment) is the release. The OS maintains the blocked-queue; exactly which process
+              wakes on V is implementation-defined (typically FIFO for fairness). Every `P` that successfully
+              decremented must be matched by a `V` to avoid permanent blocking.
+            example: |-
+              Producer calls V(full) after adding an item.
+              Consumer blocked on P(full) wakes up, decrements full,
+              proceeds to read the item.
+            source: "Part 6/7, Slide 38; Semaphore supplement; research-ipc1-semaphore.md §4"
+            bloom: understand
+          - type: name
+            prompt: Binary semaphore vs counting semaphore?
+            answer: "Binary: initialized to 1, acts like a lock. Counting: initialized to N, represents N available resources."
+            explanation: >-
+              Binary semaphores enforce mutual exclusion (one process in the CR). Counting semaphores track a pool
+              of N interchangeable resources — multiple processes can hold the resource simultaneously, up to N.
+              Same `P`/`V` primitives for both.
+            example: |-
+              Binary (mutex):  sem_init(&mtx, 0, 1);
+              Counting (pool): sem_init(&slots, 0, 10);  // 10 connections
+            source: "Part 6/7, Slide 40; research-ipc1-semaphore.md §4"
+            bloom: remember
+          - type: name
+            prompt: "Producer-consumer: initial values of `empty`, `full`, `mutex`?"
+            answer: "`empty = N` (# slots), `full = 0`, `mutex = 1`."
+            explanation: >-
+              `empty` counts unused slots (start at N). `full` counts ready items (start at 0). `mutex` protects
+              buffer manipulation (binary, start at 1). The initial values encode "buffer is empty; no items ready;
+              no one is inside the buffer right now".
+            example: |-
+              Producer: P(empty); P(mutex); put_item(); V(mutex); V(full);
+              Consumer: P(full);  P(mutex); get_item(); V(mutex); V(empty);
+              Initial: empty=N, full=0, mutex=1.
+            source: "Part 6/7, Slides 45-48; Semaphore supplement; research-ipc1-semaphore.md §6"
+            bloom: understand
+          - type: name
+            prompt: In producer-consumer with semaphores, why must P(empty) happen BEFORE P(mutex)?
+            answer: >-
+              Otherwise producer could hold mutex while waiting for an empty slot — consumer cannot enter buffer to
+              remove an item → deadlock.
+            explanation: >-
+              The ordering reflects resource-then-lock discipline. Grab the resource-count semaphore first; only if
+              you know you can proceed should you grab the mutex. Flipping the order creates a hold-and-wait on
+              empty while holding mutex — the exact Coffman pattern.
+            example: |-
+              Buffer full, producer calls P(mutex) first → mutex = 0.
+              Then P(empty) blocks (empty = 0). Consumer tries P(mutex)
+              → blocks. Both stuck. Classic semaphore ordering deadlock.
+            source: "Part 6/7, Slide 48; research-ipc1-semaphore.md §6"
+            bloom: understand
+          - type: name
+            prompt: Who invented semaphores and in what year?
+            answer: Edsger W. Dijkstra, 1965.
+            explanation: >-
+              Dijkstra introduced P/V (Dutch passeren/vrijgeven — pass/release) in his 1965 paper "Cooperating
+              Sequential Processes". Semaphores were the first principled solution to mutex + signaling without
+              busy waiting.
+            example: |-
+              Modern equivalents: POSIX sem_wait/sem_post, Java Semaphore class,
+              C# SemaphoreSlim. Same model, 60 years later.
+            source: "Part 6/7, Slide 37; research-ipc1-semaphore.md §4"
+            bloom: remember
+          - type: name
+            prompt: What is the **lost-wakeup problem**?
+            answer: >-
+              A wakeup signal arrives before the other process actually sleeps → wakeup is ignored → process sleeps
+              forever. Semaphores fix this.
+            explanation: >-
+              Sleep/wakeup has no memory — a wakeup with no waiter is discarded. Semaphores fix it because the
+              counter stays incremented until a P consumes it, so an early "wakeup" is not lost. This is the same
+              reason condition variables need an associated predicate check.
+            example: |-
+              Sleep/wakeup: Consumer sees count=0, about to sleep.
+              Producer increments count, calls wakeup (no one waiting yet).
+              Consumer calls sleep → waits forever. Fix: use semaphores.
+            source: "Part 6/7, Slide 35-36; research-ipc1-semaphore.md §3"
+            bloom: understand
+          - type: name
+            prompt: "Peterson's solution: how many processes does it handle?"
+            answer: "**Exactly 2.** Generalization exists but the slide version is 2-process only."
+            explanation: >-
+              Peterson's uses two arrays (interested[], turn) indexed by process ID. The 2-process proof depends on
+              the turn variable being a boolean. N-process generalization exists (Peterson's tournament) but is
+              out of scope per the slides.
+            example: |-
+              interested[i] = 1; turn = j;
+              while (interested[j] && turn == j) /* busy wait */;
+              // critical region
+              interested[i] = 0;
+            source: "Part 6/7, Slides 20-22; research-ipc1-semaphore.md §3"
+            bloom: remember
+          - type: name
+            prompt: What does `TSL RX, LOCK` do atomically?
+            answer: Reads LOCK into register RX AND stores a non-zero value into LOCK, in one uninterruptible operation.
+            explanation: >-
+              TSL (test-and-set-lock) is hardware mutual exclusion. The CPU asserts bus-lock for the duration of
+              the read-modify-write so no other CPU can observe or modify LOCK mid-instruction. x86 implements this
+              via XCHG with LOCK prefix.
+            example: |-
+              enter_region:
+                TSL REGISTER, LOCK    ; atomic
+                CMP REGISTER, #0
+                JNE enter_region      ; spin until LOCK was 0
+                RET
+              leave_region:
+                MOV LOCK, #0
+                RET
+            source: "Part 6/7, Slides 25-26; research-ipc1-semaphore.md §3"
+            bloom: understand
+          - type: name
+            prompt: Why does a simple lock variable NOT solve mutual exclusion?
+            answer: >-
+              Reading and setting it are separate operations → another process can read the 0 before the first sets it →
+              both enter CS.
+            explanation: >-
+              Without hardware atomicity, the read-then-write sequence is exposed to interleaving. Two processes
+              both see `lock == 0`, both write `lock = 1`, both enter. TSL and XCHG exist specifically to close
+              this window.
+            example: |-
+              Thread A: read(lock)=0; [context switch]
+              Thread B: read(lock)=0; write(lock=1); enter;
+              Thread A: write(lock=1); enter.  Both in CR.
+            source: "Part 6/7, Slides 11-12; research-ipc1-semaphore.md §3"
+            bloom: understand
+          - type: name
+            prompt: What is a **monitor**?
+            answer: >-
+              Language-level construct where only one process can be active in the monitor at a time. Uses condition
+              variables with wait/signal.
+            explanation: >-
+              Monitors synthesize mutual exclusion automatically — every method is implicitly wrapped by the
+              compiler/runtime. Programmers use condition variables for richer waits (e.g. "wait until buffer is
+              non-empty"), avoiding the manual P/V discipline that's easy to get wrong.
+            example: |-
+              monitor BoundedBuffer {
+                condition notFull, notEmpty;
+                void put(x) { if (full) wait(notFull); ...; signal(notEmpty); }
+              }
+              Compiler inserts mutex around every method body.
+            source: "Part 6/7, Slides 49-50; research-ipc1-semaphore.md §5"
+            bloom: understand
+          - type: name
+            prompt: "Condition variable: does `signal()` remember the signal if no one is waiting?"
+            answer: "**No.** If no one is waiting, the signal is lost. Condition variables have no memory."
+            explanation: >-
+              This is why every monitor pattern uses `while (!predicate) wait()`, not `if (!predicate) wait()`.
+              The while-loop re-checks the condition after wakeup so a spurious or late arrival cannot enter with
+              the predicate still false.
+            example: |-
+              Wrong: if (!available) wait(cv);   // spurious wakeup bug
+              Right: while (!available) wait(cv);
+            source: "Part 6/7, Slide 51; research-ipc1-semaphore.md §5"
+            bloom: understand
+          - type: name
+            prompt: "Busy waiting vs blocking: which wastes CPU?"
+            answer: >-
+              Busy waiting. The waiting process continuously checks a condition. Blocking puts process to sleep (no CPU
+              use).
+            explanation: >-
+              Busy waiting is fine for very short waits (microseconds on SMP) because the context-switch cost
+              exceeds the spin. For long waits, blocking wins — the OS can schedule something else. Semaphores block;
+              TSL spin locks busy-wait.
+            example: |-
+              TSL spin:   while (lock != 0);   // burns 100% CPU
+              Semaphore:  P(sem);              // process sleeps; CPU free
+            source: "Part 6/7, Slide 23; research-ipc1-semaphore.md §3"
+            bloom: understand
+          - type: name
+            prompt: Strict alternation violates which of the 4 mutual-exclusion conditions?
+            answer: >-
+              Condition #3: a process outside its CS can block another from entering (when it's not that process's
+              turn).
+            explanation: >-
+              If process 0 is running non-critical code (or blocked on I/O), process 1 is forced to wait its turn
+              even though no process is in a CR. Professor highlights this as orange/red text on the strict
+              alternation slide per `diagnosis.md:207`.
+            example: |-
+              turn = 0. Process 0 never enters its CR (maybe sleeping).
+              Process 1 spins at `while (turn != 1)` forever, even though
+              no process is in a CR. Violates #3.
+            source: "Part 6/7, Slides 17-18; research-ipc1-semaphore.md §3"
+            bloom: analyze
+          - type: name
+            prompt: Which system call creates a pipe? What does it return in `fd[0]` / `fd[1]`?
+            answer: "`pipe(fd)`. `fd[0]` = read end, `fd[1]` = write end."
+            explanation: >-
+              `pipe(2)` returns a pair of connected file descriptors — one for each end. The OS allocates a kernel
+              buffer; writes go into it via `fd[1]`, reads pull from it via `fd[0]`. The pair is inherited across
+              `fork()`, which is how parent and child communicate.
+            example: |-
+              int fd[2];
+              pipe(fd);        // fd[0] = read, fd[1] = write
+              if (fork() == 0) { close(fd[1]); read(fd[0], ...); }
+              else             { close(fd[0]); write(fd[1], ...); }
+            source: "Part 8, pipe section; research-ipc2.md §1"
+            bloom: remember
+          - type: name
+            prompt: "Unnamed pipes: which processes can use them?"
+            answer: Related processes only (parent/child/siblings) — the pipe is inherited through `fork()`.
+            explanation: >-
+              Unnamed pipes have no filesystem name, so the only way another process can obtain the fd is to
+              inherit it via fork. For unrelated processes, use named pipes (FIFO — filesystem entry) or UNIX-domain
+              sockets.
+            example: |-
+              Shell pipeline `ls | grep foo`:
+              shell forks, parent-child inherit pipe fds, ls writes,
+              grep reads. Unrelated processes cannot use the same pipe.
+            source: "Part 8, pipe section; research-ipc2.md §1"
+            bloom: remember
+          - type: name
+            prompt: "`dup2(fd, 1)` — what does it do?"
+            answer: Redirects stdout (fd 1) to `fd`. Any subsequent write to stdout goes to `fd`.
+            explanation: >-
+              `dup2` closes the destination fd (fd 1 = stdout) if open, then makes it an alias for the source fd.
+              After this call, the process has two fds pointing at the same underlying file/pipe. Shell redirection
+              `>` and pipeline `|` are implemented with dup2.
+            example: |-
+              // Redirect stdout to a pipe's write end before exec
+              dup2(fd[1], 1);   // stdout now goes to pipe
+              close(fd[1]);     // original fd no longer needed
+              execvp("ls", ...); // ls prints into pipe
+            source: "Part 8, pipe section; research-ipc2.md §1"
+            bloom: understand
+
+          # ---- Former list-recall "Three standard file descriptors" → 3 atomic cards ----
+          - type: name
+            prompt: Which standard file descriptor has number 0?
+            answer: "`stdin` (standard input)."
+            explanation: >-
+              fd 0 is always opened to the process's input source. By default it's the terminal; redirected with
+              `< file` in the shell. Reading from fd 0 blocks until input arrives.
+            example: |-
+              read(0, buf, sizeof(buf));   // read from stdin
+              Shell: `sort < data.txt`     // dup2(fd_of_data, 0)
+            source: "Part 8, stdio section; research-ipc2.md §2"
+            bloom: remember
+          - type: name
+            prompt: Which standard file descriptor has number 1?
+            answer: "`stdout` (standard output)."
+            explanation: >-
+              fd 1 is the process's normal output. Buffered by stdio (line-buffered for TTY, fully-buffered for
+              pipes) — which is why `printf` output can appear after a crash if stdout was redirected to a file
+              without flushing.
+            example: |-
+              write(1, "hi\n", 3);         // unbuffered write
+              Shell: `prog > out.txt`      // dup2(fd_of_out, 1)
+            source: "Part 8, stdio section; research-ipc2.md §2"
+            bloom: remember
+          - type: name
+            prompt: Which standard file descriptor has number 2?
+            answer: "`stderr` (standard error)."
+            explanation: >-
+              fd 2 is traditionally unbuffered so error messages appear immediately even if the program crashes.
+              Shell `2> err.log` redirects it independently of stdout; `2>&1` merges stderr into stdout by
+              duplicating fd 1 over fd 2.
+            example: |-
+              write(2, "error\n", 6);
+              Shell: `prog 2>&1`  // dup2(1, 2) — stderr follows stdout
+            source: "Part 8, stdio section; research-ipc2.md §2"
+            bloom: remember
+          # ---- end file-descriptor split ----
+
+          - type: name
+            prompt: Shared memory sequence of calls (System V)?
+            answer: "`shmget` → `shmat` → use → `shmdt` → `shmctl(IPC_RMID)`."
+            explanation: >-
+              `shmget` creates or opens the segment by key. `shmat` attaches it to the process's address space
+              (returns a pointer). After use, `shmdt` detaches (segment still exists in the kernel).
+              `shmctl(IPC_RMID)` schedules removal when last process detaches — this is kernel-lifetime.
+            example: |-
+              int id = shmget(key, 4096, IPC_CREAT|0666);
+              char *p = shmat(id, NULL, 0);     // attach
+              strcpy(p, "hello");
+              shmdt(p);                          // detach
+              shmctl(id, IPC_RMID, NULL);        // mark for removal
+            source: "Part 8, Slides 20-22; research-ipc2.md §3"
+            bloom: apply
+          - type: name
+            prompt: Why is shared memory the fastest IPC?
+            answer: No kernel data copy. Processes read/write directly in their address space (mapped to same physical pages).
+            explanation: >-
+              Pipes, message queues, and sockets copy bytes through kernel buffers — each send/recv is a
+              user→kernel→user copy. Shared memory maps the same physical pages into both processes' page tables,
+              so a write is visible to the other process with no syscall and no copy.
+            example: |-
+              Transfer 1 GB:
+              pipe: ~2 GB copied (to kernel + back) → slow.
+              shm:  0 bytes copied, just pointer writes → fastest.
+            source: "Part 8, Slides 20-22; research-ipc2.md §3"
+            bloom: understand
+          - type: name
+            prompt: Two special signal handlers?
+            answer: "`SIG_DFL` (default action) and `SIG_IGN` (ignore the signal)."
+            explanation: >-
+              `SIG_DFL` restores the signal's default behavior (e.g. terminate for SIGINT). `SIG_IGN` tells the
+              kernel to silently drop the signal — works for every signal except SIGKILL and SIGSTOP, which can
+              never be caught, blocked, or ignored.
+            example: |-
+              signal(SIGINT, SIG_IGN);   // Ctrl-C now does nothing
+              signal(SIGINT, SIG_DFL);   // restore default (terminate)
+              signal(SIGKILL, SIG_IGN);  // has NO effect — SIGKILL absolute
+            source: "Part 8, Slides 50-53; research-ipc2.md §7"
+            bloom: remember
+          - type: name
+            prompt: "`raise(SIGUSR1)` vs `kill(pid, SIGUSR1)`?"
+            answer: "`raise` sends to self. `kill` sends to any process by pid."
+            explanation: >-
+              `raise(sig)` is a shortcut for `kill(getpid(), sig)`. Both invoke the same delivery mechanism; choice
+              is stylistic. Use `raise` when sending to self makes the intent clearer.
+            example: |-
+              raise(SIGUSR1);             // self-signal
+              kill(child_pid, SIGTERM);   // signal another process
+              kill(-pgid, SIGHUP);        // signal whole process group
+            source: "Part 8, Slides 50-53; research-ipc2.md §7"
+            bloom: remember
+
+          # ---- Analyze-level IPC 1 cards ----
+          - type: name
+            prompt: >-
+              A new programmer writes a monitor method with `if (!available) wait(cv)` instead of `while (...)`.
+              What goes wrong and why?
+            answer: >-
+              Spurious wakeups or multiple signals can release `wait` with the predicate still false. With `if`,
+              the process proceeds as if available — race reintroduced. `while` re-checks after wakeup and loops
+              until the predicate actually holds.
+            explanation: >-
+              Condition variables promise "I was signaled", not "the predicate is now true". Between wakeup and
+              re-acquiring the monitor mutex, another process may have consumed the resource. `while` is
+              re-verification; `if` is a bet.
+            example: |-
+              Wrong: if (!item) wait(notEmpty); get_item();
+              Two consumers both wake on signal, both call get_item() → one
+              gets garbage. `while` would make the second loop back to wait.
+            source: "Part 6/7, Slide 51; research-ipc1-semaphore.md §5"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              Show the deadlock sequence when producer and consumer both use ordering `P(mutex); P(resource)` instead
+              of the correct `P(resource); P(mutex)`.
+            answer: >-
+              Buffer full: producer calls P(mutex)→mutex=0, then P(empty) blocks (empty=0). Consumer tries P(mutex)
+              → blocks (mutex=0). Neither can progress; producer holds mutex, consumer needs mutex to free a slot.
+              Deadlock.
+            explanation: >-
+              The bad ordering violates the "resource-then-lock" discipline. Holding the lock while waiting for a
+              resource is hold-and-wait (Coffman condition 2) — and the resource (empty slot) only becomes available
+              by someone holding the lock. Perfect cycle.
+            example: |-
+              Correct flow (P(empty) first):
+              buffer full → P(empty) blocks; no mutex held; consumer
+              enters freely, removes item, V(empty) → producer wakes. OK.
+            source: "Part 6/7, Slide 48; research-ipc1-semaphore.md §6"
+            bloom: analyze
+          # ---- end IPC 1 Analyze ----
+
+      - id: 4736-ipc2
+        name: IPC2
+        tags:
+          - ipc
+        prose: Classic IPC problems (producer-consumer, readers-writers, dining philosophers) and monitors.
+        cards:
+          - type: name
+            prompt: Call to create a FIFO?
+            answer: "`mkfifo(\"path\", mode)` or `mknod(\"path\", S_IFIFO|mode, 0)`."
+            explanation: >-
+              Both create a filesystem entry of type FIFO that unrelated processes can open by path. `mkfifo(3)`
+              is the portable wrapper; `mknod(2)` is the older low-level call with an explicit type flag. Either
+              way, the FIFO persists until explicitly unlinked.
+            example: |-
+              mkfifo("/tmp/chatq", 0666);
+              // Process A: int fd = open("/tmp/chatq", O_RDONLY);
+              // Process B: int fd = open("/tmp/chatq", O_WRONLY);
+              // Data flows B → A.
+            source: "Part 8, FIFO section; research-ipc2.md §1"
+            bloom: remember
+          - type: name
+            prompt: "FIFO vs unnamed pipe: key difference?"
+            answer: FIFO has a name in the filesystem → usable by **unrelated** processes. Unnamed pipes only between related.
+            explanation: >-
+              The name in the filesystem is the only structural difference. Both use the same in-kernel buffering
+              and have byte-stream semantics (no message boundaries). Named pipes persist across process lifetimes
+              (until unlinked); unnamed pipes disappear when the last fd closes.
+            example: |-
+              Unrelated processes need a rendezvous point:
+              mkfifo("/tmp/chatq"); then A opens for read, B opens for write.
+              Equivalent unnamed pipe would require a common ancestor fork.
+            source: "Part 8, FIFO section; research-ipc2.md §1"
+            bloom: understand
+          - type: name
+            prompt: Three System V message queue calls?
+            answer: "`msgget` (create/open), `msgsnd` (send), `msgrcv` (receive). Also `msgctl` for control."
+            explanation: >-
+              `msgget` returns a queue identifier keyed by an integer. `msgsnd` appends a typed message (type is an
+              integer used for selective receive). `msgrcv` can block or non-block and can filter by type.
+              `msgctl(IPC_RMID)` removes the queue.
+            example: |-
+              int q = msgget(key, IPC_CREAT|0666);
+              struct { long type; char text[64]; } m = {1, "hi"};
+              msgsnd(q, &m, 64, 0);
+              msgrcv(q, &m, 64, 1, 0);   // receive type-1 messages
+            source: "Part 8, message queue section; research-ipc2.md §4"
+            bloom: apply
+          - type: name
+            prompt: Do message queues preserve message boundaries?
+            answer: "**Yes.** Each msgsnd delivers one discrete typed message. Unlike pipes (byte stream)."
+            explanation: >-
+              Pipes and FIFOs concatenate bytes — if you send "abc" then "def", a reader might get "ab" + "cdef".
+              Message queues deliver each msgsnd as one atomic unit. Readers always get exactly one message per
+              msgrcv call.
+            example: |-
+              Pipe: writer sends 10+20 bytes. Reader may get 30 bytes
+              in one read or 15+15 bytes — boundaries invisible.
+              msgq: writer sends 2 messages. Reader gets each separately.
+            source: "Part 8, message queue section; research-ipc2.md §4"
+            bloom: understand
+          - type: name
+            prompt: Command to list System V IPC objects?
+            answer: "`ipcs` (add `-q` for queues, `-m` for shared memory, `-s` for semaphores)."
+            explanation: >-
+              Useful for debugging: see which IPC objects are still around because a process forgot to call
+              `IPC_RMID`. `ipcrm` complements it — manually removes an object by id. These are common
+              tools in OS labs.
+            example: |-
+              $ ipcs -m
+              key        shmid  owner  perms   bytes   nattch
+              0x00001234 32768  kevin  666     4096    2
+              $ ipcrm -m 32768
+            source: "Part 8, System V admin; research-ipc2.md §3, §4"
+            bloom: remember
+          - type: name
+            prompt: "Persistence of System V IPC objects (shm, msgq, sem): process-lifetime or kernel-lifetime?"
+            answer: "**Kernel-lifetime.** They persist after creating process dies, until explicitly removed or system reboots."
+            explanation: >-
+              This is why labs sometimes accumulate "orphan" IPC objects across runs — the creator process died
+              without cleanup. `ipcs` + `ipcrm` or a shutdown script must clear them. POSIX IPC (`sem_open`, named
+              shared memory) has the same property.
+            example: |-
+              Process A: shmget + shmat + crash (no cleanup).
+              Process B reboot-less: shmget with same key finds A's
+              segment still allocated. Manual ipcrm required.
+            source: "Part 8, System V admin; research-ipc2.md §3, §4"
+            bloom: understand
+          - type: name
+            prompt: "Named semaphore: which call opens it?"
+            answer: "`sem_open(\"/name\", O_CREAT, 0666, initial_value)`."
+            explanation: >-
+              Named semaphores are POSIX IPC — accessed by a `/name` path (not a filesystem path). Unrelated
+              processes can synchronize by opening the same name. Unnamed semaphores (`sem_init`) only work between
+              threads of one process or across fork-related processes via shared memory.
+            example: |-
+              sem_t *s = sem_open("/my_sync", O_CREAT, 0666, 1);
+              sem_wait(s); /* critical region */ sem_post(s);
+              sem_close(s); sem_unlink("/my_sync");
+            source: "Part 8, POSIX semaphore section; research-ipc2.md §5"
+            bloom: remember
+
+          # ---- Former list-recall "POSIX semaphore operations" → 5 atomic cards ----
+          - type: name
+            prompt: Which POSIX semaphore call is the equivalent of Dijkstra's P operation?
+            answer: "`sem_wait(sem_t*)` — atomically decrement; block if value was 0."
+            explanation: >-
+              Direct analog of P — the counter semantics are identical. POSIX also provides `sem_trywait` (returns
+              immediately with EAGAIN if would block) and `sem_timedwait` (blocks up to a timeout).
+            example: |-
+              sem_wait(&slots);   // block until a slot is free
+              // use slot ...
+              sem_post(&slots);   // release
+            source: "Part 8, POSIX semaphore section; research-ipc2.md §5"
+            bloom: remember
+          - type: name
+            prompt: Which POSIX semaphore call is the equivalent of Dijkstra's V operation?
+            answer: "`sem_post(sem_t*)` — atomically increment; wake one blocked waiter if any."
+            explanation: >-
+              Mirror of V. Critical property: sem_post never blocks — if the counter overflows the implementation
+              limit, it returns an error rather than waiting. Every successful sem_wait must be paired with a
+              sem_post to avoid permanent blocking of future waiters.
+            example: |-
+              sem_wait(&sem); do_work(); sem_post(&sem);
+              // Missing sem_post → next sem_wait blocks forever.
+            source: "Part 8, POSIX semaphore section; research-ipc2.md §5"
+            bloom: remember
+          - type: name
+            prompt: Which POSIX semaphore call initializes an unnamed (in-process) semaphore?
+            answer: "`sem_init(sem_t*, int pshared, unsigned int value)`."
+            explanation: >-
+              `pshared = 0` restricts the semaphore to threads of one process. `pshared = 1` allows sharing across
+              fork-related processes (requires the sem_t to live in shared memory). Named semaphores use
+              `sem_open` instead; you don't call sem_init on them.
+            example: |-
+              sem_t mtx;
+              sem_init(&mtx, 0, 1);   // 0 = process-local, initial value 1
+              // threads of this process can sem_wait/sem_post(&mtx)
+            source: "Part 8, POSIX semaphore section; research-ipc2.md §5"
+            bloom: remember
+          - type: name
+            prompt: Which POSIX semaphore call releases a process's handle to a named semaphore without removing it?
+            answer: "`sem_close(sem_t*)`."
+            explanation: >-
+              Releases this process's handle. The semaphore itself keeps existing in the kernel — other processes
+              that have opened it continue using it. To remove the semaphore from the system, call `sem_unlink`
+              and ensure every user has also called `sem_close`.
+            example: |-
+              sem_t *s = sem_open("/mysync", 0);
+              /* use */
+              sem_close(s);   // this process is done, semaphore remains
+            source: "Part 8, POSIX semaphore section; research-ipc2.md §5"
+            bloom: understand
+          - type: name
+            prompt: Which POSIX semaphore call removes a named semaphore from the system?
+            answer: "`sem_unlink(\"/name\")`."
+            explanation: >-
+              Marks the semaphore for removal; the kernel deletes it after the last `sem_close`. Analogous to
+              `unlink(2)` on a file — the name goes away immediately but the object persists until all handles
+              are gone. Always pair sem_open with eventual sem_unlink to avoid orphan objects.
+            example: |-
+              sem_unlink("/mysync");
+              // New sem_open with same name now creates a fresh semaphore,
+              // while existing handles continue to operate on the old one.
+            source: "Part 8, POSIX semaphore section; research-ipc2.md §5"
+            bloom: remember
+          # ---- end POSIX semaphore split ----
+
+          - type: name
+            prompt: Socket server call sequence (TCP)?
+            answer: "`socket` → `bind` → `listen` → `accept` → `recv/send`."
+            explanation: >-
+              `socket` allocates the descriptor. `bind` attaches an address (IP:port). `listen` marks the socket
+              passive with a backlog. `accept` blocks until a client connects, returning a new connected socket
+              for that client (original listener keeps listening).
+            example: |-
+              int s = socket(AF_INET, SOCK_STREAM, 0);
+              bind(s, ...); listen(s, 5);
+              int c = accept(s, ...);   // per-client socket
+              recv(c, ...); send(c, ...);
+            source: "Part 8, socket section; research-ipc2.md §6"
+            bloom: apply
+          - type: name
+            prompt: Socket client call sequence (TCP)?
+            answer: "`socket` → `connect` → `send/recv`."
+            explanation: >-
+              The client skips bind/listen/accept — the kernel assigns an ephemeral source port automatically on
+              connect. `connect` performs the TCP 3-way handshake (SYN → SYN-ACK → ACK) and returns once the
+              connection is established.
+            example: |-
+              int s = socket(AF_INET, SOCK_STREAM, 0);
+              connect(s, server_addr, sizeof(server_addr));
+              send(s, buf, len, 0); recv(s, buf, len, 0);
+            source: "Part 8, socket section; research-ipc2.md §6"
+            bloom: apply
+          - type: name
+            prompt: "`SOCK_STREAM` vs `SOCK_DGRAM`?"
+            answer: STREAM = TCP (connected, reliable, ordered). DGRAM = UDP (connectionless, unreliable, unordered).
+            explanation: >-
+              STREAM is the right default — TCP handles retransmission, ordering, and flow control. DGRAM is for
+              scenarios where these overheads matter more than reliability: real-time audio, DNS queries, game
+              state updates where a late packet is worthless.
+            example: |-
+              HTTP/HTTPS → STREAM (order and reliability required).
+              DNS query  → DGRAM (single small request/reply; retry on timeout).
+            source: "Part 8, socket section; research-ipc2.md §6"
+            bloom: understand
+          - type: name
+            prompt: "`mmap` flag that makes the mapping shared with other mappers and flushed to file?"
+            answer: "`MAP_SHARED`."
+            explanation: >-
+              MAP_SHARED makes mmap behave like shared memory IPC when two processes map the same file — they see
+              each other's writes. It's the bridge concept between Part 10 (virtual memory) and Part 8 (IPC), and
+              likely an exam target per the knowledge graph.
+            example: |-
+              int fd = open("shared.dat", O_RDWR);
+              char *p = mmap(NULL, 4096, PROT_READ|PROT_WRITE,
+                             MAP_SHARED, fd, 0);
+              // Two processes mapping the same file see each other's writes.
+            source: "Part 8, mmap section; Part 10 memory; research-ipc2.md §8"
+            bloom: apply
+          - type: name
+            prompt: "`MAP_PRIVATE` — what happens when process writes?"
+            answer: Copy-on-write. Changes are private to the process and NOT written back to the file.
+            explanation: >-
+              First read touches the file page directly. First write triggers a COW fault — the kernel allocates a
+              fresh private page, copies the original, redirects the mapping. Other processes and the on-disk file
+              are untouched. Used by dynamic linkers and fork.
+            example: |-
+              char *p = mmap(NULL, 4096, PROT_READ|PROT_WRITE,
+                             MAP_PRIVATE, fd, 0);
+              p[0] = 'x';   // COW fault; process now has private page
+              // file content unchanged; other mappers see no write.
+            source: "Part 8, mmap section; research-ipc2.md §8"
+            bloom: understand
+          - type: name
+            prompt: "`socketpair()` — what does it create?"
+            answer: A pair of connected sockets (local, bidirectional) — like a two-way pipe.
+            explanation: >-
+              Single syscall returns two fds already connected to each other. Commonly used as a bidirectional
+              pipe between parent and child post-fork. AF_UNIX only — no networking; the pair lives in kernel
+              memory.
+            example: |-
+              int sv[2];
+              socketpair(AF_UNIX, SOCK_STREAM, 0, sv);
+              if (fork() == 0) { close(sv[0]); write(sv[1], "hi", 2); }
+              else             { close(sv[1]); read(sv[0], buf, 2); }
+            source: "Part 8, socket section; research-ipc2.md §6"
+            bloom: remember
+          - type: name
+            prompt: "Which IPC: transfer 10 MB between unrelated processes on same host?"
+            answer: "Shared memory (via `shmget` or `mmap` with MAP\\_SHARED) — fastest. Alternatives: FIFO or UNIX socket."
+            explanation: >-
+              Shared memory avoids the user→kernel→user copy that pipes, FIFOs, and sockets impose. For 10 MB this
+              is ~20 MB of bytes moved in a pipe vs. 0 bytes with shm. FIFO and UNIX socket still work but pay the
+              copy cost twice.
+            example: |-
+              shm:   2 processes mmap the same file → writes are pointer
+                     stores. 10 MB transfer = 0 bytes copied.
+              pipe:  write 10 MB → kernel buffer → read → ~20 MB moved.
+            source: "Part 8, IPC comparison; research-ipc2.md §3, §9"
+            bloom: apply
+          - type: name
+            prompt: "Which IPC: communicate between two processes on different hosts?"
+            answer: Sockets (TCP or UDP).
+            explanation: >-
+              Sockets are the only IPC mechanism in Part 8 that crosses machine boundaries — the rest (pipes,
+              FIFOs, shm, msgq, sem, signals) are host-local. Across hosts, TCP for reliable ordered delivery,
+              UDP when low latency matters more than reliability.
+            example: |-
+              Client on host A, server on host B:
+              A: socket → connect → send/recv
+              B: socket → bind → listen → accept → recv/send
+              Either TCP (AF_INET, SOCK_STREAM) or UDP (SOCK_DGRAM).
+            source: "Part 8, socket section; research-ipc2.md §6, §9"
+            bloom: apply
+          - type: name
+            prompt: After `pipe(fd); fork();`, what must parent and child do with unused fds?
+            answer: >-
+              Close the unused ends. Parent (writer) closes `fd[0]`. Child (reader) closes `fd[1]`. Otherwise EOF is
+              never signaled.
+            explanation: >-
+              The OS sends EOF on a pipe only when all writers have closed fd[1]. If parent forgets to close its
+              own fd[0], the child's reads still block waiting for more data because a reader is "open" even though
+              it never reads. Closing unused ends is standard hygiene.
+            example: |-
+              pipe(fd); if (fork() == 0) {
+                close(fd[1]);               // child: reader only
+                while (read(fd[0], ...)) ;  // reads until parent closes
+              } else {
+                close(fd[0]);               // parent: writer only
+                write(fd[1], ...);
+                close(fd[1]);               // signals EOF to child
+              }
+            source: "Part 8, pipe section; research-ipc2.md §1"
+            bloom: apply
+          - type: name
+            prompt: Signal that cannot be caught or ignored?
+            answer: "`SIGKILL` (and `SIGSTOP`)."
+            explanation: >-
+              The kernel enforces these two regardless of process handlers. SIGKILL terminates immediately;
+              SIGSTOP suspends. This is how `kill -9` always works and why `nohup` can't protect against it. Every
+              other signal can be caught, blocked, or ignored via `sigaction`.
+            example: |-
+              signal(SIGINT,  handler);   // OK: Ctrl-C caught
+              signal(SIGKILL, handler);   // has NO effect
+              kill(pid, SIGKILL);         // immediate termination
+            source: "Part 8, signals section; research-ipc2.md §7"
+            bloom: remember
+          - type: name
+            prompt: Pipes — unidirectional or bidirectional?
+            answer: Unidirectional. For bidirectional, use two pipes or a `socketpair`.
+            explanation: >-
+              A single pipe has one read end (fd[0]) and one write end (fd[1]); data flows only write→read. True
+              bidirectional IPC needs either two pipes (one per direction) or a `socketpair` (same kernel-level
+              channel, but read+write on each end).
+            example: |-
+              Bidirectional parent↔child (two-pipe method):
+              int p2c[2], c2p[2]; pipe(p2c); pipe(c2p);
+              Parent writes p2c[1], reads c2p[0]. Child writes c2p[1], reads p2c[0].
+            source: "Part 8, pipe section; research-ipc2.md §1"
+            bloom: understand
+
+          # ---- Former list-recall "8 IPC mechanisms" → 2 Apply comparison cards (dropped 8-blank cloze
+          #      on pass-1 review; comparison cards already surface the full set through structural prompts) ----
+          - type: name
+            prompt: Which IPC mechanisms are bidirectional without needing two instances?
+            answer: "Sockets (including `socketpair`). Pipes and FIFOs are unidirectional per instance."
+            explanation: >-
+              This is an MCQ trap — students often mis-recall pipes as bidirectional. Only socket-family mechanisms
+              (including AF_UNIX socketpair) provide true bidirectionality in a single instance. Pipes, FIFOs, and
+              message queues are half-duplex.
+            example: |-
+              Parent↔child bidirectional chat:
+              wrong → one pipe (half-duplex).
+              right → socketpair(AF_UNIX) or two pipes (one per direction).
+            source: "Part 8, IPC comparison; research-ipc2.md §9"
+            bloom: apply
+          - type: name
+            prompt: Which IPC mechanisms persist with kernel lifetime (survive creator death)?
+            answer: "System V shm, System V msgq, System V semaphores, named pipes (FIFO), POSIX named semaphores."
+            explanation: >-
+              Anything with a name (System V key or POSIX path) lives until explicit removal or reboot. Process-
+              lifetime IPC: unnamed pipes, unnamed semaphores, signals. This is the source of "orphan IPC" bugs
+              in labs — creator crashes, object lingers, `ipcs` shows it.
+            example: |-
+              Lab test: create shm, crash before cleanup.
+              On re-run: shmget with same key finds existing segment, fails
+              if you forgot IPC_CREAT|IPC_EXCL. `ipcrm` to clear.
+            source: "Part 8, IPC lifetime section; research-ipc2.md §9"
+            bloom: apply
+          # ---- end 8-mechanism overlap ----
+
+          # ---- Analyze-level IPC 2 cards ----
+          - type: name
+            prompt: >-
+              Design decision: two processes on the same host need to stream audio (low-latency, tolerant of some loss)
+              through a bounded buffer. Which IPC + which synchronization primitive?
+            answer: >-
+              **Shared memory** (lowest-latency, no copy) + **counting semaphores** (`empty` + `full` + `mutex` on
+              the ring buffer). Sockets add copy overhead; pipes add copy AND are unidirectional; msgq preserves
+              boundaries you don't need.
+            explanation: >-
+              For audio, the cost hierarchy is latency > throughput > reliability. Shm + semaphores is the
+              producer-consumer template scaled up: ring buffer in shared memory, producer fills empty slots,
+              consumer drains full slots, mutex protects head/tail updates.
+            example: |-
+              Shared ring buffer with 128 audio frames:
+              sem_init(&empty, 1, 128); sem_init(&full, 1, 0); sem_init(&mutex, 1, 1);
+              Producer: sem_wait(&empty); sem_wait(&mutex); write_frame(); sem_post(&mutex); sem_post(&full);
+            source: "Part 8, IPC comparison; Part 6/7 producer-consumer; research-ipc2.md §9"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              A server uses `pipe(fd); fork()` for parent-child communication but forgets to close unused ends. Under
+              what load scenario does the bug first manifest?
+            answer: >-
+              When the child finishes writing and exits, the parent's read on `fd[0]` blocks indefinitely instead of
+              returning EOF — because the parent's own (unused) `fd[1]` remains open, so "at least one writer" is
+              still true from the kernel's perspective.
+            explanation: >-
+              The EOF condition is "all writer fds closed". The parent owns an unused write fd that it forgot to
+              close, keeping the writer count at 1 even after the child exits. The symptom is a hung read that
+              looks like the child is still running.
+            example: |-
+              Hang-reproducing code:
+              pipe(fd); if (fork()==0) { write(fd[1], "hi", 2); exit(0); }
+              // parent forgets close(fd[1]) → read(fd[0], ...) after "hi"
+              // blocks forever. Fix: close(fd[1]) in parent before read.
+            source: "Part 8, pipe section; research-ipc2.md §1"
+            bloom: analyze
+          # ---- end IPC 2 Analyze ----
+  - id: deadlock
+    name: Deadlock
+    topics:
+      - id: 4736-deadlock
+        name: Deadlock
+        tags:
+          - deadlock
+        prose: Coffman conditions, resource graphs, detection matrices, and recovery strategies.
+        cards:
+
+          # ---- Former list-recall "Four Coffman conditions?" → 4 atomic cards + 1 overlapping cloze ----
+          - type: name
+            prompt: Which Coffman condition requires that a resource be assigned to at most one process at a time?
+            answer: "**Mutual exclusion**."
+            explanation: >-
+              Sharable resources (read-only data, spooled output) don't induce deadlock because multiple processes can
+              use them concurrently. Mutual exclusion — exclusive ownership — is what creates the possibility of one
+              process blocking another on that resource.
+            example: |-
+              Printer: exclusive → mutex condition holds.
+              Read-only config file: shareable → mutex does NOT hold for it.
+            source: "Part 9, Slide 19; topic-dive: coffman-conditions-strategies.md"
+            bloom: remember
+          - type: name
+            prompt: Which Coffman condition requires a process to hold at least one resource while waiting for others?
+            answer: "**Hold and wait**."
+            explanation: >-
+              A process that owns nothing cannot be part of a wait chain. The hold-and-wait condition is what lets
+              each link of the chain own the resource the next link wants — it is the glue of a deadlock cycle.
+            example: |-
+              P1 holds the printer, now blocks requesting the tape drive.
+              P1 is holding + waiting → condition present.
+            source: "Part 9, Slide 19; topic-dive: coffman-conditions-strategies.md"
+            bloom: remember
+          - type: name
+            prompt: Which Coffman condition forbids the OS from forcibly reclaiming a held resource?
+            answer: "**No preemption**."
+            explanation: >-
+              If the OS could always rip a resource out of a process's hand, no wait would ever become permanent. The
+              no-preemption condition is what makes a wait chain stick long enough to become deadlock rather than
+              transient contention.
+            example: |-
+              Tape drive mid-write — OS cannot preempt without corruption.
+              Printer output via spool — OS CAN preempt (redirect spool).
+            source: "Part 9, Slide 19; topic-dive: coffman-conditions-strategies.md"
+            bloom: remember
+          - type: name
+            prompt: Which Coffman condition requires a cycle in the process-resource wait chain?
+            answer: "**Circular wait**."
+            explanation: >-
+              Linear wait chains eventually terminate (the last process will finish and release). A cycle is what
+              makes every process depend transitively on itself, so no progress can occur without external intervention.
+            example: |-
+              P1 waits on R2 (held by P2); P2 waits on R1 (held by P1).
+              P1 → R2 → P2 → R1 → P1: closed cycle.
+            source: "Part 9, Slide 19; topic-dive: coffman-conditions-strategies.md"
+            bloom: remember
+          - type: cloze
+            prompt: >-
+              Deadlock requires all four Coffman conditions simultaneously: {{mutual exclusion}}, {{hold and wait}},
+              {{no preemption}}, and {{circular wait}}.
+            answer: mutual exclusion, hold and wait, no preemption, circular wait
+            explanation: >-
+              The four conditions are necessary AND sufficient: remove any one and deadlock becomes impossible.
+              Prevention strategies each attack exactly one of these, which is why they are listed together.
+            example: |-
+              Remove mutual exclusion → spooling; remove hold-and-wait → request-all;
+              remove no-preemption → preempt; remove circular wait → resource ordering.
+            source: "Part 9, Slide 19; topic-dive: coffman-conditions-strategies.md"
+            bloom: understand
+          # ---- end Coffman split ----
+
+          # ---- Former list-recall "Deadlock vs starvation vs livelock?" → 3 atomic cards ----
+          - type: name
+            prompt: A process is blocked waiting on a resource held by another blocked process. What is this called?
+            answer: "**Deadlock**."
+            explanation: >-
+              Deadlock is a circular-wait condition where every participant is blocked. No process in the cycle can
+              resume without external intervention (preemption, rollback, or kill). Distinct from starvation and
+              livelock because every participant is in the **blocked** state.
+            example: |-
+              P1 blocked on R2 (held by P2); P2 blocked on R1 (held by P1).
+              Both in Blocked state → classic 2-cycle deadlock.
+            source: "Part 9, Slides 97-106; research-deadlock.md §8"
+            bloom: understand
+          - type: name
+            prompt: A ready process is never scheduled / never granted its requested resource. What is this called?
+            answer: "**Starvation**."
+            explanation: >-
+              Unlike deadlock, the starved process is **not blocked** — it could run if given the resource, but the
+              scheduler or allocation policy keeps choosing others. Fix: aging, FIFO scheduling, or fair allocation.
+            example: |-
+              Priority scheduler always picks high-priority jobs.
+              Low-priority batch job in ready queue for days → starving.
+            source: "Part 9, Slides 97-106; research-deadlock.md §8"
+            bloom: understand
+          - type: name
+            prompt: Processes keep changing state but none make progress toward their goal. What is this called?
+            answer: "**Livelock**."
+            explanation: >-
+              Participants are not blocked — they execute and react — but their reactions keep cancelling each other
+              out. Detection is harder than deadlock because the process-state field doesn't say "blocked".
+            example: |-
+              Two people stepping aside to let the other pass — both step
+              the same way repeatedly. Busy, active, but no progress.
+            source: "Part 9, Slides 97-106; research-deadlock.md §8"
+            bloom: understand
+          # ---- end deadlock/starvation/livelock split ----
+
+          - type: name
+            prompt: In a resource allocation graph, what does an arrow R→P mean vs P→R?
+            answer: R→P = resource R is allocated to process P. P→R = process P is requesting resource R.
+            explanation: >-
+              Direction encodes assignment vs request. Swapping the direction inverts the meaning, so a mis-drawn
+              arrow in a RAG can flip a deadlock analysis from "safe" to "deadlocked". Always read arrowhead.
+            example: |-
+              Past-exam Q5 graph: R₁ → P₁ means P₁ holds one instance of R₁.
+              P₁ → R₂ means P₁ is requesting R₂.
+            source: "Part 9 RAG section; past-exam Q5; research-deadlock.md §2"
+            bloom: remember
+          - type: name
+            prompt: In a single-instance-resource graph, when does deadlock exist?
+            answer: Whenever there is a **cycle** in the graph.
+            explanation: >-
+              With one instance per resource, the only way every process in a chain can be blocked is for the chain
+              to close on itself. With multiple instances per resource, a cycle is necessary but no longer sufficient
+              — the matrix algorithm replaces cycle detection.
+            example: |-
+              P1 → R2 → P2 → R1 → P1: cycle of length 2 → deadlock.
+              Same graph with R2 having 2 instances and one free → no deadlock.
+            source: "Part 9 single-instance detection; research-deadlock.md §3"
+            bloom: understand
+          - type: name
+            prompt: Matrix detection — what does the vector `E` represent?
+            answer: "Existing resources: total number of instances of each resource type in the system."
+            explanation: >-
+              E is a constant of the system (what exists physically). It never changes during the algorithm — only C,
+              R, and A change as allocation decisions are simulated.
+            example: |-
+              4 tape drives, 2 plotters, 3 scanners, 1 Blu-ray drive
+              → E = [4, 2, 3, 1].
+            source: "Part 9 matrix detection; research-deadlock.md §3; topic-dive: matrix-detection-algorithm-c-r-e-a.md"
+            bloom: remember
+          - type: name
+            prompt: Matrix detection — what does matrix `C[i][j]` represent?
+            answer: "Current allocation: number of instances of resource j currently held by process i."
+            explanation: >-
+              C is a snapshot — each row is one process's current holdings across all resource types. Column sums of
+              C tell you total holdings per resource type, which combined with A equals E.
+            example: |-
+              C[P2][Blu-ray] = 1 means P2 holds one Blu-ray drive right now.
+              C row 2: [2, 0, 0, 1] → P2 holds 2 tapes + 1 Blu-ray.
+            source: "Part 9 matrix detection; topic-dive: matrix-detection-algorithm-c-r-e-a.md"
+            bloom: remember
+          - type: name
+            prompt: Matrix detection — what does matrix `R[i][j]` represent?
+            answer: "Request: number of instances of resource j that process i is currently waiting for."
+            explanation: >-
+              R captures unmet demand only — already-granted resources live in C, not R. A process with R row all
+              zero has no outstanding requests and can finish immediately. That's the base case of the algorithm's
+              termination.
+            example: |-
+              R[P1] = [2, 0, 0, 1] means P1 is waiting for 2 tapes + 1 Blu-ray.
+              If any of those arrived in C, R decrements correspondingly.
+            source: "Part 9 matrix detection; topic-dive: matrix-detection-algorithm-c-r-e-a.md"
+            bloom: remember
+          - type: name
+            prompt: Formula for `A` (available) given `E` and `C`?
+            answer: A\[j\] = E\[j\] − Σ\_i C\[i\]\[j\] (subtract column sums of C from E).
+            explanation: >-
+              Available = total existing − total allocated. This invariant (`Σᵢ C[i][j] + A[j] = E[j]`) is the
+              sanity check on any problem input: if column sums plus A don't equal E, the problem is malformed.
+            example: |-
+              E = [3, 2, 2]. C column sums = [2, 2, 1].
+              A = [3−2, 2−2, 2−1] = [1, 0, 1].
+            source: "Part 9 matrix detection; past-exam Q5; research-deadlock.md §3"
+            bloom: apply
+          - type: name
+            prompt: Detection algorithm — what condition makes process i satisfiable?
+            answer: "R\\[i\\] ≤ A (component-wise): its request vector fits in current available."
+            explanation: >-
+              Component-wise ≤ means every resource type's request must fit. If even one component exceeds A, the
+              process is not satisfiable in this iteration — but it may become satisfiable after another process
+              releases resources.
+            example: |-
+              R[P2] = [1, 0, 1, 0], A = [2, 1, 0, 0] → NO (scanner: 1 > 0).
+              After P3 releases: A = [2, 2, 2, 0] → YES for P2.
+            source: "Part 9 matrix detection; topic-dive: matrix-detection-algorithm-c-r-e-a.md"
+            bloom: apply
+          - type: name
+            prompt: When a process is marked satisfiable, what happens to A?
+            answer: A ← A + C\[i\] (its held resources return to the pool).
+            explanation: >-
+              We simulate the process running to completion and releasing everything it held. The released holdings
+              (C[i]) become available for other processes, which may now satisfy their R[i] ≤ A check.
+            example: |-
+              Mark P3. C[P3] = [0, 1, 2, 0], A was [2, 1, 0, 0].
+              A ← [2, 1, 0, 0] + [0, 1, 2, 0] = [2, 2, 2, 0].
+            source: "Part 9 matrix detection; topic-dive: matrix-detection-algorithm-c-r-e-a.md"
+            bloom: apply
+          - type: name
+            prompt: Prevention strategy for **hold and wait**?
+            answer: Require each process to request ALL resources at once, OR release all before requesting more.
+            explanation: >-
+              The attack removes the glue of the wait chain: a process that holds zero resources cannot be a link.
+              Tradeoff: "request all upfront" over-reserves resources (they sit idle if not yet needed);
+              "release-then-reacquire" requires the process to plan for a possibly-denied reacquisition.
+            example: |-
+              Compile job: declare "I need tape + printer" at start.
+              OS grants both or blocks until both free. Never holds one
+              while waiting on the other.
+            source: "Part 9, Slides 89-95; topic-dive: coffman-conditions-strategies.md"
+            bloom: understand
+          - type: name
+            prompt: Prevention strategy for **circular wait**?
+            answer: Global numbering of resources. Processes must request in increasing order only.
+            explanation: >-
+              If A holds resource i and requests resource j with i<j, any process B holding j cannot ask for i
+              without violating the order. This breaks the closure property required for a cycle. Proof sketch: any
+              cycle would require at least one edge going from high → low in numbering, which the rule forbids.
+            example: |-
+              Imagesetter=1, Printer=2, Plotter=3, Tape=4, CD-ROM=5.
+              Any process grabs them in numeric order only → no cycle.
+            source: "Part 9, Slides 89-95; topic-dive: coffman-conditions-strategies.md"
+            bloom: understand
+          - type: name
+            prompt: Prevention strategy for **no preemption**?
+            answer: "Allow preemption: if a process requesting is blocked, forcibly take its current resources away."
+            explanation: >-
+              Works cleanly for virtualizable resources (printers via spool, CPU via context switch). Fails for
+              stateful hardware mid-operation (tape drive writing) where preemption corrupts output. Limited
+              applicability.
+            example: |-
+              Process mid-print → spooled → safe to redirect (preemptable).
+              Process mid-tape-write → physical drive busy → not safely preemptable.
+            source: "Part 9, Slides 89-95; topic-dive: coffman-conditions-strategies.md"
+            bloom: understand
+          - type: name
+            prompt: Prevention strategy for **mutual exclusion**?
+            answer: >-
+              Spooling (virtualize the resource). E.g. printer spooler — all processes "write" but only the spooler
+              daemon accesses the device.
+            explanation: >-
+              Only one process actually touches the physical device; every other process sees a spooled queue that
+              behaves as if it had its own private copy. Cannot work for all resources — notably mutable shared
+              state (a file being written concurrently) can't be spooled without serialization.
+            example: |-
+              LPR command: each user app "prints" to a spool file.
+              Spooler daemon is the single process accessing the printer.
+            source: "Part 9, Slides 89-95; topic-dive: coffman-conditions-strategies.md"
+            bloom: understand
+          - type: name
+            prompt: Banker's algorithm — purpose?
+            answer: >-
+              Deadlock **avoidance**: grant a resource request only if the resulting state is SAFE (i.e., a safe
+              sequence exists).
+            explanation: >-
+              Avoidance sits between prevention (structurally block a condition) and detection (wait for deadlock
+              and recover). Banker's simulates each request and refuses any that leaves the system without a proof
+              of completion.
+            example: |-
+              P1 requests 1 unit. Banker: if I grant this, can I still
+              sequence all processes to completion? If YES → grant.
+              If NO → deny, make P1 wait.
+            source: "Part 9, Slides 72-87; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: understand
+          - type: name
+            prompt: >-
+              Total = 10 units. Has: A=3, B=2, C=2 (Available = 3). Max: A=9, B=4, C=7. Give a safe sequence (or show
+              none exists).
+            answer: >-
+              Need = \[6, 2, 5\]. B fits (2 ≤ 3) → Available = 5. C fits (5 ≤ 5) → Available = 7. A fits (6 ≤ 7) →
+              Available = 10. Safe sequence: **B, C, A**.
+            explanation: >-
+              Safe-state check: find ANY process whose Need ≤ Available, run it, reclaim its Has, repeat. Order
+              matters only in that each step must advance; any found process works. B → C → A is the unique fit here
+              (A cannot go first because Need 6 > Available 3).
+            example: |-
+              If instead A had Has=4 (Need=5) and Available=2:
+              check B: Need 2 ≤ 2 ✓; Available = 4; A: Need 5 ≤ 4 NO;
+              C: Need 5 ≤ 4 NO → UNSAFE.
+            source: "Part 9, Slides 72-87; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: apply
+          - type: name
+            prompt: Why does Banker's refuse a grant that produces an unsafe state, even though unsafe ≠ deadlocked?
+            answer: >-
+              Unsafe means no ordering guarantees completion under worst-case future requests. Deadlock is *possible*.
+              Banker's is conservative: it preserves a safety proof at every step rather than gambling that future
+              requests behave.
+            explanation: >-
+              Safety is monotonic under Banker's — if every granted state is safe, the system can never enter a
+              state where deadlock is possible. An unsafe state isn't deadlocked yet, but the OS has no evidence
+              that future requests won't push it over the edge.
+            example: |-
+              Grant request → state passes column sums but fails safety check.
+              Banker refuses; requester blocks. No deadlock risk from this grant.
+            source: "Part 9, Slides 72-87; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: understand
+          - type: name
+            prompt: Safe state definition?
+            answer: >-
+              A state where the OS can sequence all processes such that each can eventually obtain its max resources
+              without deadlock.
+            explanation: >-
+              "Safe" is about the existence of at least one completion order, not about any particular one. Even if
+              scheduling picks a different order, the existence proof says completion is reachable.
+            example: |-
+              Has/Max/Need: A 3/9/6, B 2/4/2, C 2/7/5; Available = 3.
+              Safe sequences exist (B→C→A) → state is safe.
+            source: "Part 9, Slides 72-87; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: remember
+
+          # ---- Former list-recall "Three methods of deadlock recovery?" → 3 atomic cards ----
+          - type: name
+            prompt: Which recovery method takes a resource from its current owner and hands it to a blocked process?
+            answer: "**Preemption**."
+            explanation: >-
+              The feasibility depends on resource type: a printer can be preempted (reassign the spool) but an
+              in-progress tape write cannot. Also creates correctness concerns — the previous owner may need
+              compensating state reset.
+            example: |-
+              Blocked P wants the printer held by Q.
+              OS redirects Q's spool to a holding file, grants printer to P.
+            source: "Part 9 recovery section; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: understand
+          - type: name
+            prompt: Which recovery method restores a process to a prior checkpoint to release resources?
+            answer: "**Rollback**."
+            explanation: >-
+              Requires periodic checkpointing — memory state + resource state — saved to a distinct file (not
+              overwriting prior checkpoints). Rolls the deadlocked process back to before it acquired the contested
+              resource, then restarts from there.
+            example: |-
+              Process at cycle: checkpoint at t₀, deadlock at t₁.
+              Rollback to t₀ image → process restarts, picks different
+              order on retry → cycle broken.
+            source: "Part 9 recovery section; research-deadlock.md §6"
+            bloom: understand
+          - type: name
+            prompt: Which recovery method is the crudest but simplest?
+            answer: "**Killing** one or more processes in (or near) the cycle."
+            explanation: >-
+              Choose a victim whose work can be restarted safely — classic example: compilation (idempotent, re-runs
+              cleanly) vs. database update (side-effecting, cannot be blindly re-run). Repeat if one kill doesn't
+              clear the cycle.
+            example: |-
+              Compile process + DB-update process + file-copy in a cycle.
+              Kill the compile: safe to rerun; other two continue.
+            source: "Part 9 recovery section; research-deadlock.md §6"
+            bloom: understand
+          # ---- end recovery split ----
+
+          - type: name
+            prompt: What is the **Ostrich algorithm**?
+            answer: >-
+              Ignore the deadlock problem. Viable if deadlocks are rare and recovery cost exceeds prevention cost. Used
+              by UNIX/Windows.
+            explanation: >-
+              A cost-benefit argument, not a technical one: prevention and avoidance impose overhead on every
+              allocation. If deadlocks hit once every 5 years, reboot is cheaper than paying that overhead
+              continuously. General-purpose OSes adopt this pragmatically.
+            example: |-
+              Desktop Linux: fork/exec, malloc, file I/O — no Banker's.
+              If a user triggers a 4-process deadlock once a year, reboot.
+            source: "Part 9, Slide 106; research-deadlock.md §11"
+            bloom: remember
+
+          # ---- Former list-recall "Two phases of two-phase locking?" → 2 atomic cards ----
+          - type: name
+            prompt: In two-phase locking, what does the **growing phase** allow?
+            answer: Acquiring locks. No releasing during this phase.
+            explanation: >-
+              The transaction collects every lock it will ever need before entering the shrinking phase. If any lock
+              fails, release all acquired so far and retry — this is the escape valve that prevents hold-and-wait
+              deadlock across transactions following the same protocol.
+            example: |-
+              T1 growing: lock(A) ✓, lock(B) ✓, lock(C) blocked.
+              T1 releases A, B; retries from scratch.
+            source: "Part 9 two-phase section; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: remember
+          - type: name
+            prompt: In two-phase locking, what does the **shrinking phase** allow?
+            answer: Releasing locks. No new locks may be acquired during this phase.
+            explanation: >-
+              Once the transaction starts releasing, it commits to the locks it holds — no more acquisition. This is
+              what enforces serializability: no transaction can sneak a late lock acquisition that would reorder
+              operations with respect to other transactions.
+            example: |-
+              T1 after growing: holds A, B, C.
+              Phase 2: release C, release B, release A. No new locks allowed.
+            source: "Part 9 two-phase section; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: remember
+          # ---- end two-phase split ----
+
+          - type: name
+            prompt: >-
+              In past-exam Q5, for 3 processes and 3 resource types with given graph, what is the column-sum formula
+              used to check `E`?
+            answer: "Σi C\\[i\\]\\[j\\] = allocated count per resource. E must be ≥ this sum. Given answer: E=\\[3, 2, 2\\]."
+            explanation: >-
+              The column-sum formula is the sanity check that a problem-stated E matches the graph: if column sums
+              exceed E, the graph is malformed. In Q5, column sums of C = [2, 2, 1] ≤ E = [3, 2, 2] → valid.
+            example: |-
+              Q5 C matrix column sums = [0+2+0, 1+1+0, 0+0+1] = [2, 2, 1].
+              Stated E = [3, 2, 2]. A = E − col sums = [1, 0, 1].
+            source: "Past-exam Q5; research-deadlock.md §3"
+            bloom: apply
+
+          # ---- Additional Apply-level drills (added pass 2 to close Apply gap) ----
+          - type: name
+            prompt: >-
+              System has E = [4, 2, 3, 1], A = [2, 1, 0, 0]. C rows: P1=[0,0,1,0], P2=[2,0,0,1], P3=[0,1,2,0].
+              R rows: P1=[2,0,0,1], P2=[1,0,1,0], P3=[2,1,0,0]. Is the system deadlocked? Trace.
+            answer: >-
+              P1 R ≤ A? [2,0,0,1]≤[2,1,0,0] NO (BR: 1>0). P2 R ≤ A? [1,0,1,0]≤[2,1,0,0] NO (S: 1>0).
+              P3 R ≤ A? [2,1,0,0]≤[2,1,0,0] YES → mark P3, A += C[P3] = [2,2,2,0]. P2: [1,0,1,0]≤[2,2,2,0] YES →
+              mark, A = [4,2,2,1]. P1: [2,0,0,1]≤[4,2,2,1] YES → mark. **No deadlock** (all marked; order P3, P2, P1).
+            explanation: >-
+              Fresh scenario (not Q5). The algorithm succeeds because the first satisfiable process (P3) returns
+              exactly the scanner P2 was blocked on, which in turn returns the Blu-ray P1 was blocked on. The
+              unlock chain is the point: one release cascades into the next.
+            example: |-
+              Change P3's request to [2,2,0,0]. Then P3 also fails (1<2 in P-col).
+              With nobody satisfiable on the first pass → all three deadlocked.
+            source: "Part 9 matrix detection; research-deadlock.md §3"
+            bloom: apply
+          - type: name
+            prompt: >-
+              Banker's multi-resource. E = (6,3,4,2), A = (1,0,2,0). Allocations: A=[3,0,1,1], B=[0,1,0,0],
+              C=[1,1,1,0], D=[1,1,0,1], E=[0,0,0,0]. Still-need: A=[0,1,0,0], B=[0,1,1,2], C=[3,1,0,0],
+              D=[0,0,1,0], E=[2,1,1,0]. Find one safe process to run first.
+            answer: >-
+              Scan rows: A [0,1,0,0] ≤ [1,0,2,0]? NO (1>0 on col 2). B NO (1>0). C NO (3>1). D [0,0,1,0] ≤
+              [1,0,2,0]? YES. **D can run first.** Release D: A ← [1,0,2,0] + [1,1,0,1] = [2,1,2,1]. Continue from
+              there.
+            explanation: >-
+              Same ≤-scan pattern as detection, but here Max−Has replaces R. Any satisfiable process becomes the
+              first step of the safe sequence. If no such process exists on the initial scan, the state is unsafe
+              and Banker's would deny whatever request produced it.
+            example: |-
+              After marking D, re-scan with A=[2,1,2,1]:
+              B [0,1,1,2] ≤ [2,1,2,1]? NO (2>1 on col 4).
+              A [0,1,0,0] ≤ [2,1,2,1] YES → A next. Continue until all marked
+              or a scan fails (unsafe).
+            source: "Part 9, Slides 84-87; research-deadlock.md §4"
+            bloom: apply
+          - type: name
+            prompt: >-
+              Scenario: processes must request multiple tape drives and scanners, often in different orders.
+              Deadlocks have been observed. Which Coffman condition is easiest to attack here, and how?
+            answer: >-
+              Attack **circular wait** via global resource numbering — e.g. tape=1, scanner=2. Every process must
+              request in increasing order. Removes the cyclic dependency without over-reserving resources
+              (unlike request-all-upfront).
+            explanation: >-
+              Ranking Coffman attacks by overhead in this scenario: mutex (spooling tape drives is awkward, they
+              are stateful hardware); hold-and-wait (request-all wastes expensive devices); no-preemption (mid-tape
+              preemption corrupts); circular-wait (cheap protocol change, no resource waste). Numbering wins.
+            example: |-
+              Global order: tape=1, scanner=2, plotter=3.
+              Process wanting tape + scanner: requests tape first, then scanner.
+              Another process wanting scanner + tape: must also request tape first,
+              cannot form a cycle.
+            source: "Part 9, Slides 89-95; research-deadlock.md §5, §12"
+            bloom: apply
+          # ---- end Apply drills ----
+
+          # ---- Analyze-level cards (for Bloom mix) ----
+          - type: name
+            prompt: >-
+              Past-exam Q5: C = [[0,1,0],[2,1,0],[0,0,1]], R = [[2,0,0],[0,0,2],[3,0,0]], E = [3,2,2]. Is the system
+              deadlocked? Show the trace.
+            answer: >-
+              A = E − col(C) = [1, 0, 1]. Check R[i] ≤ A: P1 [2,0,0] NO; P2 [0,0,2] NO; P3 [3,0,0] NO. No process
+              can proceed → **DEADLOCK** on all three processes.
+            explanation: >-
+              The algorithm terminates as soon as an iteration finds no satisfiable process. When that happens on
+              the very first iteration — as here — every process is part of the deadlock set. No kills, no releases
+              can help without external intervention (preemption or rollback).
+            example: |-
+              Same C but R[P3] changed to [4,0,0], E = [5, 2, 2]:
+              A = [3, 0, 1]. P1 [2,0,0] ≤ [3,0,1] YES → mark, release [0,1,0]
+              → A = [3,1,1] → P2 [0,0,2] NO (2>1) → P3 [4,0,0] NO (4>3).
+              P2 and P3 are deadlocked; P1 escapes.
+            source: "Past-exam Q5; research-deadlock.md §3; topic-dive: matrix-detection-algorithm-c-r-e-a.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              A Banker's system has processes A (Has=3, Max=9), B (Has=2, Max=4), C (Has=4, Max=7). Total = 10.
+              B now requests 2 more units. Grant or deny? Justify.
+            answer: >-
+              Available = 10 − Σ Has = 10 − (3+2+4) = 1. B requests 2 but only 1 is free. The request fails
+              Banker's **first gate** (sufficient free resources) and never reaches the safety check.
+              **Deny / postpone.**
+            explanation: >-
+              Banker's has two gates: (1) enough free resources to satisfy the request at all, then (2) does the
+              resulting state stay safe. This request fails gate (1); gate (2) never runs.
+            example: |-
+              Change A's Has to 2 (so Available = 2). B requests 2.
+              Grant → B Has=4, Available=0. Safety check with Need=[7,2,3]:
+              A Need 7 ≤ 0? NO. B Need 2 ≤ 0? NO. C Need 3 ≤ 0? NO.
+              → UNSAFE → deny.
+            source: "Part 9, Slides 72-87; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              Given holders P1 (Printer), P2 (Tape), waits P1→Tape, P2→Printer — name the exact Coffman condition
+              each structural element corresponds to.
+            answer: >-
+              **Mutual exclusion** — both resources are held exclusively (only one holder each). **Hold and wait** —
+              P1 holds Printer while waiting; P2 holds Tape while waiting. **No preemption** — OS lets each keep its
+              held resource. **Circular wait** — P1→Tape→P2→Printer→P1 closes the cycle.
+            explanation: >-
+              This is the canonical exam diagnostic: given a deadlock, identify which structural features of the
+              scenario instantiate which of the four conditions. Removing any single element breaks deadlock —
+              which is also the map to the four prevention strategies.
+            example: |-
+              Break circular wait: number Printer=1, Tape=2.
+              P1 must take Printer before Tape — OK.
+              P2 must take Printer before Tape too — but P1 already holds it,
+              so P2 blocks before grabbing Tape → cycle impossible.
+            source: "Part 9, Slide 19; research-deadlock.md §1, §5"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              Why does two-phase locking prevent circular-wait deadlock between transactions that follow the
+              protocol, even without explicit resource numbering?
+            answer: >-
+              It doesn't — 2PL by itself can still deadlock if T1 locks A then B while T2 locks B then A. The
+              "retry" behavior (release all, retry) is what breaks wait chains, not 2PL's phase structure.
+            explanation: >-
+              Common misconception: two-phase locking guarantees serializability, not deadlock-freedom. Deadlock
+              prevention via 2PL requires an additional protocol — typically global resource ordering — or a
+              deadlock-detection backstop that aborts one of the transactions.
+            example: |-
+              T1: lock(A), lock(B); T2: lock(B), lock(A).
+              T1 holds A, waits on B; T2 holds B, waits on A.
+              Circular wait → deadlock, despite both being 2PL.
+            source: "Part 9 two-phase section; topic-dive: banker-s-algorithm-recovery-two-phase-locking.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              A system runs daily at 99.9% utilization. Deadlocks occur once every 3 years. The alternative
+              (avoidance via Banker's) would impose 2% overhead on every resource request. Which strategy is
+              justified and why?
+            answer: >-
+              **Ostrich** (ignore + reboot on rare deadlock). 2% continuous overhead on every request vastly exceeds
+              the cost of a once-in-3-years outage — especially on a general-purpose system where safety-critical
+              real-time guarantees are absent.
+            explanation: >-
+              Engineers weigh expected cost (probability × impact × continuity) against overhead. If deadlocks are
+              rare and the overhead to prevent them is continuous, ignore-and-recover usually wins. If they are
+              frequent or impact is catastrophic (avionics, medical), prevention or avoidance wins even at high
+              overhead.
+            example: |-
+              Same system but deadlocks hit weekly → Banker's worth it.
+              Safety-critical real-time controller → prevention regardless
+              of overhead; no room for ignore.
+            source: "Part 9, Slide 106; research-deadlock.md §7, §11"
+            bloom: analyze
+          # ---- end Analyze cards ----
+  - id: memory
+    name: Memory & Paging
+    topics:
+      - id: 4736-memory-paging
+        name: Memory/Paging
+        tags:
+          - paging
+          - memory
+        prose: >-
+          Virtual memory via paging — fixed-size pages mapped to frames through page tables. Drill address-translation
+          math: page size → offset bits, number of pages/frames, and multi-level page-table sizing.
+        cards:
+          - type: name
+            prompt: Virtual page vs page frame?
+            answer: >-
+              Virtual page = chunk of virtual address space. Page frame = same-size unit in physical memory. Page table
+              maps the two.
+            explanation: >-
+              Pages and frames are always the **same size** so the low-order bits (the offset) survive translation
+              unchanged. Translation only rewrites the upper bits — virtual page number → page frame number.
+            example: |-
+              4 KB pages. Virtual addr 8300 = (VP 2, offset 108).
+              Page table: VP 2 → frame 6.
+              Physical = frame 6 base (24576) + 108 = 24684.
+            source: "Part 10, Slides 47-72; topic-dive: paging-core-formulas.md"
+            bloom: understand
+          - type: name
+            prompt: 48-bit VA, 32-bit PA, 8 KB pages. Number of pages?
+            answer: 8 KB = 2^13. Pages = 2^(48−13) = **2^35**.
+            explanation: >-
+              Number of virtual pages is always 2^(VA_bits − offset_bits). The offset fills log₂(page_size) bits; what
+              remains of the virtual address selects the page.
+            example: |-
+              Same problem, 4 KB pages instead: offset = 12 bits,
+              pages = 2^(48−12) = 2^36.
+            source: "Part 10, Slides 47-72; past-exam Q1; topic-dive: paging-core-formulas.md"
+            bloom: apply
+          - type: name
+            prompt: 48-bit VA, 32-bit PA, 8 KB pages. Number of page frames?
+            answer: 2^(32−13) = **2^19**.
+            explanation: >-
+              Frame count depends on **physical** address width, not virtual. Same offset bits (13) come off the top;
+              the remaining physical bits select the frame.
+            example: |-
+              If PA were 34-bit instead of 32-bit (same 8 KB pages):
+              frames = 2^(34−13) = 2^21 = 4× as much physical memory.
+            source: "Part 10, Slides 47-72; past-exam Q1; topic-dive: paging-core-formulas.md"
+            bloom: apply
+          - type: name
+            prompt: Entries in single-level linear page table with 48-bit VA, 8 KB pages?
+            answer: One entry per virtual page = **2^35 entries**.
+            explanation: >-
+              A linear page table holds one PTE per virtual page — even for unmapped pages. This is why 64-bit
+              single-level tables are infeasible and multi-level / inverted tables exist.
+            example: |-
+              2^35 entries × 8 B per entry = 2^38 B = 256 GiB
+              just for the page table of ONE process.
+            source: "Part 10, Slides 47-72; topic-dive: paging-core-formulas.md"
+            bloom: apply
+          - type: name
+            prompt: Formula for offset bits given page size?
+            answer: offset\_bits = log2(page\_size).
+            explanation: >-
+              The offset is a byte address *within* the page, so its width has to span the whole page size. A
+              page-size that isn't a power of 2 would waste offset bits and make page-number extraction require
+              division instead of a bit-shift, which is why real hardware insists on powers of 2.
+            example: |-
+              4 KB page = 2^12 B → offset = 12 bits.
+              8 KB page = 2^13 B → offset = 13 bits.
+              1 MB page = 2^20 B → offset = 20 bits.
+            source: "Part 10, Slides 47-72; topic-dive: paging-core-formulas.md"
+            bloom: remember
+          - type: name
+            prompt: Physical address formula from virtual address, given frame number and page size?
+            answer: physical = frame# × page\_size + offset. Offset = virtual\_addr − (page# × page\_size).
+            explanation: >-
+              Treat VA as (page#, offset) and PA as (frame#, offset). Only the high-order index changes during
+              translation — the offset is a pure passthrough.
+            example: |-
+              VA 4100, 4 KB pages: page# = 4100 / 4096 = 1, offset = 4.
+              If VP 1 → frame 1: PA = 1 × 4096 + 4 = 4100.
+            source: "Part 10, Slides 47-72; topic-dive: address-translation-worked-examples.md"
+            bloom: apply
+
+          # ---- Former list-recall card "5 fields of a PTE?" split into 5 atomic cards ----
+          - type: name
+            prompt: Which PTE field triggers a page fault when accessed with value 0?
+            answer: The **present/absent bit** (Pr).
+            explanation: >-
+              When Pr = 0 the frame# field is meaningless — the page isn't in memory. The MMU traps to the OS, which
+              either loads the page from disk (hard miss) or terminates the process (invalid VA).
+            example: |-
+              Past-exam Q3: VA 53448 lands on a PTE marked "X" (Pr=0)
+              → page fault; OS reads the page from disk into a free frame.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          - type: name
+            prompt: Which PTE field holds the physical mapping the MMU uses to build the physical address?
+            answer: The **page frame number** (PFN).
+            explanation: >-
+              On a hit, the MMU concatenates the PFN with the unchanged offset to form the physical address. For a
+              32-bit system with 4 KB pages, this field is typically 20 bits wide (32 − 12).
+            example: |-
+              PFN = 0x1A3, offset = 0x4B0, 4 KB pages:
+              PA = (0x1A3 << 12) | 0x4B0 = 0x1A34B0.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: apply
+          - type: name
+            prompt: Which PTE field enforces read-only, write, or execute rules on a page?
+            answer: The **protection bits** (R / W / X).
+            explanation: >-
+              Access violating the protection bits traps to the OS. This is how text pages are kept read-only and
+              stacks are kept non-executable.
+            example: |-
+              Text page PTE: protection = R | X, write = 0.
+              A write to this page → protection trap.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          - type: name
+            prompt: Which PTE field lets the OS skip writing a page to disk on eviction?
+            answer: The **modified (dirty) bit**, when it is 0.
+            explanation: >-
+              Hardware sets this bit on the first write after the page was loaded. Clean pages (dirty = 0) are backed
+              identically on disk, so eviction is just "drop the frame" — no write-back.
+            example: |-
+              Code page, never written → dirty = 0 → evict = free the frame.
+              Heap page that was written → dirty = 1 → must write-back first.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          - type: name
+            prompt: Which PTE field is used by clock / LRU-approximation page-replacement algorithms?
+            answer: The **referenced bit** (R).
+            explanation: >-
+              Hardware sets R on any access. The OS periodically clears it and uses the pattern of "was it set again?"
+              to approximate recency for eviction. Clock algorithm uses R directly to give pages a second chance.
+            example: |-
+              Clock eviction: hand lands on a frame with R = 1
+              → clear R to 0 and advance. If R = 0, evict that page.
+            source: "Part 10 page-replacement section; topic-dive: page-replacement-algorithms.md"
+            bloom: understand
+          - type: name
+            prompt: Which PTE field tells the MMU to skip the CPU cache when accessing this page?
+            answer: The **caching-disabled bit** (Ca).
+            explanation: >-
+              Set Ca = 1 for pages backing memory-mapped device registers: caching them would hide updates that the
+              device makes outside CPU visibility. For ordinary RAM-backed pages Ca = 0 so hardware caches are used.
+            example: |-
+              MMIO page (e.g. NIC control registers) → Ca = 1.
+              Every load hits the device directly, never stale cache data.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          # ---- end PTE-fields split ----
+
+          - type: name
+            prompt: Present/absent bit = 0 means what?
+            answer: Page is NOT currently in physical memory. Accessing it causes a page fault.
+            explanation: >-
+              The MMU checks Pr on every translation. If 0, the PTE's frame# field is ignored and the hardware raises
+              a fault; the OS page-fault handler then fetches the page.
+            example: |-
+              Past-exam Q4: VA 0x61B4 → VP 6. PTE[6] has Pr = 0 →
+              page fault; process blocks while OS reads the page from disk.
+            source: "Part 10, Slides 47-72; topic-dive: address-translation-worked-examples.md"
+            bloom: understand
+          - type: name
+            prompt: Purpose of the **modified (dirty) bit**?
+            answer: If set, page has been written to → must flush to disk on eviction. If clear, can just discard.
+            explanation: >-
+              Dirty = 1 means the RAM copy differs from the disk copy, so eviction must write back. Dirty = 0 means
+              the on-disk copy is already correct, so the frame can be reclaimed for free.
+            example: |-
+              Binary text page (read-only) → dirty stays 0 → discard on eviction.
+              Updated heap page → dirty = 1 → write to swap before reuse.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          - type: name
+            prompt: What is a TLB?
+            answer: >-
+              Translation Lookaside Buffer. Small associative cache in MMU that stores recent virtual→physical
+              translations to skip the page table walk.
+            explanation: >-
+              Walking a multi-level page table is slow (multiple memory reads). The TLB caches recent translations so
+              repeat addresses translate in one cycle and skip the walk.
+            example: |-
+              Illustrative EAT arithmetic (numbers picked for demo):
+              1 ns TLB, 100 ns RAM, hit rate h.
+              EAT = h·(1 + 100) + (1−h)·(1 + 200).
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          - type: name
+            prompt: TLB soft miss vs hard miss?
+            answer: >-
+              Soft: not in TLB but page is in memory — just refill TLB. Hard: not in TLB AND not in memory → page fault
+              → disk I/O.
+            explanation: >-
+              Both miss the TLB, but the recovery cost is orders of magnitude different. Soft miss is microseconds
+              (page-table walk); hard miss is milliseconds (disk I/O) — 1000× slower.
+            example: |-
+              Soft miss: walk PT → Pr = 1 → install TLB entry, continue.
+              Hard miss: walk PT → Pr = 0 → trap → disk read → update PT → restart instruction.
+            source: "Part 10, Slides 73-81; topic-dive: tlb-mmu-details.md"
+            bloom: understand
+          - type: name
+            prompt: "Page size 4 K, page table: VP 0→frame 2, VP 1→frame 1. Virtual address 20 gives what physical address?"
+            answer: Page 0 → frame 2 (base 8K = 8192). Offset 20. Physical = 8192 + 20 = **8212**.
+            explanation: >-
+              VA 20 is below 4096 so it sits in VP 0. PT maps VP 0 → frame 2. Frame 2 base = 2 × 4096 = 8192; add the
+              offset of 20 that passes through untouched.
+            example: |-
+              Same table, VA 50: also VP 0, offset 50.
+              PA = 8192 + 50 = 8242.
+            source: "Past-exam Q3; topic-dive: address-translation-worked-examples.md"
+            bloom: apply
+          - type: name
+            prompt: Page size 4 K, VP 1 → frame 1. Virtual addr 4100 → physical?
+            answer: Page 1, offset = 4100 − 4096 = 4. Frame 1 base = 4096. Physical = 4096 + 4 = **4100**.
+            explanation: >-
+              PA = VA *only within this page* because VP 1 maps to frame 1 — their base addresses are equal, so the
+              addition of offset gives an identical result. Translation still runs; the equality is a lucky artifact,
+              not a general rule.
+            example: |-
+              Same table, VA 4200 → VP 1, offset 104.
+              PA = 4096 + 104 = 4200 (still identity for VP 1).
+            source: "Past-exam Q3; topic-dive: address-translation-worked-examples.md"
+            bloom: apply
+          - type: name
+            prompt: Page size 4 K, VP 2 → frame 6. Virtual addr 8300 → physical?
+            answer: Page 2, offset = 8300 − 8192 = 108. Frame 6 base = 24K = 24576. Physical = 24576 + 108 = **24684**.
+            explanation: >-
+              Pick off VP: 8300 ÷ 4096 = 2 r 108. PT maps VP 2 → frame 6. PA = 6 × 4096 + 108 = 24684. The offset never
+              changes during translation.
+            example: |-
+              Same table, VA 10000 → VP 2, offset 1808.
+              PA = 24576 + 1808 = 26384.
+            source: "Past-exam Q3; topic-dive: address-translation-worked-examples.md"
+            bloom: apply
+          - type: name
+            prompt: Virtual addr 53448 falls in a page marked "X" in page table. What happens?
+            answer: "**Page fault.** Page is not in memory; OS must load it."
+            explanation: >-
+              "X" in the PT column means Pr = 0 for that PTE. The MMU traps; the OS either brings the page in from disk
+              (if it was just swapped) or kills the process (if VA is invalid for this address space).
+            example: |-
+              VA 53448, 4 KB pages → VP = 53448 / 4096 = 13.
+              PTE[13] present = 0 → trap → disk read → retry instruction.
+            source: "Past-exam Q3; topic-dive: address-translation-worked-examples.md"
+            bloom: understand
+          - type: name
+            prompt: Why multi-level page tables?
+            answer: >-
+              Single-level for 64-bit VA with 4 KB pages = 2^52 entries — infeasible. Multi-level lets unused regions
+              have no second-level table.
+            explanation: >-
+              Most of a 64-bit address space is never touched. Multi-level PTs allocate inner tables only for regions
+              in use, so the memory cost scales with mapped regions, not total VA size.
+            example: |-
+              Process using 1 MB of code + 1 MB of heap (2^21 B):
+              two-level PT allocates 1 outer + 2 inner tables,
+              not 2^52 PTEs.
+            source: "Part 10, Slides 90-97; topic-dive: two-level-page-tables.md"
+            bloom: understand
+          - type: name
+            prompt: 2-level PT, 6-bit VA, 2-bit offset, 2-bit top, 2-bit second. Address 37 (100101) — top/second/offset?
+            answer: top=10=2, second=01=1, offset=01=1.
+            explanation: >-
+              Split 6 bits from MSB as 2/2/2: bits 5-4 = top, bits 3-2 = second, bits 1-0 = offset. 37 = 100101₂ splits
+              to 10 | 01 | 01.
+            example: |-
+              Same split, address 62 (111110):
+              top = 11 = 3, second = 11 = 3, offset = 10 = 2.
+            source: "Past-exam Q7; topic-dive: two-level-page-tables.md"
+            bloom: apply
+          - type: name
+            prompt: What is Belady's anomaly?
+            answer: "FIFO page replacement: increasing # frames can INCREASE page faults. Does not occur with optimal or LRU."
+            explanation: >-
+              FIFO's eviction order depends only on arrival, not on usefulness, so adding a frame can push out a page
+              that would have stayed under a smaller-frame schedule. LRU and OPT cannot exhibit Belady's anomaly.
+            example: |-
+              Reference string 1,2,3,4,1,2,5,1,2,3,4,5:
+              3 frames → 9 FIFO faults.
+              4 frames → 10 FIFO faults. Extra frame hurts.
+            source: "Part 10 page-replacement section; topic-dive: page-replacement-algorithms.md"
+            bloom: understand
+          - type: name
+            prompt: Optimal page replacement algorithm?
+            answer: >-
+              Replace the page that will not be used for the longest time in the future. Unimplementable (future
+              unknown). Benchmark only.
+            explanation: >-
+              OPT minimizes page faults mathematically but requires clairvoyance — you must know all future accesses.
+              Real systems approximate it with LRU (past as predictor of future).
+            example: |-
+              Frames [A,B,C], next access is A, then D.
+              On miss for D: evict the page whose next use is farthest.
+              Future: A in 1 step, B in 5, C in 4 → evict B.
+            source: "Part 10 page-replacement section; topic-dive: page-replacement-algorithms.md"
+            bloom: understand
+          - type: name
+            prompt: Clock algorithm — brief description?
+            answer: >-
+              Circular list of page frames + hand pointer. At eviction, if referenced bit = 1, clear it and advance. If
+              0, evict that page.
+            explanation: >-
+              Clock is an LRU approximation. The referenced bit gives a rough "recently used?" signal; clearing it
+              ages the page. Pages that survive a full clock rotation without being re-referenced get evicted.
+            example: |-
+              Hand at frame 3, R=1 → clear to 0, advance to 4.
+              Frame 4, R=0 → evict, place new page, advance to 5.
+            source: "Part 10 page-replacement section; topic-dive: page-replacement-algorithms.md"
+            bloom: understand
+          - type: name
+            prompt: LRU — what gets evicted?
+            answer: The page that has been unused for the longest time.
+            explanation: >-
+              LRU assumes past access patterns predict near-future ones. It's provably immune to Belady's anomaly but
+              exact LRU needs a timestamp or list update on every reference — too expensive in hardware. Clock
+              approximates it.
+            example: |-
+              Access order A, B, C, A, D (3 frames):
+              load A, B, C. Access A → A is MRU. Miss D:
+              evict B (least recently used).
+            source: "Part 10 page-replacement section; topic-dive: page-replacement-algorithms.md"
+            bloom: understand
+          - type: name
+            prompt: What does an **inverted page table** index by?
+            answer: Physical frame number. One entry per frame (not per virtual page). Lookup requires hashing.
+            explanation: >-
+              Size scales with physical memory instead of virtual address space — critical for 64-bit machines. The
+              cost is slower lookup: VA → hash → chain search, versus direct indexing in a linear PT.
+            example: |-
+              4 GB RAM, 4 KB frames → 1 M IPT entries (fixed).
+              Regardless of VA size (48-bit, 64-bit), IPT stays the same size.
+            source: "Part 10, Slides 83-88 (inverted page tables)"
+            bloom: understand
+          - type: name
+            prompt: Optimal page size formula given process size s and PT entry size e?
+            answer: p\* = √(2se). Overhead at p\* also equals √(2se).
+            explanation: >-
+              Overhead(p) = s·e/p (PT size) + p/2 (avg last-page waste). Differentiate wrt p, set to 0:
+              −s·e/p² + 1/2 = 0 → p² = 2se → p* = √(2se). At this p*, both terms are equal so overhead = √(2se).
+            example: |-
+              s = 1 MB, e = 8 B:
+              p* = √(2 × 2^20 × 2^3) = √(2^24) = 2^12 = 4 KB.
+            source: "Part 10, Slides 57-58; past-exam Q6; topic-dive: memory-overhead-optimal-page-size-q6.md"
+            bloom: apply
+          - type: name
+            prompt: Compute p\* for s = 1 MB, e = 8 bytes.
+            answer: p\* = √(2 × 2^20 × 2^3) = √(2^24) = **2^12 = 4 KB**.
+            explanation: >-
+              Plug into p* = √(2se). Keep everything as powers of 2 so the square root is trivial: 2 × 2^20 × 2^3 = 2^24;
+              √(2^24) = 2^12 = 4096.
+            example: |-
+              Same formula, s = 1 MB, e = 16 B:
+              p* = √(2 × 2^20 × 2^4) = √(2^25) ≈ 2^12.5 ≈ 5.8 KB.
+              Round up to the nearest page-size-of-2 → 8 KB.
+            source: "Past-exam Q6; topic-dive: memory-overhead-optimal-page-size-q6.md"
+            bloom: apply
+          # ---- Analyze-level cards (added pass 2 to close Bloom gap) ----
+          - type: name
+            prompt: Derive `p* = √(2se)` starting from `Overhead(p) = s·e/p + p/2`.
+            answer: >-
+              dOverhead/dp = −s·e/p² + 1/2. Set = 0 → p² = 2se → p* = √(2se). At this p*: se/p* = √(2se)/2 and
+              p*/2 = √(2se)/2, so Overhead(p*) = √(2se) = p*.
+            explanation: >-
+              This is the classic minimization pattern: sum of a decreasing term (PT cost falls as pages grow) and an
+              increasing term (internal fragmentation grows as pages grow). The minimum sits where their slopes
+              cancel; at that minimum the two terms are equal and each equals half the total.
+            example: |-
+              s = 1 MB, e = 8 B → p* = √(2·2^20·2^3) = √(2^24) = 4 KB.
+              Both overhead terms at p*: se/p* = 2^23/2^12 = 2 KB;
+              p*/2 = 2 KB. Total = 4 KB = p*.
+            source: "Part 10, Slides 57-58; past-exam Q6; topic-dive: memory-overhead-optimal-page-size-q6.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              Why can LRU never exhibit Belady's anomaly while FIFO can?
+            answer: >-
+              LRU's resident set with k+1 frames is always a superset of its resident set with k frames on the same
+              reference string. Any page resident under k frames stays resident under k+1. FIFO evicts by arrival
+              order, so adding a frame can reorder evictions and push out a page that smaller-frame FIFO kept.
+            explanation: >-
+              The inclusion property (k frames ⊆ k+1 frames at every step) is the reason. LRU preserves it because
+              eviction depends only on access recency, independent of frame count. FIFO's queue order depends on
+              count, so the invariant breaks.
+            example: |-
+              Reference string 1,2,3,4,1,2,5,1,2,3,4,5:
+              LRU 3 frames = 10 faults, 4 frames = 8 faults (strictly improves).
+              FIFO 3 frames = 9 faults, 4 frames = 10 faults (anomaly).
+            source: "Part 10 page-replacement section; topic-dive: page-replacement-algorithms.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              Buddy arena (1024 KB, min 32 KB) has free entries of sizes 512, 256, 128, 64, 32 — but cannot satisfy
+              a 1024 KB request. What does that tell you about the arena state?
+            answer: >-
+              The free 512's buddy (the other 512-level block) is not wholly free — a busy leaf somewhere in its
+              subtree blocks the merge. Only freeing those busy leaves can restore a 1024 KB block; the buddy system
+              has no compaction pass.
+            explanation: >-
+              A 1024 KB block forms only when both top-level 512s are simultaneously wholly free. Even one busy leaf
+              anywhere in the other 512's subtree blocks the merge path to the root, no matter how many smaller free
+              blocks exist. This is the buddy system's fundamental weakness.
+            example: |-
+              Tree state: left 512 wholly free; right 512 split into
+              [256(free), 128(free), 64(free), 32(busy), 32(free)].
+              Free-list shows {512, 256, 128, 64, 32} — yet the root
+              1024 cannot coalesce because that one busy 32 in the right
+              subtree keeps the right 512 from being wholly free.
+            source: "Part 10, Slides 34-36; topic-dive: buddy-system-past-exam-q8.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              Given holes [10, 4, 20, 18, 7, 9, 12, 15] and successive requests 12, 10, 9 — which fit algorithm leaves
+              the **smallest sum of leftover fragments**?
+            answer: >-
+              **Best fit** — leaves 0 total (each request takes a hole of exactly its size). Worst-fit leaves 8+8+6=22.
+              First-fit leaves 8+0+9=17. Next-fit leaves 8+8+0=16.
+            explanation: >-
+              Best-fit's tiny-fragment pathology fails to appear when the hole list happens to contain exact matches
+              for each request. This exercise is a counter-example to the generalization "best-fit always leaves many
+              tiny fragments" — it only does so on average over many request distributions.
+            example: |-
+              Best fit: pick 12 (→ 0), 10 (→ 0), 9 (→ 0). Total = 0.
+              First fit: pick 20 (→ 8), 10 (→ 0), 18 (→ 9). Total = 17.
+              Worst fit: pick 20, 18, 15 (→ 8, 8, 6). Total = 22.
+            source: "Part 10, Slides 19-36; past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: analyze
+          - type: name
+            prompt: >-
+              A process with working set 400 MB runs on 300 MB of RAM. Page faults climb, CPU utilization drops.
+              Which two remedies, drawn from Part 10 material, will reduce fault rate and why?
+            answer: >-
+              (1) Reduce degree of multiprogramming — suspend a process so the remaining working sets fit in RAM
+              (directly addresses thrashing). (2) Increase page size — fewer PTEs per process and better spatial
+              locality per fault, at the cost of more internal fragmentation.
+            explanation: >-
+              The root cause is working-set pressure, not replacement algorithm. Swapping out a whole process breaks
+              the fault feedback loop instantly; changing replacement (FIFO → LRU) only helps when eviction choices
+              are the problem, which they aren't when the set simply doesn't fit.
+            example: |-
+              400 MB working set on 300 MB RAM, 4 KB pages:
+              fault rate → near 100%. Suspend one of two such processes
+              → remaining process holds its set → fault rate → near 0%.
+            source: "Part 10 working-set section; topic-dive: page-replacement-algorithms.md"
+            bloom: analyze
+          # ---- end Analyze cards ----
+          - type: name
+            prompt: What is **thrashing**?
+            answer: >-
+              System spends more time paging than executing because working sets exceed physical memory. Remedy: reduce
+              degree of multiprogramming.
+            explanation: >-
+              When combined working sets don't fit, each process evicts pages others need, so every access faults. CPU
+              utilization drops even as run queue grows. Fix = swap a whole process out to let others finish.
+            example: |-
+              4 processes, each needs 300 MB working set, RAM = 1 GB:
+              every context switch faults. Suspend one → other three fit → paging stops.
+            source: "Part 10 working-set section"
+            bloom: understand
+
+      - id: 4736-memory-alloc
+        name: Memory/Alloc
+        tags:
+          - memory
+        prose: >-
+          Physical-memory management — base/limit relocation, swapping whole processes, and tracking free space with
+          bitmaps or linked lists. Placement algorithms (first/best/worst/next fit) pick which hole to use.
+        cards:
+          - type: name
+            prompt: Base and limit registers — what do they do?
+            answer: >-
+              Every memory reference: check against limit (protection), then add base (relocation). Simple hardware
+              segmentation.
+            explanation: >-
+              Limit guards the upper bound (fault if address ≥ limit); base offsets every reference so a process can be
+              loaded anywhere in physical RAM without relinking. Predecessor of the MMU.
+            example: |-
+              base = 0x10000, limit = 0x2000.
+              Program issues addr 0x500 → check 0x500 < 0x2000 ✓ →
+              physical = 0x10500.
+            source: "Part 10, Slides 4-21; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: understand
+          - type: name
+            prompt: What is **swapping**?
+            answer: Bring entire process into memory, run, swap whole process back to disk. Alternative to virtual memory.
+            explanation: >-
+              Whole-process swap trades time (disk I/O on every swap) for simplicity (no paging hardware). It's a
+              coarser predecessor to virtual memory; modern systems still use it as the last-resort memory pressure
+              release valve.
+            example: |-
+              RAM = 1 GB, 5 processes × 300 MB each:
+              only 3 fit. OS rotates: run P1-P3, swap P1 out,
+              swap P4 in, continue. Pre-VM design.
+            source: "Part 10, Slides 4-21; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: remember
+          - type: name
+            prompt: "Memory management with bitmaps: tradeoff?"
+            answer: Small unit → larger bitmap + slow search. Large unit → wasted space (internal fragmentation).
+            explanation: >-
+              The bitmap needs 1 bit per allocation unit. Finer granularity tracks memory precisely but inflates the
+              bitmap and makes "find N free bits in a row" slower. Coarser units waste memory inside each allocation.
+            example: |-
+              1 GB RAM, 1-byte units: bitmap = 128 MB (12.5% overhead).
+              1 GB RAM, 4 KB units: bitmap = 32 KB (trivial) but 4 KB internal frag per alloc.
+            source: "Part 10, Slides 4-21; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: understand
+
+          # ---- Former list-recall "Memory list entry fields?" split into 4 atomic cards ----
+          - type: name
+            prompt: In a memory linked-list, which field distinguishes a hole from an allocated block?
+            answer: The **type/status** tag — H (hole) or P (process).
+            explanation: >-
+              The allocator scans the list looking for H entries that fit the request. On free, adjacent H entries get
+              coalesced; P entries are skipped during placement.
+            example: |-
+              List: [P:0-10][H:10-14][P:14-20]
+              Free P:0-10 → [H:0-14][P:14-20] (coalesced with neighbor H).
+            source: "Part 10, Slides 4-21; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: understand
+          - type: name
+            prompt: In a memory linked-list entry, what does the "address" field store?
+            answer: Starting address of the region this entry describes.
+            explanation: >-
+              The address + length pair identifies exactly one contiguous region. Entries are kept sorted by address so
+              that coalescing (merging adjacent holes) is a single adjacency check with neighbors.
+            example: |-
+              Entry: { type=H, address=0x2000, length=0x400, next=... }
+              describes a 1 KB hole starting at 0x2000.
+            source: "Part 10, Slides 4-21; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: remember
+          - type: name
+            prompt: In a memory linked-list, which field does first-fit compare against the allocation request?
+            answer: The **length** field.
+            explanation: >-
+              Placement walks the list; for each H entry, check length ≥ requested size. First-fit stops on the first
+              match, best-fit continues to find the smallest suitable match.
+            example: |-
+              Request 12 MB. List: H:10, H:4, H:20, H:18...
+              First fit: 10<12 ✗, 4<12 ✗, 20≥12 ✓ → take 20 MB hole.
+            source: "Part 10, Slides 19-36; past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: Why must memory-list entries include a pointer to the next entry?
+            answer: So placement and coalescing can splice and merge neighbors in O(1) edits (traversal is still O(n)).
+            explanation: >-
+              Pointers let you remove an entry and merge it with a neighbor in constant time. An array-backed
+              structure would require O(n) shifts on every allocation. Walking the list to find the target is still
+              O(n) in either representation.
+            example: |-
+              Coalesce on free: find freed block's entry → if prev is H,
+              merge; if next is H, merge. Each merge = two pointer rewrites.
+            source: "Part 10, Slides 19-36; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: understand
+          # ---- end memory-list-entry split ----
+
+          - type: name
+            prompt: Define **First fit**.
+            answer: Scan the hole list from the beginning; take the first hole ≥ requested size.
+            explanation: >-
+              First-fit is fastest on average because it short-circuits — once a suitable hole is found, no further
+              scan. Its structural weakness is that repeat small requests tend to chop the first few holes into
+              slivers, so the early list fills with tiny residuals that every future scan must skip past.
+            example: |-
+              Holes [10, 4, 20, 18, 7, 9, 12, 15] MB. Request 12:
+              scan → 10, 4 too small → 20 ≥ 12 → **take 20**.
+            source: "Part 10, Slides 19-36; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: remember
+          - type: name
+            prompt: Define **Best fit**.
+            answer: Scan the entire list; take the smallest hole ≥ requested size.
+            explanation: >-
+              Minimizes waste per allocation but creates many tiny leftover holes (fragments) that are often too small
+              to reuse. Slower than first-fit because it never short-circuits.
+            example: |-
+              Holes [10, 4, 20, 18, 7, 9, 12, 15]. Request 12:
+              candidates ≥ 12: {20, 18, 12, 15} → smallest = **12**.
+            source: "Part 10, Slides 19-36; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: remember
+          - type: name
+            prompt: Define **Worst fit**.
+            answer: Scan the entire list; take the largest hole (to leave a usable remainder).
+            explanation: >-
+              The design goal is to keep leftover holes big enough to be useful, unlike best-fit's slivers. In
+              practice worst-fit exhausts the arena's large holes early, so late-arriving big requests fail — which
+              is why it performs worst on average despite the appealing intuition.
+            example: |-
+              Holes [10, 4, 20, 18, 7, 9, 12, 15]. Request 12:
+              largest ≥ 12 = **20**. Leaves 8 MB leftover.
+            source: "Part 10, Slides 19-36; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: remember
+          - type: name
+            prompt: Define **Next fit**.
+            answer: Like first fit but starts scanning from the position of the last allocation.
+            explanation: >-
+              Avoids crowding small holes at the head (first-fit's pathology) by spreading allocations around the list.
+              Cost: one extra piece of state — the rover pointer — carried across allocations.
+            example: |-
+              Rover at index 3 (hole 18), request 10 MB:
+              scan from index 3 → 18 ≥ 10 ✓ → take 18. Rover moves to index 4.
+            source: "Part 10, Slides 19-36; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: remember
+          - type: name
+            prompt: "Holes \\[10,4,20,18,7,9,12,15\\]. Request 12 MB: first fit picks?"
+            answer: "**20** (first hole ≥ 12 is at index 2)."
+            explanation: >-
+              First-fit stops on the first success. Scan: 10 < 12, 4 < 12, 20 ≥ 12 → take. Indexes 3+ not examined.
+            example: |-
+              Same list, request 5 MB → first fit takes **10**
+              (first hole ≥ 5).
+            source: "Past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: "Holes \\[10,4,20,18,7,9,12,15\\]. Request 12 MB: best fit picks?"
+            answer: "**12** (smallest hole ≥ 12)."
+            explanation: >-
+              Best-fit examines every hole. Candidates ≥ 12: {20, 18, 12, 15}. The smallest is 12 → pick that. Leaves 0
+              fragment for this slot.
+            example: |-
+              Same list, request 8 MB → candidates {10, 20, 18, 9, 12, 15}.
+              Smallest ≥ 8 = **9** → best fit picks 9.
+            source: "Past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: "Holes \\[10,4,20,18,7,9,12,15\\]. Request 12 MB: worst fit picks?"
+            answer: "**20** (largest hole)."
+            explanation: >-
+              Worst-fit picks the largest hole regardless of how close it is to the request. Intent: leave a big-enough
+              leftover for a future allocation. 20 is the unambiguous max.
+            example: |-
+              Same list, request 5 MB → still **20** (largest hole
+              irrespective of request size).
+            source: "Past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: "Past-exam Q2: worst fit picks which hole for requests 12, 10, 9?"
+            answer: 20, 18, 15 (always the largest remaining hole).
+            explanation: >-
+              After each allocation the selected hole shrinks by the request size; worst-fit then picks the new max.
+              Start {10,4,20,18,7,9,12,15}: pick 20 (→ 8). Then max = 18 → pick 18 (→ 8). Then max = 15 → pick 15.
+            example: |-
+              Sequence of leftovers:
+              20 − 12 = 8; 18 − 10 = 8; 15 − 9 = 6.
+              Three medium holes become three small ones.
+            source: "Past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: "Past-exam Q2: next fit picks which holes for requests 12, 10, 9?"
+            answer: 20, 18, 9 (rover advances after each allocation).
+            explanation: >-
+              Start with rover at the head. Request 12 → first ≥ 12 from rover = 20 (index 2); rover advances to
+              index 3. Request 10 → first ≥ 10 from index 3 = 18. Rover advances to index 4. Request 9 → scan 7 (fail)
+              then 9 ≥ 9 → take 9.
+            example: |-
+              Holes [10, 4, 20, 18, 7, 9, 12, 15]:
+              rover at 0 → pick 20 (idx 2) → rover→3;
+              from idx 3 → pick 18 (idx 3) → rover→4;
+              from idx 4 → 7<9, then 9≥9 → pick 9 (idx 5).
+            source: "Part 10, Slides 19-36; past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: "Past-exam Q2: best fit picks which hole for requests 12, 10, 9?"
+            answer: 12, 10, 9 (smallest that fits each time).
+            explanation: >-
+              Best-fit leaves zero leftover in each case because the request exactly equals the chosen hole. Perfect
+              packing on this list — but in general best-fit generates many tiny fragments.
+            example: |-
+              After allocations: holes [10, 4, 20, 18, 7, 9, 15]
+              (12, 10, 9 are gone). No fragments introduced.
+            source: "Past-exam Q2; topic-dive: placement-algorithms-past-exam-q2.md"
+            bloom: apply
+          - type: name
+            prompt: Internal vs external fragmentation?
+            answer: >-
+              Internal: wasted space WITHIN an allocated block (request smaller than block). External: usable memory
+              scattered between allocations, too small in any one piece.
+            explanation: >-
+              Paging and buddy cause internal fragmentation (fixed block sizes don't match requests). Variable-size
+              placement (first/best/next) causes external fragmentation (holes between allocations). Compaction fixes
+              external but is expensive.
+            example: |-
+              Internal: 200 KB request in 256 KB buddy block → 56 KB internal.
+              External: holes 2, 3, 7 KB scattered = 12 KB free,
+              but can't satisfy a 10 KB request.
+            source: "Part 10, Slides 4-21; topic-dive: segmentation-swapping-bitmaps-vs-lists.md"
+            bloom: understand
+          - type: name
+            prompt: Buddy system — block sizes?
+            answer: >-
+              All powers of 2. Split larger blocks in half to reach a block ≥ request; coalesce with buddy on free if
+              buddy is free.
+            explanation: >-
+              Power-of-2 sizing makes buddy computation a single bit flip (XOR with block size) and keeps splits
+              symmetric — every block has exactly one buddy at each level. The cost is up to 50% internal frag
+              (request of size 2^k + 1 takes a 2^(k+1) block).
+            example: |-
+              1024 → [512, 512] → [256, 256, 512] → [128, 128, 256, 512]...
+              Each split halves the block; each block has a buddy at the same level.
+            source: "Part 10, Slides 34-36; topic-dive: buddy-system-past-exam-q8.md"
+            bloom: understand
+          - type: name
+            prompt: Buddy, 1024 KB, min 32 KB. Process A requests 200 KB → block size?
+            answer: "200 rounds up to 256 KB. Splits: 1024→512,512 → 512→256,256. A gets a 256 KB block."
+            explanation: >-
+              Round up the request to the next power of 2 ≥ request ≥ min. 200 KB → 256 KB (since 128 < 200 ≤ 256).
+              Then split the smallest available block that can contain it; here we split 1024 twice to get a free 256.
+            example: |-
+              Same arena, A' requests 100 KB:
+              round up to 128. Split one 256 → [128, 128]; take one 128.
+            source: "Past-exam Q8; topic-dive: buddy-system-past-exam-q8.md"
+            bloom: apply
+          - type: name
+            prompt: Buddy, after A holds 256 KB, B requests 50 KB → block size + subtree?
+            answer: 50 rounds up to 64. Take free 256 → split to 128,128 → split to 64,64. B gets one 64.
+            explanation: >-
+              50 rounds up to 64 (since 32 < 50 ≤ 64 given min = 32). No 64 or 128 is free, so split a free 256 twice:
+              256 → 128+128 → 64+64. Allocate the first leaf 64 to B.
+            example: |-
+              Resulting layout:
+              [A:256][B:64][free:64][free:128][free:512]
+              (B's 128-level sibling is free; A's 256-level sibling is not).
+            source: "Past-exam Q8; topic-dive: buddy-system-past-exam-q8.md"
+            bloom: apply
+          - type: name
+            prompt: "Buddy: when does coalescing happen on free?"
+            answer: "Recursively: when a block is freed, if its buddy is also free, merge them. Repeat up the tree."
+            explanation: >-
+              A block's buddy is the sibling it was split from (address XOR block_size). Coalescing requires the buddy
+              to be **wholly free** — any busy descendant in the buddy's subtree blocks the merge. Merges propagate as
+              long as the condition holds.
+            example: |-
+              Free two sibling 64s → merge to 128.
+              If that 128's buddy is also free → merge to 256.
+              Stop when buddy is busy or has busy descendants.
+            source: "Past-exam Q8; topic-dive: buddy-system-past-exam-q8.md"
+            bloom: understand
+          - type: name
+            prompt: Which placement algorithm keeps separate free-lists per common request size?
+            answer: "**Quick fit** — one free-list per size bucket, so allocation is a direct list pop (no scan)."
+            explanation: >-
+              Bucketing by size removes the search step entirely: request → bucket → pop head. The tradeoff is that
+              coalescing becomes harder — adjacency between buckets is not tracked, so merging free neighbors on free
+              requires extra bookkeeping.
+            example: |-
+              Buckets: [4K list], [8K list], [16K list].
+              Request 4K → pop head of 4K list.
+            source: "Part 10, Slides 19-36"
+            bloom: remember
+          - type: name
+            prompt: Buddy allocation of 200 KB in 256 KB block — how much internal fragmentation?
+            answer: 256 − 200 = **56 KB** wasted inside the block.
+            explanation: >-
+              Internal frag = (block size) − (request). Worst case for buddy is request = 2^k + 1, which takes block
+              2^(k+1) for ~50% waste. Tradeoff for O(log n) alloc/free and clean coalescing.
+            example: |-
+              Request 129 KB → takes 256 KB block → 127 KB waste (~49.6%).
+              Request 128 KB → takes 128 KB block → 0 waste.
+            source: "Past-exam Q8; topic-dive: buddy-system-past-exam-q8.md"
+            bloom: apply

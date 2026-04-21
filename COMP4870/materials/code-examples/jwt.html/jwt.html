@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>CORS Client</title>
+  </head>
+  <body>
+    <h3>CORS Client</h3>
+    <!-- add a register form requesting email and password -->
+    <form id="registerForm">
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="passwordRegister" placeholder="Password" />
+      <button id="btnRegister">Register</button>
+    </form>
+    <hr />
+    <!-- add a login form requesting username and password-->
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Username" />
+      <input type="password" id="passwordLogin" placeholder="Password" />
+      <button id="btnLogin">Login</button>
+    </form>
+    <hr />
+    <button id="btnGetData">Get Data</button>
+    <pre id="preOutput"></pre>
+    <script>
+      const baseUrl = "http://localhost:5069";
+      var showResponse = function (object) {
+        document.querySelector("#preOutput").innerHTML = JSON.stringify(
+          object,
+          null,
+          4
+        );
+      };
+
+      const button = document.querySelector("#btnGetData");
+      button.addEventListener("click", (e) => {
+        getData();
+      });
+
+      var getData = async function () {
+        var url = baseUrl + "/api/patients";
+
+        // get the token from local storage and add it to the headers
+        var token = localStorage.getItem("token");
+        var headers = {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        };
+
+        await fetch(url, {
+          method: "GET",
+          headers: headers,
+        })
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            showResponse(data);
+          });
+
+        return false;
+      };
+
+      // when the register button is clicked, call the registerUser function
+      document.querySelector("#btnRegister").addEventListener("click", (e) => {
+        e.preventDefault();
+        registerUser();
+      });
+
+      // add a function to register a user
+      var registerUser = async function () {
+        var url = baseUrl + "/register";
+        var email = document.querySelector("#email").value;
+        var password = document.querySelector("#passwordRegister").value;
+        var data = {
+          Email: email,
+          Password: password,
+        };
+        await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            showResponse(data);
+          });
+        return false;
+      };
+
+      // add a function to login a user
+      document.querySelector("#btnLogin").addEventListener("click", (e) => {
+        e.preventDefault();
+        loginUser();
+      });
+
+      // add a function to login a user and save the token that is returned
+      var loginUser = async function () {
+        var url = baseUrl + "/login";
+        var username = document.querySelector("#username").value;
+        var password = document.querySelector("#passwordLogin").value;
+        var data = {
+          Username: username,
+          Password: password,
+        };
+        await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            showResponse(data);
+            localStorage.setItem("token", data.token);
+          });
+        return false;
+      };
+    </script>
+  </body>
+</html>

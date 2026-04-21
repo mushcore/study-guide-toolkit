@@ -1,0 +1,1101 @@
+duration_seconds: 10800
+questions:
+  - id: q1
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 1
+    question: A lock variable alone is sufficient to guarantee mutual exclusion.
+    correct: 1
+    rationale: Read and set are not atomic; both processes can read 0 before either sets it.
+    choices:
+      - "True"
+      - "False"
+  - id: q2
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 1
+    question: Peterson's solution works for any number of processes.
+    correct: 1
+    rationale: Slide version is 2-process only.
+    choices:
+      - "True"
+      - "False"
+  - id: q3
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 1
+    question: Semaphores use busy waiting.
+    correct: 1
+    rationale: P() blocks the process; no CPU burn. Busy waiting applies to TSL/Peterson.
+    choices:
+      - "True"
+      - "False"
+  - id: q4
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 1
+    question: A condition variable signal is queued if no process is currently waiting.
+    correct: 1
+    rationale: Condition variables have no memory. Unwaited signals are lost.
+    choices:
+      - "True"
+      - "False"
+  - id: q5
+    type: MCQ
+    topic: IPC2
+    marks: 1
+    question: System V message queues are removed automatically when the creating process exits.
+    correct: 1
+    rationale: Kernel-lifetime. Persist until explicit IPC\_RMID or reboot.
+    choices:
+      - "True"
+      - "False"
+  - id: q6
+    type: MCQ
+    topic: IPC2
+    marks: 1
+    question: Unnamed pipes can be used between unrelated processes.
+    correct: 1
+    rationale: Unnamed pipes need shared file descriptor via fork. For unrelated procs use FIFO.
+    choices:
+      - "True"
+      - "False"
+  - id: q7
+    type: MCQ
+    topic: Deadlock
+    marks: 1
+    question: Deadlock requires all four Coffman conditions to hold simultaneously.
+    correct: 0
+    rationale: By definition. Breaking any one prevents deadlock.
+    choices:
+      - "True"
+      - "False"
+  - id: q8
+    type: MCQ
+    topic: Deadlock
+    marks: 1
+    question: >-
+      The presence of a cycle in a resource allocation graph with multiple instances per resource type always means
+      deadlock.
+    correct: 1
+    rationale: >-
+      Only guaranteed for single-instance resources. Multi-instance: cycle is necessary but not sufficient; use matrix
+      algorithm.
+    choices:
+      - "True"
+      - "False"
+  - id: q9
+    type: MCQ
+    topic: Memory
+    marks: 1
+    question: FIFO page replacement can exhibit Belady's anomaly.
+    correct: 0
+    rationale: More frames can cause more page faults under FIFO. Optimal/LRU do not suffer this.
+    choices:
+      - "True"
+      - "False"
+  - id: q10
+    type: MCQ
+    topic: Memory
+    marks: 1
+    question: A TLB soft miss requires a disk I/O.
+    correct: 1
+    rationale: Soft miss = page in memory but not in TLB. Just update TLB. Hard miss requires disk.
+    choices:
+      - "True"
+      - "False"
+  - id: q11
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 2
+    question: >-
+      A semaphore is initialized to 2. Three processes call P() in order. What are the final semaphore value and the
+      states of the processes?
+    correct: 2
+    rationale: "P1: 2→1. P2: 1→0. P3: s is 0 → blocks. Final s=0, P3 blocked."
+    choices:
+      - s=0; all three running
+      - s=−1; P3 blocked
+      - s=0; P3 blocked
+      - s=1; all three running
+      - s=2; P3 blocked
+  - id: q12
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 2
+    question: Producer-consumer with semaphores. What is the correct ORDER of P calls in the producer for empty, mutex, full?
+    correct: 1
+    rationale: >-
+      Wait for empty slot FIRST, then grab mutex, work, release mutex, signal full. Swapping P(empty) and P(mutex)
+      causes deadlock.
+    choices:
+      - P(mutex), P(empty), V(full), V(mutex)
+      - P(empty), P(mutex), V(mutex), V(full)
+      - P(full), P(mutex), V(mutex), V(empty)
+      - P(mutex), P(full), V(mutex), V(empty)
+      - P(empty), V(mutex), P(mutex), V(full)
+  - id: q13
+    type: MCQ
+    topic: IPC2
+    marks: 2
+    question: Which IPC mechanism is fastest for large data transfer between processes on the same machine?
+    correct: 2
+    rationale: "Shared memory: no kernel copy. Direct memory access."
+    choices:
+      - Pipe
+      - Message queue
+      - Shared memory
+      - Socket
+      - Signal
+  - id: q14
+    type: MCQ
+    topic: IPC2
+    marks: 2
+    question: "The system call that creates a FIFO on disk is:"
+    correct: 3
+    rationale: Both mkfifo() and mknod() with S\_IFIFO create FIFOs. pipe() creates unnamed pipe.
+    choices:
+      - pipe()
+      - mkfifo()
+      - mknod() with S\_IFIFO
+      - Both B and C
+      - fifo\_create()
+  - id: q15
+    type: MCQ
+    topic: Deadlock
+    marks: 2
+    question: Which Coffman condition does global resource numbering prevent?
+    correct: 3
+    rationale: "Numbering forbids cycles: any cycle would require requesting a lower-numbered resource while holding a higher one."
+    choices:
+      - Mutual exclusion
+      - Hold and wait
+      - No preemption
+      - Circular wait
+      - Starvation
+  - id: q16
+    type: MCQ
+    topic: Deadlock
+    marks: 2
+    question: Given E=\[3,2,2\] and allocation C with column sums \[2,2,1\], what is A (available)?
+    correct: 0
+    rationale: A = E − column\_sums(C) = \[3−2, 2−2, 2−1\] = \[1, 0, 1\].
+    choices:
+      - \[1, 0, 1\]
+      - \[3, 2, 2\]
+      - \[2, 2, 1\]
+      - \[5, 4, 3\]
+      - \[1, 1, 1\]
+  - id: q17
+    type: MCQ
+    topic: Memory/Paging
+    marks: 2
+    question: 64-bit VA, 4 KB pages. How many entries are in a single-level page table?
+    correct: 3
+    rationale: offset = log2(4 K) = 12. Entries = 2^(64−12) = 2^52.
+    choices:
+      - 2^12
+      - 2^20
+      - 2^40
+      - 2^52
+      - 2^64
+  - id: q18
+    type: MCQ
+    topic: Memory/Paging
+    marks: 2
+    question: Page size 4 K. VP 3 maps to frame 5. What physical address corresponds to virtual address 12300?
+    correct: 1
+    rationale: VP 3 base = 12288. Offset = 12300 − 12288 = 12. Frame 5 base = 5\*4096 = 20480. PA = 20480 + 12 = 20492.
+    choices:
+      - "12300"
+      - "20492"
+      - "12288"
+      - "4108"
+      - "8196"
+  - id: q19
+    type: MCQ
+    topic: Memory/Alloc
+    marks: 2
+    question: >-
+      Holes \[10, 4, 20, 18, 7, 9, 12, 15\]. Using BEST fit for successive requests of 12, 10, 9, which holes are
+      picked?
+    correct: 1
+    rationale: Best fit always picks smallest ≥ request. 12→12; 10→10; 9→9.
+    choices:
+      - 20, 10, 18
+      - 12, 10, 9
+      - 12, 10, 18
+      - 20, 18, 9
+      - 12, 9, 10
+  - id: q20
+    type: MCQ
+    topic: Memory/Alloc
+    marks: 2
+    question: In the buddy system, a process requests 100 KB. What block size does it receive (min 32 KB)?
+    correct: 2
+    rationale: Round up to next power of 2 ≥ 100 → 128 KB.
+    choices:
+      - 64 KB
+      - 100 KB
+      - 128 KB
+      - 256 KB
+      - 32 KB
+  - id: q21
+    type: MCQ
+    topic: Memory
+    marks: 2
+    question: "Optimal page size formula for process size s and PT entry size e:"
+    correct: 2
+    rationale: Minimize overhead se/p + p/2 → p\* = √(2se).
+    choices:
+      - p\* = s·e
+      - p\* = √(s·e)
+      - p\* = √(2·s·e)
+      - p\* = 2·s·e
+      - p\* = s/(2e)
+  - id: q22
+    type: MCQ
+    topic: Memory
+    marks: 2
+    question: Which page replacement algorithm is ONLY useful as a benchmark?
+    correct: 2
+    rationale: Optimal requires future knowledge, which is impossible.
+    choices:
+      - FIFO
+      - LRU
+      - Optimal
+      - Clock
+      - NFU
+  - id: q23
+    type: SHORT
+    topic: IPC1/Sem
+    marks: 4
+    question: Explain the lost-wakeup problem and how semaphores solve it.
+    correct: >-
+      In sleep/wakeup, a producer may signal wakeup before the consumer actually calls sleep(). The wakeup is discarded
+      (not queued) and the consumer sleeps forever. Semaphores solve this: V() atomically increments the counter; if P()
+      sees a positive value it proceeds without sleeping. No wakeup can be "lost" because the count captures it.
+    rationale: "Key insight: atomicity + persistent counter."
+  - id: q24
+    type: SHORT
+    topic: Deadlock
+    marks: 4
+    question: Name the 4 Coffman conditions and give one real-world prevention strategy for each.
+    correct: >-
+      1) Mutual exclusion — spool the resource (e.g. printer daemon). 2) Hold and wait — require all resources requested
+      at once. 3) No preemption — allow the OS to reclaim resources. 4) Circular wait — enforce a global ordering of
+      resource IDs, request only in increasing order.
+    rationale: ""
+  - id: q25
+    type: SHORT
+    topic: Memory
+    marks: 4
+    question: Explain why multi-level page tables are used instead of a single-level linear table in 64-bit systems.
+    correct: >-
+      Single-level table would need 2^52 entries (64-bit VA / 4 KB pages) — impossible to keep in memory. Multi-level
+      splits VA into (top-level index, second-level index, offset). Unused regions of the address space need no
+      second-level table at all, saving vast amounts of memory. Only populated ranges consume PT entries.
+    rationale: ""
+  - id: q26
+    type: SHORT
+    topic: Memory/Paging
+    marks: 5
+    question: >-
+      48-bit virtual address space, 32-bit physical, 8 KB pages. Compute: (a) number of virtual pages, (b) number of
+      page frames, (c) entries in a single-level linear page table.
+    correct: >-
+      8 KB = 2^13 → offset = 13 bits. (a) Pages = 2^(48−13) = 2^35. (b) Frames = 2^(32−13) = 2^19. (c) PT entries =
+      #pages = 2^35.
+    rationale: Past-exam Q1 verbatim.
+  - id: q27
+    type: SHORT
+    topic: Memory/Paging
+    marks: 5
+    question: >-
+      Page size = 4 K. Page table: VP 0→frame 2, VP 1→frame 1, VP 2→frame 6. Find the physical addresses for virtual
+      addresses 20, 4100, 8300.
+    correct: >-
+      VA 20 → VP 0, offset 20 → PA = 2×4096 + 20 = 8212. VA 4100 → VP 1, offset 4 → PA = 1×4096 + 4 = 4100. VA 8300 → VP
+      2, offset 108 → PA = 6×4096 + 108 = 24684.
+    rationale: Past-exam Q3 verbatim.
+  - id: q28
+    type: SHORT
+    topic: Memory/Alloc
+    marks: 8
+    question: >-
+      Holes in memory (in order): \[10, 4, 20, 18, 7, 9, 12, 15\] MB. Successive requests: 12 MB, 10 MB, 9 MB. Fill in a
+      4×3 table showing which hole is picked by First fit, Best fit, Worst fit, Next fit.
+    correct: |-
+      12 MB | 10 MB | 9 MB
+      First fit:    20   |  10   |  18
+      Best fit:     12   |  10   |   9
+      Worst fit:    20   |  18   |  15
+      Next fit:     20   |  18   |   9
+    rationale: >-
+      Past-exam Q2 answer key. Next fit: after picking 20 for 12 MB, position is at hole 18 → picks 18 for 10 MB. Then
+      after 18 (partial remainder 8) the next hole ≥ 9 from that position is 9.
+  - id: q29
+    type: SHORT
+    topic: Memory/Alloc
+    marks: 8
+    question: >-
+      System has 1024 KB memory, min block 32 KB (buddy system). Sequence: Process A requests 200 KB; Process B requests
+      50 KB; A releases; C requests 90 KB. Show the buddy tree after each operation.
+    correct: |-
+      A requests 200 (round up to 256):
+        1024 → split → 512, 512
+        first 512 → split → 256, 256
+        A gets first 256.
+
+      B requests 50 (round up to 64):
+        use free 256 (A's sibling) → split → 128, 128
+        first 128 → split → 64, 64
+        B gets first 64. (Or last, depending on convention.)
+
+      A releases (A's 256 freed):
+        A's buddy 256 is held (B's subtree) — cannot coalesce.
+        Free block of 256 sits next to the B subtree. No coalesce.
+
+      C requests 90 (round up to 128):
+        Free 128 exists (B's sibling in the split 256). C takes it.
+    rationale: Past-exam Q8 walkthrough.
+  - id: q30
+    type: SHORT
+    topic: Deadlock
+    marks: 10
+    question: >-
+      Build C, R, and E matrices from a resource allocation graph with 3 processes, 3 resources. R1 has 3 instances, R2
+      has 2, R3 has 2. Allocations: R1→P2 ×2, R2→P1 ×1, R2→P2 ×1, R3→P3 ×1. Requests: P1→R1 ×2, P2→R3 ×2, P3→R1 ×3.
+      Compute A.
+    correct: |-
+      C:
+              R1 R2 R3
+      P1  [   0  1  0  ]
+      P2  [   2  1  0  ]
+      P3  [   0  0  1  ]
+
+      R:
+              R1 R2 R3
+      P1  [   2  0  0  ]
+      P2  [   0  0  2  ]
+      P3  [   3  0  0  ]
+
+      E: [ 3 2 2 ]
+      Col sums of C: [2, 2, 1]
+      A = E − sums = [1, 0, 1]
+    rationale: Past-exam Q5 verbatim.
+  - id: q31
+    type: SHORT
+    topic: Memory/Paging
+    marks: 6
+    question: >-
+      A two-level page table uses a 6-bit virtual address with 2 bits top-level, 2 bits second-level, 2 bits offset.
+      Address 62 (0x3E = 111110). Walk the page table. (Assume the shown figure: top entry 3 → second table where entry
+      3 → PF 4.)
+    correct: |-
+      62 = 111110 → top=11=3, second=11=3, offset=10=2
+      Top-level entry 3 → second-level table shown
+      Second-level entry 3 → PF 4
+      Physical address = 4 × 4 + 2 = 18
+    rationale: Past-exam Q7 worked solution.
+  - id: q32
+    type: SHORT
+    topic: Memory
+    marks: 5
+    question: >-
+      Given process size s = 1 MB, page table entry size e = 8 bytes. Compute optimal page size p\* and the overhead at
+      p\*.
+    correct: |-
+      p* = √(2·s·e) = √(2 × 2^20 × 2^3) = √(2^24) = 2^12 = 4 KB.
+      Overhead at p* = s·e/p* + p*/2
+                    = (2^20·8)/4096 + 4096/2
+                    = 2048 + 2048 = 4096 bytes
+                    = √(2se) = p* (matches the derivation).
+    rationale: Past-exam Q6. Overhead at optimal page size equals p\* itself.
+  - id: q33
+    type: SHORT
+    topic: Deadlock
+    marks: 6
+    question: Compare deadlock prevention, avoidance, and detection+recovery. Give one strength and one weakness of each.
+    correct: >-
+      Prevention: eliminates at least one Coffman condition by design. STRENGTH: no runtime overhead to detect.
+      WEAKNESS: often restricts resource use (e.g. request-all-at-once wastes resources). Avoidance (Banker's): grants
+      requests only if state stays safe. STRENGTH: less restrictive than prevention. WEAKNESS: requires max-need info
+      upfront; costly safety check per request. Detection+recovery: allow deadlocks, find them, resolve by
+      killing/preempting. STRENGTH: no up-front restrictions. WEAKNESS: recovery disruptive (lost work, rollback cost).
+    rationale: ""
+  - id: q34
+    type: SHORT
+    topic: Memory
+    marks: 6
+    question: Describe the page fault handling sequence from CPU interrupt to process resumption.
+    correct: >-
+      1) CPU traps — process hit unmapped VA. 2) Trap to OS page fault handler. 3) OS saves process state (registers,
+      PC). 4) Identify faulting VA and its virtual page. 5) Find a free physical frame; if none, select a victim via
+      page replacement. 6) If victim is dirty, write to swap. 7) Load the needed page from disk into the free frame. 8)
+      Update the page table (set present=1, frame#). 9) Restore process state, rewind PC to faulting instruction. 10)
+      Resume; instruction is re-executed successfully.
+    rationale: ""
+  - id: q35
+    type: SHORT
+    topic: IPC1/Sem
+    marks: 6
+    question: Write pseudocode for producer-consumer using semaphores. Explain why the ordering of P operations matters.
+    correct: >-
+      empty=N; full=0; mutex=1. Producer: P(empty); P(mutex); insert; V(mutex); V(full). Consumer: P(full); P(mutex);
+      remove; V(mutex); V(empty). Ordering: wait for slot count BEFORE taking mutex. If producer holds mutex while
+      waiting for an empty slot, consumer cannot enter buffer to free a slot — deadlock.
+    rationale: ""
+
+  # ---- Memory / Paging (6) ----
+  - id: q36
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    question: FIFO page replacement can produce more faults with 4 frames than with 3 frames on the same reference string.
+    correct: 0
+    rationale: >-
+      True. This is Belady's anomaly — FIFO's eviction depends on arrival order, not recency, so adding a frame can
+      reorder evictions and push out a page the smaller-frame run would have kept. LRU and OPT are immune.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q37
+    type: MCQ
+    topic: Memory/Paging
+    marks: 2
+    question: >-
+      TLB lookup takes 1 ns; a main-memory access takes 100 ns; PT walk adds one memory access. With a TLB hit rate
+      of 0.90, what is the effective access time (EAT)?
+    correct: 1
+    rationale: >-
+      EAT = 0.90 × (1 + 100) + 0.10 × (1 + 200) = 90.9 + 20.1 = 111 ns. A — forgets PT-walk cost. C — uses miss
+      rate where hit rate belongs. D — double-counts the TLB lookup on a miss.
+    choices:
+      - "101 ns"
+      - "111 ns"
+      - "191 ns"
+      - "201 ns"
+
+  - id: q38
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    question: Which page replacement algorithm is provably optimal (minimum page faults)?
+    correct: 2
+    rationale: >-
+      OPT (replace the page not used for longest time in the future) minimizes faults but is unimplementable.
+      FIFO — simple, suffers Belady. LRU — approximates OPT. Second Chance — FIFO variant. None match OPT's bound.
+    choices:
+      - "FIFO"
+      - "LRU"
+      - "OPT (furthest-future)"
+      - "Second Chance"
+
+  - id: q39
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    question: A two-level page table's primary advantage over a single-level linear page table is reduced PT memory when the address space is sparsely used.
+    correct: 0
+    rationale: >-
+      True. Multi-level only allocates second-level tables for regions in use, so total PT memory scales with mapped
+      regions, not total VA size. False would imply no advantage — but the 2^52-entry infeasibility of 64-bit linear
+      PTs is exactly what multi-level solves.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q40
+    type: MCQ
+    topic: Memory/Alloc
+    marks: 2
+    question: >-
+      In a buddy system with smallest block 32 KB, which request size causes the **most KB wasted** inside the
+      allocated block?
+    correct: 1
+    rationale: >-
+      A: 129 KB rounds to 256 KB → **127 KB wasted**. B: 257 KB rounds to 512 KB → **255 KB wasted**.
+      C: 192 KB rounds to 256 KB → **64 KB wasted**. D: 128 KB rounds to 128 KB → **0 wasted**. Worst case is
+      `2^k + 1` for the largest k that still fits — B wastes 128 KB more than A in absolute terms.
+    choices:
+      - "129 KB"
+      - "257 KB"
+      - "192 KB"
+      - "128 KB"
+
+  - id: q41
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    question: The dirty (modified) bit being clear means the OS can skip writing the page to disk when evicting it.
+    correct: 0
+    rationale: >-
+      True. Clean pages are byte-identical to the disk copy, so eviction = "drop the frame". Dirty = 1 means RAM differs
+      from disk and a write-back is required before reuse. This is a hot MCQ target per Part 10 PTE-fields emphasis.
+    choices:
+      - "True"
+      - "False"
+
+  # ---- Deadlock (3) ----
+  - id: q42
+    type: MCQ
+    topic: Deadlock
+    marks: 1
+    question: Which recovery mechanism uses periodic checkpoints to restore a process to a pre-deadlock state?
+    correct: 1
+    rationale: >-
+      Rollback — checkpoint memory + resource state, restore on deadlock. A (preemption) takes a resource without
+      restarting the process. C (killing) discards the process entirely. D (Banker's) is avoidance, not recovery.
+    choices:
+      - "Preemption"
+      - "Rollback"
+      - "Process killing"
+      - "Banker's algorithm"
+
+  - id: q43
+    type: MCQ
+    topic: Deadlock
+    marks: 1
+    question: Global resource numbering attacks which Coffman condition?
+    correct: 3
+    rationale: >-
+      Circular wait — forcing increasing-order requests makes cycles impossible. A (mutex) is attacked by spooling.
+      B (hold-and-wait) by request-all-upfront or release-before-reacquire. C (no-preemption) by allowing preemption.
+    choices:
+      - "Mutual exclusion"
+      - "Hold and wait"
+      - "No preemption"
+      - "Circular wait"
+
+  - id: q44
+    type: MCQ
+    topic: Deadlock
+    marks: 1
+    question: An unsafe state is the same as a deadlocked state.
+    correct: 1
+    rationale: >-
+      False. Unsafe means there is no guarantee all processes can complete under worst-case future requests, but
+      deadlock has not yet occurred. Banker's avoidance denies requests that would produce unsafe states to
+      pre-empt the possibility of deadlock.
+    choices:
+      - "True"
+      - "False"
+
+  # ---- IPC 1 / Semaphores / Sync (4) ----
+  - id: q45
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 2
+    question: >-
+      In producer-consumer with three semaphores (`empty=N, full=0, mutex=1`), what deadlock results if a producer
+      calls `P(mutex)` before `P(empty)`?
+    correct: 2
+    rationale: >-
+      Producer holds mutex, waits on empty when the buffer is full. Consumer cannot call P(mutex) to remove an item
+      → buffer stays full forever. A — no, the initial state is fine. B — livelock implies active state changes;
+      here both are blocked. D — misnames the deadlock; specifics of which sem is held matter.
+    choices:
+      - "No deadlock — semaphores are symmetric"
+      - "Starvation, not deadlock"
+      - "Producer holds mutex forever, consumer blocks on mutex"
+      - "Both block on the same semaphore"
+
+  - id: q46
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 1
+    question: Condition variables retain signals that arrive with no waiter present.
+    correct: 1
+    rationale: >-
+      False. Condition variables have **no memory** — signals sent with no waiter are lost. This is exactly why
+      monitors pair condition variables with an explicit predicate check in a while-loop.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q47
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 1
+    question: Which mechanism allows exactly one process to execute inside at a time without explicit P/V calls by the programmer?
+    correct: 2
+    rationale: >-
+      Monitor — compiler/runtime synthesizes mutual exclusion around every method. A (semaphore) requires explicit
+      P/V. B (mutex) requires explicit lock/unlock. D (spin lock) requires explicit acquire/release and burns CPU.
+    choices:
+      - "Counting semaphore"
+      - "Mutex lock"
+      - "Monitor"
+      - "Spin lock"
+
+  - id: q48
+    type: MCQ
+    topic: IPC1/Sem
+    marks: 1
+    question: Strict alternation satisfies all four requirements for a correct mutual exclusion solution.
+    correct: 1
+    rationale: >-
+      False. Strict alternation violates requirement #3 (a process **outside** its critical region cannot block
+      another): if process A is slow or not running, process B is blocked waiting its "turn" even though A isn't
+      in its critical region. Professor highlights this on the requirements slide.
+    choices:
+      - "True"
+      - "False"
+
+  # ---- IPC 2 / Linux IPC (4) ----
+  - id: q49
+    type: MCQ
+    topic: IPC2
+    marks: 1
+    question: Which IPC mechanism is bidirectional and usable between **unrelated** processes?
+    correct: 2
+    rationale: >-
+      Named pipe (FIFO) — accessed by filesystem path, both directions available. A (unnamed pipe) is unidirectional
+      AND needs fork to share the fd. B (signal) carries no payload. D (System V semaphore) is synchronization,
+      not a data channel.
+    choices:
+      - "Unnamed pipe"
+      - "Signal"
+      - "Named pipe (FIFO)"
+      - "System V semaphore"
+
+  - id: q50
+    type: MCQ
+    topic: IPC2
+    marks: 1
+    question: Which signal cannot be caught, blocked, or ignored?
+    correct: 2
+    rationale: >-
+      SIGKILL — the kernel enforces immediate termination. A (SIGTERM) can be caught or ignored. B (SIGINT) handlers
+      are common (Ctrl-C handlers). D (SIGUSR1) is for application use, fully handler-able.
+    choices:
+      - "SIGTERM"
+      - "SIGINT"
+      - "SIGKILL"
+      - "SIGUSR1"
+
+  - id: q51
+    type: MCQ
+    topic: IPC2
+    marks: 1
+    question: "`mmap` with `MAP_SHARED` allows two unrelated processes to share memory by mapping the same file."
+    correct: 0
+    rationale: >-
+      True. MAP_SHARED writes are visible to all processes mapping the same region of the same file. This is the
+      cross-Part-8-and-Part-10 bridge concept flagged as a likely exam target in the knowledge graph.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q52
+    type: MCQ
+    topic: IPC2
+    marks: 2
+    question: In a TCP socket server, which sequence correctly sets up a listening endpoint?
+    correct: 0
+    rationale: >-
+      socket → bind → listen → accept. B swaps bind and listen (listen cannot happen before the address is
+      assigned). C omits listen entirely. D is the client-side order (connect replaces listen/accept).
+    choices:
+      - "socket, bind, listen, accept"
+      - "socket, listen, bind, accept"
+      - "socket, bind, accept"
+      - "socket, bind, connect"
+
+  # ---- Paging — address translation + bit-splits (6) ----
+  - id: q53
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    tags: [memory-focus]
+    question: With page size 4 KB and a 32-bit virtual address, how many bits make up the offset?
+    correct: 2
+    rationale: >-
+      4 KB = 2^12 so the offset is 12 bits; the remaining 20 bits are the virtual page number. A (10) matches 1 KB
+      pages. B (11) matches 2 KB. D (13) matches 8 KB.
+    choices:
+      - "10"
+      - "11"
+      - "12"
+      - "13"
+
+  - id: q54
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    tags: [memory-focus]
+    question: A 36-bit virtual address with 4 KB pages yields how many virtual pages?
+    correct: 1
+    rationale: >-
+      offset = 12 bits → VP bits = 36 − 12 = 24 → pages = 2^24. A — forgets to subtract offset. C — uses PA bits.
+      D — uses 64-bit VA.
+    choices:
+      - "2^36"
+      - "2^24"
+      - "2^20"
+      - "2^52"
+
+  - id: q55
+    type: MCQ
+    topic: Memory/Paging
+    marks: 2
+    tags: [memory-focus]
+    question: >-
+      Page size 4 KB. The page table says VP 3 → frame 5. What physical address corresponds to virtual address 12400?
+    correct: 2
+    rationale: >-
+      VA 12400 / 4096 = VP 3, offset 112. PA = 5 × 4096 + 112 = 20480 + 112 = 20592. A — uses VP × 4096 only.
+      B — off-by-one page. D — arithmetic slip (× 4 instead of × 4096).
+    choices:
+      - "20480"
+      - "16492"
+      - "20592"
+      - "112"
+
+  - id: q56
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    tags: [memory-focus]
+    question: The offset portion of a virtual address passes through translation unchanged.
+    correct: 0
+    rationale: >-
+      True. Translation only rewrites the page/frame high-order bits; the offset (low-order byte index inside the
+      page) is concatenated onto the frame base unaltered. This is what makes translation a pure bit-substitution.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q57
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    tags: [memory-focus]
+    question: For a VA, the physical-address formula is PA = frame × page_size + offset.
+    correct: 0
+    rationale: >-
+      True. The equivalent form `PA = VA + (frame_base − page_base)` (shown on Part 10 slides as `Y = x + (a − A)`)
+      gives the same number; both methods earn marks on the written exam.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q58
+    type: MCQ
+    topic: Memory/Paging
+    marks: 2
+    tags: [memory-focus]
+    question: >-
+      48-bit virtual address, 40-bit physical address, 16 KB pages. How many page frames does the system have?
+    correct: 1
+    rationale: >-
+      offset = log₂(16 KB) = 14 bits → frames = 2^(40 − 14) = 2^26. A — uses VA bits. C — uses 4 KB pages. D —
+      forgets subtraction.
+    choices:
+      - "2^34"
+      - "2^26"
+      - "2^28"
+      - "2^40"
+
+  # ---- Page tables (4) ----
+  - id: q59
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    tags: [memory-focus]
+    question: An inverted page table has one entry per physical frame, not per virtual page.
+    correct: 0
+    rationale: >-
+      True. This trades direct-indexing speed (linear PT) for size that scales with RAM rather than VA space.
+      Lookups require hashing and chain search. Essential for 64-bit systems where linear PTs are infeasible.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q60
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    tags: [memory-focus]
+    question: Which PTE field causes a page fault when its value is 0 on access?
+    correct: 0
+    rationale: >-
+      Present/absent bit. When 0, the MMU traps and the OS loads the page (or kills the process for invalid VAs).
+      B (dirty) just tracks writeback need. C (referenced) is for replacement algorithms. D (caching-disabled)
+      affects cache policy, not faults.
+    choices:
+      - "Present/absent"
+      - "Modified (dirty)"
+      - "Referenced"
+      - "Caching-disabled"
+
+  - id: q61
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    tags: [memory-focus]
+    question: >-
+      A 64-bit virtual address with 4 KB pages requires 2^52 entries in a single-level linear page table per process.
+    correct: 0
+    rationale: >-
+      True. 64 − 12 = 52 VP bits → 2^52 entries. This is exactly why 64-bit systems use multi-level (or inverted)
+      page tables — a linear 2^52-entry PT per process is infeasible.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q62
+    type: MCQ
+    topic: Memory/Paging
+    marks: 2
+    tags: [memory-focus]
+    question: >-
+      Two-level page table with 32-bit VA, 4 KB pages, 10 top-level bits, 10 second-level bits. How many outer-table
+      entries and inner-table entries does each level have?
+    correct: 1
+    rationale: >-
+      Outer = 2^10 = 1024; inner = 2^10 = 1024; offset = 12. A — uses linear PT count. C — swaps levels. D — uses
+      2^20 for both.
+    choices:
+      - "1024 outer, 4096 inner"
+      - "1024 outer, 1024 inner"
+      - "4096 outer, 1024 inner"
+      - "1M outer, 1M inner"
+
+  # ---- Page replacement (4) ----
+  - id: q63
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    tags: [memory-focus]
+    question: The clock algorithm approximates LRU using the referenced bit.
+    correct: 0
+    rationale: >-
+      True. The hand advances through frames; if referenced=1, clear it and advance. If 0, evict. Pages that survive
+      a full rotation without re-access get evicted — a cheap approximation of "least recently used".
+    choices:
+      - "True"
+      - "False"
+
+  - id: q64
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    tags: [memory-focus]
+    question: Which page-replacement policy can suffer Belady's anomaly?
+    correct: 0
+    rationale: >-
+      FIFO — more frames can mean more faults on certain reference strings. B (LRU) cannot. C (OPT) cannot. D
+      (Second Chance) is FIFO variant that uses the reference bit but the core queue is still FIFO — reduces but
+      does not immunize against the anomaly per Part 10 slides.
+    choices:
+      - "FIFO"
+      - "LRU"
+      - "OPT"
+      - "Random"
+
+  - id: q65
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    tags: [memory-focus]
+    question: The OPT (furthest-future) replacement policy is implementable in production systems.
+    correct: 1
+    rationale: >-
+      False. OPT requires knowing future accesses — not available at runtime. It's a theoretical benchmark against
+      which practical policies (LRU, Clock) are measured.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q66
+    type: MCQ
+    topic: Memory/Paging
+    marks: 2
+    tags: [memory-focus]
+    question: >-
+      3 frames, reference string 1, 2, 3, 1, 2, 4, 1, 2, 3, 4. How many page faults with LRU?
+    correct: 2
+    rationale: >-
+      Trace: 1(F), 2(F), 3(F) → [1,2,3]; 1(hit), 2(hit); 4(F evict 3) → [1,2,4]; 1(hit), 2(hit); 3(F evict 4) →
+      [1,2,3]; 4(F evict 1) → [2,3,4]. **6 faults.** A — miscounts 3 as hit. B — misses the 3/4 thrash. D — uses
+      FIFO trace.
+    choices:
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+
+  # ---- TLB (3) ----
+  - id: q67
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    tags: [memory-focus]
+    question: A TLB soft miss and hard miss differ in whether the page is currently in physical memory.
+    correct: 0
+    rationale: >-
+      True. Soft miss: not in TLB but page IS in memory → just refill TLB. Hard miss: not in TLB AND page not in
+      memory → page fault + disk I/O. Hard miss is orders of magnitude slower.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q68
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    tags: [memory-focus]
+    question: The TLB caches recent virtual-to-physical translations.
+    correct: 0
+    rationale: >-
+      True. TLB hits skip the page-table walk entirely — the MMU returns the frame number directly. This is what
+      makes translation fast on average despite the walk being expensive.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q69
+    type: MCQ
+    topic: Memory/Paging
+    marks: 2
+    tags: [memory-focus]
+    question: >-
+      TLB 1 ns, memory 100 ns, PT walk adds one memory access, hit rate 0.98. Closest EAT?
+    correct: 0
+    rationale: >-
+      EAT = 0.98 × 101 + 0.02 × 201 = 98.98 + 4.02 = 103 ns. B — forgets PT cost. C — uses 0.90 hit rate. D — uses
+      no-TLB baseline.
+    choices:
+      - "103 ns"
+      - "101 ns"
+      - "111 ns"
+      - "201 ns"
+
+  # ---- Allocation algorithms (4) ----
+  - id: q70
+    type: MCQ
+    topic: Memory/Alloc
+    marks: 2
+    tags: [memory-focus]
+    question: >-
+      Holes [10, 4, 20, 18, 7, 9, 12, 15] MB. Request 10 MB. Which hole does **first fit** pick?
+    correct: 0
+    rationale: >-
+      First fit stops at the first hole ≥ 10: scan → 10 ≥ 10 → take 10 (index 0). B — best fit. C — worst fit.
+      D — confuses with a 12 MB request.
+    choices:
+      - "10"
+      - "12"
+      - "20"
+      - "18"
+
+  - id: q71
+    type: MCQ
+    topic: Memory/Alloc
+    marks: 2
+    tags: [memory-focus]
+    question: >-
+      Same holes [10, 4, 20, 18, 7, 9, 12, 15]. Request 9 MB. Which hole does **best fit** pick?
+    correct: 2
+    rationale: >-
+      Candidates ≥ 9: {10, 20, 18, 9, 12, 15}. Smallest = 9. A — first fit would take 10. B — next fit rover-dependent.
+      D — worst fit picks 20.
+    choices:
+      - "10"
+      - "12"
+      - "9"
+      - "20"
+
+  - id: q72
+    type: MCQ
+    topic: Memory/Alloc
+    marks: 1
+    tags: [memory-focus]
+    question: Worst fit leaves smaller leftover fragments than best fit on average.
+    correct: 1
+    rationale: >-
+      False. Worst fit picks the **largest** hole regardless of request size, so leftover tends to be large (useful)
+      per the original design intuition. Best fit leaves tiny fragments. Actual practice: worst fit performs poorly
+      because it exhausts large holes prematurely.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q73
+    type: MCQ
+    topic: Memory/Alloc
+    marks: 1
+    tags: [memory-focus]
+    question: Quick fit maintains separate free-lists for common request sizes.
+    correct: 0
+    rationale: >-
+      True. One list per size bucket → allocation is a single list pop (O(1), no scan). Tradeoff: coalescing is
+      harder because neighbor-adjacency is not tracked directly.
+    choices:
+      - "True"
+      - "False"
+
+  # ---- Buddy system (3) ----
+  - id: q74
+    type: MCQ
+    topic: Memory/Alloc
+    marks: 2
+    tags: [memory-focus]
+    question: >-
+      Buddy arena 1024 KB, min 32 KB. Process requests 300 KB. What block size is allocated?
+    correct: 2
+    rationale: >-
+      300 rounds up to next power of 2 ≥ 300 = 512. A — 256 < 300 (would not fit). B — rounds down, wrong. D — next
+      power after 512 but 512 already fits.
+    choices:
+      - "256 KB"
+      - "300 KB"
+      - "512 KB"
+      - "1024 KB"
+
+  - id: q75
+    type: MCQ
+    topic: Memory/Alloc
+    marks: 1
+    tags: [memory-focus]
+    question: Buddy-system coalescing merges two blocks only when both are wholly free and are buddies.
+    correct: 0
+    rationale: >-
+      True. Any busy leaf anywhere in the buddy's subtree blocks the merge. Two adjacent free blocks that are NOT
+      buddies (different parents) also do not merge — buddy status is determined by the split history, not
+      adjacency.
+    choices:
+      - "True"
+      - "False"
+
+  - id: q76
+    type: MCQ
+    topic: Memory/Alloc
+    marks: 1
+    tags: [memory-focus]
+    question: Buddy systems eliminate internal fragmentation.
+    correct: 1
+    rationale: >-
+      False. Power-of-2 rounding causes up to ~50% internal fragmentation worst case (request = 2^k + 1 takes block
+      2^(k+1)). They reduce external fragmentation via predictable coalescing, not internal.
+    choices:
+      - "True"
+      - "False"
+
+  # ---- Fragmentation + thrashing (1) ----
+  - id: q77
+    type: MCQ
+    topic: Memory/Paging
+    marks: 1
+    tags: [memory-focus]
+    question: Thrashing is best remedied by increasing the degree of multiprogramming.
+    correct: 1
+    rationale: >-
+      False. Thrashing happens when combined working sets exceed RAM; adding more processes makes it worse.
+      **Reducing** the degree of multiprogramming (suspending a process to disk) is the canonical fix per Part 10.
+    choices:
+      - "True"
+      - "False"

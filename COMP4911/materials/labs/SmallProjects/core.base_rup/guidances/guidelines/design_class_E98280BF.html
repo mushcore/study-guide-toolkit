@@ -1,0 +1,427 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Guideline: Design Class</title>
+<meta name="uma.type" content="Guideline">
+<meta name="uma.name" content="design_class">
+<meta name="uma.presentationName" content="Design Class">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_qwxC8N7YEdmjRZts2c4ZjQ", "{DB21F5EF-810B-4994-B120-79FA8774FA9D}", "2.914882084937444E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_f6_YwN7DEdmsEI4YDGX2ag", "_qwxC8N7YEdmjRZts2c4ZjQ", "{DB21F5EF-810B-4994-B120-79FA8774FA9D}", "2.914882084937444E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_jijhYAIaEdqEutyfYo0quQ", "_n7ZcgN7REdmjRZts2c4ZjQ", "{952A9CE9-D5A3-43AC-980D-0B9298F3872E}", "2.914882084937444E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_2ClPcDIcEdqDs_9ORT1Rig", "2.914882084937444E-305"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="2.914882084937444E-305"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Guideline: Design Class</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/guidance.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">A Design Class represents a design element that will be mapped directly to code. This guideline explains how to develop a Design Class.</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/workproducts/rup_design_class_B33BD5E5.html" guid="{952A9CE9-D5A3-43AC-980D-0B9298F3872E}">Design Class</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/roles/rup_designer_BA8DE74E.html" guid="{DB21F5EF-810B-4994-B120-79FA8774FA9D}">Designer</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a><a id="XE_class__guidelines_for" name="XE_class__guidelines_for"></a> 
+<h3>
+    <a id="Explanation" name="Explanation">Definition</a>
+</h3>
+<p>
+    <a id="XE_class__definition" name="XE_class__definition"></a>A <b>design class</b> represents an abstraction of one or
+    several classes in the system's implementation; exactly what it corresponds to depends on the implementation language.
+    For example, in an object-oriented language such as C++, a class can correspond to a plain class. Or in Ada, a class
+    can correspond to a tagged type defined in the visible part of a package.
+</p>
+<p>
+    Classes define <b>objects</b>, which in turn realize (implement) the use cases. A class originates from the
+    requirements the use-case realizations make on the objects needed in the system, as well as from any previously
+    developed object model.
+</p>
+<p>
+    Whether or not a class is good depends heavily on the implementation environment. The proper size of the class and its
+    objects depends on the programming language, for example. What is considered right when using Ada might be wrong when
+    using Smalltalk. Classes should map to a particular phenomenon in the implementation language, and the classes should
+    be structured so that the mapping results in good code.
+</p>
+<p>
+    Even though the peculiarities of the implementation language influence the design model, you must keep the class
+    structure easy to understand and modify. You should design as if you had classes and encapsulation even if the
+    implementation language does not support this.
+</p>
+<h3>
+    <a id="operations" name="operations">Operations</a>
+</h3>
+<p>
+    The only way other objects can get access to or affect the attributes or relationships of an object is through its
+    <b>operations</b>. The operations of an object are defined by its class. A specific behavior can be performed via the
+    operations, which may affect the attributes and relationships the object holds and cause other operations to be
+    performed. An operation corresponds to a member function in C++ or to a function or procedure in Ada. What behavior you
+    assign to an object depends on what role it has in the use-case realizations.
+</p>
+<h4>
+    <a id="parameters" name="parameters">Parameters</a>
+</h4>
+<p>
+    In the specification of an operation, the parameters constitute <b>formal parameters</b>. Each parameter has a name and
+    type. You can use the implementation language syntax and semantics to specify the operations and their parameters so
+    that they will already be specified in the implementation language when coding starts.
+</p>
+<p class="exampleheading">
+    Example:
+</p>
+<p class="example">
+    In the <b>Recycling Machine System</b>, the objects of a <b>Receipt Basis</b> class keep track of how many deposit
+    items of a certain type a customer has handed in. The behavior of a <b>Receipt Basis</b> object includes incrementing
+    the number of objects returned. The operation <b>insertItem,</b> which receives a reference to the item handed in,
+    fills this purpose.
+</p>
+<p class="picturecenter" align="center">
+    <img height="44" alt="Diagram described in accompanying text." src="./../../../core.base_rup/guidances/guidelines/resources/md_clas3.gif" width="210" />
+</p>
+<p class="picturetext">
+    Use the implementation language syntax and semantics when specifying operations.
+</p>
+<h4>
+    <a id="XE_class__operations_on" name="XE_class__operations_on"></a><b><a id="Class Operations" name="Class Operations">Class Operations</a></b>
+</h4>
+<p>
+    An operation nearly always denotes object behavior. An operation can also denote behavior of a class, in which case it
+    is a <b>class operation</b>. This can be modeled in the UML by type-scoping the operation.
+</p>
+<h4>
+    <a id="Operation Visibility" name="Operation Visibility">Operation Visibility</a>
+</h4>
+<p align="left">
+    The following visibilities are possible on an operation:
+</p>
+<ul>
+    <li>
+        <b>Public</b>: the operation is visible to model elements other than the class itself.
+    </li>
+    <li>
+        <b>Protected</b>: the operation is visible only to the class itself, to its subclasses, or to <b>friends</b> of the
+        class (language dependent)
+    </li>
+    <li>
+        <b>Private</b>: the operation is only visible to the class itself and to <b>friends</b> of the class
+    </li>
+    <li>
+        <b>Implementation</b>: the operation is visible only within to the class itself.
+    </li>
+</ul>
+<p>
+    <b>Public</b> visibility should be used <b>very</b> <b>sparingly</b>, only when an operation is needed by another
+    class.
+</p>
+<p>
+    <b>Protected</b> visibility should be the <b>default</b>; it protects the operation from use by external classes, which
+    promotes loose coupling and encapsulation of behavior.
+</p>
+<p>
+    <b>Private</b> visibility should be used in cases where you want to prevent <b>subclasses</b> from inheriting the
+    operation. This provides a way to de-couple subclasses from the super-class and to reduce the need to remove or exclude
+    unused inherited operations.
+</p>
+<p>
+    <b>Implementation</b> visibility is the <b>most restrictive</b>; it is used in cases where only the class itself is
+    able to use the operation. It is <b>a variant of Private visibility</b>, which for most cases is suitable.
+</p>
+<h3>
+    <a id="States" name="States">States</a>
+</h3>
+<p>
+    An object can react differently to a specific message depending on what state it is in; the state-dependent behavior of
+    an object is defined by an associated statechart diagram. For each state the object can enter, the statechart diagram
+    describes what messages it can receive, what operations will be carried out, and what state the object will be in
+    thereafter. Refer to <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/statechart_diagram_640B5D0B.html" guid="1.4528459404144188E-304">Guideline: Statechart Diagram</a> for more information.
+</p>
+<h3>
+    <a id="Interaction Between Objects" name="Interaction Between Objects">Collaborations</a>
+</h3>
+<p>
+    A collaboration is a dynamic set of object interactions in which a set of objects communicate by sending
+    <b>messages</b> to each other. Sending a message is straightforward in Smalltalk; in Ada it is done as a subprogram
+    call. A message is sent to a receiving object that invokes an operation within the object. The message indicates the
+    name of the operation to perform, along with the required parameters. When messages are sent, <b>actual parameters</b>
+    (values for the formal <b>parameter</b>s) are supplied for all the <b>parameter</b>s.
+</p>
+<p>
+    The message transmissions among objects in a use-case realization and the focus of control the objects follow as the
+    operations are invoked are described in interaction diagrams. See <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/sequence_diagram_AFA76EBB.html" guid="3.211008403369512E-306">Guideline: Sequence Diagram</a> and <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/communication_diagram_FFFEA1B5.html" guid="4.5194432001390347E-305">Guideline: Communication Diagram</a> for information about these diagrams.
+</p>
+<h3>
+    <a id="XE_class_attribute__definition" name="XE_class_attribute__definition"></a><a id="Attributes" name="Attributes"></a><a id="XE_attribute__definition_for" name="XE_attribute__definition_for">Attributes</a>
+</h3>
+<p>
+    An attribute is a named property of an object. The attribute name is a noun that describes the attribute's role in
+    relation to the object. An attribute can have an initial value when the object is created.
+</p>
+<p>
+    You should model attributes only if doing so makes an object more understandable. You should model the property of an
+    object as an attribute only if it is a property of <b>that object alone</b>. Otherwise, you should model the property
+    with an association or aggregation relationship to a class whose objects represent the property.
+</p>
+<p class="exampleheading">
+    Example:
+</p>
+<p class="picturecenter" align="center">
+    <img height="63" alt="Diagram described in accompanying text." src="./../../../core.base_rup/guidances/guidelines/resources/md_clas4.gif" width="162" />
+</p>
+<p class="example">
+    An example of how an attribute is modeled. Each member of a family has a name and an address. Here, we have identified
+    the attributes <b>my name</b> and <b>home address</b> of type <b>Name</b> and <b>Address</b>, respectively:
+</p>
+<p class="picturecenter" align="center">
+    <img height="45" alt="Diagram described in accompanying text." src="./../../../core.base_rup/guidances/guidelines/resources/md_clas5.gif" width="308" />
+</p>
+<p class="example">
+    In this example, an association is used instead of an attribute. The <b>my name</b> property is probably unique to each
+    member of a family. Therefore we can model it as an attribute of the attribute type <b>Name</b>. An address, though, is
+    shared by all family members, so it is best modeled by an association between the <b>Family Member</b> class and the
+    <b>Address</b> class.
+</p>
+<p>
+    It is not always easy to decide immediately whether to model some concept as a separate object or as an attribute of
+    another object. Having unnecessary objects in the object model leads to unnecessary documentation and development
+    overhead. You must therefore establish certain criteria to determine how important a concept is to the system.
+</p>
+<ul>
+    <li>
+        <b>Accessibility</b>. What governs your choice of object versus attribute is not the importance of the concept in
+        real life, but the need to access it during the use case. If the unit is accessed frequently, model it as an
+        object.
+    </li>
+    <li>
+        <b>Separateness during execution</b>. Model concepts handled separately during the execution of use cases as
+        objects.
+    </li>
+    <li>
+        <b>Ties to other concepts</b>. Model concepts strictly tied to certain other concepts and never used separately,
+        but always via an object, as an attribute of the object.
+    </li>
+    <li>
+        <b>Demands from relationships</b>. If, for some reason, you must relate a unit from two directions, re-examine the
+        unit to see if it should be a separate object. Two objects cannot associate the same instance of an attribute type.
+    </li>
+    <li>
+        <b>Frequency of occurrence.</b> If a unit exists only during a use case, do not model it as an object. Instead
+        model it as an attribute to the object that performs the behavior in question, or simply mention it in the
+        description of the affected object.
+    </li>
+    <li>
+        <b>Complexity.</b> If an object becomes too complicated because of its attributes, you may be able to extract some
+        of the attributes into separate objects. Do this in moderation, however, so that you do not have too many objects.
+        On the other hand, the units may be very straightforward. For example, classified as attributes are (1) units that
+        are simple enough to be supported directly by primitive types in the implementation language, such as, integers in
+        C++, and (2) units that are simple enough to be implemented by using the application-independent components of the
+        implementation environment, such as, <b>String</b> in C++ and Smalltalk-80.
+    </li>
+</ul>
+<p>
+    You will probably model a concept differently for different systems. In one system, the concept may be so vital that
+    you will model it as an object. In another, it may be of minor importance, and you will model it as an attribute of an
+    object.
+</p>
+<p class="exampleheading">
+    Example:
+</p>
+<p class="example">
+    For example, for an airline company you would develop a system that supports departures.
+</p>
+<p class="picturecenter" align="center">
+    <img height="75" alt="Diagram described in accompanying text." src="./../../../core.base_rup/guidances/guidelines/resources/md_clas6.gif" width="146" />
+</p>
+<p class="picturetext">
+    A system that supports departures. Suppose the personnel at an airport want a system that supports departures. For each
+    departure, you must define the time of departure, the airline, and the destination. You can model this as an object of
+    a class <b>Departure</b>, with the attributes <b>time of departure</b>, <b>airline</b>, and <b>destination</b>.
+</p>
+<p class="example">
+    If, instead, the system is developed for a travel agency, the situation might be somewhat different.
+</p>
+<p class="picturecenter" align="center">
+    <img height="65" alt="Diagram described in accompanying text." src="./../../../core.base_rup/guidances/guidelines/resources/md_clas7.gif" width="391" />
+</p>
+<p class="picturetext">
+    Flight destinations forms its own object, <b>Destination.</b>
+</p>
+<p class="example">
+    The time of departure, airline, and destination will, of course, still be needed. Yet there are other requirements,
+    because a travel agency is interested in finding a departure with a specific destination. You must therefore create a
+    separate object for <b>Destination</b>. The objects of <b>Departure</b> and <b>Destination</b> must, of course, be
+    aware of each other, which is enabled by an association between their classes.
+</p>
+<p>
+    The argument for the importance of certain concepts is also valid for determining what attributes should be defined in
+    a class. The class <b>Car</b> will no doubt define different attributes if its objects are part of a motor-vehicle
+    registration system than if its objects are part of an automobile manufacturing system.
+</p>
+<p>
+    Finally, the rules for what to represent as objects and what to represent as attributes are not absolute.
+    Theoretically, you can model everything as objects, but this is cumbersome. A simple rule of thumb is to view an object
+    as something that at some stage is used irrespective of other objects. In addition, you do not have to model every
+    object property using an attribute, only properties necessary to understand the object. You should not model details
+    that are so implementation-specific that they are better handled by the implementer.
+</p>
+<h4>
+    <a id="XE_attribute__class,_definition_for" name="XE_attribute__class,_definition_for"></a><a id="Class_Attributes" name="Class_Attributes"></a>Class Attributes
+</h4>
+<p>
+    An attribute nearly always denotes object properties. An attribute can also denote properties of a class, in which case
+    it is a <b>class attribute</b>. This can be modeled in the UML by type-scoping the attribute.
+</p>
+<h4>
+    <a id="XE_external_units__modeling_with_attributes" name="XE_external_units__modeling_with_attributes"></a><a id="Modeling_External" name="Modeling_External"></a><a id="XE_attribute__modeling_external_units_with" name="XE_attribute__modeling_external_units_with">Modeling External Units with Attributes</a>
+</h4>
+<p>
+    An object can encapsulate something whose value can change without the object performing any behavior. It might be
+    something that is really an external unit, but that was not modeled as an actor. For example, system boundaries may
+    have been chosen so that some form of sensor equipment lies within them. The sensor can then be encapsulated within an
+    object, so that the value it measures constitutes an attribute. This value can then change continually, or at certain
+    intervals without the object being influenced by any other object in the system.
+</p>
+<p class="exampleheading">
+    Example:
+</p>
+<p class="example">
+    You can model a thermometer as an object; the object has an attribute that represents temperature, and changes value in
+    response to changes in the temperature of the environment. Other objects may ask for the current temperature by
+    performing an operation on the thermometer object.
+</p>
+<p class="picturecenter" align="center">
+    <img height="45" alt="Diagram described in accompanying text." src="./../../../core.base_rup/guidances/guidelines/resources/md_clas8.gif" width="153" />
+</p>
+<p class="picturetext">
+    The value of the attribute <b>temperature</b> changes spontaneously in the <b>Thermometer</b> object.
+</p>
+<p>
+    You can still model an encapsulated value that changes in this way as an ordinary attribute, but you should describe in
+    the object's class that it changes <b>spontaneously</b>.
+</p>
+<h4>
+    <a id="Attribute Visibility" name="Attribute Visibility">Attribute Visibility</a>
+</h4>
+<p>
+    Attribute visibility assumes one of the following values:
+</p>
+<ul>
+    <li>
+        <b>Public</b>: the attribute is visible both inside and outside the package containing the class.
+    </li>
+    <li>
+        <b>Protected</b>: the attribute is visible only to the class itself, to its subclasses, or to <b>friends</b> of the
+        class (language dependent)
+    </li>
+    <li>
+        <b>Private</b>: the attribute is only visible to the class itself and to <b>friends</b> of the class
+    </li>
+    <li>
+        <b>Implementation</b>: the attribute is visible to the class itself.
+    </li>
+</ul>
+<p>
+    <b>Public</b> visibility should be used <b>very</b> <b>sparingly</b>, only when an attribute is directly accessible by
+    another class. Defining public visibility is effectively a short-hand notation for defining the attribute visibility as
+    protected, private or implementation, with associated public operations to get and set the attribute value. Public
+    attribute visibility can be used as a declaration to a code generator that these get/set operations should be
+    automatically generated, saving time during class definition.
+</p>
+<p>
+    <b>Protected</b> visibility should be the <b>default</b>; it protects the attribute from use by external classes, which
+    promotes loose coupling and encapsulation of behavior.
+</p>
+<p>
+    <b>Private</b> visibility should be used in cases where you want to prevent <b>subclasses</b> from inheriting the
+    attribute. This provides a way to de-couple subclasses from the super-class and to reduce the need to remove or exclude
+    unused inherited attributes.
+</p>
+<p>
+    <b>Implementation</b> visibility is the <b>most restrictive</b>; it is used in cases where only the class itself is
+    able to use the attribute. It is <b>a variant of Private visibility</b>, which for most cases is suitable.
+</p>
+<h3>
+    <a id="Internal Structure" name="Internal Structure">Internal Structure</a>
+</h3>
+<p>
+    Some classes may represent complex abstractions and have a complex structure. While modeling a class, the designer may
+    want to represent its internal participating elements and their relationships, to make sure that the implementer will
+    accordingly implement the collaborations happening inside that class.
+</p>
+<p>
+    In UML 2.0, classes are defined as <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/termdefinitions/structured_class_4BB99B12.html" guid="_yW3E4NnmEdmO6L4XMImrsA">structured classes</a>, with the capability to have a internal structure and ports.
+    Then, classes may be decomposed into collections of connected parts that may be further decomposed in turn. A class may
+    be encapsulated by forcing communications from outside to pass through ports obeying declared interfaces.
+</p>
+<p>
+    Thus, in addition to using class diagrams to represent class relationships (e.g. associations, compositions and
+    aggregations) and attributes, the designer may want to use a composite structure diagram. This diagram provides the
+    designer a mechanism to show how instances of internal parts play their roles within an instance of a given class.
+</p>
+<p>
+    For more information on this topic and examples on composite structure diagram, see <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/concepts/structured_class_FF8DB16F.html" guid="1.1994826813129747E-304">Concept: Structured Class</a>.
+</p></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

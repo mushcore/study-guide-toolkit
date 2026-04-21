@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Accessing Rational ClearCase from Rational Rose</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="accessing_clearcase">
+<meta name="uma.presentationName" content="Accessing Rational ClearCase from Rational Rose">
+<meta name="uma.category" content="Tool:rup_rose_classic:Rational Rose">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational Rose">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_qS-iwAIOEdqTna4sZVFRow", "{06FB737B-5D74-4C3B-98F4-36153CFB2E34}", "{B67E317F-3C7C-4377-9F44-E9B38321C3F1}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_U5tiUAISEdqTna4sZVFRow", "{06FB737B-5D74-4C3B-98F4-36153CFB2E34}", "{B67E317F-3C7C-4377-9F44-E9B38321C3F1}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{06FB737B-5D74-4C3B-98F4-36153CFB2E34}", "{B67E317F-3C7C-4377-9F44-E9B38321C3F1}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{06FB737B-5D74-4C3B-98F4-36153CFB2E34}", "{B67E317F-3C7C-4377-9F44-E9B38321C3F1}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{B67E317F-3C7C-4377-9F44-E9B38321C3F1}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Accessing Rational ClearCase from Rational Rose</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to use the Rational Rose ClearCase add-in to access Rational ClearCase in order to manage changes to Rose model files and their generated source code files.</td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_rose_classic_20F2524D.html" guid="{06FB737B-5D74-4C3B-98F4-36153CFB2E34}">Rational Rose</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/structure_implementation_model_E0E0DEF9.html" guid="{35272424-8A0A-4DDD-BA74-C91B80A8D046}">Structure the Implementation Model</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><h3>
+    Overview
+</h3>
+<p>
+    The Rational Rose ClearCase add-in provides a tight integration between Rational ClearCase and Rational Rose. Using
+    this add-in, you can access many ClearCase functions from within Rational Rose, making it simple and convenient to set
+    up and ensure source control and change management for Rose model files, as well as some types of Rose-generated source
+    files.
+</p>
+<p>
+    Rational Rose files include model files (.mdl), files and controlled units (.cat, .sub, .prc, .prp), as well as source
+    files generated from ANSI C++ or Rose C++ classes and components.
+</p>
+<p>
+    <img height="16" alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" /> For details about Rose files,
+    refer to the <b>Controlled Units</b> topic in Rational Rose online help.
+</p>
+<h3>
+    Tool Steps
+</h3>
+<p>
+    In order to successfully work with Rational ClearCase from Rational Rose, you must ensure that the Rose ClearCase
+    add-in is active in the Rose Add-In Manager. You can then perform the following ClearCase tasks from within Rose:
+</p>
+<ol>
+    <li>
+        <a href="#Create and manage the Rose development environment">Create and manage the Rose development
+        environment</a>
+    </li>
+    <li>
+        <a href="#Add Rose files to ClearCase version control">Add Rational Rose files to Rational ClearCase
+        version control</a>
+    </li>
+    <li>
+        <a href="#Check out and check in Rose files">Check in and check out Rational Rose files</a>
+    </li>
+    <li>
+        <a href="#View ClearCase information about Rose files">View Rational ClearCase information about Rational
+        Rose files</a>
+    </li>
+    <li>
+        <a href="#Deliver Rose files to the integration stream">Deliver Rational Rose files to the integration
+        stream</a>
+    </li>
+    <li>
+        <a href="#Update a work area from the integration stream">Update a work area from the integration
+        stream</a>
+    </li>
+</ol>
+<h4>
+    1. <a id="Create and manage the Rose development environment" name="Create and manage the Rose development environment">Create and manage the Rational Rose development
+    environment</a>
+</h4>
+<p>
+    You can use Rational Rose ClearCase menus to perform many of the tasks required to create and manage the Rose
+    development environment from within Rose:
+</p>
+<ul>
+    <li>
+        Use <b>Start Version Control Explorer</b> to view ClearCase Details and gain access to ClearCase environment
+        commands, including commands for working with VOBs, views, branches, streams, and projects.
+    </li>
+    <li>
+        Use <b>Project Explorer</b> to create and work with ClearCase projects, views, and streams. Once you start the
+        Rational ClearCase Explorer, you have access to all of the ClearCase commands that allow you to define and promote
+        baselines, deliver and rebase streams. This command is only available if you are running ClearCase 4.0 or higher.
+    </li>
+</ul>
+<h5>
+    <b>For More Information</b>
+</h5>
+<p>
+    Refer to these Rational ClearCase Tool Mentors:
+</p>
+<ul>
+    <li>
+        <a class="elementLink" href="./../../../core.base_rup/guidances/toolmentors/setup_implementation_model_40C73358.html" guid="{FEEAA9AD-2CEE-41C6-BD6C-BBF14CA205A5}">Setting Up the Implementation Model Using Rational ClearCase</a>
+    </li>
+    <li>
+        <a class="elementLink" href="./../../../core.base_rup/guidances/toolmentors/creating_baselines_EFAE6E4.html" guid="{2BF31AC7-E278-4558-B8D2-83C5C646B7E9}">Creating Baselines Using Rational ClearCase</a>
+    </li>
+    <li>
+        <a class="elementLink" href="./../../../core.base_rup/guidances/toolmentors/promoting_project_baselines_728AA53B.html" guid="{BCD4B9BC-9799-4B27-A010-4D82F2CAE82B}">Promoting Project Baselines Using Rational ClearCase</a>
+    </li>
+</ul>
+<h4>
+    2. <a id="Add Rose files to ClearCase version control" name="Add Rose files to ClearCase version control">Add Rational
+    Rose files to Rational ClearCase version control</a>
+</h4>
+<p>
+    To add files to Rational ClearCase version control from Rational Rose, you can use Rose pop-up menus, or choose <b>Add
+    to Version Control</b> from the ClearCase submenu on the Rose Tools menu. Depending on the version of ClearCase you are
+    running, this command displays a Rose dialog that interfaces with ClearCase, or it displays the actual ClearCase
+    dialog. You can also remove files from ClearCase version control using Rose ClearCase commands.. However, you should
+    always exercise caution when removing files from version control.
+</p>
+<h5>
+    <b>For More Information</b>
+</h5>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" /> For details about adding and removing
+    files from Rational ClearCase version control, refer to the Rational Rose ClearCase add-in online help and&nbsp; the
+    Rational ClearCase Tool Mentor <a class="elementLink" href="./../../../core.base_rup/guidances/toolmentors/setup_implementation_model_40C73358.html" guid="{FEEAA9AD-2CEE-41C6-BD6C-BBF14CA205A5}">Setting Up the Implementation Model Using Rational ClearCase</a>.
+</p>
+<h4>
+    3. <a id="Check out and check in Rose files" name="Check out and check in Rose files">Check in and check out Rational
+    Rose files&nbsp;</a>
+</h4>
+<p>
+    To check out and check in files to Rational ClearCase version control from Rational Rose, you can use Rose pop-up
+    menus, or choose one of the following commands from the ClearCase submenu on the Rose Tools menu:
+</p>
+<ul>
+    <li>
+        Check In
+    </li>
+    <li>
+        Check Out
+    </li>
+    <li>
+        Undo Checkout
+    </li>
+    <li>
+        Get Latest
+    </li>
+</ul>
+<p>
+    Depending on the version of Rational ClearCase you are running, these commands display Rational Rose dialogs that
+    interface with ClearCase, or they display the actual ClearCase dialogs.
+</p>
+<h5>
+    <b>For More Information</b>
+</h5>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" /> For details about Rational Rose file
+    check out and check in to Rational ClearCase version control, refer to the Rose ClearCase add-in online help and the
+    Rational ClearCase Tool Mentors <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/toolmentors/check_out_check_in_203CEEC2.html" guid="{3D4CC908-5E3C-48C5-99F6-D4137834D9A4}">Checking Out and Checking In Configuration Items</a> and <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/toolmentors/using_ucm_change_sets_with_clearcase_46E66835.html" guid="{C7D320FC-FD99-4842-9193-28565FC50FEB}">Using UCM Change Sets</a>.
+</p>
+<h4>
+    4. <a id="View ClearCase information about Rose files" name="View ClearCase information about Rose files">View Rational
+    ClearCase information about Rational Rose files</a>
+</h4>
+<p>
+    The Rational Rose ClearCase add-in provides two sets of commands that allow you to obtain ClearCase information about
+    Rose files.
+</p>
+<ul>
+    <li>
+        The <b>List</b> commands query Rational ClearCase and then display the information you request in text format. List
+        commands include: Object, History, Checkouts, Version Tree, and All of the Above.
+    </li>
+    <li>
+        The <b>Browse</b> commands directly access Rational ClearCase dialogs, allowing you to view file information using
+        ClearCase's graphical browsers. Browse commands include Properties, History, Version Tree, and Directory.
+    </li>
+</ul>
+<h5>
+    <b>For More Information</b>
+</h5>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" /> For details about how to view
+    Rational ClearCase information within Rational Rose, refer to the Rose ClearCase add-in online help. For detailed
+    explanations of ClearCase file information, refer to the Rational ClearCase online help.
+</p>
+<h4>
+    5. <a id="Deliver Rose files to the integration stream" name="Deliver Rose files to the integration stream">Deliver
+    Rational Rose files to the integration stream</a>&nbsp;
+</h4>
+<p>
+    To deliver Rational Rose files from your development stream to an integration stream, use the <b>Deliver Stream</b>
+    command from the Rational ClearCase submenu of the Rose Tools menu. This command is only available if you are running
+    ClearCase 4.0 or higher.
+</p>
+<h5>
+    <b>For More Information</b>
+</h5>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" /> For details about delivering a
+    development stream to an integration stream in Rational ClearCase, refer to the Rational ClearCase Tool Mentor <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/toolmentors/delivering_your_work_4891CF09.html" guid="{DD0A5FB2-76C7-4B86-BBBD-FFF767EA07FA}">Delivering Your Work.</a>
+</p>
+<h4>
+    6.&nbsp;<a id="Update a work area from the integration stream" name="Update a work area from the integration stream">Update a work area from the integration stream</a>
+</h4>
+<p>
+    To update the Rational Rose files in your development stream from a more recent baseline in the integration stream, use
+    the <b>Rebase Stream</b> command from the Rational ClearCase submenu of the Rose Tools menu. This command is only
+    available if you are running ClearCase 4.0 or higher.
+</p>
+<h5>
+    <b>For More Information</b>
+</h5>
+<p>
+    <img height="16" alt="Help icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" /> For details about rebasing a
+    development stream using Rational ClearCase, refer to the Rational ClearCase Tool Mentor <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/toolmentors/updating_your_project_workarea_DE9AB16A.html" guid="{12294137-8815-4CC8-B79E-09BE5046C6D8}">Updating Your Work Area.</a>
+</p></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

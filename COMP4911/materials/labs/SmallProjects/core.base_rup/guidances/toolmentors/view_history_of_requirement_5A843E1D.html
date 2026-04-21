@@ -1,0 +1,383 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Viewing Requirement History Using Rational RequisitePro</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="view_history_of_requirement">
+<meta name="uma.presentationName" content="Viewing Requirement History Using Rational RequisitePro">
+<meta name="uma.category" content="Tool:rup_requisite_pro:Rational RequisitePro">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational RequisitePro">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_qS-iwAIOEdqTna4sZVFRow", "{887DBA0C-5761-494D-862D-5956F1C51BF7}", "{9D4EA8B0-AB27-4B4F-9571-938469E24D7A}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{887DBA0C-5761-494D-862D-5956F1C51BF7}", "{9D4EA8B0-AB27-4B4F-9571-938469E24D7A}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{887DBA0C-5761-494D-862D-5956F1C51BF7}", "{9D4EA8B0-AB27-4B4F-9571-938469E24D7A}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{9D4EA8B0-AB27-4B4F-9571-938469E24D7A}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Viewing Requirement History Using Rational RequisitePro</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor explains how to view the history of a requirement in Rational RequisitePro&reg;. </td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_requisite_pro_593FD397.html" guid="{887DBA0C-5761-494D-862D-5956F1C51BF7}">Rational RequisitePro</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><h3>
+    Overview
+</h3>
+<p>
+    As requirements are modified, the requirement history allows you to keep track of the <b>what</b>, <b>when</b>,
+    <b>why</b>, and <b>who</b> of these requirement changes. Requirement history provides the following information:
+</p>
+<ul>
+    <li>
+        How often do your requirements change? (Too much change too quickly may be indicative of an ill-defined
+        requirement.)
+    </li>
+    <li>
+        Who modified a particular requirement? (You may want to consult that person and understand his or her motives
+        before validating or invalidating that change.)
+    </li>
+    <li>
+        Why has a requirement changed? (What is the rationale?)
+    </li>
+    <li>
+        What caused a relationship between two requirements to become "suspect"?
+    </li>
+</ul>
+<p>
+    Knowing the history of a requirement is particularly useful during impact analysis, when you are trying to determine
+    whether a change to one requirement affects requirements to which it is linked.&nbsp;
+</p>
+<h3>
+    Tool Steps
+</h3>
+<p>
+    This tool mentor introduces the following requirement history procedures:
+</p>
+<ol>
+    <li>
+        <a href="#ViewHistory">View the history of a requirement</a>
+    </li>
+    <li>
+        <a href="#ImpactAnalysis">Perform an impact analysis</a>
+    </li>
+    <li>
+        <a href="#Tips">Record the history of requirements</a>
+    </li>
+</ol>
+<h3>
+    1. <a id="ViewHistory" name="ViewHistory">View the history of a requirement</a>
+</h3>
+<p>
+    In RequisitePro, the history of a requirement is located in the <b>Revision</b> tab of the Requirement Properties
+    dialog box. This dialog box is accessible from either the Microsoft&reg; Word document or a view.
+</p>
+<p>
+    In the Word document:
+</p>
+<ol>
+    <li>
+        Position your cursor in the text of a requirement.
+    </li>
+    <li>
+        Click <b>RequisitePro</b> &gt; <b>Requirement</b> &gt; <b>Properties</b>. The Requirement Properties dialog box
+        appears.
+    </li>
+</ol>
+<p>
+    In a view:
+</p>
+<ol>
+    <li>
+        Select the requirement row and do one of the following to open the Requirement Properties dialog box:
+    </li>
+</ol>
+<blockquote>
+    <ul>
+        <li>
+            Right-click to display the context-sensitive menu, and then click <b>Properties</b> from the pop-up menu.
+        </li>
+        <li>
+            Click <b>Requirement &gt; Properties</b>.
+        </li>
+    </ul>
+</blockquote>
+<ol start="2">
+    <li>
+        Do the following:
+    </li>
+    <li style="list-style: none">
+        <ul>
+            <li>
+                Click the <b>Revision</b> tab. This pane displays the last change made to that requirement. The date, time,
+                author, and change description (rationale for the change) are shown.
+            </li>
+            <li>
+                Click the <b>History</b> button. The Revision History dialog box displays all modifications made to that
+                requirement since it was created. RequisitePro automatically increases the Revision number as modifications
+                occur.
+            </li>
+            <li>
+                Click a revision in the revisions list box to view details about that revision.
+            </li>
+            <li>
+                Click <b>Print</b> to print the set of revisions for that requirement.
+            </li>
+        </ul>
+    </li>
+</ol>
+<blockquote>
+    <p>
+        <b>Note:</b> To print revisions pertaining to multiple requirements, use Rational SoDA&reg;, the Rational document
+        automation tool, to extract any set of revisions from the RequisitePro project and print a Word or Adobe&reg;
+        FrameMaker document. Alternatively, open the read-only RequisitePro database with an ODBC connection and use a
+        database reporting tool to query revisions on multiple requirements.
+    </p>
+</blockquote>
+<h3>
+    2.&nbsp; <a id="ImpactAnalysis" name="ImpactAnalysis">Perform an impact analysis</a>
+</h3>
+<p>
+    Reviewing the history of a requirement is an important step in impact analysis. One of the reasons you set traceability
+    links between requirements is to have a means of flagging requirements that might be affected by a change in a related
+    requirement.
+</p>
+<p>
+    RequisitePro uses a <b>suspect link</b> to denote that the relationship between two related requirements must be
+    reexamined because one of the requirements has been modified. A suspect link is visually represented in a Traceability
+    Matrix or a Traceability Tree with a red slash through a traceability arrow. This indicator visually notifies users
+    that the text or attributes of a requirement have changed and that this change may affect requirements that are traced
+    to or from the modified requirement.
+</p>
+<p>
+    When a suspect link is displayed, you investigate what caused the suspect link and what effects the change might have
+    on other requirements. You view the history of the two requirements involved in the suspect link, following the steps
+    outlined in the first section of this tool mentor (<a href="#ViewHistory">View the history of a requirement</a>). When
+    you view the history of the modified requirement, you may reach one of the following two conclusions:
+</p>
+<ul>
+    <li>
+        The modification to that requirement does not affect the linked requirements. In this case, the suspect link can be
+        cleared. To clear a suspect link while you are in a traceability view, position your cursor on the suspect link
+        icon. Right-click to display the context-sensitive menu, and select <b>Clear Suspect</b>.
+    </li>
+    <li>
+        The modification affects the linked requirements. In this case, the definition of the linked requirements must be
+        updated to reflect the change before the link is cleared.
+    </li>
+</ul>
+<p>
+    To clear a suspect link while you are in a traceability view, double-click the requirement that is affected. Then do
+    one of the following:
+</p>
+<ul>
+    <li>
+        If the requirement was created in a RequisitePro document, RequisitePro opens the document and positions the cursor
+        on the requirement. Modify the text of the requirement as necessary in light of the related modified requirement,
+        and then click <b>RequisitePro &gt; Document &gt; Save</b> to commit your changes.
+    </li>
+    <li>
+        If the requirement was created directly in a view, the Requirement Properties dialog box appears. Modify the
+        <b>Text</b> box, and click <b>OK</b> to commit your change.
+    </li>
+</ul>
+<h3>
+    3. <a id="Tips" name="Tips">Record the history of requirements</a>
+</h3>
+<p>
+    The following tips are related to the use of requirements history.
+</p>
+<ul>
+    <li>
+        <b>Tip 1</b>: <a href="#tip1">Assign user names to all users</a>
+    </li>
+    <li>
+        <b>Tip 2</b>: <a href="#tip2">Do not delete requirements</a>
+    </li>
+    <li>
+        <b>Tip 3</b>: <a href="#tip3">Add revisions to traceability relationships</a>
+    </li>
+    <li>
+        <b>Tip 4</b>: <a href="#tip4">Always fill in change notification dialogs</a>
+    </li>
+</ul>
+<h4>
+    Tip 1: <a id="tip1" name="tip1">Assign user names to all users</a>
+</h4>
+<p>
+    An important record in the requirement history is the author of the requirement change. This author is the user logged
+    into the RequisitePro project at the time the requirement is modified. To record which user logs in, you must enable
+    the RequisitePro project security.
+</p>
+<p>
+    By default, RequisitePro projects have security disabled. Even if you do not want to set permissions for each project
+    components (project, documents, requirements, and so on), you should enable security so that you can assign user names
+    to users. These user names will be entered in the requirement revisions as a user creates or modifies a requirement.
+</p>
+<p>
+    To enable security and create user names, do the following:
+</p>
+<ol>
+    <li>
+        Click <b>File &gt; Project Administration &gt; Security</b>. The Project Security dialog box appears.
+    </li>
+    <li>
+        Select the <b>Enable security for this project</b> check box.
+    </li>
+</ol>
+<p>
+    To create user groups:
+</p>
+<ol>
+    <li>
+        Click on the <b>Add</b> button located below the <b>Groups</b> box. The Group Permissions dialog box appears.
+    </li>
+    <li>
+        Type a group name and define permissions for that group. Permissions can be set for specific document types,
+        requirement types, attributes, and attribute values. You can also define whether this group of users can modify the
+        project structure. This can include permission to add attributes to requirement types, add document types, and so
+        forth.
+    </li>
+</ol>
+<p align="left">
+    To add an individual user:
+</p>
+<ol>
+    <li>
+        Select a group in the Groups list in the Project Security dialog box.
+    </li>
+    <li>
+        Click the <b>Add</b> button located in the <b>Users of Group</b> box. The Add User dialog box appears.
+    </li>
+    <li>
+        Enter a username (for example, John Smith); you have the option of typing a password and e-mail address. E-mail
+        addresses are used when users participate in e-mail group discussions.
+    </li>
+</ol>
+<h4>
+    Tip 2: <a id="tip2" name="tip2">Do not delete requirements</a>
+</h4>
+<p>
+    RequisitePro allows you to delete requirements. This feature is useful when you first create a project; you may want to
+    experiment with how to use RequisitePro and what level of detail you want to use for requirements. At some point, you
+    decide that your project is ready to be maintained as it is. From that point on, you should keep track of every
+    modification made in the project. Be aware that when RequisitePro deletes requirements, every property of that
+    requirement is deleted, including its history; this is typically information you do not want to lose. RequisitePro
+    requires your confirmation before deleting the requirement.
+</p>
+<p>
+    We recommend that you not delete a requirement using the <b>Delete</b> feature. Instead, you can create an attribute
+    (for example, Deleted or Inactive) to mark requirements as "deleted" (or inactive). You can re-activate that
+    requirement later by simply changing the value of that attribute.
+</p>
+<p>
+    You might also want to relocate inactive requirements either to the bottom of the document in which they appear or to
+    the database (so that inactive requirements do not appear in documents). To move requirements that are located in the
+    Word document (as opposed to those that are located only in a view), follow these steps:
+</p>
+<ol>
+    <li>
+        In the Word document, position your cursor in the requirement text.
+    </li>
+    <li>
+        Click <b>RequisitePro &gt; Requirement &gt; Cut</b>.
+    </li>
+    <li>
+        In the Explorer, click the Attribute Matrix in which you want to paste the requirements, and then click <b>Edit
+        &gt; Paste</b>.
+    </li>
+</ol>
+<h4>
+    Tip 3: <a id="tip3" name="tip3">Add revisions to traceability relationships</a>
+</h4>
+<p>
+    By default, RequisitePro maintains revisions of requirements, not traceability links. To set RequisitePro to also
+    maintain revisions of traceability links, do the following:
+</p>
+<ol>
+    <li>
+        Click <b>Tools</b> &gt; <b>Options</b>.
+    </li>
+    <li>
+        In the Traceability section, select the check box <b>Changes logged in history</b>.
+    </li>
+    <li>
+        Click <b>OK</b>.
+    </li>
+</ol>
+<p>
+    To verify the traceability history log, open a Traceability Matrix. Add or remove a traceability link between two
+    requirements. Then select one of the requirements and click <b>Requirements &gt; Properties</b> to open the Requirement
+    dialog box. At the <b>Revision</b> tab, click <b>History</b>. The traceability change appears in the Revision list.
+</p>
+<h4>
+    Tip 4: <a id="tip4" name="tip4">Always fill in change notification dialogs</a>
+</h4>
+<p>
+    As part of good requirement management process, we recommend that project members record their reasons for changing
+    requirements. RequisitePro provides a <b>Change Description</b> field in which this information can be recorded.
+</p>
+<p>
+    The <b>Change Description</b> field is located on the <b>Revision</b> tab of the Requirement Properties dialog box.
+</p>
+<p>
+    When you save a RequisitePro document containing requirements that have been modified, RequisitePro displays the Change
+    Notification dialog box for each modified requirement. You can use the <b>Apply to all modified requirements in the
+    document</b> check box to attach the same Change Description information to all modified requirements (for example,
+    "per meeting with VP on 5/30/2001").
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

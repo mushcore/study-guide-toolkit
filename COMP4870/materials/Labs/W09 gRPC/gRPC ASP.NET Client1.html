@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html><head>
+</head><body style="font-family: arial; font-size: larger;"><p>Using the gRPC service that was created in class, create an ASP.NET Server-Side Blazor application that consumes all the student service methods. Note that the Server-Side Blazor application will take the role of client to the gRPC service.</p>
+<p style="text-align: center;"><img src="/content/enforced/1159953-41925.202530/image_20251030190100233.png" width="473" height="259"></p>
+<p>This means that you should list, add, update and delete data.</p>
+<p style="text-align: center;"><span style="font-family: 'courier new', courier, sans-serif;">dotnet new blazor -int Server -o WhateverYouWantTheBlazorAppNameToBe</span></p>
+<p style="text-align: left;">Your solution must run as an .NET Aspire orchestration.</p>
+<h3><span style="font-family: arial, helvetica, sans-serif;">HINTS</span></h3>
+<p><span style="font-family: arial, helvetica, sans-serif;">Dependency Injection:</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif;">Add this package:</span></p>
+<p><span style="font-family: 'courier new', courier, sans-serif;">dotnet add package Grpc.Net.ClientFactory;</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif;">Then, register DI in <em>Program.cs</em>:</span></p>
+<div>
+<div style="padding-left: 40px;"><span style="font-family: 'courier new', courier, sans-serif;">// add grpc client</span></div>
+<div style="padding-left: 40px;"><span style="font-family: 'courier new', courier, sans-serif;">builder.Services.AddGrpcClient&lt;StudentRemote.StudentRemoteClient&gt;(options =&gt;</span></div>
+<div style="padding-left: 40px;"><span style="font-family: 'courier new', courier, sans-serif;">{</span></div>
+<div style="padding-left: 40px;"><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; options.Address = new Uri("<a href="http://localhost:5099">http://localhost:5099</a>");</span></div>
+<div style="padding-left: 40px;"><span style="font-family: 'courier new', courier, sans-serif;">});</span></div>
+<p><span style="font-family: arial, helvetica, sans-serif;">Inject in views:</span></p>
+<p style="text-align: center;"><span style="font-family: 'courier new', courier, sans-serif;">@inject StudentRemote.StudentRemoteClient _grpcClient</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif;">Render mode in views:</span></p>
+<p style="text-align: center;"><span style="font-family: 'courier new', courier, sans-serif;">@rendermode InteractiveServer</span></p>
+<h3><span style="font-family: arial, helvetica, sans-serif;"></span>ASPIRE</h3>
+<p><span style="font-family: courier new, courier, sans-serif;">aspire init</span></p>
+<p><img src="/content/enforced/1159953-41925.202530/image_20241121212952829.png" data-d2l-editor-default-img-style="true" style="max-width: 100%;"></p>
+<p><span style="font-family: 'courier new', courier, sans-serif; color: #4a8f00;">// Add service defaults &amp; Aspire components.</span><br><span style="font-family: 'courier new', courier, sans-serif;">builder.AddServiceDefaults();</span></p>
+<p><span style="font-family: 'courier new', courier, sans-serif;"><span style="color: #4a8f00;">// AppHost.cs</span><br>var grpc = builder.AddProject&lt;Projects.GrpcStudents&gt;("backend");</span><br><span style="font-family: 'courier new', courier, sans-serif;">builder.AddProject&lt;Projects.BlazorGrpcClient&gt;("frontend")</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; .WithReference(grpc);</span></p>
+<p><span style="font-family: 'courier new', courier, sans-serif;"><span style="color: #4a8f00;">// gRPC Program.cs</span><br>builder.Services.AddGrpcClient&lt;StudentRemote.StudentRemoteClient&gt;(options =&gt;</span><br><span style="font-family: 'courier new', courier, sans-serif;">{</span><br><span style="font-family: 'courier new', courier, sans-serif;">&nbsp; &nbsp; options.Address = new Uri("<a href="http://backend">http://backend</a>");</span><br><span style="font-family: 'courier new', courier, sans-serif;">});</span></p>
+</div></body></html>

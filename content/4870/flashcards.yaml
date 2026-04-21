@@ -1,0 +1,539 @@
+modules:
+  - id: ai-ml
+    name: AI & ML.NET
+    topics:
+      - id: 4870-ai-semantic-kernel-maf-mcp-ollama
+        name: AI (Semantic Kernel, MAF, MCP, Ollama)
+        tags:
+          - ai
+          - semantic-kernel
+        prose: AI topics cover Semantic Kernel, Microsoft Agent Framework, MCP and running local models via Ollama.
+        cards:
+          - type: name
+            prompt: What Kernel builder method registers Ollama chat completion?
+            answer: "`builder.AddOllamaChatCompletion(modelName, new Uri(\"http://localhost:11434\"))`"
+          - type: name
+            prompt: Default Ollama local endpoint URL?
+            answer: "`http://localhost:11434`"
+          - type: name
+            prompt: GitHub Models inference endpoint URL?
+            answer: "`https://models.github.ai/inference`"
+          - type: name
+            prompt: "Service to resolve from Kernel for chat: \\_\\_\\_"
+            answer: "`IChatCompletionService` — `kernel.GetRequiredService<IChatCompletionService>()`"
+          - type: name
+            prompt: What class holds the conversation context in SK?
+            answer: "`ChatHistory` — can seed with system prompt in constructor: `new ChatHistory(\"You are helpful.\")`"
+          - type: name
+            prompt: How to add a system message to ChatHistory?
+            answer: "`history.AddSystemMessage(\"prompt\")` (or pass to constructor)"
+          - type: name
+            prompt: Method to import native C# plugin into kernel?
+            answer: "`kernel.ImportPluginFromType<MyPlugin>()`"
+          - type: name
+            prompt: Method to import prompt-directory plugins (skprompt.txt)?
+            answer: "`kernel.ImportPluginFromPromptDirectory(\"Plugins/MyPlugin\")`"
+          - type: name
+            prompt: Attribute marking a C# method as a kernel-callable function?
+            answer: "`[KernelFunction]` with optional `[Description(\"...\")]`"
+          - type: name
+            prompt: Variable placeholder syntax in skprompt.txt?
+            answer: "`{{$variable}}`"
+          - type: name
+            prompt: Method to convert an OpenAIClient into an agent?
+            answer: "`.AsAIAgent(\"model-name\")`"
+          - type: name
+            prompt: Factory method to wrap a delegate as an AI tool?
+            answer: "`AIFunctionFactory.Create(delegate, name, description)`"
+          - type: name
+            prompt: Class that maintains multi-turn conversation state in MAF?
+            answer: "`AgentSession` — `new AgentSession(agent)`"
+          - type: name
+            prompt: Method to stream agent output as tokens arrive?
+            answer: "`RunStreamingAsync(prompt)` — iterate with `await foreach`"
+          - type: name
+            prompt: NuGet package for MAF + OpenAI integration?
+            answer: "`Microsoft.Agents.AI.OpenAI`"
+          - type: name
+            prompt: "MCP transports: \\_\\_\\_ (local) and \\_\\_\\_ (cloud)"
+            answer: "`stdio` (process pipe) and `SSE` (Server-Sent Events over HTTP)"
+          - type: name
+            prompt: "MCP expands to: \\_\\_\\_"
+            answer: "**Model Context Protocol** — open protocol for LLM tool/resource access"
+          - type: name
+            prompt: Three MCP primitives a server can expose?
+            answer: |-
+              1. **Tools** (executable)
+              2. **Resources** (read-only data)
+              3. **Prompts** (reusable templates)
+          - type: name
+            prompt: NuGet package for Ollama C# client?
+            answer: "`OllamaSharp`"
+          - type: name
+            prompt: CLI command to download llama3 to local Ollama?
+            answer: "`ollama pull llama3`"
+          - type: name
+            prompt: SLM vs LLM tradeoff in one sentence?
+            answer: SLM = smaller/faster/cheaper/local; LLM = bigger/smarter/needs cloud and API key
+          - type: name
+            prompt: "Class used in kernel builder: `Kernel.___.Build()`?"
+            answer: "`Kernel.CreateBuilder()`.Build()"
+          - type: name
+            prompt: "Chat call method that returns full response: \\_\\_\\_"
+            answer: "`chat.GetChatMessageContentAsync(history, kernel: kernel)`"
+          - type: name
+            prompt: "Key difference: SK vs MAF"
+            answer: SK = kernel + plugins (flexible low-level); MAF = `AIAgent` (high-level, simpler agent creation)
+          - type: name
+            prompt: Which MCP transport requires a process pipe with stdin/stdout?
+            answer: "`stdio` — used for local, co-located tools"
+      - id: 4870-ml-net-pipeline
+        name: ML.NET pipeline
+        tags:
+          - ml-net
+          - machine-learning
+        prose: "ML.NET follows a seven-step pipeline: context, load, split, pipeline, fit, evaluate, save."
+        cards:
+          - type: name
+            prompt: Entry-point class for all ML.NET code?
+            answer: "`MLContext` — `var mlContext = new MLContext(seed: 0);`"
+          - type: name
+            prompt: Interface representing loaded/transformed data in ML.NET?
+            answer: "`IDataView` (tabular data flow)"
+          - type: name
+            prompt: Method to load CSV data into an IDataView?
+            answer: "`mlContext.Data.LoadFromTextFile<T>(path, hasHeader: true, separatorChar: ',')`"
+          - type: name
+            prompt: Method that splits data for testing?
+            answer: "`mlContext.Data.TrainTestSplit(data, testFraction: 0.2)`"
+          - type: name
+            prompt: What does `pipeline.Fit(trainSet)` return?
+            answer: "`ITransformer` (the trained model)"
+          - type: name
+            prompt: "FastTree trainer for regression: `mlContext.___.Trainers.FastTree()`"
+            answer: "`Regression` — `mlContext.Regression.Trainers.FastTree()`"
+          - type: name
+            prompt: "Regression metric: higher = better, scale 0-1?"
+            answer: "`RSquared`"
+          - type: name
+            prompt: Method to evaluate regression predictions?
+            answer: "`mlContext.Regression.Evaluate(predictions, labelColumnName: \"Label\")`"
+          - type: name
+            prompt: How to save a trained model to disk?
+            answer: "`mlContext.Model.Save(model, data.Schema, \"model.zip\")`"
+          - type: name
+            prompt: Method to load a saved model back?
+            answer: "`mlContext.Model.Load(\"model.zip\", out var schema)`"
+          - type: name
+            prompt: Class used to predict on a single record?
+            answer: "`PredictionEngine<TInput, TOutput>` — created via `mlContext.Model.CreatePredictionEngine<I,O>(model)`"
+          - type: name
+            prompt: Transform that collapses string category to numeric vector?
+            answer: "`mlContext.Transforms.Categorical.OneHotEncoding(\"outCol\", \"inCol\")`"
+          - type: name
+            prompt: Transform that combines columns into a single Features vector?
+            answer: "`mlContext.Transforms.Concatenate(\"Features\", \"A\", \"B\", \"C\")`"
+          - type: name
+            prompt: Attribute on a class property to map CSV column index?
+            answer: "`[LoadColumn(0)]` — e.g. `[LoadColumn(2)] public float Fare;`"
+          - type: name
+            prompt: Attribute marking the target (Y) column in a training model?
+            answer: "`[ColumnName(\"Label\")]`"
+          - type: name
+            prompt: Namespace for 2-class trainers?
+            answer: "`mlContext.BinaryClassification.Trainers`"
+          - type: name
+            prompt: Namespace for 3+-class trainers?
+            answer: "`mlContext.MulticlassClassification.Trainers`"
+          - type: name
+            prompt: AutoML CLI command to train a model?
+            answer: "`mlnet regression --dataset data.csv --label-col Label` (similar for classification)"
+  - id: caching-grpc
+    name: Caching & gRPC
+    topics:
+      - id: 4870-caching-imemorycache-redis
+        name: Caching (IMemoryCache + Redis)
+        tags:
+          - cache
+          - redis
+        prose: >-
+          `IMemoryCache` for single-server in-process caching; `IDistributedCache` (Redis) for shared state across a
+          load-balanced farm. Know absolute vs sliding expiration and `CacheItemPriority`.
+        cards:
+          - type: name
+            prompt: Registration for in-memory cache in Program.cs?
+            answer: "`builder.Services.AddMemoryCache();`"
+          - type: name
+            prompt: Interface injected to use the in-memory cache?
+            answer: "`IMemoryCache`"
+          - type: name
+            prompt: Pattern to read cache with fallback load?
+            answer: "`_cache.TryGetValue<T>(key, out var val)` then load + `_cache.Set(key, val, options)`"
+          - type: name
+            prompt: Options class for in-memory cache entries?
+            answer: "`MemoryCacheEntryOptions`"
+          - type: name
+            prompt: "Difference: AbsoluteExpiration vs SlidingExpiration"
+            answer: Absolute = hard expiry at time X. Sliding = expire if idle for Y. Combine → whichever fires first.
+          - type: name
+            prompt: Property to mark a cache entry as never-evict-unless-full?
+            answer: "`CacheItemPriority.NeverRemove` (also Low/Normal/High)"
+          - type: name
+            prompt: Registration for Redis distributed cache?
+            answer: "`builder.Services.AddStackExchangeRedisCache(o => o.Configuration = \"localhost:6379\");`"
+          - type: name
+            prompt: Interface injected to use the distributed cache?
+            answer: "`IDistributedCache`"
+          - type: name
+            prompt: Method to store a string in IDistributedCache?
+            answer: "`await cache.SetStringAsync(key, value, opts)`"
+          - type: name
+            prompt: Docker command to run Redis locally?
+            answer: "`docker run -d --name redis -p 6379:6379 redis`"
+          - type: name
+            prompt: Razor tag for server-fragment caching?
+            answer: "`<cache expires-after=\"@TimeSpan.FromMinutes(10)\">...</cache>`"
+          - type: name
+            prompt: Attribute to vary cached fragment by logged-in user?
+            answer: "`vary-by-user=\"true\"`"
+          - type: name
+            prompt: Five vary-by-\* attributes on ?
+            answer: |-
+              1. `vary-by-user`
+              2. `vary-by-route`
+              3. `vary-by-query`
+              4. `vary-by-cookie`
+              5. `vary-by-header` (also `vary-by` for custom)
+          - type: name
+            prompt: Why does IMemoryCache fail in load-balanced deployments?
+            answer: >-
+              Each server has its own in-process cache → cache miss for users hitting different servers → inconsistent
+              data. Use IDistributedCache (Redis) for shared cache.
+          - type: name
+            prompt: Single-call cache-or-load method?
+            answer: >-
+              `await _cache.GetOrCreateAsync(key, async entry => { entry.AbsoluteExpirationRelativeToNow =
+              TimeSpan.FromMinutes(5); return await Load(); })`
+      - id: 4870-grpc
+        name: gRPC
+        tags:
+          - grpc
+          - proto
+        prose: >-
+          gRPC is contract-first RPC over HTTP/2 — .proto defines messages, tooling generates C# server and client
+          stubs.
+        cards:
+          - type: name
+            prompt: Full name of gRPC?
+            answer: "**Google Remote Procedure Call**"
+          - type: name
+            prompt: HTTP protocol gRPC requires?
+            answer: "**HTTP/2** (binary framing, multiplexing, streaming)"
+          - type: name
+            prompt: Serialization format gRPC uses?
+            answer: "**Protocol Buffers (protobuf)** — binary, compact, typed"
+          - type: name
+            prompt: First line of every proto3 file?
+            answer: "`syntax = \"proto3\";`"
+          - type: name
+            prompt: Directive setting C# namespace in .proto?
+            answer: "`option csharp_namespace = \"MyApp\";`"
+          - type: name
+            prompt: What does field number represent in a proto message?
+            answer: >-
+              A stable wire-format identifier. Must be unique within the message. ORDER in code does NOT matter; field
+              number does.
+          - type: name
+            prompt: Service registration line for gRPC server?
+            answer: "`builder.Services.AddGrpc();`"
+          - type: name
+            prompt: Middleware line to wire a gRPC service class?
+            answer: "`app.MapGrpcService<MyServiceImpl>();`"
+          - type: name
+            prompt: Create a gRPC channel to a server?
+            answer: "`GrpcChannel.ForAddress(\"https://localhost:5001\")`"
+          - type: name
+            prompt: DI pattern to register a gRPC client?
+            answer: "`builder.Services.AddGrpcClient<Greeter.GreeterClient>(o => o.Address = new Uri(\"https://...\"));`"
+          - type: name
+            prompt: csproj item to compile .proto files?
+            answer: "`<Protobuf Include=\"Protos/greet.proto\" GrpcServices=\"Server\" />` — values: Server | Client | Both"
+          - type: name
+            prompt: The four gRPC call types?
+            answer: |-
+              1. Unary
+              2. Server streaming
+              3. Client streaming
+              4. Bidirectional streaming
+  - id: testing-hosting
+    name: Testing, file-based apps & Aspire
+    topics:
+      - id: 4870-tdd-xunit
+        name: TDD / xUnit
+        tags:
+          - tdd
+          - xunit
+        prose: >-
+          public class CalculatorTests : IDisposable { private readonly Calculator _calc; public CalculatorTests() { //
+          setup _calc = new Calculator(); } public void Dispose() { } // teardown [Fact] public void
+          Add_TwoPositives_ReturnsSum() { var r = _calc.Add(2, 3); Assert.Equal(5, r); } [Theory] [InlineData(1, 2, 3)]
+          [InlineData(0, 0, 0)] [InlineData(-1, 1, 0)] public void Add_Various(int a, int b, int expected) {
+          Assert.Equal(expected, _calc.Add(a, b)); } [Fact] public void Divide_ByZero_Throws() { var ex =
+          Assert.Throws&lt;DivideByZeroException&gt;(() =&gt; _calc.Divide(5, 0)); Assert.Contains("zero", ex.Message);
+          } [Fact] public async Task LongTask_Completes() { await Assert.ThrowsAsync&lt;TimeoutException&gt;(async ()
+          =&gt; await _calc.SlowAsync()); } } Asserts in the course Equal, NotEqual, True, False, Null, NotNull, Same,
+          NotSame, Throws&lt;T&gt;, ThrowsAsync&lt;T&gt;, Contains, DoesNotContain, Empty, NotEmpty, InRange,
+          IsType&lt;T&gt;, IsAssignableFrom&lt;T&gt;, Collection
+        cards:
+          - type: name
+            prompt: "The TDD cycle: \\_\\_\\_ / \\_\\_\\_ / \\_\\_\\_"
+            answer: "**Red** (failing test) → **Green** (make it pass) → **Refactor**"
+          - type: name
+            prompt: Attribute for a parameterless test?
+            answer: "`[Fact]`"
+          - type: name
+            prompt: Attribute for a parameterized test?
+            answer: "`[Theory]` — paired with `[InlineData(...)]`, `[MemberData(...)]`, or `[ClassData(typeof(X))]`"
+          - type: name
+            prompt: Assertion argument order?
+            answer: "`Assert.Equal(expected, actual)` — EXPECTED first. Swapping gives misleading failure messages."
+          - type: name
+            prompt: AAA pattern stands for?
+            answer: "**Arrange** (setup) → **Act** (run) → **Assert** (verify)"
+          - type: name
+            prompt: How do you perform setup code in xUnit (no \[SetUp\] attribute)?
+            answer: Use the test class **constructor**. For teardown, implement `IDisposable`.
+          - type: name
+            prompt: Interface for shared state across tests in a class?
+            answer: "`IClassFixture<TFixture>` — shared across methods in one class"
+          - type: name
+            prompt: Interface for shared state across test CLASSES?
+            answer: "`ICollectionFixture<T>` with `[Collection(\"name\")]`"
+          - type: name
+            prompt: Assert method for expected exception?
+            answer: "`Assert.Throws<ExceptionType>(() => code())`. Async version: `ThrowsAsync<T>`."
+          - type: name
+            prompt: CLI to create and run a test project?
+            answer: "`dotnet new xunit -n MyTests` then `dotnet test`"
+          - type: name
+            prompt: Moq pattern to stub a return?
+            answer: "`var m = new Mock<IFoo>(); m.Setup(f => f.Get(5)).Returns(\"hi\"); var svc = new Svc(m.Object);`"
+          - type: name
+            prompt: Difference between stub, mock, fake?
+            answer: |-
+              1. **Stub**: provides canned answers
+              2. **Mock**: stub + verifies calls
+              3. **Fake**: working lightweight impl (in-memory db)
+      - id: 4870-file-based-c-apps
+        name: File-based C# apps
+        tags:
+          - file-based
+          - dotnet-run
+        prose: >-
+          .NET 10 file-based C# apps — single `.cs` file run via `dotnet run app.cs`, no `.csproj` needed. `#:package`,
+          `#:sdk`, `#:property`, `#:project` directives inline MSBuild config.
+        cards:
+          - type: name
+            prompt: Command to run a file-based C# app?
+            answer: "`dotnet run app.cs`"
+          - type: name
+            prompt: Minimum .NET version for file-based apps?
+            answer: "**.NET 10**"
+          - type: name
+            prompt: Directive to reference a NuGet package?
+            answer: "`#:package PackageName@version` — e.g. `#:package Spectre.Console@0.48.0`"
+          - type: name
+            prompt: Directive to use the ASP.NET Web SDK?
+            answer: "`#:sdk Microsoft.NET.Sdk.Web`"
+          - type: name
+            prompt: Directive to set an MSBuild property?
+            answer: "`#:property LangVersion=preview`"
+          - type: name
+            prompt: Directive to reference another .csproj from a file-based app?
+            answer: "`#:project ./path/MyLib.csproj`"
+          - type: name
+            prompt: "Exam trap — correct syntax: `#:package X` or `#: package X`?"
+            answer: "**#:package X** — NO space after the colon"
+          - type: name
+            prompt: Command to promote a file-based app to a project?
+            answer: "`dotnet project convert app.cs`"
+          - type: name
+            prompt: Why file-based apps exist?
+            answer: >-
+              Lightweight scripting for utilities, demos, learning — no .csproj, no bin/obj folders, single-file
+              distribution.
+          - type: name
+            prompt: Shebang line for Linux/Mac direct execution?
+            answer: "`#!/usr/bin/env dotnet` (then `chmod +x file.cs`)"
+      - id: 4870-asp-net-aspire
+        name: ASP.NET Aspire
+        tags:
+          - aspire
+          - orchestration
+        prose: >-
+          ASP.NET Aspire orchestrates a distributed app — AppHost wires resources (Redis, SQL, projects) via
+          `WithReference`; each service uses `AddServiceDefaults()` for telemetry, health, and service discovery.
+        cards:
+          - type: name
+            prompt: Aspire builder entry point?
+            answer: "`var builder = DistributedApplication.CreateBuilder(args);`"
+          - type: name
+            prompt: Method to add a .NET project to the distributed app?
+            answer: "`builder.AddProject<Projects.MyApi>(\"api\")`"
+          - type: name
+            prompt: Method to inject cache URL into a project?
+            answer: "`api.WithReference(cache)` — passes connection string via env var"
+          - type: name
+            prompt: Add a Redis resource to Aspire?
+            answer: "`var cache = builder.AddRedis(\"cache\");`"
+          - type: name
+            prompt: Add SQL Server + a database?
+            answer: "`var sql = builder.AddSqlServer(\"sql\"); var db = sql.AddDatabase(\"app\");`"
+          - type: name
+            prompt: Service discovery URL scheme?
+            answer: "`https+http://api` — scheme fallback + logical name"
+          - type: name
+            prompt: What is an Aspire AppHost?
+            answer: >-
+              A **project template** (not a class) that orchestrates all resources (projects, db, cache) and launches
+              them together.
+          - type: name
+            prompt: ServiceDefaults vs AppHost roles?
+            answer: >-
+              **AppHost**: orchestrates everything (in AppHost's Program.cs). **ServiceDefaults**: shared wire-up
+              (telemetry, health checks) each service imports.
+          - type: name
+            prompt: Method each service calls to register Aspire defaults?
+            answer: "`builder.AddServiceDefaults();`"
+          - type: name
+            prompt: Method to wait for a dependency before starting?
+            answer: "`.WaitFor(resource)`"
+  - id: web-ui
+    name: Localization, Tag Helpers & Blazor
+    topics:
+      - id: 4870-localization
+        name: Localization
+        tags:
+          - localization
+          - i18n
+        prose: >-
+          Localization via `AddLocalization` + `UseRequestLocalization` middleware. `.resx` files per culture under
+          `ResourcesPath`. CurrentCulture = formatting; CurrentUICulture = resource lookup.
+        cards:
+          - type: name
+            prompt: Service registration for localization?
+            answer: "`builder.Services.AddLocalization(o => o.ResourcesPath = \"Resources\");`"
+          - type: name
+            prompt: Middleware to apply culture selection?
+            answer: "`app.UseRequestLocalization();`"
+          - type: name
+            prompt: Interface injected in a Razor view for translations?
+            answer: "`IViewLocalizer` — `@inject IViewLocalizer Localizer`, use `@Localizer[\"Hello\"]`"
+          - type: name
+            prompt: Resource file naming convention (French, for IndexModel)?
+            answer: "`Pages.Index.fr.resx` or `Pages/Index.fr.resx` (depends on ResourcesPath setting)"
+          - type: name
+            prompt: CurrentCulture vs CurrentUICulture?
+            answer: >-
+              **CurrentCulture** — number/date formatting. **CurrentUICulture** — which resx to load for translated
+              strings.
+          - type: name
+            prompt: Three built-in culture providers (in priority order)?
+            answer: |-
+              1. QueryString (`?culture=fr`)
+              2. Cookie
+              3. Accept-Language header
+          - type: name
+            prompt: Cookie name used by CookieRequestCultureProvider?
+            answer: "`CookieRequestCultureProvider.DefaultCookieName` (literal: `.AspNetCore.Culture`)"
+          - type: name
+            prompt: Difference between i18n and l10n?
+            answer: >-
+              **i18n (globalization)** = design for any culture. **l10n (localization)** = specific
+              resources/translations for one culture.
+      - id: 4870-tag-helpers
+        name: Tag Helpers
+        tags:
+          - tag-helpers
+          - razor
+        prose: >-
+          Tag helpers are reusable Razor markup components registered in `_ViewImports.cshtml`. Custom helpers extend
+          `TagHelper` and override `Process`; PascalCase properties map to kebab-case HTML attributes.
+        cards:
+          - type: name
+            prompt: File where tag helpers are registered?
+            answer: "`_ViewImports.cshtml` — `@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers`"
+          - type: name
+            prompt: "Custom tag helper: base class + method to override?"
+            answer: "Base: `TagHelper`. Override: `Process(context, output)` or `ProcessAsync(...)`."
+          - type: name
+            prompt: Attribute to target an HTML element name in a custom tag helper?
+            answer: "`[HtmlTargetElement(\"toon\")]`"
+          - type: name
+            prompt: Property `FontFamily` on a tag helper maps to what HTML attribute?
+            answer: "`font-family` (PascalCase → kebab-case)"
+          - type: name
+            prompt: Tag helper to render a validation error for a single field?
+            answer: "`<span asp-validation-for=\"PropertyName\"></span>`"
+          - type: name
+            prompt: Tag helper to cache-bust a script reference?
+            answer: "`<script src=\"/js/site.js\" asp-append-version=\"true\"></script>`"
+      - id: 4870-blazor-quickgrid
+        name: Blazor QuickGrid
+        tags:
+          - blazor
+          - quickgrid
+        prose: >-
+          Blazor QuickGrid renders tabular data in three components: <QuickGrid>, <PropertyColumn> per field, and a
+          <Paginator>.
+        cards:
+          - type: name
+            prompt: NuGet package for QuickGrid?
+            answer: "`Microsoft.AspNetCore.Components.QuickGrid`"
+          - type: name
+            prompt: Sortable property column syntax?
+            answer: "`<PropertyColumn Property=\"@(_ => _.Name)\" Sortable=\"true\" />`"
+          - type: name
+            prompt: Pagination state declaration?
+            answer: "`private PaginationState pagination = new PaginationState { ItemsPerPage = 10 };`"
+          - type: name
+            prompt: TemplateColumn sorting requires?
+            answer: Explicit `SortBy="@gridSort"` — uses `GridSort<T>.ByAscending(x => x.Prop)`
+          - type: name
+            prompt: Live-filter input binding?
+            answer: "`<input @bind=\"filter\" @bind:event=\"oninput\" />`"
+  - id: export
+    name: Excel / PDF / Chart export
+    topics:
+      - id: 4870-excel-pdf-chart-export
+        name: Excel / PDF / Chart export
+        tags:
+          - excel
+          - pdf
+          - chart
+        prose: >-
+          using ClosedXML.Excel; using var wb = new XLWorkbook(); var ws = wb.Worksheets.Add("Sheet1"); ws.Cell(1,
+          1).Value = "Name"; ws.Cell(1, 2).Value = "Score"; ws.Cell(2, 1).Value = "Alice"; ws.Cell(2, 2).Value = 92;
+          using var ms = new MemoryStream(); wb.SaveAs(ms); return File(ms.ToArray(),
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "report.xlsx"); PDF with iText7 using
+          iText.Kernel.Pdf; using iText.Layout; using iText.Layout.Element; using var ms = new MemoryStream(); var
+          writer = new PdfWriter(ms); var pdf = new PdfDocument(writer); var doc = new Document(pdf); doc.Add(new
+          Paragraph("Hello PDF")); var table = new Table(2); table.AddCell("Name"); table.AddCell("Score");
+          table.AddCell("Alice"); table.AddCell("92"); doc.Add(table); doc.Close(); return File(ms.ToArray(),
+          "application/pdf", "report.pdf"); Required packages: itext7 + itext.bouncy-castle-adapter
+        cards:
+          - type: name
+            prompt: Package used for Excel export?
+            answer: "`ClosedXML` — `new XLWorkbook()` + `Worksheets.Add()` + `Cell(r,c).Value`"
+          - type: name
+            prompt: Packages required for PDF generation?
+            answer: "`itext7` + `itext.bouncy-castle-adapter` (BOTH needed)"
+          - type: name
+            prompt: MIME type for Excel .xlsx?
+            answer: "`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`"
+          - type: name
+            prompt: MIME type for PDF?
+            answer: "`application/pdf`"
+          - type: name
+            prompt: Chart rendering library used in course?
+            answer: "**Chart.js** (via CDN, client-side rendering inside Razor)"

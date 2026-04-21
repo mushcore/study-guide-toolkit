@@ -1,0 +1,384 @@
+Comp 4915 - Lab 5
+=================
+
+Student: A01353636
+
+
+System Startup
+--------------
+
+1. What are the services started when you boot your system?
+
+   On a modern Fedora/CentOS system using systemd, the startup services are
+   managed by systemctl rather than the legacy /etc/rc.d/rcx.d init scripts.
+
+   To list all services that start at boot:
+
+     $ systemctl list-unit-files --type=service --state=enabled
+
+   Typical enabled services on our CentOS Stream lab system:
+
+     auditd.service              - Linux audit daemon
+     chronyd.service             - NTP time synchronization
+     crond.service               - Cron job scheduler
+     dbus-broker.service         - D-Bus message broker
+     firewalld.service           - Dynamic firewall manager
+     irqbalance.service          - IRQ balancing daemon
+     kdump.service               - Kernel crash dump capture
+     NetworkManager.service      - Network connection manager
+     polkit.service              - Authorization manager
+     rsyslog.service             - System logging
+     sshd.service                - OpenSSH server
+     sssd.service                - System Security Services Daemon
+     systemd-logind.service      - Login manager
+     systemd-resolved.service    - DNS resolver
+     systemd-udevd.service       - Device manager
+     tuned.service               - System tuning daemon
+
+   Legacy note: On older SysV init systems, /etc/rc.d/rcx.d contains
+   symlinks named SXXservice (start) and KXXservice (kill/stop), where
+   XX is the execution order. These link to scripts in /etc/rc.d/init.d.
+   The run level x determines which rcx.d directory is used (e.g., rc3.d
+   for multi-user text mode, rc5.d for graphical).
+
+
+2. Brief description of each started service:
+
+   auditd        - Tracks security-relevant events (file access, syscalls)
+                   and writes audit logs for compliance and forensics.
+   chronyd       - Synchronizes the system clock with NTP time servers to
+                   maintain accurate time.
+   crond         - Executes scheduled tasks defined in crontab files at
+                   specified times and intervals.
+   dbus-broker   - Provides inter-process communication (IPC) between
+                   system services and user applications.
+   firewalld     - Manages iptables/nftables firewall rules dynamically,
+                   supporting zones and runtime changes.
+   irqbalance    - Distributes hardware interrupt requests across CPUs
+                   to improve performance on multi-core systems.
+   kdump         - Captures a kernel memory dump when the system crashes,
+                   enabling post-mortem debugging.
+   NetworkManager- Manages network connections (wired, wireless, VPN) and
+                   handles DHCP, DNS, and interface configuration.
+   polkit        - Provides fine-grained authorization policy for
+                   unprivileged processes to talk to privileged ones.
+   rsyslog       - Collects and routes system log messages from the kernel
+                   and services to log files in /var/log.
+   sshd          - Listens for incoming SSH connections, allowing secure
+                   remote login and command execution.
+   sssd          - Provides access to remote identity and authentication
+                   providers (LDAP, Kerberos, Active Directory).
+   systemd-logind- Manages user login sessions, seat tracking, and
+                   handles power/sleep/shutdown actions.
+   systemd-resolved - Provides DNS resolution services for local
+                   applications via a stub resolver.
+   systemd-udevd - Manages device nodes in /dev, loading drivers and
+                   setting permissions when hardware is detected.
+   tuned         - Applies system tuning profiles to optimize performance
+                   for specific workloads (throughput, latency, etc.).
+
+
+3. Services installed but NOT started at boot:
+
+     $ systemctl list-unit-files --type=service --state=disabled
+
+   Typical disabled services:
+
+     bluetooth.service           - Bluetooth support
+     cups.service                - Printing service
+     httpd.service               - Apache web server
+     named.service               - BIND DNS server
+     nfs-server.service          - NFS file sharing server
+     postfix.service             - Mail transfer agent
+     vsftpd.service              - FTP server
+     smb.service                 - Samba file sharing
+     dhcpd.service               - DHCP server
+     mariadb.service             - MariaDB database
+     dovecot.service             - IMAP/POP3 mail server
+     sendmail.service            - Sendmail MTA
+
+
+4. Brief description of each non-started service:
+
+   bluetooth     - Manages Bluetooth device pairing and connections.
+   cups          - Manages print jobs and printer configuration.
+   httpd         - Serves web pages over HTTP/HTTPS (Apache web server).
+   named         - Provides DNS name resolution services (BIND).
+   nfs-server    - Exports directories for network file sharing via NFS.
+   postfix       - Routes and delivers email messages (mail transfer agent).
+   vsftpd        - Provides FTP file transfer access to the system.
+   smb           - Shares files and printers with Windows clients via SMB.
+   dhcpd         - Assigns IP addresses to network clients via DHCP.
+   mariadb       - Relational database management system (MySQL-compatible).
+   dovecot       - Provides IMAP and POP3 access to local mailboxes.
+   sendmail      - Older mail transfer agent for sending/receiving email.
+
+
+5. Services that start but need not be started, and why:
+
+   - kdump: On a lab workstation, kernel crash dumps are rarely needed.
+     Disabling it saves memory (it reserves a block of RAM for the crash
+     kernel). Only needed on production servers where post-crash analysis
+     is important.
+
+   - bluetooth: If the system has no Bluetooth hardware or you do not use
+     Bluetooth devices, this service wastes resources.
+
+   - tuned: On a lab machine with no specific performance requirements,
+     the default kernel settings are sufficient. tuned is more useful on
+     production servers that need workload-specific tuning.
+
+   - sssd: If you are not using remote authentication (LDAP, Active
+     Directory), sssd is unnecessary. Local accounts work without it.
+
+
+6. Services that do not start but should be started, and why:
+
+   - For our lab work, we need several services enabled depending on the
+     lab assignment:
+     - named (Lab 3): We need DNS for name resolution.
+     - dhcpd (Lab 3): We need DHCP to assign IPs to clients.
+     - httpd (Lab 8): We need Apache for web server exercises.
+     - vsftpd (Lab 6): We need FTP for file transfer exercises.
+     - smb (Lab 7): We need Samba for Windows file sharing.
+     - sendmail (Lab 7): We need sendmail for email exercises.
+
+   - sshd should definitely be started (and typically is by default) as
+     it allows remote administration of the server, which is essential.
+
+
+Procedures and Questions
+------------------------
+
+7. History commands:
+
+   $ history
+   (displays numbered list of recent commands)
+
+   If history is not enabled, add to ~/.bashrc:
+     HISTSIZE=1000
+     HISTFILESIZE=2000
+
+   Commands to re-execute from history:
+
+   - Execute the 2nd to last command:    !-2
+   - Execute the previous command:       !!    (or !-1)
+   - Execute the last command starting
+     with the letter "c":                !c
+
+
+8. Describe what happens with these commands:
+
+   $ man bash | col -b > bashman
+
+   This pipes the output of "man bash" through "col -b", which strips
+   backspace sequences (used for bold/underline formatting in man pages),
+   producing clean plain text. The result is redirected to a file called
+   "bashman". You now have a plain-text copy of the bash man page.
+
+   $ cat bashman
+
+   This displays the entire contents of the bashman file to the terminal.
+   Since the bash man page is very long, the output scrolls rapidly and
+   you only see the last screenful.
+
+   $ ^cat^more^
+
+   This is bash's quick substitution feature. It takes the previous
+   command ("cat bashman") and replaces the first occurrence of "cat"
+   with "more", effectively running "more bashman". The more command
+   displays the file one screenful at a time, pausing for user input
+   between pages (press space to continue, q to quit).
+
+
+9. PID of login shell and killing it:
+
+   $ echo $$
+   1234
+
+   The $$ variable contains the PID of the current shell. To find the
+   login shell specifically:
+
+   $ ps -p $$
+   PID  TTY      TIME CMD
+   1234 pts/0    00:00:00 bash
+
+   Can you kill this process? Yes, you can:
+
+   $ kill $$
+
+   What happens: The shell receives the signal and terminates. Since this
+   is the login shell, the terminal session ends and you are logged out.
+   The terminal window closes (or returns to a login prompt). You CAN kill
+   your own shell because you own the process. The only processes you
+   cannot kill are those owned by other users (unless you are root) or
+   certain kernel processes.
+
+
+10. Children of login shell:
+
+    $ ps --ppid $$
+      PID TTY          TIME CMD
+     2345 pts/0    00:00:00 ps
+
+    Or more verbosely:
+
+    $ ps -ef | grep $$ | grep -v grep
+
+    To count just the children:
+
+    $ ps --ppid $$ --no-headers | wc -l
+
+    In a typical interactive session with no background jobs running, the
+    only child process is the command you just ran (ps itself). If you had
+    background jobs (e.g., sleep 100 &), those would also appear as
+    children.
+
+
+11. Execute .bashrc without starting a new shell:
+
+    $ . ~/.bashrc
+
+    The dot (.) command is a bash builtin that reads and executes commands
+    from the specified file in the CURRENT shell environment. This is
+    equivalent to:
+
+    $ source ~/.bashrc
+
+    The hint says "a command that doesn't start with a letter" -- that is
+    the dot (.) command. Unlike running "bash ~/.bashrc" (which would
+    create a subshell), the dot command executes in the current shell, so
+    all variable assignments, aliases, and function definitions take effect
+    immediately in your current session.
+
+
+12. Modified .bashrc with the required commands:
+
+    --- ~/.bashrc additions ---
+
+    # Set history size to 42 commands
+    HISTSIZE=42
+
+    # Set system variable to the hostname
+    system=$(hostname)
+
+    # Set prompt to "What?"
+    PS1="What? "
+
+    # Prevent clobbering (overwriting) files with redirection
+    set -o noclobber
+
+    # Alias so to source
+    alias so='source'
+
+    # Alias h to history
+    alias h='history'
+
+
+13. Execute the modified .bashrc:
+
+    $ . ~/.bashrc
+
+    After execution, the prompt changes to "What? " and all aliases and
+    variables are active in the current shell.
+
+
+14. Explanation of each command:
+
+    HISTSIZE=42
+      Sets the number of commands bash keeps in memory during the current
+      session to 42. After 42 commands, the oldest is discarded.
+
+    system=$(hostname)
+      Runs the hostname command and stores its output in the variable
+      "system". The $(...) syntax is command substitution. For example,
+      if hostname returns "L327S06A", then $system equals "L327S06A".
+
+    PS1="What? "
+      Sets the primary prompt string to "What? ". PS1 is the variable
+      that controls what the shell displays as the command prompt.
+
+    set -o noclobber
+      Enables the noclobber option, which prevents the > redirection
+      operator from overwriting existing files. If you try
+      "echo hi > existingfile", bash will refuse with an error. To
+      override, use >| instead of >.
+
+    alias so='source'
+      Creates a shorthand "so" for the "source" command. Typing
+      "so file" is now equivalent to "source file".
+
+    alias h='history'
+      Creates a shorthand "h" for the "history" command. Typing "h"
+      shows the command history.
+
+
+15. Redefine ls in login scripts:
+
+    Add to ~/.bashrc:
+
+      alias ls='/usr/bin/ls -F'
+
+    The -F flag appends indicator characters to filenames:
+    - / for directories
+    - * for executable files
+    - @ for symbolic links
+
+
+16. Run ls without the -F option after the alias is defined:
+
+    Several methods:
+
+    a. Use the full path:
+       $ /usr/bin/ls
+
+    b. Escape the command to bypass alias lookup:
+       $ \ls
+
+    c. Use the command builtin:
+       $ command ls
+
+    d. Quote the command name:
+       $ 'ls'
+
+    All of these bypass the alias and run the original ls without -F.
+
+
+17. What happens if you use ls in a shell script after the alias:
+
+    By default, aliases are NOT expanded in non-interactive shells
+    (scripts). Bash disables alias expansion in scripts for safety and
+    predictability. So a shell script that uses "ls" will run the standard
+    /usr/bin/ls without -F, regardless of any alias defined in .bashrc.
+
+    This is because .bashrc is only sourced for interactive shells, and
+    even if aliases were present, bash requires "shopt -s expand_aliases"
+    to enable alias expansion in scripts.
+
+
+18. Why not redefine standard utilities like ls:
+
+    1. Scripts may break: Other scripts expect standard behavior from ls.
+       If ls is redefined, scripts that parse ls output may fail because
+       the -F indicators change the output format.
+
+    2. Confusion for other users: If someone else uses your account or
+       reads your scripts, they expect ls to behave normally.
+
+    3. Documentation mismatch: Man pages describe the standard behavior.
+       Redefining commands makes documentation misleading.
+
+    4. Debugging difficulty: When troubleshooting, you expect commands to
+       behave as documented. Hidden aliases add confusion.
+
+    5. Portability: Scripts that depend on redefined commands will not
+       work on other systems where the alias is not present.
+
+    6. Recursive behavior risk: If the alias references the command
+       itself incorrectly, it could cause unexpected behavior.
+
+    7. Security: Redefining commands in shared environments could mask
+       malicious activity or introduce unexpected behavior.
+
+    Best practice: Create a NEW alias name (e.g., "ll" for "ls -lF")
+    rather than redefining the original command.

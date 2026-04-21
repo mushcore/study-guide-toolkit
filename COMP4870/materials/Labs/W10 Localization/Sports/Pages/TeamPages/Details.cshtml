@@ -1,0 +1,32 @@
+@page
+@model Sports.Pages.TeamPages.DetailsModel
+@inject Sports.Services.SharedResourceService sharedLocalizer
+
+@{
+    ViewData["Title"] = @sharedLocalizer.Get("Details");
+}
+
+<h1>@sharedLocalizer.Get("Details")</h1>
+
+<div>
+    <h4>@sharedLocalizer.Get("Team")</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @sharedLocalizer.Get("TeamName")
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Team.TeamName)
+        </dd>
+        <dt class = "col-sm-2">
+            @sharedLocalizer.Get("City")
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Team.City)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Team.TeamName">@sharedLocalizer.Get("Edit")</a> |
+    <a asp-page="./Index">@sharedLocalizer.Get("BackToList")</a>
+</div>

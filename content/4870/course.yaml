@@ -1,0 +1,16 @@
+id: "4870"
+code: COMP 4870
+name: Enterprise .NET
+exam: "2026-04-24T10:30:00-07:00"
+room: SE12-327
+format: 60 Multiple Choice + 10 Match Two Columns + 1 Coding Question · 80 marks · 60 min · pass 55%
+instructor: Medhat Elmasry
+notes: |
+  - Instructor: Medhat Elmasry · Covers weeks 7-13 (post-midterm, including W7)
+  - Highest weight: AI (13) + ML.NET (12) = 25 marks — 31% of exam. Cannot skip.
+  - Mid-weight: Cache/Redis (8), File-based (8), gRPC (7), TDD (6), Aspire (5) = 34 marks
+  - Coding question (10 marks): most likely gRPC proto, xUnit test class, or ML.NET pipeline
+  - Midterm style (matched on final): MCQ with 5 options a-e, exact method-name recognition, fake API distractors
+  - Match column pattern (from midterm): package → file/command (e.g. React → Vite, TypeScript → tsc)
+  - HAND-WRITTEN cheat sheet 8.5×11 both sides: pack method names, package names, exact syntax. Not printed.
+  - Allowed scope: ASP.NET Core fundamentals carry over; exam focuses on W7-13 content

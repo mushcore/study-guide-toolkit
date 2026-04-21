@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Setting Policies Using Rational ClearCase</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="setting_up_policies">
+<meta name="uma.presentationName" content="Setting Policies Using Rational ClearCase">
+<meta name="uma.category" content="Tool:rup_clearcase:Rational ClearCase">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational ClearCase">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_qS-iwAIOEdqTna4sZVFRow", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{A7DB751F-6724-468A-8FA0-7C4B54DC2AF6}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_U5tiUAISEdqTna4sZVFRow", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{A7DB751F-6724-468A-8FA0-7C4B54DC2AF6}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_LWLSQDIEEdqwaNnSEheSAg", "_85i-sDIFEdqwaNnSEheSAg", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{A7DB751F-6724-468A-8FA0-7C4B54DC2AF6}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_4U33kAILEdq-_NKqZM1EhA", "_XxCC0AIUEdqEutyfYo0quQ", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{A7DB751F-6724-468A-8FA0-7C4B54DC2AF6}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{A7DB751F-6724-468A-8FA0-7C4B54DC2AF6}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_9U7IkDIEEdqwaNnSEheSAg", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{A7DB751F-6724-468A-8FA0-7C4B54DC2AF6}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{A7DB751F-6724-468A-8FA0-7C4B54DC2AF6}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{A7DB751F-6724-468A-8FA0-7C4B54DC2AF6}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Setting Policies Using Rational ClearCase</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to set project policies with Rational ClearCase Unified Change Management (UCM).</td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_clearcase_9665C.html" guid="{B2D1373B-A826-4169-A38A-B53B2122DC7C}">Rational ClearCase</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><h3>
+    Overview
+</h3>
+<p>
+    Project policies allow the enforcement of good development practices among a team. By setting policies, you can, for
+    example, minimize problems that may be encountered when integrating work by setting a policy that requires developers
+    to update their work areas with the project's recommended baselines before they deliver work to the shared stream. This
+    practice reduces the possibility of introducing code defects.
+</p>
+<p>
+    Project policies are set when a UCM project is created. They can be modified at any time.
+</p>
+<p>
+    This tool mentor is applicable when running Microsoft Windows.
+</p>
+<h3>
+    Tool Steps
+</h3>
+<p>
+    There are two procedures for setting policies for UCM projects.
+</p>
+<ul>
+    <li>
+        <a href="#SetPoliciesForNewProjects">Set policies for new projects</a>
+    </li>
+    <li>
+        <a href="#SetOrChangeExistingProjectPolicies">Set or change policies for existing projects</a>
+    </li>
+</ul>
+<h3>
+    1. <a id="SetPoliciesForNewProjects" name="SetPoliciesForNewProjects">Set policies for new projects</a>
+</h3>
+<ul>
+    <li>
+        From the Windows task bar, select <b>Start &gt; Programs &gt; Rational Software &gt; Rational ClearCase &gt;
+        Project Explorer</b>.
+    </li>
+    <li>
+        From the <b>File</b> menu, select <b>New &gt; Project</b> to start the <b>New Project Wizard</b>. When prompted,
+        select the policies to enforce for this project.
+    </li>
+</ul>
+<p>
+    <img height="16" alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" /> Refer to the <i>Managing Software
+    Projects</i> online Help for details.
+</p>
+<h3>
+    2. <a id="SetOrChangeExistingProjectPolicies" name="SetOrChangeExistingProjectPolicies">Set or change policies for
+    existing projects</a>
+</h3>
+<ol>
+    <li>
+        From the Project Explorer, locate the project to modify.
+    </li>
+    <li>
+        Right-click on the project and select <b>Policies</b>.
+    </li>
+    <li>
+        Click on the different tabs to display and select project policies.
+    </li>
+</ol>
+<p>
+    Refer to the context-sensitive help topic for the Policies dialog for a description of each project policy.
+</p>
+<p>
+    <img height="15" alt="book icon" src="./../../../core.base_rup/resources/book.gif" width="16" /> Refer to the chapter "Setting policies"
+    in the manual <i>IBM Rational ClearCase Guide to Managing Software Projects</i> for more information about policies
+    that can be set for UCM projects.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

@@ -1,0 +1,29 @@
+@model System.Diagnostics.Process
+
+@{
+    ViewData["Title"] = "Concrete Process Details Page";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Here are the details of the process: @Model?.ProcessName.</p>
+<table>
+    <tr>
+        <th>Id</th>
+        <td>@Model?.Id</td>
+    </tr>
+    <tr>
+        <th>Name</th>
+        <td>@Model?.ProcessName</td>
+    </tr>
+    <tr>
+        <th>Memory (MB)</th>
+        <td>@(Model != null ? Model.WorkingSet64 / 1024 / 1024 : 0)</td>
+    </tr>
+    <tr>
+        <th>Start Time</th>
+        <td>@(Model != null ? Model.StartTime.ToString() : "N/A")</td>
+    </tr>
+    <tr>
+        <th>Total Processor Time</th>
+        <td>@(Model != null ? Model.TotalProcessorTime.ToString() : "N/A")</td>
+    </tr>

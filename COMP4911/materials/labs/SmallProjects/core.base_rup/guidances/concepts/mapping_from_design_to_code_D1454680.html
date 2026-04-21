@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Concept: Mapping from Design to Code</title>
+<meta name="uma.type" content="Concept">
+<meta name="uma.name" content="mapping_from_design_to_code">
+<meta name="uma.presentationName" content="Mapping from Design to Code">
+<meta name="element_type" content="concept">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_qwxC8N7YEdmjRZts2c4ZjQ", "{75501BAA-0CCE-4852-A7B2-B10CA71C002A}", "1.424219730601675E-305"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_IY0NkAISEdqTna4sZVFRow", "_yd3ExNnmEdmO6L4XMImrsA", "1.424219730601675E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_f6_YwN7DEdmsEI4YDGX2ag", "_qwxC8N7YEdmjRZts2c4ZjQ", "{75501BAA-0CCE-4852-A7B2-B10CA71C002A}", "1.424219730601675E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_kC0pcN7GEdm8G6yT7-Wdqw", "_yd3ExNnmEdmO6L4XMImrsA", "1.424219730601675E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_vzRNgDIcEdqDs_9ORT1Rig", "1.424219730601675E-305"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="1.424219730601675E-305"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Concept: Mapping from Design to Code</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/concept.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This guideline describes some different options for moving from a design to the implementation, and discusses the benefits and drawbacks of these approaches. </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/disciplines/rup_implementation_discipline_263E22DB.html" guid="_yd3ExNnmEdmO6L4XMImrsA">Implementation</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/roles/rup_implementer_D145E819.html" guid="{75501BAA-0CCE-4852-A7B2-B10CA71C002A}">Implementer</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a><a id="XE_code__mapping_from_design" name="XE_code__mapping_from_design"></a> 
+<h3>
+    <b><a id="Introduction" name="Introduction">Introduction</a></b>
+</h3>
+<p>
+    Design must define enough of the system so that it can be implemented unambiguously. What constitutes enough varies
+    from project to project and company to company.
+</p>
+<p>
+    In some cases the design resembles a sketch, elaborated only far enough to ensure that the implementer can proceed (a
+    "sketch and code" approach). The degree of specification varies with the expertise of the implementer, the complexity
+    of the design, and the risk that the design might be misconstrued.
+</p>
+<p>
+    In other cases, the design is elaborated to the point that the design can be transformed automatically into code. This
+    typically involves extensions to standard UML to represent language and/or environment specific semantics.
+</p>
+<p>
+    The design may also be hierarchical, such as the following:
+</p>
+<ul>
+    <li>
+        a high level design model which sketches an overview of the overall system
+    </li>
+    <li>
+        a subsystem specification model which precisely specifies the required interfaces and behavior of major subsystems
+        within the system
+    </li>
+    <li>
+        a detailed design model for the internals of subsystems
+    </li>
+</ul>
+<p>
+    The <img alt="" src="./../../../images/no_rup.gif">&#160;<a class="elementLink" href="./../../../pages_not_installed/pages_not_installed.html" guid="{F071C3D3-7054-457F-8A81-EFA6678CCDE1}">Development Case</a> should define how the Design Model is realized in
+    the project's specific process, and how/if the model relates to other models and to the implementation. Details should
+    be captured in the <img alt="" src="./../../../images/no_rup.gif">&#160;<a class="elementLink" href="./../../../pages_not_installed/pages_not_installed.html" guid="{E5501201-7EE6-4243-AE91-73880FF76FC1}">Project-Specific Guidelines</a>.
+</p>
+<p>
+    The sections below describe some different options for relating a design and implementation, and discuss benefits and
+    drawbacks of these approaches.
+</p>
+<h3>
+    <b><a id="sketch" name="sketch">Sketch and Code</a></b>
+</h3>
+<p>
+    One common approach to design is to sketch out the design at a fairly abstract level, and then move directly to code.
+    Maintenance of the design model is manual.
+</p>
+<p>
+    In this approach, we let a design class be an abstraction of several code-level classes. We recommend that you map each
+    design class to one "head" class that, in turn, can use several "helper" classes to perform its behavior. You can use
+    "helper" classes to implement a complex attribute or to build a data structure that you need for the implementation of
+    an operation. In design, you don't model the "helper" classes and you only model the key attributes, relationships, and
+    operations defined by the head class. The purpose of such a model is to abstract away details that can be completed by
+    the implementer.
+</p>
+<p>
+    This approach is extended to apply to the other design model elements. You may have design interfaces which are more
+    abstract than the code-level interfaces, and so on.
+</p>
+<h3>
+    <b><a id="round" name="round">Round-Trip Engineering</a></b>
+</h3>
+<p>
+    In round-trip engineering environments, the design model evolves to a level of detail where it becomes a visual
+    representation of the code. The code and its visual representation are synchronized (with tool support).
+</p>
+<p>
+    The following are some options for representing a Design Model in a round-trip engineering context.
+</p>
+<p>
+    <b><a id="trace" name="trace">High Level Design Model and Detailed Design Model</a></b><a href="#Top"><img height="20"     alt="To top of page" src="./../../../core.base_rup/resources/top.gif" width="26" border="0" /></a>
+</p>
+<p>
+    In this approach, there are two levels of design model maintained. Each high level design element is an abstraction of
+    one or more detailed elements in the round-tripped model. For example, a design class may map to one "head" class and
+    several "helper" classes, just as in the "sketch and code" approach described previously. Traceability from the high
+    level design model elements to round-trip model elements can help maintain consistency between the two models.
+</p>
+<p>
+    Although this can help abstract away less important details, this benefit must be balanced against the effort required
+    to maintain consistency between the models.
+</p>
+<p>
+    <b><a id="evolves" name="evolves">Single Evolving Design Model</a></b><a href="#Top"><img height="20"     alt="To top of page" src="./../../../core.base_rup/resources/top.gif" width="26" border="0" /></a>
+</p>
+<p>
+    In this approach, there is a single Design Model. Initial sketches of design elements evolve to the point where they
+    can be synchronized with code. Diagrams, such as those used to describe design use-case realizations, initially
+    reference sketched design classes, but eventually reference language-specific classes. High level descriptions of the
+    design are maintained as needed, such as:
+</p>
+<ul>
+    <li>
+        diagrams of the logical structure of the system,
+    </li>
+    <li>
+        subsystem/component specifications,
+    </li>
+    <li>
+        design patterns / mechanisms.<br />
+    </li>
+</ul>
+<p>
+    Such a model is easier to maintain consistent with the implementation.
+</p>
+<h3>
+    <a id="specification" name="specification">Specification and Realization Models</a>
+</h3>
+<p>
+    A related approach is to define the design in terms of specifications for major subsystems, detailed to the point where
+    client implementations can compile against them.
+</p>
+<p>
+    The detailed design of the subsystem realization can be modeled and maintained separately from this specification
+    model.
+</p>
+<p>
+    See <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/design_subsystem_B26FD609.html" guid="1.2314266786534317E-305">Guideline: Design Subsystem</a> for guidelines related to subsystem specifications and
+    realizations, and when they should be used.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

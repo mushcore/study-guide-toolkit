@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Guideline: Use-Case Generalization</title>
+<meta name="uma.type" content="Guideline">
+<meta name="uma.name" content="use-case_generalization">
+<meta name="uma.presentationName" content="Use-Case Generalization">
+<meta name="element_type" content="other">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_N13eYAINEdq-_NKqZM1EhA", "_KVkLoN7HEdm8G6yT7-Wdqw", "{9C66F2EC-EDEB-4369-9AFB-04B9E7CBCB8E}", "3.7061366529594173E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_EOvXUN7HEdm8G6yT7-Wdqw", "_KVkLoN7HEdm8G6yT7-Wdqw", "{9C66F2EC-EDEB-4369-9AFB-04B9E7CBCB8E}", "3.7061366529594173E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_Jvt1cAIaEdqEutyfYo0quQ", "_jijhYAIaEdqEutyfYo0quQ", "_mTMIkN7REdmjRZts2c4ZjQ", "{9C66F2EC-EDEB-4369-9AFB-04B9E7CBCB8E}", "3.7061366529594173E-305"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_2ClPcDIcEdqDs_9ORT1Rig", "3.7061366529594173E-305"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="3.7061366529594173E-305"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Guideline: Use-Case Generalization</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/guidance.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">Generalization is used when you find two or more use cases that have commonalities in behavior, structure, and purpose. This guideline demonstrates how to use this relationship. </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/structure_use_case_model_93D8F44.html" guid="{F7D9D038-B184-43CC-9353-15BA154F87B5}">Structure the Use-Case Model</a>
+</li>
+<li>
+<a href="./../../../core.base_rup/workproducts/rup_usecase_model_EF15E534.html" guid="{9C66F2EC-EDEB-4369-9AFB-04B9E7CBCB8E}">Use-Case Model</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    <a id="Explanation" name="Explanation">Explanation</a>
+</h3>
+<p>
+    A parent use case may be specialized into one or more child use cases that represent more specific forms of the parent.
+    Neither parent nor child is necessarily abstract, although the parent in most cases is abstract. A child inherits all
+    structure, behavior, and relationships of the parent. Children of the same parent are all specializations of the
+    parent. This is generalization as applicable to use cases (for more information on the concept of generalization as
+    applied to classes, see <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/generalization_94751549.html" guid="1.839540980397304E-305">Guideline: Generalization</a>).
+</p>
+<p>
+    Generalization is used when you find two or more use cases that have commonalities in behavior, structure, and purpose.
+    When this happens, you can describe the shared parts in a new, often abstract, use case, that is then specialized by
+    child use cases.
+</p>
+<p class="exampleheading">
+    Example:
+</p>
+<p align="center">
+    <img height="301" alt="Diagram described in caption." src="./../../../core.base_rup/guidances/guidelines/resources/ucgen1.gif" width="259" />
+</p>
+<p class="picturetext">
+    The use cases Telephone Order and Internet Order are specializations of the abstract use case Place Order.
+</p>
+<p class="example">
+    In an Order Management system, the use cases Telephone Order and Internet Order share a lot in structure and behavior.
+    A general use case Place Order is defined where that structure and common behavior is defined. The abstract use case
+    Place Order need not be complete in itself, but it provides a general behavioral framework that the child use cases can
+    then make complete.
+</p>
+<p>
+    The parent use case is not always abstract.
+</p>
+<p class="exampleheading">
+    Example:
+</p>
+<p class="example">
+    Consider the Order Management system in the previous example. Say that we want to add an Order Registry Clerk actor,
+    who can enter orders into the system on behalf of a customer. This actor would initiate the general Place Order use
+    case, which now must have a complete flow of events described for it. The child use cases can add behavior to the
+    structure that the parent use case provides, and also modify behavior in the parent.
+</p>
+<p align="center">
+    <img height="306" alt="Diagram described in caption." src="./../../../core.base_rup/guidances/guidelines/resources/ucgen2.gif" width="325" />
+</p>
+<p class="picturetext">
+    The actor Order Registry Clerk can instantiate the general use case Place Order. Place Order can also be specialized by
+    the use cases Telephone Order or Internet Order.
+</p>
+<p>
+    The child use case is dependent on the structure (see <a class="elementLinkWithType" href="./../../../core.base_rup/guidances/guidelines/use_case_CC89870D.html" guid="4.1983217662266927E-305">Guideline: Use Case</a>, the discussion on structure of flow of events) of the parent use case. The child use case may add additional
+    behavior to the parent by inserting segments of behavior into the inherited behavior, or by declaring include- and
+    extend-relationships to the child use case. The child may modify behavior segments inherited from the parent, although
+    it must be done with care so that the intent of the parent is preserved. The structure of the parent use case is
+    preserved by the child. This means that all behavior segments, described as steps or subflows of the parent's flow of
+    events, must still exist, but the contents of these behavior segments may be modified by the child.
+</p>
+<p>
+    If the parent is an abstract use case, it may have behavior segments that are incomplete. The child must then complete
+    those behavior segments and make them meaningful to the actor.
+</p>
+<p>
+    A parent use case need not have a relationship to an actor if it is an abstract use case.
+</p>
+<p>
+    If two child use cases are specializing the same parent (or base), the specializations are independent of one another,
+    meaning they are executed in separate use-case instances. This is unlike the extend- or include-relationships, where
+    several additions implicitly or explicitly modify one use-case instance executing the same base use case.
+</p>
+<p>
+    Both use-case-generalization and include can be used to reuse behavior among use cases in the model. The difference is
+    that with use-case-generalization, the execution of the children is dependent on the structure and behavior of the
+    parent (the reused part), while in an include-relationship the execution of the base use case depends only on the
+    result of the function that the inclusion use case (the reused part) performs. Another difference is that in a
+    generalization the children share similarities in purpose and structure, while in the include-relationship the base use
+    cases that are reusing the same inclusion can have completely different purposes, but they need the same function to be
+    performed.
+</p>
+<h3>
+    <a id="Executing the Use-Case-Generalization" name="Executing the Use-Case-Generalization">Executing the Use-Case
+    Generalization</a>
+</h3>
+<p>
+    A use-case instance executing a child use case will follow the flow of events described for the parent use case,
+    inserting additional behavior and modifying behavior as defined in the flow of events of the child use case.
+</p>
+<p align="center">
+    <img height="240" alt="Diagram described in caption." src="./../../../core.base_rup/guidances/guidelines/resources/ucgen3.gif" width="273" />
+</p>
+<p class="picturetext">
+    The use-case instance follows the parent use case, with behavior inserted or modified as described in the child use
+    case.
+</p>
+<h3>
+    <a id="Describing the Use-Case Generalization" name="Describing the Use-Case Generalization">Describing the Use-Case
+    Generalization</a>
+</h3>
+<p>
+    In general, you do not describe the generalization-relationship itself. Instead, in the flow of events of the child use
+    case you will specify how new steps are inserted into the inherited behavior, and how inherited behavior is modified.
+</p>
+<p>
+    If the child is specializing more than one parent (multiple inheritance), you must in the specification of the child
+    explicitly state how the behavior sequences from the parents are interleaved in the child.
+</p>
+<h3>
+    <a id="Example of Use" name="Example of Use">Example of Use</a>
+</h3>
+<p>
+    Consider the following step-by-step outlines to use cases for a simple phone system:
+</p>
+<h4>
+    Place Local Call
+</h4>
+<ol>
+    <li>
+        <font color="#008080">Caller lifts receiver.</font>
+    </li>
+    <li>
+        <font color="#008080">System presents dial-tone.</font>
+    </li>
+    <li>
+        <font color="#008080">Caller dials a digit.</font>
+    </li>
+    <li>
+        <font color="#008080">System turns off dial-tone.</font>
+    </li>
+    <li>
+        <font color="#008080">Caller enters remainder of number.</font>
+    </li>
+    <li>
+        <font color="#008080">System analyzes the number.</font>
+    </li>
+    <li>
+        System finds corresponding party.
+    </li>
+    <li>
+        System connects the parties.
+    </li>
+    <li>
+        <font color="#008080">Parties disconnect.</font>
+    </li>
+</ol>
+<h4>
+    <b>Place Long-Distance Call</b>
+</h4>
+<ol>
+    <li>
+        <font color="#008080">Caller lifts receiver.</font>
+    </li>
+    <li>
+        <font color="#008080">System presents dial-tone.</font>
+    </li>
+    <li>
+        <font color="#008080">Caller dials a digit.</font>
+    </li>
+    <li>
+        <font color="#008080">System turns off dial-tone.</font>
+    </li>
+    <li>
+        <font color="#008080">Caller enters remainder of number.</font>
+    </li>
+    <li>
+        <font color="#008080">System analyzes the number.</font>
+    </li>
+    <li>
+        System sends number to other system.
+    </li>
+    <li>
+        System connect the lines.
+    </li>
+    <li>
+        <font color="#008080">Parties disconnect.</font>
+    </li>
+</ol>
+<p>
+    The text in <font color="#008080">blue</font> is very similar in the two use cases. If the two use cases are so
+    similar, we should consider merging them into one, where alternative subflows show the difference between local calls
+    and long-distance calls.
+</p>
+<p>
+    If, however, the difference between them is of some significance, and there is a value in clearly showing in the
+    use-case model the relationship between local call and long-distance call, we can extract common behavior into a new,
+    more general use case, called Place Call.
+</p>
+<p>
+    In a use-case diagram, the generalization-relationship created will be illustrated as follows:
+</p>
+<p class="picturecenter" align="center">
+    <img height="155" alt="Diagram described in caption." src="./../../../core.base_rup/guidances/guidelines/resources/ucgen4.gif" width="260" />
+</p>
+<p class="picturetext">
+    The use cases Place Local Call and Place Long-Distance Call are inheriting from the abstract use case Place Call.
+</p><br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

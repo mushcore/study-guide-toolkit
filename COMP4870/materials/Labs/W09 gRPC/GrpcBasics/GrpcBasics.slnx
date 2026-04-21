@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="GrpcStudentsClient/GrpcStudentsClient.csproj" />
+  <Project Path="GrpcStudentsServer/GrpcStudentsServer.csproj" />
+  <Project Path="BlazorGrpcClient/BlazorGrpcClient.csproj" />
+  <Project Path="GrpcBasics.AppHost/GrpcBasics.AppHost.csproj" />
+  <Project Path="GrpcBasics.ServiceDefaults/GrpcBasics.ServiceDefaults.csproj" />
+</Solution>

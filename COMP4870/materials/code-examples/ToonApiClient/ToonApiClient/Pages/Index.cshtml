@@ -1,0 +1,29 @@
+﻿@page
+@model IndexModel
+
+@{
+    ViewBag.Title = "Toons";
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Picture</th>
+        </tr>
+    </thead>
+    <tbody>
+            @foreach (var item in Model.toons!)
+            {
+                //string url = ViewBag.BaseUrl + item.pictureUrl;
+
+                <tr>
+                    <td>@item.FirstName @item.LastName</td>
+                    <td>
+                        <img src="@item.PictureUrl" alt="@item.PictureUrl" style="height:50"
+                             class="img-thumbnail" />
+                    </td>
+                </tr>
+            }
+    </tbody>
+</table>

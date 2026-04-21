@@ -1,0 +1,20 @@
+{
+  "courses": [
+    {
+      "id": "4736",
+      "file": "content/_dist/4736.js",
+      "hash": "7769f70e5a12069a",
+      "counts": {
+        "modules": 3,
+        "topics": 5,
+        "cards": 157,
+        "lessons": 10,
+        "codePractice": 11,
+        "topicDives": 19,
+        "cheatBlocks": 19,
+        "mockQuestions": 77
+      }
+    }
+  ],
+  "builtAt": "2026-04-21T01:58:23.839Z"
+}

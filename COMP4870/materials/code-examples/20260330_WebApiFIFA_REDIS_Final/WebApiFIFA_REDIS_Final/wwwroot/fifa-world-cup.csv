@@ -1,0 +1,32 @@
+GameId,Year,Gender,City,Country,Continent,Winner
+1,1930,Men,Montevideo,Uruguay,South America,Uruguay
+2,1934,Men,Rome,Italy,Europe,Italy
+3,1938,Men,Paris,France,Europe,Italy
+4,1950,Men,Rio de Janeiro,Brazil,South America,Uruguay
+5,1954,Men,Bern,Switzerland,Europe,West Germany
+6,1958,Men,Stockholm,Sweden,Europe,Brazil
+7,1962,Men,Santiago,Chile,South America,Brazil
+8,1966,Men,London,England,Europe,England
+9,1970,Men,Mexico City,Mexico,North America,Brazil
+10,1974,Men,Munich,West Germany,Europe,West Germany
+11,1978,Men,Buenos Aires,Argentina,South America,Argentina
+12,1982,Men,Madrid,Spain,Europe,Italy
+13,1986,Men,Mexico City,Mexico,North America,Argentina
+14,1990,Men,Rome,Italy,Europe,West Germany
+15,1991,Women,Montevideo,Uruguay,South America,Uruguay
+16,1994,Men,Los Angeles,United States,North America,Brazil
+17,1995,Women,Rome,Italy,Europe,Norway
+18,1998,Men,Paris,France,Europe,France
+19,1999,Women,Pasadena/CA,United States,North America,United States
+20,2002,Men,Seoul and Tokyo,South Korea and Japan,Asia,Brazil
+21,2003,Women,Carson/CA,United States,North America,Germany
+22,2006,Men,Berlin,Germany,Europe,Italy
+23,2007,Women,Shanghai,China,Asia,Germany
+24,2010,Men,Johannesburg,South Africa,Africa,Spain
+25,2011,Women,Frankfurt,Germany,Europe,Japan
+26,2014,Men,Rio de Janeiro,Brazil,South America,Germany
+27,2015,Women,Vancouver,Canada,North America,United States
+28,2018,Men,Moscow,Russia,Europe,France
+29,2019,Women,Lyon,France,Europe,United States
+30,2022,Men,Doha,Qatar,Asia,Argentina
+31,2023,Women,Sydney,Australia,Oceania,Spain

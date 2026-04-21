@@ -1,0 +1,14 @@
+﻿@page
+@model RazorStar.Pages.BindProcessPageModel
+@{
+}
+
+<div>
+    <h2>Process Page</h2>
+    @foreach (var item in Model.Procs!)
+    {
+        <div>
+            <a asp-page="/BindProcessDetailPage" asp-route-id="@item.Id">@item.ProcessName</a>
+        </div>
+    }
+</div>

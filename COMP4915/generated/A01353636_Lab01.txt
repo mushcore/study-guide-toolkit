@@ -1,0 +1,166 @@
+Comp 4915 - Lab 1 (Chapter 1-5 plus research)
+===============================================
+
+1. In what language is Linux written? What does the language have to do with
+   the success of Linux?
+
+   Linux is written in C. C made Linux portable -- the same source code can
+   be compiled on many different hardware platforms, which is a core reason
+   Linux became the dominant server OS.
+
+
+2. What is a shell? How does it work with the kernel? With the user?
+
+   A shell is a command line interpreter and programming language that runs
+   as a user-space program on top of the kernel.
+
+   With the kernel: when a user types a command, the shell makes system calls
+   (fork/exec) to create a new process and run the program, then waits for
+   the kernel to signal completion.
+
+   With the user: the shell displays a prompt, reads commands from standard
+   input, provides variable substitution, filename generation (globbing),
+   I/O redirection, pipelines, and a scripting interface.
+
+
+3. What happens when you give the following commands when the file named done
+   already exists (assume to_do also exists)?
+
+   a. cp to_do done
+      Copies the contents of to_do into done, overwriting done without
+      warning. Both files exist afterward; to_do is unchanged.
+
+   b. mv to_do done
+      Moves to_do to done, overwriting done without warning. After the
+      command, to_do no longer exists.
+
+
+4. What happens if you use diff to compare two binary files that are not
+   identical? Explain why the diff output for binary files is different than
+   the diff output for ASCII files.
+
+   diff outputs: "Binary files file1.gz and file2.gz differ"
+
+   It simply reports that the files differ without showing specifics. diff
+   works line-by-line on readable text. Binary files contain non-printable
+   characters and no meaningful line structure, so displaying byte-level
+   differences would be unreadable.
+
+
+5. What does which do? What is the result of giving the which utility the name
+   of a command that resides in a directory that is not in your search path?
+
+   which searches the directories in PATH and displays the absolute pathname
+   of the executable that would be run.
+
+   If the command is not in PATH, which returns an error like:
+     /usr/bin/which: no such_command in (...)
+
+
+6. Experiment by calling the file utility with names of files in /usr/bin.
+   How many different types of files can you find there (approximately)?
+
+   Running "file /usr/bin/*" reveals approximately 6-8 types, including:
+   ELF 64-bit executables, position-independent executables, POSIX shell
+   scripts, Bash scripts, Perl/Python scripts, and symbolic links.
+
+   file determines type by examining file contents (magic numbers), not
+   the file extension.
+
+
+7. Try giving the two commands and explain the difference between them:
+
+   a. echo cat
+      Output: cat
+      echo prints its arguments as text to stdout.
+
+   b. cat echo
+      Output: cat: echo: No such file or directory
+      cat tries to open a file named "echo", which doesn't exist.
+
+   The first token on the command line is the command; subsequent tokens
+   are its arguments.
+
+
+8. Find an existing file, or create a file that:
+
+   a. gzip compresses by more than 80 per cent
+      A file with highly repetitive content (e.g., a large log file or
+      a file of repeated lines) compresses well over 80% because gzip
+      excels at eliminating repeated patterns.
+
+   b. gzip compresses by less than 10 per cent
+      A compiled binary or already-compressed file (.jpg, .mp3, .gz) has
+      very little redundancy, so gzip achieves less than 10%.
+
+   c. gets larger when compressed with gzip
+      A very small file (e.g., 3 bytes) grows because gzip adds an 18-byte
+      header/trailer, exceeding any compression savings.
+
+
+9. Write a grep command to do the following:
+
+   a. Display all lines starting with t or T in the file fred.txt:
+        grep '^[tT]' fred.txt
+
+   b. Display all lines in the file header.h which contain write
+      (upper or lower case):
+        grep -i 'write' header.h
+
+   c. Count all of the lines that are empty (use grep and wc):
+        grep '^$' filename | wc -l
+
+
+10. What grep options will:
+
+    a. Print only a count of matched lines:       -c
+    b. List filenames, but not matched lines:      -l
+    c. Print lines and their line numbers:         -n
+    d. Ignore upper and lower case distinctions:   -i
+
+
+11. What command will print the last 132 lines of the file test?
+
+      tail -n 132 test
+
+
+12. What command can you use to copy all of the files in the directory lab1
+    (including any subdirectories) into the directory /home/eric?
+
+      cp -r lab1 /home/eric/
+
+    The -r option copies recursively, including subdirectories.
+
+
+13. The ls command has lots of options. What options will:
+
+    a. Show nonprinting characters in octal:                          -b
+    b. List files by creation/modification time:                      -t
+    c. Indicate file type (/ for dirs, * for executables, @ for links): -F
+    d. List only the directory name, not its contents:                -d
+    e. List all files, even those normally hidden:                    -a
+    f. Recursively list subdirectories:                               -R
+    g. List files according to modification time:                     -t
+    h. Show permissions, owner, size, modification type:              -l
+
+
+14. Write a find command to do the following:
+
+    a. List all files (and subdirectories) in your home directory:
+         find ~
+
+    b. List all files named fred1 in the /work directory:
+         find /work -name fred1
+
+    c. List all files whose name starts with memo and which are owned by
+       ann in the system:
+         find / -name 'memo*' -user ann
+
+    d. List all files in the system that were modified within the last two
+       days:
+         find / -mtime -2
+
+    e. Use find to grep for a pattern down a directory tree. Display all
+       lines in all files in your login directory (or subdirectories) which
+       contain the string "ListMe":
+         find ~ -type f -exec grep "ListMe" {} +

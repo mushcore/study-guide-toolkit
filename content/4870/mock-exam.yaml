@@ -1,0 +1,982 @@
+duration_seconds: 3600
+questions:
+  - id: q1
+    type: MCQ
+    topic: AI
+    marks: 1
+    question: Which method resolves the chat service from a built SK Kernel?
+    correct: 2
+    rationale: >-
+      Standard DI pattern — kernel is an IServiceProvider. `GetRequiredService<IChatCompletionService>()` is the
+      canonical resolve.
+    choices:
+      - kernel.Services.GetChat()
+      - kernel.Chat
+      - kernel.GetRequiredService<IChatCompletionService>()
+      - kernel.CreateChatCompletion()
+      - new ChatCompletion(kernel)
+  - id: q2
+    type: MCQ
+    topic: AI
+    marks: 1
+    question: What is the default local Ollama endpoint?
+    correct: 1
+    rationale: Ollama default port is 11434 and uses plain HTTP on localhost.
+    choices:
+      - http://localhost:8080
+      - http://localhost:11434
+      - https://localhost:11434
+      - http://localhost:3000
+      - http://127.0.0.1:5000
+  - id: q3
+    type: MCQ
+    topic: AI
+    marks: 1
+    question: Which factory method creates an AI tool from a C# delegate in MAF?
+    correct: 2
+    rationale: >-
+      `AIFunctionFactory.Create(delegate, name, description)` is the static factory. Wraps a C# method into an
+      `AIFunction` tool.
+    choices:
+      - AIFunction.Create(delegate)
+      - AIAgent.CreateTool(delegate)
+      - AIFunctionFactory.Create(delegate, name, desc)
+      - Tool.FromMethod(delegate)
+      - new AIFunction(delegate)
+  - id: q4
+    type: MCQ
+    topic: AI
+    marks: 1
+    question: Which attribute marks a C# method as Kernel-callable in Semantic Kernel?
+    correct: 1
+    rationale: >-
+      The current attribute (post rename) is `[KernelFunction]`. `[SKFunction]` was the older name and is a classic
+      distractor.
+    choices:
+      - \[SKFunction\]
+      - \[KernelFunction\]
+      - \[AIFunction\]
+      - \[SemanticFunction\]
+      - \[Callable\]
+  - id: q5
+    type: MCQ
+    topic: AI
+    marks: 1
+    question: Which MCP transport is appropriate for a LOCAL co-located tool?
+    correct: 3
+    rationale: "`stdio` uses a stdin/stdout process pipe — local only. `SSE` is HTTP-based for remote."
+    choices:
+      - SSE
+      - WebSocket
+      - HTTP/2
+      - stdio
+      - gRPC
+  - id: q6
+    type: MCQ
+    topic: AI
+    marks: 1
+    question: In MAF, what object maintains multi-turn history across calls?
+    correct: 1
+    rationale: "`AgentSession` wraps an `AIAgent` and tracks prior messages. `ChatHistory` is the SK equivalent, not MAF."
+    choices:
+      - ChatHistory
+      - AgentSession
+      - ConversationContext
+      - IContextMemory
+      - AgentContext
+  - id: q7
+    type: MCQ
+    topic: AI
+    marks: 1
+    question: Which MAF extension method turns an OpenAIClient into an agent?
+    correct: 2
+    rationale: "Extension: `client.AsAIAgent(\"gpt-4o-mini\")`."
+    choices:
+      - .ToAIAgent(model)
+      - .CreateAgent(model)
+      - .AsAIAgent(model)
+      - .MakeAgent(model)
+      - new AIAgent(client, model)
+  - id: q8
+    type: MCQ
+    topic: ML.NET
+    marks: 1
+    question: What does `pipeline.Fit(trainSet)` return?
+    correct: 2
+    rationale: Fit trains the pipeline and returns an `ITransformer` (the trained model). It does NOT return the predictions.
+    choices:
+      - IDataView
+      - MLContext
+      - ITransformer
+      - IEstimator
+      - PredictionEngine
+  - id: q9
+    type: MCQ
+    topic: ML.NET
+    marks: 1
+    question: Which method loads a CSV file as IDataView?
+    correct: 2
+    rationale: "`LoadFromTextFile<T>` is the correct name and takes hasHeader + separatorChar."
+    choices:
+      - mlContext.Data.LoadCsv<T>(path)
+      - mlContext.LoadFromCsv<T>(path)
+      - "mlContext.Data.LoadFromTextFile<T>(path, hasHeader: true, separatorChar: ',')"
+      - mlContext.ReadCsv(path)
+      - new IDataView(path)
+  - id: q10
+    type: MCQ
+    topic: ML.NET
+    marks: 1
+    question: Which metric is appropriate for a REGRESSION model?
+    correct: 3
+    rationale: RSquared (and RMSE) are regression metrics. Accuracy/F1/LogLoss are for classification.
+    choices:
+      - Accuracy
+      - F1Score
+      - MacroAccuracy
+      - RSquared
+      - LogLoss
+  - id: q11
+    type: MCQ
+    topic: ML.NET
+    marks: 1
+    question: Which namespace holds trainers for a binary (2-class) classifier?
+    correct: 0
+    rationale: "`BinaryClassification.Trainers` for 2-class; `MulticlassClassification.Trainers` for 3+."
+    choices:
+      - mlContext.BinaryClassification.Trainers
+      - mlContext.Classification.Trainers
+      - mlContext.MulticlassClassification.Trainers
+      - mlContext.Classify.Trainers
+      - mlContext.Predictor.Trainers
+  - id: q12
+    type: MCQ
+    topic: ML.NET
+    marks: 1
+    question: What transform combines multiple columns into a single Features vector?
+    correct: 0
+    rationale: >-
+      `mlContext.Transforms.Concatenate("Features", "A", "B", "C")` — required by trainers that expect a single Features
+      column.
+    choices:
+      - Concatenate
+      - Combine
+      - MergeColumns
+      - BuildVector
+      - Union
+  - id: q13
+    type: MCQ
+    topic: ML.NET
+    marks: 1
+    question: Which attribute maps a CSV column index to a class property?
+    correct: 1
+    rationale: "`[LoadColumn(0)]` maps the zero-based CSV column to the property."
+    choices:
+      - \[Column(0)\]
+      - \[LoadColumn(0)\]
+      - \[FromCsv(0)\]
+      - \[Index(0)\]
+      - \[Ordinal(0)\]
+  - id: q14
+    type: MCQ
+    topic: Cache
+    marks: 1
+    question: Which interface is injected for distributed caching?
+    correct: 2
+    rationale: "`IDistributedCache` is the abstraction backed by Redis / SQL Server / etc."
+    choices:
+      - IMemoryCache
+      - ICacheProvider
+      - IDistributedCache
+      - IRedisCache
+      - ICacheManager
+  - id: q15
+    type: MCQ
+    topic: Cache
+    marks: 1
+    question: "Register Redis distributed cache in Program.cs:"
+    correct: 2
+    rationale: "`AddStackExchangeRedisCache` uses the options callback with `Configuration` property."
+    choices:
+      - builder.Services.AddRedisCache("localhost:6379")
+      - builder.Services.AddDistributedRedisCache(o => o.Host = "localhost")
+      - builder.Services.AddStackExchangeRedisCache(o => o.Configuration = "localhost:6379")
+      - builder.Services.AddRedis("localhost:6379")
+      - builder.Services.UseRedis()
+  - id: q16
+    type: MCQ
+    topic: Cache
+    marks: 1
+    question: Why does IMemoryCache fail in a load-balanced web farm?
+    correct: 2
+    rationale: In-process cache = per-server RAM. Server A has no clue about what Server B cached. Redis solves this.
+    choices:
+      - Memory leak
+      - Thread safety
+      - Each server instance has its own cache
+      - MemoryCache is deprecated
+      - Firewall blocks it
+  - id: q17
+    type: MCQ
+    topic: Cache
+    marks: 1
+    question: "Cache Tag Helper attribute to vary fragment by current user:"
+    correct: 1
+    rationale: "`vary-by-user=\"true\"`."
+    choices:
+      - vary-by-identity
+      - vary-by-user
+      - user="true"
+      - authenticate-vary
+      - vary-by-auth
+  - id: q18
+    type: MCQ
+    topic: Cache
+    marks: 1
+    question: Difference between AbsoluteExpiration and SlidingExpiration?
+    correct: 0
+    rationale: >-
+      Absolute: expires at fixed DateTimeOffset. Sliding: resets TTL whenever entry is accessed. Combining = earlier
+      wins.
+    choices:
+      - Absolute = fixed duration; Sliding = resets on access
+      - Both are identical
+      - Absolute = relative time; Sliding = calendar time
+      - Absolute applies to Redis only
+      - Sliding expires immediately
+  - id: q19
+    type: MCQ
+    topic: FileBased
+    marks: 1
+    question: Which is the CORRECT directive to reference a NuGet package?
+    correct: 2
+    rationale: "No space after colon: `#:package`. Space between directive and content is OK."
+    choices:
+      - "#: package Humanizer@2.14.1"
+      - "#package Humanizer@2.14.1"
+      - "#:package Humanizer@2.14.1"
+      - //:package Humanizer@2.14.1
+      - "#pragma package Humanizer"
+  - id: q20
+    type: MCQ
+    topic: FileBased
+    marks: 1
+    question: "Command to run a single file-based C# app:"
+    correct: 2
+    rationale: "`dotnet run app.cs` — detects the .cs argument and compiles/runs in memory."
+    choices:
+      - dotnet app.cs
+      - dotnet exec app.cs
+      - dotnet run app.cs
+      - dotnet script app.cs
+      - csi app.cs
+  - id: q21
+    type: MCQ
+    topic: FileBased
+    marks: 1
+    question: What directive selects the ASP.NET Core web SDK in a file-based app?
+    correct: 1
+    rationale: "`#:sdk Microsoft.NET.Sdk.Web` — full MSBuild SDK identifier."
+    choices:
+      - "#:sdk AspNetCore"
+      - "#:sdk Microsoft.NET.Sdk.Web"
+      - "#:framework web"
+      - "#:use Web"
+      - "#:webhost"
+  - id: q22
+    type: MCQ
+    topic: FileBased
+    marks: 1
+    question: "Command to convert a file-based app into a .csproj project:"
+    correct: 2
+    rationale: "`dotnet project convert app.cs` promotes the script into a proper project with a .csproj."
+    choices:
+      - dotnet upgrade app.cs
+      - dotnet convert app.cs
+      - dotnet project convert app.cs
+      - dotnet new project --from app.cs
+      - dotnet build --promote app.cs
+  - id: q23
+    type: MCQ
+    topic: FileBased
+    marks: 1
+    question: Which .NET version introduced file-based apps?
+    correct: 4
+    rationale: "Single-file apps with #: directives shipped in .NET 10."
+    choices:
+      - .NET 6
+      - .NET 7
+      - .NET 8
+      - .NET 9
+      - .NET 10
+  - id: q24
+    type: MCQ
+    topic: gRPC
+    marks: 1
+    question: First line of every .proto3 file?
+    correct: 1
+    rationale: Literally `syntax = "proto3";` at the top.
+    choices:
+      - package proto3;
+      - syntax = "proto3";
+      - version 3;
+      - proto 3;
+      - schema = "proto3";
+  - id: q25
+    type: MCQ
+    topic: gRPC
+    marks: 1
+    question: Protocol gRPC REQUIRES?
+    correct: 2
+    rationale: gRPC is built on HTTP/2 (binary framing, multiplexing, streaming).
+    choices:
+      - HTTP/1.0
+      - HTTP/1.1
+      - HTTP/2
+      - WebSocket
+      - QUIC
+  - id: q26
+    type: MCQ
+    topic: gRPC
+    marks: 1
+    question: "Register a gRPC service in Program.cs:"
+    correct: 2
+    rationale: "Two steps: `AddGrpc()` in services, `MapGrpcService<T>()` in the pipeline."
+    choices:
+      - app.MapGrpc<MyService>()
+      - app.UseGrpc()
+      - builder.Services.AddGrpc(); app.MapGrpcService<MyServiceImpl>();
+      - builder.Services.AddGrpcService<MyServiceImpl>()
+      - app.MapService<MyServiceImpl>()
+  - id: q27
+    type: MCQ
+    topic: gRPC
+    marks: 1
+    question: "csproj item to compile a .proto for the server:"
+    correct: 1
+    rationale: "`<Protobuf Include=\"...\" GrpcServices=\"Server|Client|Both\" />` — \"Role\" and \"For\" are fake."
+    choices:
+      - <Protobuf Include="x.proto" Role="Server"/>
+      - <Protobuf Include="x.proto" GrpcServices="Server"/>
+      - <Proto Include="x.proto" For="Server"/>
+      - <ProtobufServer Include="x.proto"/>
+      - <Grpc Include="x.proto" Generate="Server"/>
+  - id: q28
+    type: MCQ
+    topic: TDD
+    marks: 1
+    question: "Argument order for `Assert.Equal`:"
+    correct: 1
+    rationale: Always `(expected, actual)`. Swapping produces misleading failure messages.
+    choices:
+      - (actual, expected)
+      - (expected, actual)
+      - (left, right)
+      - Order does not matter
+      - (value, compareTo)
+  - id: q29
+    type: MCQ
+    topic: TDD
+    marks: 1
+    question: "Attribute for a test with multiple parameter sets:"
+    correct: 2
+    rationale: "`[Theory]` with `[InlineData(...)]` rows. `[Fact]` = no args."
+    choices:
+      - \[TestCase\]
+      - \[DataRow\]
+      - \[Theory\] + \[InlineData\]
+      - \[Parameterized\]
+      - \[Many\]
+  - id: q30
+    type: MCQ
+    topic: TDD
+    marks: 1
+    question: How do you perform test setup in xUnit?
+    correct: 2
+    rationale: "xUnit uses the class constructor. Teardown: implement `IDisposable`."
+    choices:
+      - \[SetUp\] method
+      - \[TestInitialize\] method
+      - Class constructor
+      - OnBefore() override
+      - Static Init()
+  - id: q31
+    type: MCQ
+    topic: TDD
+    marks: 1
+    question: How do you assert that code throws an exception?
+    correct: 1
+    rationale: "`Assert.Throws<T>(Action)` — use `ThrowsAsync<T>` for async."
+    choices:
+      - Assert.ThrowsException<T>(code)
+      - Assert.Throws<T>(() => code())
+      - \[ExpectedException(typeof(T))\]
+      - try/catch with Assert.Fail
+      - Assert.HasException<T>
+  - id: q32
+    type: MCQ
+    topic: Aspire
+    marks: 1
+    question: "Aspire AppHost entry point:"
+    correct: 1
+    rationale: "`DistributedApplication.CreateBuilder(args)` — parallels `WebApplication.CreateBuilder`."
+    choices:
+      - new DistributedApplication()
+      - var builder = DistributedApplication.CreateBuilder(args);
+      - Aspire.CreateHost(args)
+      - new AspireAppHost()
+      - Host.CreateApplicationBuilder(args)
+  - id: q33
+    type: MCQ
+    topic: Aspire
+    marks: 1
+    question: "Add a Redis resource to Aspire AppHost:"
+    correct: 0
+    rationale: "`builder.AddRedis(\"cache\")` on the AppHost builder."
+    choices:
+      - builder.AddRedis("cache")
+      - builder.Services.AddRedis("cache")
+      - builder.UseRedis()
+      - DistributedApplication.AddRedis("cache")
+      - builder.AddContainer("redis")
+  - id: q34
+    type: MCQ
+    topic: Aspire
+    marks: 1
+    question: "Method that passes a resource's connection info to a project:"
+    correct: 1
+    rationale: "`project.WithReference(resource)` injects env vars/connection strings."
+    choices:
+      - .WithConnection(db)
+      - .WithReference(db)
+      - .UseDatabase(db)
+      - .LinkTo(db)
+      - .AddDependency(db)
+  - id: q35
+    type: MCQ
+    topic: Localization
+    marks: 1
+    question: "Register localization service:"
+    correct: 0
+    rationale: "`AddLocalization` with options callback setting `ResourcesPath`."
+    choices:
+      - builder.Services.AddLocalization(o => o.ResourcesPath = "Resources")
+      - builder.UseLocalization("Resources")
+      - builder.Services.AddI18n()
+      - builder.AddCultures(new\[\] { "en", "fr" })
+      - builder.Services.UseResources("Resources")
+  - id: q36
+    type: MCQ
+    topic: Localization
+    marks: 1
+    question: Which interface is injected in a Razor view for translations?
+    correct: 2
+    rationale: "`IViewLocalizer` is the one designed for Razor views. `IStringLocalizer<T>` used in code-behind / controllers."
+    choices:
+      - IStringLocalizer
+      - ILocalizer
+      - IViewLocalizer
+      - IResourceLocalizer
+      - IHtmlLocalizer
+  - id: q37
+    type: MCQ
+    topic: Localization
+    marks: 1
+    question: Which property controls number/date formatting culture?
+    correct: 2
+    rationale: "`CurrentCulture` = formatting. `CurrentUICulture` = which resx to load."
+    choices:
+      - CurrentUICulture
+      - CurrentLocale
+      - CurrentCulture
+      - FormattingCulture
+      - DisplayCulture
+  - id: q38
+    type: MCQ
+    topic: TagHelpers
+    marks: 1
+    question: File where tag helpers are registered for a folder?
+    correct: 2
+    rationale: "`_ViewImports.cshtml` — via `@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers`."
+    choices:
+      - \_Layout.cshtml
+      - \_ViewStart.cshtml
+      - \_ViewImports.cshtml
+      - appsettings.json
+      - Program.cs
+  - id: q39
+    type: MCQ
+    topic: TagHelpers
+    marks: 1
+    question: Property `FontFamily` on a custom tag helper maps to which HTML attribute?
+    correct: 3
+    rationale: "Kebab-case conversion: PascalCase C# → lowercase-hyphenated HTML."
+    choices:
+      - fontFamily
+      - Font-Family
+      - FONT\_FAMILY
+      - font-family
+      - fontfamily
+  - id: q40
+    type: MCQ
+    topic: Blazor
+    marks: 1
+    question: "NuGet package for QuickGrid:"
+    correct: 2
+    rationale: "`Microsoft.AspNetCore.Components.QuickGrid`."
+    choices:
+      - Microsoft.AspNetCore.Components.Grid
+      - Microsoft.AspNetCore.QuickGrid
+      - Microsoft.AspNetCore.Components.QuickGrid
+      - Blazor.QuickGrid
+      - Syncfusion.QuickGrid
+  - id: q41
+    type: MCQ
+    topic: Blazor
+    marks: 1
+    question: A `TemplateColumn` with `Sortable="true"` — what happens?
+    correct: 1
+    rationale: "`Sortable=\"true\"` is only recognized on `PropertyColumn`. `TemplateColumn` needs `SortBy=\"@GridSort...\"`."
+    choices:
+      - It sorts alphabetically
+      - Sorting ignores the attribute; TemplateColumn needs SortBy
+      - Compile error
+      - Runtime exception
+      - Sorts by row index
+  - id: q42
+    type: MCQ
+    topic: ExcelPDF
+    marks: 1
+    question: Correct MIME type for an .xlsx download?
+    correct: 3
+    rationale: The modern Open XML MIME type. `application/vnd.ms-excel` is for legacy .xls.
+    choices:
+      - application/xlsx
+      - application/excel
+      - application/vnd.ms-excel
+      - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      - text/xlsx
+  - id: q43
+    type: MCQ
+    topic: AI
+    marks: 1
+    question: Method to import a native C# plugin class into a Semantic Kernel?
+    correct: 1
+    rationale: >-
+      `ImportPluginFromType<T>()` (source: CSharp\_Meets\_AI.pptx). Register → fake. AddPlugin exists on Kernel.Plugins
+      but is not the preferred factory.
+    choices:
+      - kernel.AddPlugin<MyPlugin>()
+      - kernel.ImportPluginFromType<MyPlugin>()
+      - kernel.Register<MyPlugin>()
+      - kernel.Plugins.Add(new MyPlugin())
+      - kernel.LoadPlugin<MyPlugin>()
+  - id: q44
+    type: MCQ
+    topic: AI
+    marks: 1
+    question: Variable placeholder syntax inside a skprompt.txt template?
+    correct: 3
+    rationale: >-
+      Double-brace with $ is the SK prompt template syntax (source: CSharp\_Meets\_AI.pptx). Single-brace is
+      interpolation; ${} is JS; @ is Razor.
+    choices:
+      - "{input}"
+      - ${input}
+      - <input>
+      - "{{$input}}"
+      - "@input"
+  - id: q45
+    type: MCQ
+    topic: AI
+    marks: 1
+    question: "MCP stands for:"
+    correct: 0
+    rationale: "**Model Context Protocol** — open standard for LLM tool/resource access (source: SLM.pptx)."
+    choices:
+      - Model Context Protocol
+      - Multi-Cloud Protocol
+      - Managed Connection Provider
+      - Microsoft Chat Protocol
+      - Memory Cache Proxy
+  - id: q46
+    type: MCQ
+    topic: AI
+    marks: 1
+    question: GitHub Models OpenAI-compatible inference endpoint URL?
+    correct: 1
+    rationale: "`https://models.github.ai/inference` (source: SLM.docx). All other URLs are plausible-sounding fakes."
+    choices:
+      - https://api.github.com/models
+      - https://models.github.ai/inference
+      - https://github.ai/v1/chat
+      - https://copilot.github.com/api
+      - https://models.githubusercontent.com
+  - id: q47
+    type: MCQ
+    topic: ML.NET
+    marks: 1
+    question: "Purpose of `new MLContext(seed: 0)`?"
+    correct: 1
+    rationale: >-
+      The seed makes pipelines deterministic — same data + seed → same model (source: ML.NET.pptx). Not related to LLMs
+      or hardware.
+    choices:
+      - Seed the LLM sampler
+      - Make training reproducible (determinism)
+      - Set the number of GPU cores
+      - Disable parallelism
+      - Reset the model cache
+  - id: q48
+    type: MCQ
+    topic: ML.NET
+    marks: 1
+    question: What is an `IDataView`?
+    correct: 2
+    rationale: "IDataView is immutable + lazy; enables streaming of huge datasets (source: ML.NET.pptx)."
+    choices:
+      - A GUI view of training data
+      - A mutable array of records
+      - An immutable, lazily-evaluated tabular data abstraction
+      - A SQL result set
+      - An HTTP JSON stream
+  - id: q49
+    type: MCQ
+    topic: ML.NET
+    marks: 1
+    question: "Save a trained ML.NET model to disk:"
+    correct: 2
+    rationale: >-
+      Signature: `mlContext.Model.Save(model, schema, path)`. Schema is required so the re-loaded model knows its input
+      column shape (source: ML.NET\_VS2022\_SCRIPT.docx).
+    choices:
+      - model.Save("m.zip")
+      - mlContext.SaveModel("m.zip", model)
+      - mlContext.Model.Save(model, data.Schema, "m.zip")
+      - model.Serialize("m.zip")
+      - mlContext.Persist(model, "m.zip")
+  - id: q50
+    type: MCQ
+    topic: ML.NET
+    marks: 1
+    question: Class used to predict ONE record at a time?
+    correct: 2
+    rationale: >-
+      `PredictionEngine<TIn,TOut>` is type-safe single-record inference (source: ML.NET.pptx). ITransformer.Transform is
+      batch.
+    choices:
+      - ITransformer
+      - IDataView
+      - PredictionEngine<TIn,TOut>
+      - MLContext
+      - SinglePredictor
+  - id: q51
+    type: MCQ
+    topic: Cache
+    marks: 1
+    question: Razor tag that caches an HTML fragment on the server?
+    correct: 2
+    rationale: "`<cache>` tag helper (source: Cache\\_Tag\\_Helper\\_SCRIPT.docx). Uses IMemoryCache under the hood."
+    choices:
+      - <output-cache>
+      - <fragment>
+      - <cache>
+      - <memoize>
+      - <server-cache>
+  - id: q52
+    type: MCQ
+    topic: Cache
+    marks: 1
+    question: Single-call read-or-load pattern against IMemoryCache?
+    correct: 2
+    rationale: >-
+      `GetOrCreateAsync` is the ASP.NET Core idiom; the entry lambda configures expiry before the value is cached
+      (source: DataCache\_SCRIPT.docx).
+    choices:
+      - \_cache.LoadOrCreate(key, loader)
+      - \_cache.GetOrAdd(key, loader)
+      - >-
+        await \_cache.GetOrCreateAsync(key, async entry => { entry.AbsoluteExpirationRelativeToNow = ...; return await
+        Load(); })
+      - \_cache.ReadOrFetch(key, loader)
+      - \_cache.Miss(key, loader)
+  - id: q53
+    type: MCQ
+    topic: FileBased
+    marks: 1
+    question: Directive referencing another .csproj from a file-based app?
+    correct: 0
+    rationale: "`#:project` (source: file-based-apps.pptx). Note: no space after the colon."
+    choices:
+      - "#:project ./lib/MyLib.csproj"
+      - "#:ref ./lib/MyLib.csproj"
+      - "#:include ./lib/MyLib.csproj"
+      - "#:use ./lib/MyLib.csproj"
+      - ""
+  - id: q54
+    type: MCQ
+    topic: FileBased
+    marks: 1
+    question: Directive setting an MSBuild property in a file-based app?
+    correct: 1
+    rationale: "`#:property Name=Value` maps one-for-one to MSBuild PropertyGroup entries (source: file-based-apps.pptx)."
+    choices:
+      - "#:set LangVersion=preview"
+      - "#:property LangVersion=preview"
+      - "#:msbuild LangVersion=preview"
+      - preview
+      - "#:var LangVersion=preview"
+  - id: q55
+    type: MCQ
+    topic: gRPC
+    marks: 1
+    question: Directive to set the generated C# namespace in a .proto file?
+    correct: 2
+    rationale: >-
+      `option csharp_namespace = "MyApp";` (source: gRPC.pptx). `package` also affects namespace but as a fallback; the
+      explicit option wins.
+    choices:
+      - namespace MyApp;
+      - package MyApp;
+      - option csharp\_namespace = "MyApp";
+      - csharp { namespace = "MyApp"; }
+      - "#namespace MyApp"
+  - id: q56
+    type: MCQ
+    topic: gRPC
+    marks: 1
+    question: In a .proto message, what does the "= 1" after a field do?
+    correct: 2
+    rationale: >-
+      Field numbers identify the field on the wire — re-ordering fields in code is safe as long as numbers stay stable
+      (source: gRPC.pptx). That is the whole point of protobuf schema evolution.
+    choices:
+      - Default value
+      - Required flag
+      - Unique wire-format field number (stable identifier)
+      - Position in generated C# class
+      - Protobuf version tag
+  - id: q57
+    type: MCQ
+    topic: TDD
+    marks: 1
+    question: xUnit interface for shared state across test methods IN ONE class?
+    correct: 1
+    rationale: >-
+      `IClassFixture<TFx>` — xUnit instantiates the fixture once per class and injects it via the constructor (source:
+      TDD\_xunit.pptx). `ICollectionFixture` is for sharing across classes.
+    choices:
+      - ITestFixture<T>
+      - IClassFixture<T>
+      - ICollectionFixture<T>
+      - ISharedContext<T>
+      - IUseFixture<T>
+  - id: q58
+    type: MCQ
+    topic: Aspire
+    marks: 1
+    question: Line every Aspire-aware service project calls to wire telemetry + discovery defaults?
+    correct: 2
+    rationale: >-
+      `builder.AddServiceDefaults()` comes from the ServiceDefaults shared project that each service references (source:
+      aspire\_SCRIPT.docx).
+    choices:
+      - builder.UseAspire()
+      - builder.AddAspireDefaults()
+      - builder.AddServiceDefaults()
+      - builder.Services.AddAspire()
+      - builder.AddDistributed()
+  - id: q59
+    type: MCQ
+    topic: TagHelpers
+    marks: 1
+    question: Base class + method to override when writing a CUSTOM tag helper?
+    correct: 1
+    rationale: >-
+      Derive from `TagHelper`; override `Process(context, output)` or its async variant (source:
+      TagHelpers\_SCRIPT.docx).
+    choices:
+      - HtmlHelper · Render
+      - TagHelper · Process / ProcessAsync
+      - TagBuilder · Build
+      - IHtmlTag · Emit
+      - Component · OnRender
+  - id: q60
+    type: MCQ
+    topic: ExcelPDF
+    marks: 1
+    question: Which TWO packages together enable PDF generation in the course lab?
+    correct: 2
+    rationale: >-
+      `itext7` (core) plus `itext.bouncy-castle-adapter` (crypto backend) — BOTH are required (source: Add package for
+      PDF.html).
+    choices:
+      - iTextSharp + pdfium
+      - QuestPDF + QuestPDF.Fonts
+      - itext7 + itext.bouncy-castle-adapter
+      - PdfSharp + MigraDoc
+      - Spire.PDF + Spire.License
+  - id: q61
+    type: MCQ
+    topic: Match
+    marks: 1
+    question: Match — *Semantic Kernel entry point* →
+    correct: 1
+    rationale: >-
+      SK starts from the static `Kernel.CreateBuilder()` factory (source: CSharp\_Meets\_AI.pptx). `MLContext` is
+      ML.NET; `DistributedApplication.CreateBuilder` is Aspire.
+    choices:
+      - "`MLContext`"
+      - "`Kernel.CreateBuilder()`"
+      - "`DistributedApplication.CreateBuilder(args)`"
+      - "`new Kernel()`"
+      - "`WebApplication.CreateBuilder(args)`"
+  - id: q62
+    type: MCQ
+    topic: Match
+    marks: 1
+    question: Match — *MCP stdio transport* →
+    correct: 2
+    rationale: >-
+      stdio = the MCP server runs as a co-located child process; host talks to it via stdin/stdout (source: SLM.pptx).
+      SSE is the remote HTTP transport.
+    choices:
+      - HTTP/2 server
+      - WebSocket connection
+      - Local process pipe (stdin/stdout)
+      - Server-Sent Events over HTTPS
+      - gRPC bidirectional stream
+  - id: q63
+    type: MCQ
+    topic: Match
+    marks: 1
+    question: Match — *ML.NET entry point* →
+    correct: 2
+    rationale: >-
+      Every ML.NET program starts with `new MLContext(seed: 0)` (source: ML.NET.pptx). The others are downstream
+      products of the pipeline.
+    choices:
+      - "`IDataView`"
+      - "`Kernel`"
+      - "`MLContext`"
+      - "`PredictionEngine`"
+      - "`ITransformer`"
+  - id: q64
+    type: MCQ
+    topic: Match
+    marks: 1
+    question: Match — *IMemoryCache failure mode* →
+    correct: 2
+    rationale: >-
+      MemoryCache is per-process — behind a load balancer, server A has no idea what server B cached (source:
+      DataCache\_SCRIPT.docx). Fix: `IDistributedCache` (Redis).
+    choices:
+      - Runs out of RAM after 1000 entries
+      - Thread-unsafe by default
+      - Each server has its own cache — stale/inconsistent across a web farm
+      - Requires a SQL Server backing store
+      - Deprecated in .NET 8
+  - id: q65
+    type: MCQ
+    topic: Match
+    marks: 1
+    question: Match — *gRPC .proto field identifier* →
+    correct: 3
+    rationale: >-
+      The wire format uses the number tag; the code order does not matter (source: gRPC.pptx). That is what makes
+      protobuf schema-evolution safe.
+    choices:
+      - Field name
+      - Field position in the message
+      - Field C# property index
+      - Field number tag (`= 1`)
+      - Field JSON key
+  - id: q66
+    type: MCQ
+    topic: Match
+    marks: 1
+    question: Match — *xUnit parameterized test* →
+    correct: 2
+    rationale: >-
+      `[Theory]` marks a test as data-driven; `[InlineData]` rows ARE the test cases (source: TDD\_xunit.pptx).
+      `[TestCase]`/`[DataRow]` are NUnit/MSTest fakes here.
+    choices:
+      - "`[Fact]`"
+      - "`[TestCase(...)]`"
+      - "`[Theory] + [InlineData(...)]`"
+      - "`[DataRow(...)]`"
+      - "`[Parameterized]`"
+  - id: q67
+    type: MCQ
+    topic: Match
+    marks: 1
+    question: Match — *Aspire orchestration* →
+    correct: 1
+    rationale: >-
+      Aspire AppHost composes resources with `AddProject<T>`, `AddRedis`, etc., and wires dependencies with
+      `.WithReference(...)` (source: aspire\_SCRIPT.docx).
+    choices:
+      - "`AddMvc() / MapControllers()`"
+      - "`AddProject<T>() / WithReference()`"
+      - "`AddSignalR() / MapHub<T>()`"
+      - "`AddGrpc() / MapGrpcService<T>()`"
+      - "`UseRouting() / UseEndpoints()`"
+  - id: q68
+    type: MCQ
+    topic: Match
+    marks: 1
+    question: Match — *File-based C# package reference* →
+    correct: 2
+    rationale: >-
+      Directive form is `#:package Name@version` with NO space after the colon (source: file-based-apps.pptx).
+      PackageReference is MSBuild (full project only).
+    choices:
+      - "`// #package X`"
+      - "`#pragma package X`"
+      - "`#:package X@version`"
+      - "`<PackageReference Include=\"X\"/>`"
+      - "`using package X`"
+  - id: q69
+    type: MCQ
+    topic: Match
+    marks: 1
+    question: Match — *Localization culture cookie name* →
+    correct: 2
+    rationale: >-
+      `CookieRequestCultureProvider.DefaultCookieName` resolves to the literal `.AspNetCore.Culture` (source:
+      razor\_pages\_localization\_SCRIPT.docx).
+    choices:
+      - "`culture=fr`"
+      - "`.AspNet.Locale`"
+      - "`.AspNetCore.Culture`"
+      - "`__culture`"
+      - "`AspNetCultureCookie`"
+  - id: q70
+    type: MCQ
+    topic: Match
+    marks: 1
+    question: Match — *Blazor QuickGrid column with HTML content* →
+    correct: 2
+    rationale: >-
+      Arbitrary HTML goes in a `TemplateColumn`; because the rendered content is not a bare property, sorting must be
+      supplied explicitly with `SortBy` (source: BlazorServer\_QuickGrid.docx).
+    choices:
+      - "`PropertyColumn` with `Sortable=\"true\"`"
+      - "`DataColumn` with `Template`"
+      - "`TemplateColumn` with `SortBy=\"@gridSort\"`"
+      - "`GridColumn` with `RenderFragment`"
+      - "`HtmlColumn` with `Content`"
+  - id: q71
+    type: SHORT
+    topic: Coding
+    marks: 10
+    question: >-
+      Write a gRPC service contract and server implementation for a Calculator service.      Requirements:   1) Create a
+      `.proto` file named `calculator.proto` defining a `Calculator` service with one RPC `Add(AddRequest)` returning
+      `AddResponse`. AddRequest has two int32 fields (`a`, `b`). AddResponse has one int32 field (`sum`).   2) Register
+      the service in `Program.cs`.   3) Implement the service class to return the sum.
+    correct: See model solution below.
+    rationale: >-
+      **Marking rubric (10 marks):** proto syntax line + csharp\_namespace (2) · service + rpc signature (2) · two
+      messages with field tags (2) · AddGrpc + MapGrpcService (2) · correct override signature returning
+      Task<AddResponse> (2).

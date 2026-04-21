@@ -1,0 +1,80 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "FIFA World Cup";
+}
+
+<div class="text-center">
+    <h4 class="display-4">Games played by continent</h4>
+        <div class="card">
+            <div class="card-header">Pie Chart</div>
+            <div class="chart-container">
+                <canvas id="pie-chart" width="100" height="300"></canvas>
+            </div>
+        </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+@* <script src="lib/chartjs/chart.min.js"></script> *@
+
+<script>
+
+    var Count = [];
+    var Continents = [];
+
+    @if (Model.ChartData.Count > 0)
+    {
+        foreach (var item in Model.ChartData)
+        {
+            @:Count.push(@item.Count);
+            @:Continents.push('@item.Name');
+        }
+    }
+
+    var Continent = {
+        label: "Continent",
+        data: Count,
+        backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1,
+        lineTension: 0,
+    };
+
+    var datasetvalues = {
+        labels: Continents, // x-azis label values
+        datasets: [Continent] // y-axis
+    };
+
+    pieChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Games played by continent'
+            }
+        }
+    }
+
+    var pieChart = new Chart(
+        document.getElementById('pie-chart').getContext('2d'), {
+        type: 'pie',
+        data: datasetvalues,
+        options: pieChartOptions
+    });
+
+</script>

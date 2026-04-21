@@ -1,0 +1,207 @@
+=============================================================================
+COMP4870 AI/SLM EXAM STUDY MATERIALS - RESEARCH COMPLETE
+=============================================================================
+
+DELIVERABLE: /Users/kevinliang/BCIT/CST/TERM4/COMP4870/generated/exam-study/research-ai.md
+STATUS: COMPLETE (765 lines, 36 KB)
+
+=============================================================================
+CONTENTS EXTRACTED FROM SOURCE MATERIALS
+=============================================================================
+
+Source Files:
+  1. CSharp_Meets_AI.pptx (slides) - tokenization, completion, LLM types
+  2. SLM.pptx (slides) - Ollama, models, demos
+  3. AI-Models_MAF_SCRIPT.docx (detailed - Demo #1-5)
+  4. SLM.docx (detailed - Ollama, OpenAI SDK, MAF patterns)
+
+=============================================================================
+RESEARCH OUTPUT STRUCTURE
+=============================================================================
+
+1. TOPIC SUMMARIES (8 topics, 3-5 sentences each)
+   ✓ Semantic Kernel (SK)
+   ✓ Ollama
+   ✓ Microsoft Agent Framework (MAF)
+   ✓ Model Context Protocol (MCP)
+   ✓ Chat Completion
+   ✓ Plugins
+   ✓ Tools
+   ✓ Skills
+
+2. KEY CONCEPTS WITH DEFINITIONS (14 core concepts)
+   ✓ Kernel (SK)
+   ✓ ChatHistory
+   ✓ PromptTemplate
+   ✓ AIAgent (MAF)
+   ✓ AIFunction
+   ✓ AIPlugin
+   ✓ Planner
+   ✓ IChatCompletionService
+   ✓ MCP Server / Client / Tool / Resource (5 concepts)
+
+3. CODE PATTERNS (25+ VERBATIM patterns from source materials)
+   ✓ Semantic Kernel registration
+   ✓ Plugin loading (prompt-based and native C#)
+   ✓ Ollama via OllamaSharp
+   ✓ GitHub Models via OpenAI SDK
+   ✓ Azure OpenAI
+   ✓ MAF agent creation (basic and with tools)
+   ✓ Tool registration via AIFunctionFactory.Create()
+   ✓ Lambda-based tools
+   ✓ MAF sessions (multi-turn)
+   ✓ Streaming responses
+   ✓ NuGet commands (all packages)
+   ✓ appsettings.json examples
+   ✓ Ollama CLI commands
+   ✓ Native plugin with [Description] attribute
+   ✓ skprompt.txt template syntax
+
+4. ARCHITECTURE DIAGRAMS (4 described in ASCII)
+   ✓ Kernel → ChatHistory flow
+   ✓ MAF stack (AIAgent → AIFunction → Tool)
+   ✓ MCP transport types (stdio vs SSE)
+   ✓ Ollama interaction pattern
+
+5. FLASHCARDS (20 SuperMemo cards)
+   ✓ All source-tagged
+   ✓ All atomic (one concept per card)
+   ✓ Cloze or Q&A format
+   ✓ Recognition-focused (not deep theory)
+   ✓ Exam-style recall
+
+6. EXAM TRAPS & TRICKS (comprehensive, high-leverage)
+   ✓ SK vs. MAF differences
+   ✓ stdio vs. SSE confusion
+   ✓ GitHub vs. Ollama endpoints
+   ✓ Local vs. cloud SLM tradeoffs
+   ✓ Fake method names (common MCQ distractors)
+   ✓ Package naming confusion
+   ✓ Endpoint URL pitfalls
+   ✓ API key authentication patterns
+   ✓ ChatHistory vs. AgentSession
+   ✓ Temperature/settings misconceptions
+
+7. PRACTICE MCQ QUESTIONS (8 questions)
+   ✓ 5 choices each (a-e), single correct
+   ✓ Full explanations
+   ✓ Source citations
+   ✓ Coverage: MAF, Ollama, endpoints, auth, SK, SLM
+
+8. QUICK REFERENCE TABLE
+   ✓ Key classes / methods / examples
+   ✓ MCP transports comparison
+
+9. RECOMMENDED STUDY SEQUENCE (5 days)
+   ✓ Day 1: MAF basics (2 hours)
+   ✓ Day 2: Ollama + SLM patterns (1.5 hours)
+   ✓ Day 3: Traps & differences (1.5 hours)
+   ✓ Day 4: Tools, skills, plugins (1 hour)
+   ✓ Day 5: Timed practice (1 hour)
+   ✓ Total: ~7 hours for 13-mark topic
+
+=============================================================================
+EXAM FOCUS GUARANTEES
+=============================================================================
+
+✓ ALL exact method names: AsAIAgent(), RunAsync(), AIFunctionFactory.Create()
+✓ ALL package names: Microsoft.Agents.AI.OpenAI, OllamaSharp, Microsoft.SemanticKernel
+✓ ALL endpoint URLs: GitHub (https://models.github.ai/inference), Ollama (http://localhost:11434)
+✓ ALL code patterns: agent creation, tool registration, streaming, sessions
+✓ ALL architecture patterns: SK plugins, MAF tools, MCP transports
+✓ ALL traps: common mistakes, fake options, endpoint confusion, auth patterns
+
+=============================================================================
+STUDY STRATEGY
+=============================================================================
+
+TARGET: 55-60% pass threshold
+TOPIC WEIGHT: 13 marks on final exam
+MINIMUM SCORE: ~7 marks from this topic
+
+STUDY TIME: ~7 hours total
+  - Read summaries + concepts: 1 hour
+  - Flashcards (spaced): 2.5 hours
+  - Practice MCQs: 1 hour
+  - Code pattern review: 1.5 hours
+  - Trap review: 1 hour
+
+HIGH-ROI FOCUS:
+  ✓ Exact method names (highest exam weight)
+  ✓ Endpoint URLs and configuration
+  ✓ Tool registration patterns
+  ✓ MAF vs SK differences
+  ✓ Local vs cloud SLM distinctions
+
+LOW-ROI (skip if time-constrained):
+  ✗ Deep transformer theory
+  ✗ Advanced MCP server implementation
+  ✗ Multi-agent coordination algorithms
+  ✗ Fine-tuning details
+
+=============================================================================
+KEY DISTINCTIONS TO MEMORIZE
+=============================================================================
+
+SEMANTIC KERNEL vs. MAF:
+  SK:  Prompt orchestration, plugin composition, skill management
+  MAF: Multi-turn reasoning, tool calling, agent autonomy
+
+OLLAMA vs. GITHUB MODELS:
+  Ollama:        Local, offline, free, limited model choice
+  GitHub Models: Cloud, requires auth, broader model options, latency
+
+STDIO vs. SSE (MCP):
+  stdio: Synchronous, process-spawned, low overhead
+  SSE:   Asynchronous, HTTP-based, scalable
+
+ChatHistory vs. AgentSession:
+  ChatHistory:  Manual list of ChatMessage objects
+  AgentSession: Managed by agent, includes hidden state
+
+=============================================================================
+CONFIDENCE CHECKLIST (Before Exam)
+=============================================================================
+
+Can you answer these 8 questions?
+
+[ ] What does AIFunctionFactory.Create() do?
+[ ] What's the difference between stdio and SSE in MCP?
+[ ] What endpoint URL does Ollama listen on?
+[ ] How do you create an MAF agent with tools?
+[ ] What attribute decorates a Semantic Kernel function?
+[ ] Why would you use Ollama instead of GitHub Models?
+[ ] What method maintains multi-turn state in MAF?
+[ ] How do you substitute variables in skprompt.txt?
+
+If yes to all 8: YOU ARE READY FOR THE EXAM
+
+=============================================================================
+FILE MANIFEST
+=============================================================================
+
+research-ai.md (MAIN FILE)
+  - 765 lines
+  - 36 KB
+  - Standalone, comprehensive study guide
+  - All source materials referenced inline
+  - No external dependencies
+
+README.md (INDEX & USAGE GUIDE)
+  - 122 lines
+  - 4.3 KB
+  - Quick reference guide
+  - Study strategy summary
+  - Confidence checklist
+
+=============================================================================
+GENERATION METADATA
+=============================================================================
+
+Generated: April 2026
+Study Focus: COMP4870 Final Exam (13-mark weight)
+Source Extraction: Verbatim from course materials
+No Training Data: All content from provided source files only
+Target Student: 55-60% pass threshold, recognition-based learning
+
+=============================================================================

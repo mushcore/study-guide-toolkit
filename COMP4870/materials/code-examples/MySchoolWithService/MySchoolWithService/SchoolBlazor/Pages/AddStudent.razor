@@ -1,0 +1,40 @@
+@page "/add"
+@inject NavigationManager NavManager
+@inject StudentService studentsService
+
+@if (apiResponse != null && apiResponse.IsOk == false)
+{
+    <p class="alert alert-warning"> 
+        @apiResponse.IsOk
+        <br />
+        @apiResponse.Message
+    </p>
+}
+
+<EditForm Model="@student" OnValidSubmit="@HandleAdd">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText placeholder="First Name" id="firstName" @bind-Value="@student.FirstName" />
+    <br />
+    <InputText placeholder="Last Name" id="lastName" @bind-Value="@student.LastName" />
+    <br />
+    <InputText placeholder="School" id="school" @bind-Value="@student.School" />
+    <br />
+    <button type="submit">Submit</button>
+</EditForm>
+
+@code {
+    private Student student = new Student();
+    private ApiResponse? apiResponse = null;
+    private async void HandleAdd()
+    {
+        bool isNewItem = true;
+        apiResponse = await studentsService.SaveStudentsAsync(student, isNewItem);
+        
+        if (apiResponse.IsOk)
+            NavManager.NavigateTo("/students"); // redirect to students page
+
+        StateHasChanged(); 
+    }
+}

@@ -1,0 +1,27 @@
+id: "4736"
+code: COMP 4736
+name: Operating Systems
+exam: "2026-04-21T15:30:00-07:00"
+room: BCIT
+format: ~90 marks · 2 hr · closed book
+instructor: Rahim
+notes: >-
+  Closed book. Bring laptop (charged), calculator, blank paper, pencil.
+
+  4 core topics: IPC 1 (Part 6/7), IPC 2 (Part 8), Deadlock (Part 9), Memory (Part 10). Semaphore onwards IS on the
+  final.
+
+  Closed book. Bring laptop (charged), calculator, blank paper, pencil. No makeups.
+
+  Past exam pattern: 7/8 practice questions were Memory (paging calculations, fit algorithms, buddy system). 1/8 was
+  Deadlock (C/R/E matrix). Practice exam does NOT match final weighting — IPC 1, IPC 2, and Deadlock are
+  instructor-listed core topics (Final Exam Details), so expect them on the real exam.
+
+  Computational focus. Expect: virtual→physical address translation, page count formulas, First/Best/Worst/Next fit
+  tables, buddy system trees, deadlock detection matrices.
+
+  Format split: Part 1 online (T/F + MCQ). Part 2 written (on paper or online) — computational problems with worked
+  steps.
+
+  Must memorize: p* = √(2se), overhead = se/p + p/2, # pages = 2^(VA_bits - offset_bits), 4 Coffman conditions,
+  semaphore P/V semantics.

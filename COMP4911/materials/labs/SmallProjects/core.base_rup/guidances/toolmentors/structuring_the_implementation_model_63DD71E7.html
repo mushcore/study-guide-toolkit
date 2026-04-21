@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Structuring the Implementation Model Using Rational XDE Developer</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="structuring_the_implementation_model">
+<meta name="uma.presentationName" content="Structuring the Implementation Model Using Rational XDE Developer">
+<meta name="uma.category" content="Tool:rup_xde:Rational XDE Developer">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational XDE Developer">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_qS-iwAIOEdqTna4sZVFRow", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{ED12F411-0BE2-4A9D-AF41-07329966116F}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_U5tiUAISEdqTna4sZVFRow", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{ED12F411-0BE2-4A9D-AF41-07329966116F}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{ED12F411-0BE2-4A9D-AF41-07329966116F}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{303A82D2-E3AB-4501-8563-0D4D43782AF9}", "{ED12F411-0BE2-4A9D-AF41-07329966116F}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{ED12F411-0BE2-4A9D-AF41-07329966116F}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Structuring the Implementation Model Using Rational XDE Developer</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to perform Structuring the Implementation Model with Rational XDE Developer.</td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_xde_D81FFA70.html" guid="{303A82D2-E3AB-4501-8563-0D4D43782AF9}">Rational XDE Developer</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/structure_implementation_model_E0E0DEF9.html" guid="{35272424-8A0A-4DDD-BA74-C91B80A8D046}">Structure the Implementation Model</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    Overview
+</h3>
+<p>
+    The steps in this tool mentor match those in the task.&nbsp;References to topics in Rational XDE&trade; online Help are
+    marked with <img height="16" alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />.
+</p>
+<p>
+    This tool mentor assumes that you have defined the top level structure of your Implementation Model as described in the
+    <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/whitepapers/model_structure_guidelines_for_rational_xde_developer_6D2FD64A.html" guid="2.67081400527339E-306">Rational XDE Model Structure Guidelines</a>. The steps in this tool mentor permit this
+    initial structure to be refined.
+</p>
+<p>
+    The following steps are performed in this tool mentor:
+</p>
+<ul>
+    <li>
+        <a href="#Establish the Implementation Model Structure">Establish the Implementation Model Structure</a>
+    </li>
+    <li>
+        <a href="#Adjust Subsystems">Adjust Implementation Subsystems</a>
+    </li>
+    <li>
+        <a href="#Define Imports for Each Subsystem">Define Imports for Each Implementation Subsystem</a>
+    </li>
+    <li>
+        <a href="#Decide how to treat executable programs (and other derived objects)">Decide How to
+        Treat Executables (and Other Derived Objects)</a>
+    </li>
+    <li>
+        <a href="#Decide how to treat test assets">Decide How to Treat Test Assets</a>
+    </li>
+    <li>
+        <a href="#Update the Implementation View">Update the Implementation View</a>
+    </li>
+    <li>
+        <a href="#Evaluate the implementation model">Evaluate the Implementation Model</a>
+    </li>
+</ul>
+<h3>
+    <a id="Establish the Implementation Model Structure" name="Establish the Implementation Model Structure">Establish the
+    Implementation Model Structure</a>
+</h3>
+<p>
+    As Implementation Subsystems are identified, they can be modeled as packages on component diagrams to show dependencies
+    between the subsystems. These diagrams define the <a class="elementLink" href="./../../../core.base_rup/guidances/concepts/implementation_view_E373E3B6.html" guid="4.693519701160983E-305">Implementation View</a>. To create this, follow these steps:
+</p>
+<ol>
+    <li>
+        Navigate to the model and package that will contain the Implementation Subsystems. (In the recommended <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/whitepapers/model_structure_guidelines_for_rational_xde_developer_6D2FD64A.html" guid="2.67081400527339E-306">Rational XDE Model Structure Guidelines</a>, this is the Integration Support Model.)
+    </li>
+    <li>
+        Create a component diagram providing an overview of the Implementation Subsystems. See <img alt="helpbook icon"         src="./../../../core.base_rup/resources/helpbook.gif" /> <i>Adding Diagrams.</i> 
+        <!--<script language=javascript>ReferenceHelpTopic("Adding Diagrams","rs","rs_t_add_dgm");</script>   -->
+    </li>
+    <li>
+        Create a package for each Implementation Subsystem. (See <img alt="helpbook icon"         src="./../../../core.base_rup/resources/helpbook.gif" /> <i>Adding Shapes to Diagrams.)</i> &nbsp; 
+        <!--<script language=javascript>ReferenceHelpTopic(topicTitle,"rs","rs_t_add_shp_dgm"); </script>   -->Note that
+        there is no specific support in Rational XDE for Implementation Subsystems, so this diagram is just a picture.
+    </li>
+    <li>
+        (optional) If the relationship of these Implementation Subsystems to projects and/or elements in the various code
+        models is not obvious, then a Traceabilty to Design Elements diagram can be created. See <img alt="helpbook icon"         src="./../../../core.base_rup/resources/helpbook.gif" /> <i>Adding Diagrams.</i> 
+        <!--<script language=javascript>ReferenceHelpTopic(topicTitle,"rs","rs_t_add_dgm");  </script>     -->
+    </li>
+</ol>
+<p>
+    Each project's code model must be structured in accordance with the <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/whitepapers/model_structure_guidelines_for_rational_xde_developer_6D2FD64A.html" guid="2.67081400527339E-306">Rational XDE Model Structure Guidelines</a>. See <img alt="helpbook icon"     src="./../../../core.base_rup/resources/helpbook.gif" /> <i>Grouping Model Elements in Packages.&nbsp;</i> &nbsp; 
+    <!--<script language=javascript>ReferenceHelpTopic(topicTitle,"rs","rs_t_group_mod_ele_package"); </script>          -->Alternatively,
+    create directories in the file system and packages in code, and synchronize to create the corresponding packages in the
+    model. <!-- end - vsnet -->
+</p>
+<h3>
+    <a id="Adjust Subsystems" name="Adjust Subsystems">Adjust Implementation Subsystems</a>
+</h3>
+<p>
+    There is no Rational XDE specific guidance for this step.
+</p>
+<h3>
+    <a id="Define Imports for Each Subsystem" name="Define Imports for Each Subsystem">Define Imports for Each
+    Implementation Subsystem</a>
+</h3>
+<p>
+    Capture import dependencies on the Implementation View component diagram created previously. See&nbsp;<img     alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /> <i>Adding Dependency Relationships.</i> &nbsp; 
+    <!--<script language=javascript>ReferenceHelpTopic(topicTitle,"rs","rs_t_add_depend_relshp");</script>           -->Note
+    that these dependencies only provide guidance to developers. There is no enforcement or checking performed by Rational
+    XDE.
+</p>
+<p>
+    Project imports should match these dependencies.
+</p><!-- begin - wsw -->
+<p>
+    To define or modify imports of JARs from outside the project, click <b>Window</b> on the toolbar, click
+    <b>Preferences</b>, and then click <b>Java, Organize Imports</b>.
+</p>Imports from outside the project are referred to as Reference Models. See <img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /> <i>Reference Models.</i> 
+<!--<script language=javascript>ReferenceHelpTopic(topicTitle,"vs/modeling_code","vs_c_ref_models"); </script>      -->
+<!-- end - vsnet -->
+<h3>
+    <a id="Decide how to treat executable programs (and other derived objects)" name="Decide how to treat executable programs (and other derived objects)">Decide How to Treat Executables (and Other
+    Derived Objects)</a>
+</h3>
+<p>
+    Executables and other deployable files can be modeled as UML components. See the Deployment Support Model in the <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/whitepapers/model_structure_guidelines_for_rational_xde_developer_6D2FD64A.html" guid="2.67081400527339E-306">Rational XDE Model Structure Guidelines</a>. If you decide to model these files, the
+    following steps apply:
+</p>
+<ol>
+    <li>
+        Navigate to the model and package which will contain these files. (In the recommended <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/whitepapers/model_structure_guidelines_for_rational_xde_developer_6D2FD64A.html" guid="2.67081400527339E-306">Rational XDE Model Structure Guidelines</a>, this is the Deployment Support Model.)
+    </li>
+    <li>
+        Create a component diagram. See&nbsp;<img alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" />
+        <i>Adding Diagrams.</i> 
+        <!--<script language=javascript>ReferenceHelpTopic(topicTitle,"rs","rs_t_add_dgm"); </script>      -->
+    </li>
+    <li>
+        Add each of the executable programs and other deployable files (modeled as UML components).&nbsp; See <img         alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" /> <i>Adding Shapes to Diagrams.</i> 
+        <!--//ReferenceHelpTopic(topicTitle,"rs","rs_t_add_shp_dgm");               -->
+    </li>
+    <li>
+        Organize into packages (as described in <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/whitepapers/model_structure_guidelines_for_rational_xde_developer_6D2FD64A.html" guid="2.67081400527339E-306">Rational XDE Model Structure Guidelines</a>). See <img alt="helpbook icon"         src="./../../../core.base_rup/resources/helpbook.gif" /> <i>Grouping Model Elements in Packages.</i> 
+        <!--<script language=javascript>ReferenceHelpTopic(topicTitle,"rs","rs_t_group_mod_ele_package");</script>  -->
+    </li>
+</ol>
+<p>
+    Note that there is no round-trip engineering support for executable programs, so this model must be maintained by hand.
+</p>
+<h3>
+    <a id="Decide how to treat test assets" name="Decide how to treat test assets">Decide How to Treat Test Assets</a>
+</h3>
+<p>
+    There is no Rational XDE specific guidance for this step.
+</p>
+<h3>
+    <a id="Update the Implementation View" name="Update the Implementation View">Update the Implementation View</a>
+</h3>
+<p>
+    If there is a separate Logical View, it must be maintained. See <a class="elementLinkWithUserText" href="./../../../core.base_rup/guidances/whitepapers/model_structure_guidelines_for_rational_xde_developer_6D2FD64A.html" guid="2.67081400527339E-306">Rational XDE Model Structure Guidelines</a>.
+</p>
+<h3>
+    <a id="Evaluate the implementation model" name="Evaluate the implementation model">Evaluate the Implementation
+    Model</a><br />
+</h3>
+<p>
+    There is no Rational XDE specific guidance for this step.
+</p></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

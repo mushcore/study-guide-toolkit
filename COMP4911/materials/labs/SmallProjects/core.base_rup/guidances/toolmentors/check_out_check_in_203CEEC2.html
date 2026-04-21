@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" lang="en" xml:lang="en">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Tool Mentor: Checking Out and Checking In Configuration Items Using Rational ClearCase</title>
+<meta name="uma.type" content="ToolMentor">
+<meta name="uma.name" content="check_out_check_in">
+<meta name="uma.presentationName" content="Checking Out and Checking In Configuration Items Using Rational ClearCase">
+<meta name="uma.category" content="Tool:rup_clearcase:Rational ClearCase">
+<meta name="element_type" content="tool_mentor">
+<meta name="tool" content="Rational ClearCase">
+<meta name="filetype" content="description">
+<meta name="role" content="none">
+<link rel="StyleSheet" href="./../../../css/default.css" type="text/css">
+<script src="./../../../scripts/ContentPageResource.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageSubSection.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/ContentPageToolbar.js" type="text/javascript" language="JavaScript"></script><script src="./../../../scripts/contentPage.js" type="text/javascript" language="JavaScript"></script><script type="text/javascript" language="JavaScript">
+					var backPath = './../../../';
+					var imgPath = './../../../images/';
+					var nodeInfo=[{view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_gpYSoAILEdq-_NKqZM1EhA", "_qS-iwAIOEdqTna4sZVFRow", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{3D4CC908-5E3C-48C5-99F6-D4137834D9A4}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_zRigkAILEdq-_NKqZM1EhA", "_U5tiUAISEdqTna4sZVFRow", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{3D4CC908-5E3C-48C5-99F6-D4137834D9A4}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_LWLSQDIEEdqwaNnSEheSAg", "_85i-sDIFEdqwaNnSEheSAg", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{3D4CC908-5E3C-48C5-99F6-D4137834D9A4}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_4U33kAILEdq-_NKqZM1EhA", "_XxCC0AIUEdqEutyfYo0quQ", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{3D4CC908-5E3C-48C5-99F6-D4137834D9A4}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_AUv4MAIMEdq-_NKqZM1EhA", "_5ZuQsAIUEdqEutyfYo0quQ", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{3D4CC908-5E3C-48C5-99F6-D4137834D9A4}"]}, {view: "view:_LVCagP5WEdmAzesbYywanQ", path: ["_LVCagP5WEdmAzesbYywanQ", "_mp7z0DIDEdqwaNnSEheSAg", "_9U7IkDIEEdqwaNnSEheSAg", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{3D4CC908-5E3C-48C5-99F6-D4137834D9A4}"]}, {view: "view:_FCx1oN7CEdmsEI4YDGX2ag", path: ["_FCx1oN7CEdmsEI4YDGX2ag", "_jD8dUAIbEdqEutyfYo0quQ", "_F1OgYAIbEdqEutyfYo0quQ", "{B2D1373B-A826-4169-A38A-B53B2122DC7C}", "{3D4CC908-5E3C-48C5-99F6-D4137834D9A4}"]}];
+					contentPage.preload(imgPath, backPath, nodeInfo,  '', false, false, false);
+				</script>
+</head>
+<body>
+<div id="breadcrumbs"></div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top"><a name="Top"></a>
+<div id="page-guid" value="{3D4CC908-5E3C-48C5-99F6-D4137834D9A4}"></div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td class="pageTitle" nowrap="true">Tool Mentor: Checking Out and Checking In Configuration Items Using Rational ClearCase</td><td width="100%">
+<div align="right" id="contentPageToolbar"></div>
+</td>
+</tr>
+</table>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td class="pageTitleSeparator"><img src="./../../../images/shim.gif" alt="" title="" height="1"></td>
+</tr>
+</table>
+<div class="overview">
+<table width="97%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="50"><img src="./../../../images/toolmentor.gif" alt="" title=""></td><td>
+<table class="overviewTable" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td valign="top">This tool mentor describes how to create a new version of a configuration item (check out) and how to make the new version of the configuration item persistent in the configuration management database (check in).</td>
+</tr>
+<tr>
+<td>Tool: <a href="./../../../core.base_rup/tools/rup_clearcase_9665C.html" guid="{B2D1373B-A826-4169-A38A-B53B2122DC7C}">Rational ClearCase</a> </td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Relationships</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<th class="sectionTableHeading" scope="row">Related Elements</th><td class="sectionTableCell">
+<ul>
+<li>
+<a href="./../../../core.base_rup/tasks/setup_cm_environment_78ABEDF9.html" guid="{FC91D0C9-759E-4D3D-86D8-22D7B26AA0F6}">Set Up Configuration Management (CM) Environment</a>
+</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+<div class="sectionHeading">Main Description</div>
+<div class="sectionContent">
+<table class="sectionTable" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td class="sectionTableSingleCell"><a id="Top" name="Top"></a> 
+<h3>
+    Overview
+</h3>
+<p>
+    This tool mentor describes the use of check in and check out with the base ClearCase model and is applicable when
+    running Microsoft Windows.
+</p>
+<h4>
+    <a id="ToolSteps" name="ToolSteps">Tool Steps</a>
+</h4>
+<p>
+    To check out and check in configuration items with ClearCase:
+</p>
+<ol>
+    <li>
+        <a href="#1">Check out the files you want to change</a>
+    </li>
+    <li>
+        <a href="#2">Make changes and perform unit tests to verify the changes</a>
+    </li>
+    <li>
+        <a href="#3">Check in the changes</a>
+    </li>
+</ol>
+<h3>
+    1.&nbsp;<a id="1" name="1">Check out the files you want to change</a> <a href="#ToolSteps"><img height="20"     alt="To Tool Steps" src="./../../../core.base_rup/resources/top.gif" width="26" border="0" /></a>
+</h3>
+<ul>
+    <li>
+        Navigate to the ClearCase Explorer. From the Windows task bar, click <b>Start &gt; Programs &gt; Rational Software
+        &gt; Rational ClearCase &gt; ClearCase Explorer</b>.
+    </li>
+    <li>
+        In ClearCase Explorer, right-click the item or items to check out and select <b>Check Out</b> from the ClearCase
+        pop-up menu.
+    </li>
+    <li>
+        Type your comment in the <b>Check Out</b> dialog box and click <b>OK</b>.
+    </li>
+</ul>
+<p>
+    &nbsp;<img height="16" alt="book icon" src="./../../../core.base_rup/resources/book.gif" width="16" />&nbsp;See the ClearCase manual
+    <i>Developing Software</i> or <img height="16" alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif" width="16" />
+    ClearCase online Help for more information about checking out files.
+</p>
+<h3>
+    2.&nbsp;<a id="2" name="2">Make changes and perform unit tests to verify the changes</a> <a href="#ToolSteps"><img     height="20" alt="To Tool Steps" src="./../../../core.base_rup/resources/top.gif" width="26" border="0" /></a>
+</h3>
+<p>
+    Test the changes you've made to your private copy of the files or directories you've checked out. Once your work is
+    checked in, it's accessible to other team members.
+</p>
+<h3>
+    3.&nbsp;<a id="3" name="3">Check in the changes</a> <a href="#ToolSteps"><img height="20" alt="To Tool Steps"     src="./../../../core.base_rup/resources/top.gif" width="26" border="0" /></a>
+</h3>
+<ul>
+    <li>
+        Navigate to ClearCase Explorer.&nbsp;
+    </li>
+    <li>
+        In ClearCase Explorer, right-click the item or items to check in and select <b>Check In</b> from the ClearCase
+        pop-up menu.
+    </li>
+    <li>
+        Type your comment in the <b>Check In</b> dialog box and click <b>OK</b>.
+    </li>
+</ul>
+<p>
+    &nbsp;<img height="16" alt="book icon" src="./../../../core.base_rup/resources/book.gif" width="16" />&nbsp;See the ClearCase manual
+    <i>Developing Software</i> or&nbsp;<img height="16" alt="helpbook icon" src="./../../../core.base_rup/resources/helpbook.gif"     width="16" />&nbsp; ClearCase online Help for more information about checking in files.
+</p><br />
+<br />
+<br />
+<br /></td>
+</tr>
+</table>
+</div>
+<table class="copyright" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td class="copyright"><p>
+    &copy; &nbsp;Copyright IBM Corp.&nbsp;1987, 2006. &nbsp;All Rights Reserved.
+</p></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript" language="JavaScript">
+				contentPage.onload();
+			</script>
+</html>

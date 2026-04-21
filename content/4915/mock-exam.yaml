@@ -1,0 +1,849 @@
+duration_seconds: 7200
+questions:
+  - id: q1
+    type: MCQ
+    topic: Filesystem
+    marks: 2
+    question: Which of the following is the Unix root directory?
+    correct: 4
+    rationale: "`/` is the root directory. `/root` is root user's home. (Verbatim from midterm Q18.)"
+    choices:
+      - "`/root`"
+      - "`root`"
+      - "`c:/`"
+      - "`root/`"
+      - "`/`"
+  - id: q2
+    type: MCQ
+    topic: Commands
+    marks: 2
+    question: Which command displays the system manual for a utility?
+    correct: 1
+    rationale: "`man`. The rest are distractors. (Midterm Q8, sample Q1.)"
+    choices:
+      - info
+      - man
+      - disp
+      - sysman
+      - mozilla
+  - id: q3
+    type: MCQ
+    topic: Redirection
+    marks: 2
+    question: To send command output to a file and also to standard output, use which command?
+    correct: 0
+    rationale: "`tee` splits output: one copy to stdout, one to file. (Midterm Q4.)"
+    choices:
+      - tee
+      - redirection
+      - switch
+      - "`>`"
+      - "`>>`"
+  - id: q4
+    type: MCQ
+    topic: Find
+    marks: 2
+    question: Locate a file named foo with no idea where it is — which command?
+    correct: 2
+    rationale: "`find / -name foo`. Need a starting path (root), and `-name` takes the pattern. (Midterm Q6.)"
+    choices:
+      - find -name foo
+      - find foo
+      - find / -name foo
+      - whereis foo
+      - find / foo
+  - id: q5
+    type: MCQ
+    topic: Redirection
+    marks: 2
+    question: Which directs standard output to outfile AND standard error to errfile?
+    correct: 1
+    rationale: stdout=fd1 (> alone), stderr=fd2. (Midterm Q10.)
+    choices:
+      - make FreeCiv >outfile 0>errfile
+      - make FreeCiv >outfile 2>errfile
+      - make FreeCiv >outfile 1>errfile
+      - make FreeCiv <outfile 2<errfile
+      - make FreeCiv >errfile 2>outfile
+  - id: q6
+    type: MCQ
+    topic: grep
+    marks: 2
+    question: Correct syntax to search for word 'superman' in SuperHeroes?
+    correct: 1
+    rationale: >-
+      **B: `grep -w`**. The question says *word*. `-w` matches whole-word boundaries — `superman` hits but
+      `supermanhood` does not. Plain `grep superman` (D) is a substring match and would also hit `supermanhood`, so D
+      does not satisfy the 'word' constraint. Distractors: -v inverts, -q is quiet, -n adds line numbers. (Midterm Q34.)
+    choices:
+      - grep -v superman SuperHeroes
+      - grep -w superman SuperHeroes
+      - grep -q superman SuperHeroes
+      - grep superman SuperHeroes
+      - grep -n superman SuperHeroes
+  - id: q7
+    type: MCQ
+    topic: Permissions
+    marks: 2
+    question: Make jack the owner of all files under /home/jack/candy?
+    correct: 1
+    rationale: "`chown -R` (capital R) recursive. Lowercase `-r` is invalid. (Midterm Q16.)"
+    choices:
+      - chown -changes jack /home/jack/candy
+      - chown -R jack /home/jack/candy
+      - chmod u+rwx /home/jack/candy
+      - chown -r jack /home/jack/candy
+      - chmod a+rwx jack /home/jack/candy
+  - id: q8
+    type: MCQ
+    topic: Quoting
+    marks: 2
+    question: person=jenny. Output of `echo '$person'`?
+    correct: 3
+    rationale: Single quotes are literal — no expansion. Outputs `$person`. (Midterm Q47.)
+    choices:
+      - person
+      - jenny
+      - "'$person'"
+      - $person
+      - $jenny
+  - id: q9
+    type: MCQ
+    topic: Links
+    marks: 2
+    question: To link a file so that the linked file exists even after original is deleted?
+    correct: 4
+    rationale: >-
+      Hard link: both entries share the inode. Deleting one leaves the other functional. Soft/symbolic dangles. (Midterm
+      Q24.)
+    choices:
+      - virtual
+      - shortcut
+      - soft
+      - symbolic
+      - hard
+  - id: q10
+    type: MCQ
+    topic: Shell params
+    marks: 2
+    question: Which variable holds the entire argument list?
+    correct: 3
+    rationale: "`$@`. $# is count, $? is exit status, $$ is PID. (Midterm Q31.)"
+    choices:
+      - $?
+      - $#
+      - $args
+      - $@
+      - $$
+  - id: q11
+    type: MCQ
+    topic: Runlevels
+    marks: 2
+    question: Run level 3 in Linux System V does what?
+    correct: 3
+    rationale: 3 = multi-user text mode (server default). 5 = multi-user graphical. (Midterm Q35.)
+    choices:
+      - Reboots
+      - Single user
+      - Multiuser graphics
+      - Multiuser text
+      - Halts
+  - id: q12
+    type: MCQ
+    topic: Shell
+    marks: 2
+    question: Which command changes your login shell?
+    correct: 4
+    rationale: "`chsh` — change shell. Others are distractors. (Midterm Q33.)"
+    choices:
+      - newsh
+      - chngsh
+      - chlg
+      - cs
+      - chsh
+  - id: q13
+    type: MCQ
+    topic: Networking
+    marks: 2
+    question: Secure technology for serving files over internet?
+    correct: 1
+    rationale: >-
+      sftp is file transfer over SSH. ftp/http are insecure for auth. ssh is a shell, not a file serving protocol.
+      (Midterm Q1.)
+    choices:
+      - ftp://
+      - sftp
+      - http
+      - ssh
+      - ftp
+  - id: q14
+    type: MCQ
+    topic: Networking
+    marks: 2
+    question: Service to offer remote mounting of Linux partitions on a Linux-only network?
+    correct: 4
+    rationale: NFS = Network File System. SMB is for Windows interop. (Midterm Q19.)
+    choices:
+      - FIPS
+      - NIS
+      - SMB
+      - DNS
+      - NFS
+  - id: q15
+    type: MCQ
+    topic: DNS
+    marks: 2
+    question: Which daemon manages a machine's DNS?
+    correct: 2
+    rationale: "`named` — the daemon binary. BIND is the software suite. (Midterm Q28.)"
+    choices:
+      - dnsd
+      - inetd
+      - named
+      - bind
+      - iisd
+  - id: q16
+    type: MCQ
+    topic: K8s
+    marks: 2
+    question: Agent on cluster nodes implementing control-plane commands?
+    correct: 2
+    rationale: Kubelet = node agent. kubectl is user CLI. DaemonSet/Deployment are workload objects. (Quiz 4 Q1.)
+    choices:
+      - DaemonSet
+      - Deployment
+      - Kubelet
+      - OCI
+      - kubectl
+  - id: q17
+    type: MCQ
+    topic: K8s
+    marks: 2
+    question: K8s executable image format?
+    correct: 3
+    rationale: OCI = Open Container Initiative standard. (Quiz 4 Q2.)
+    choices:
+      - container
+      - pod
+      - CNCF
+      - OCI
+      - OKD
+  - id: q18
+    type: MCQ
+    topic: K8s
+    marks: 2
+    question: Most common way to run a K8s app?
+    correct: 0
+    rationale: Deployment wraps ReplicaSet for rolling updates. (Quiz 4 Q4.)
+    choices:
+      - deployment
+      - pod
+      - daemonset
+      - StatefulSet
+      - container
+  - id: q19
+    type: MCQ
+    topic: K8s
+    marks: 2
+    question: K8s object running one pod on every node?
+    correct: 3
+    rationale: DaemonSet. Node is a machine, not a workload. (Quiz 4 Q8.)
+    choices:
+      - Node
+      - StatefulSet
+      - Job
+      - DaemonSet
+      - DNS
+  - id: q20
+    type: MCQ
+    topic: K8s
+    marks: 2
+    question: Reason for the pause container in a pod?
+    correct: 0
+    rationale: Pause holds namespace file descriptors open so other containers can join them. (Quiz 4 Q10.)
+    choices:
+      - helps set up Linux namespaces and cgroups for a pod
+      - allows running the pause service
+      - allows each pod to use the pause service
+      - allows the pod it is with to use the pause service
+      - allows kubernetes to pause the pod it is in
+  - id: q21
+    type: MCQ
+    topic: Runlevels
+    marks: 2
+    question: Which run level halts the system?
+    correct: 0
+    rationale: 0 = halt. 6 = reboot. 1 = single user.
+    choices:
+      - "0"
+      - "1"
+      - "3"
+      - "5"
+      - "6"
+  - id: q22
+    type: MCQ
+    topic: iptables
+    marks: 2
+    question: Default policy of the filter table INPUT chain if no rule matches and no policy set?
+    correct: 2
+    rationale: Default policy is ACCEPT unless explicitly changed with `iptables -P INPUT DROP`.
+    choices:
+      - DROP
+      - REJECT
+      - ACCEPT
+      - LOG
+      - MASQUERADE
+  - id: q23
+    type: MCQ
+    topic: Apache
+    marks: 2
+    question: Default DocumentRoot on RHEL/Fedora?
+    correct: 1
+    rationale: "`/var/www/html` — Apache default on RHEL/CentOS/Fedora."
+    choices:
+      - /etc/httpd/html
+      - /var/www/html
+      - /srv/www
+      - /home/www
+      - /usr/local/httpd
+  - id: q24
+    type: MCQ
+    topic: Samba
+    marks: 2
+    question: Samba configuration file?
+    correct: 1
+    rationale: "`/etc/samba/smb.conf`."
+    choices:
+      - /etc/smb.conf
+      - /etc/samba/smb.conf
+      - /etc/samba/samba.conf
+      - /etc/smbd.conf
+      - /var/lib/samba/smb.conf
+  - id: q25
+    type: MCQ
+    topic: Namespaces
+    marks: 2
+    question: Which command creates new Linux namespaces?
+    correct: 1
+    rationale: "`unshare` creates new. `nsenter` joins existing."
+    choices:
+      - nsenter
+      - unshare
+      - lsns
+      - chroot
+      - pivot\_root
+  - id: q26
+    type: MCQ
+    topic: Redirection
+    marks: 1
+    question: "`tr -d '\\r'` can convert DOS/Windows text files to Unix."
+    correct: 0
+    rationale: TRUE. DOS uses CRLF; -d deletes CR (\\r). (Midterm Q46.)
+    choices:
+      - "True"
+      - "False"
+  - id: q27
+    type: MCQ
+    topic: Redirection
+    marks: 1
+    question: Redirecting output to a file will warn before overwriting existing data.
+    correct: 1
+    rationale: FALSE. Silent destruction by default. (Midterm Q43.)
+    choices:
+      - "True"
+      - "False"
+  - id: q28
+    type: MCQ
+    topic: Security
+    marks: 1
+    question: rsh, rlogin, rcp all have security risks.
+    correct: 0
+    rationale: TRUE. Cleartext, .rhosts spoofable. Replaced by ssh/scp. (Midterm Q45.)
+    choices:
+      - "True"
+      - "False"
+  - id: q29
+    type: MCQ
+    topic: Exit status
+    marks: 1
+    question: The shell stores the exit status of the last command in $?.
+    correct: 0
+    rationale: TRUE. 0=success, non-zero=error. (Midterm Q39.)
+    choices:
+      - "True"
+      - "False"
+  - id: q30
+    type: MCQ
+    topic: Quoting
+    marks: 1
+    question: "`echo '$person'` (with person='Fred') outputs `Fred`."
+    correct: 1
+    rationale: FALSE. Single quotes literal — outputs `$person`. (Midterm Q47.)
+    choices:
+      - "True"
+      - "False"
+  - id: q31
+    type: MCQ
+    topic: Filesystem
+    marks: 1
+    question: Hard links can cross filesystem boundaries.
+    correct: 1
+    rationale: FALSE. Inode numbers are unique only within a filesystem.
+    choices:
+      - "True"
+      - "False"
+  - id: q32
+    type: MCQ
+    topic: less
+    marks: 1
+    question: "`less` displays a text file one screen at a time."
+    correct: 0
+    rationale: TRUE. Interactive pager. (Midterm Q40.)
+    choices:
+      - "True"
+      - "False"
+  - id: q33
+    type: MCQ
+    topic: K8s
+    marks: 1
+    question: The pause container runs application logic.
+    correct: 1
+    rationale: FALSE. Pause does nothing — only holds namespaces.
+    choices:
+      - "True"
+      - "False"
+  - id: q34
+    type: MCQ
+    topic: Bash
+    marks: 1
+    question: In bash, comments start with `#`.
+    correct: 0
+    rationale: TRUE. (Sample Q8, Quiz 3 Q4.)
+    choices:
+      - "True"
+      - "False"
+  - id: q35
+    type: MCQ
+    topic: K8s
+    marks: 1
+    question: etcd is where Kubernetes *persists* raw cluster state data.
+    correct: 0
+    rationale: >-
+      TRUE — etcd is the distributed KV store (raft consensus) that holds the cluster's state data. Note: Quiz 4 Q5
+      asked what *maintains* state — that answer is kube-controller-manager (etcd is not even in Q5's options).
+    choices:
+      - "True"
+      - "False"
+  - id: q36
+    type: MCQ
+    topic: Networking
+    marks: 1
+    question: NFS is suitable for Linux-to-Windows file sharing.
+    correct: 1
+    rationale: FALSE. NFS is for Linux (and other UNIX). Use Samba for Windows interop.
+    choices:
+      - "True"
+      - "False"
+  - id: q37
+    type: SHORT
+    topic: Bit bucket
+    marks: 3
+    question: What is the name of the Linux bit-bucket?
+    correct: <code>/dev/null</code>
+    rationale: Character special file that discards all input. Midterm Q48, sample Q13.
+  - id: q38
+    type: SHORT
+    topic: Commands
+    marks: 3
+    question: What command displays the name of the Linux machine you are working at?
+    correct: <code>hostname</code>
+    rationale: Also `uname -n`.
+  - id: q39
+    type: SHORT
+    topic: Redirection
+    marks: 3
+    question: "Predict output. x doesn't exist, y contains 'This is y': ```bash cat x y 1>hold 2>&1 cat hold ```"
+    correct: |-
+      <pre><code class="language-bash">cat: x: No such file or directory
+      This is y</code></pre>
+    rationale: >-
+      stderr merged into stdout, both captured in hold. Order: cat attempts x (fails, stderr msg), then reads y
+      (stdout).
+  - id: q40
+    type: SHORT
+    topic: Glob
+    marks: 3
+    question: Given libby1.jpg..libby12.jpg and libby1.txt, which files match `libby1*.jpg`?
+    correct: libby1.jpg, libby10.jpg, libby11.jpg, libby12.jpg
+    rationale: "`*` matches any chars (including empty). .txt excluded by the .jpg suffix."
+  - id: q41
+    type: SHORT
+    topic: Glob
+    marks: 3
+    question: Which files match `libby[6-8].jpg`?
+    correct: libby6.jpg, libby7.jpg, libby8.jpg
+    rationale: Char class \[6-8\] matches exactly one of 6,7,8.
+  - id: q42
+    type: SHORT
+    topic: Aliases
+    marks: 3
+    question: How do you find aliases currently defined in your shell?
+    correct: Run <code>alias</code> with no arguments.
+    rationale: Prints all current aliases.
+  - id: q43
+    type: SHORT
+    topic: Shell
+    marks: 3
+    question: Command to display the value of variable myvar?
+    correct: <code>echo $myvar</code> (or <code>echo "$myvar"</code>)
+    rationale: Use double quotes to preserve whitespace.
+  - id: q44
+    type: SHORT
+    topic: grep
+    marks: 3
+    question: Write a command that displays all lines in files in current directory which do NOT contain bb, bB, Bb, or BB.
+    correct: <code>grep -vi bb *</code>
+    rationale: \-v inverts match, -i ignores case — so all 4 variants matched then inverted.
+  - id: q45
+    type: SHORT
+    topic: PAM
+    marks: 3
+    question: What is Linux-PAM?
+    correct: >-
+      Pluggable Authentication Modules — modular authentication library. Apps use a unified PAM API; admin configures
+      auth policy per-service in /etc/pam.d/ without recompiling apps.
+    rationale: "Midterm Q51. Key point: modular, per-service, no recompile."
+  - id: q46
+    type: SHORT
+    topic: SSH
+    marks: 3
+    question: Write the SSH command to forward local port 5432 through bastion.example.com to db.internal port 5432.
+    correct: <code>ssh -L 5432:db.internal:5432 user@bastion.example.com</code>
+    rationale: "\\-L = local forward. Format: local:remote\\_host:remote\\_port."
+  - id: q47
+    type: SHORT
+    topic: K8s
+    marks: 3
+    question: Name the 8 Linux namespaces.
+    correct: PID, NET, MNT, UTS, IPC, USER, CGROUP, TIME.
+    rationale: Each isolates a specific kernel resource.
+  - id: q48
+    type: SHORT
+    topic: Hard vs soft links
+    marks: 10
+    question: >-
+      Discuss and distinguish the similarities and differences between hard and soft links in Linux. Include limitations
+      and when to use each.
+    correct: >-
+      Hard link: extra directory entry pointing to same inode. Soft (symbolic) link: special file containing target's
+      pathname as text.<br><br><strong>Similarities:</strong> both allow multiple names/paths to reach same data; both
+      created with <code>ln</code>.<br><br><strong>Differences:</strong><br>• Hard link shares inode → identical file;
+      can't span filesystems (inode unique per FS); can't link to directories (normal users); no dangling — file
+      persists as long as link count &gt; 0.<br>• Soft link has own inode containing target path text; CAN span
+      filesystems; CAN link to directories; CAN dangle if target deleted; ls -l shows <code>l</code> type and arrow to
+      target.<br><br><strong>Use hard link when:</strong> aliasing same file on one filesystem, tracking link count for
+      cleanup.<br><strong>Use soft link when:</strong> crossing filesystems, linking to directories, pointing to a path
+      that may change.
+    rationale: Midterm Q58. Expected to cover inode mechanics, cross-FS limitation, dangling behavior.
+  - id: q49
+    type: SHORT
+    topic: Shell script
+    marks: 10
+    question: >-
+      Write a shell script that prints 'Your working directory is ' followed by your current working directory, all on
+      one line.
+    correct: |-
+      <pre><code class="language-bash">#!/bin/bash
+      echo "Your working directory is $(pwd)"</code></pre>Or: <code>echo "Your working directory is `pwd`"</code>
+    rationale: Midterm Q59. Needs shebang + command substitution. `$(pwd)` preferred over backticks.
+  - id: q50
+    type: SHORT
+    topic: Bash function
+    marks: 10
+    question: >-
+      Write a bash function that reads a parameter and writes to stdout the processes in `ps aux` output that contain
+      that parameter.
+    correct: |-
+      <pre><code class="language-bash">psgrep() {
+          ps aux | grep "$1" | grep -v grep
+      }</code></pre>Call: <code>psgrep httpd</code>
+    rationale: Midterm Q60. `grep -v grep` excludes the grep process itself. Quote `"$1"` to handle spaces.
+  - id: q51
+    type: MCQ
+    topic: Filesystem
+    marks: 2
+    question: What is a Unix PPID?
+    correct: 4
+    rationale: Parent Process ID. Every process except init has a parent. (Midterm Q26.)
+    choices:
+      - person process ID
+      - protected process ID
+      - private process ID
+      - protected parent ID
+      - parent process ID
+  - id: q52
+    type: MCQ
+    topic: Commands
+    marks: 2
+    question: Which command sends a signal to a process?
+    correct: 4
+    rationale: "`kill`. Misleadingly named — sends any signal, not just SIGKILL. (Midterm Q23.)"
+    choices:
+      - signal
+      - snd
+      - sendsig
+      - send
+      - kill
+  - id: q53
+    type: MCQ
+    topic: Files
+    marks: 2
+    question: Command to list contents of a directory?
+    correct: 0
+    rationale: "`ls`. `dir` works too but is unusual on Unix. (Midterm Q29.)"
+    choices:
+      - ls
+      - joe
+      - rm
+      - dir
+      - cat
+  - id: q54
+    type: MCQ
+    topic: Commands
+    marks: 2
+    question: What does `tr` do?
+    correct: 3
+    rationale: "`tr` translates/deletes characters. (Midterm Q14.)"
+    choices:
+      - Translates shell to perl
+      - Moves process to foreground
+      - Translates C to assembler
+      - Maps one character string to another
+      - Matches any single character
+  - id: q55
+    type: MCQ
+    topic: Shell
+    marks: 2
+    question: What does `cd ~` do?
+    correct: 3
+    rationale: Tilde alone expands to $HOME. (Midterm Q5.)
+    choices:
+      - Go up one directory
+      - Switch to root
+      - Change to directory ~ under current
+      - Switch to your home directory
+      - List current directory
+  - id: q56
+    type: MCQ
+    topic: Commands
+    marks: 2
+    question: Which gives info like number of lines in a file?
+    correct: 0
+    rationale: "`wc` with `-l` counts lines. (Midterm Q37, sample Q2.)"
+    choices:
+      - wc
+      - wl
+      - w -l
+      - w
+      - nl
+  - id: q57
+    type: MCQ
+    topic: GNU
+    marks: 2
+    question: Who founded the GNU project (and is paired with Linus Torvalds in Linux history)?
+    correct: 2
+    rationale: "Richard Stallman started GNU in 1983. Instructor explicitly: 'remember Linus Torvalds and Richard Stallman'."
+    choices:
+      - Dennis Ritchie
+      - Ken Thompson
+      - Richard Stallman
+      - Andrew Tanenbaum
+      - Brian Kernighan
+  - id: q58
+    type: MCQ
+    topic: Flags
+    marks: 2
+    question: Which is equivalent to `ls -r -x`?
+    correct: 0
+    rationale: >-
+      Single-letter flags can be combined. Instructor explicitly: 'can combine single-letter into 1 — ls -r -x → ls
+      -rx'.
+    choices:
+      - ls -rx
+      - ls --rx
+      - ls -r,-x
+      - ls r x
+      - ls r-x
+  - id: q59
+    type: MCQ
+    topic: Devices
+    marks: 2
+    question: What does `/dev/zero` produce when read?
+    correct: 1
+    rationale: >-
+      /dev/zero returns an endless stream of null bytes. Used to zero-fill. Instructor: '/dev/null, /dev/zero — could
+      easily be asked'.
+    choices:
+      - Random bytes
+      - Null bytes (0x00) infinitely
+      - EOF immediately
+      - Current time
+      - Last input
+  - id: q60
+    type: MCQ
+    topic: NFS
+    marks: 2
+    question: "Per instructor, NFS is useful:"
+    correct: 1
+    rationale: "Instructor: 'NFS useful only behind firewalls.' NFS has weak auth and shouldn't be exposed."
+    choices:
+      - On the public internet
+      - Only behind firewalls
+      - Only over VPN
+      - Only with Kerberos
+      - Only on Wi-Fi
+  - id: q61
+    type: MCQ
+    topic: DHCP
+    marks: 2
+    question: DHCP client-server exchange (DORA) in order?
+    correct: 1
+    rationale: "DORA: Discover (client broadcast) → Offer (server) → Request (client) → Ack (server)."
+    choices:
+      - Offer, Discover, Ack, Request
+      - Discover, Offer, Request, Ack
+      - Request, Offer, Discover, Ack
+      - Ack, Discover, Offer, Request
+      - Discover, Request, Offer, Ack
+  - id: q62
+    type: MCQ
+    topic: Soft link
+    marks: 2
+    question: Command to create a soft (symbolic) link?
+    correct: 2
+    rationale: "`ln -s target linkname`. Instructor: 'Soft links — created with ln -s'."
+    choices:
+      - ln file link
+      - ln -h file link
+      - ln -s file link
+      - ln -S file link
+      - link file link
+  - id: q63
+    type: MCQ
+    topic: grep recursive
+    marks: 2
+    question: Flag to make grep search recursively through directories?
+    correct: 1
+    rationale: "`grep -r` (or -R). Instructor specifically mentioned recursive grep through files and directories."
+    choices:
+      - \-d
+      - \-r
+      - \-a
+      - \-t
+      - \-n
+  - id: q64
+    type: MCQ
+    topic: tar
+    marks: 2
+    question: Which tar command extracts an archive?
+    correct: 2
+    rationale: "\\-x extract, -c create, -t list. Instructor: know simplified create/list/extract."
+    choices:
+      - tar -cf
+      - tar -tf
+      - tar -xf
+      - tar -df
+      - tar -lf
+  - id: q65
+    type: MCQ
+    topic: hostname
+    marks: 2
+    question: What does `hostname` display?
+    correct: 1
+    rationale: "Displays the machine name. Instructor: 'hostname — display name that you're logged into'."
+    choices:
+      - Current username
+      - Name of machine logged into
+      - DNS server IP
+      - Local IP
+      - FQDN of remote
+  - id: q66
+    type: MCQ
+    topic: Perl
+    marks: 1
+    question: Perl scripting will be tested on the exam.
+    correct: 1
+    rationale: "FALSE. Instructor: 'Don't need to know perl.'"
+    choices:
+      - "True"
+      - "False"
+  - id: q67
+    type: MCQ
+    topic: IPv6
+    marks: 1
+    question: You must know IPv6 DNS records (AAAA) for the exam.
+    correct: 1
+    rationale: "FALSE. Instructor: 'Not IPv6, just IPv4.'"
+    choices:
+      - "True"
+      - "False"
+  - id: q68
+    type: MCQ
+    topic: ACL
+    marks: 1
+    question: You need to know ACL (Access Control List) details for the exam.
+    correct: 1
+    rationale: "FALSE. Instructor: 'Don't have to know about ACL or Access Control Lists.'"
+    choices:
+      - "True"
+      - "False"
+  - id: q69
+    type: MCQ
+    topic: dhcpd.conf
+    marks: 1
+    question: You must be able to reproduce a dhcpd.conf file on the exam.
+    correct: 1
+    rationale: "FALSE. Instructor: 'Not asked to reproduce dhcpd.conf file.'"
+    choices:
+      - "True"
+      - "False"
+  - id: q70
+    type: MCQ
+    topic: Hard link
+    marks: 1
+    question: Given two files that are hard links to each other, there is no way to tell which was the 'original'.
+    correct: 0
+    rationale: TRUE. Both are equal directory entries pointing to the same inode. Instructor explicit.
+    choices:
+      - "True"
+      - "False"
+  - id: q71
+    type: MCQ
+    topic: SSDs
+    marks: 1
+    question: SSDs have effectively unlimited write cycles.
+    correct: 1
+    rationale: >-
+      FALSE. SSDs have a limited number of write cycles per cell — wear leveling mitigates but doesn't eliminate this.
+      (Instructor noted this.)
+    choices:
+      - "True"
+      - "False"
+  - id: q72
+    type: SHORT
+    topic: Expansions
+    marks: 3
+    question: Given `set -- 'alpha beta' 'gamma'`, show the difference between `for x in "$@"` and `for x in "$*"`.
+    correct: >-
+      <code>"$@"</code> iterates twice: x='alpha beta' then x='gamma' (preserves separation). <code>"$*"</code> iterates
+      once: x='alpha beta gamma' (all args joined). Use <code>"$@"</code> in functions.
+    rationale: "Per instructor: $\\* vs $@ difference 'probably on exam'."
+  - id: q73
+    type: SHORT
+    topic: Container
+    marks: 3
+    question: What is a container image?
+    correct: >-
+      A layered, read-only template used to instantiate containers. Includes filesystem snapshot, entrypoint, env vars,
+      and metadata. Standardized by OCI. Pulled from a registry; runtime adds a writable layer per container.
+    rationale: "Instructor: 'Useful to know about container images.'"

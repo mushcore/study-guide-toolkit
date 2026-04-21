@@ -1,0 +1,242 @@
+Comp 4915 - Lab 3: DNS and DHCP Setup
+======================================
+
+Student: A01353636
+Workstation: 6 (L327S06A)
+Server IP: 142.232.18.196
+
+
+Part 0: Investigating the Network Setup
+----------------------------------------
+
+The lab uses Hyper-V virtualization. Important: on SE12-327 lab machines,
+do NOT create a new Network Adapter -- it will kill network connectivity.
+
+
+Part 1: Setting up DNS
+-----------------------
+
+Step 1: Install BIND packages
+
+  $ sudo dnf install bind bind-utils
+
+Step 2: Enable and start named
+
+  $ sudo systemctl enable named
+  $ sudo systemctl start named
+  $ sudo systemctl status named
+  Active: active (running)
+
+Step 3: Open firewall for DNS (port 53 TCP and UDP)
+
+  $ sudo firewall-cmd --add-port=53/tcp
+  $ sudo firewall-cmd --permanent --add-port=53/tcp
+  $ sudo firewall-cmd --add-port=53/udp
+  $ sudo firewall-cmd --permanent --add-port=53/udp
+
+  Note: The lab handout has typos in the firewall commands
+  ("--add-ort", "--app-port" should both be "--add-port").
+
+
+JumpStart I: DNS Caching Server
+--------------------------------
+
+Step 3a: Set static IP and DNS to 127.0.0.1 via nmtui
+
+  - IPv4 Manual, Address: 142.232.18.196/25
+  - Gateway: 142.232.18.129
+  - DNS: 127.0.0.1
+
+Step 3b: Verify resolv.conf
+
+  $ cat /etc/resolv.conf
+  nameserver 127.0.0.1
+
+Step 3c: First DNS query
+
+  $ dig www.sobell.com
+  ;; Query time: 578 msec
+  ;; SERVER: 127.0.0.1#53
+
+Step 3d: Second query (cached)
+
+  $ dig www.sobell.com
+  ;; Query time: 0 msec
+
+  Query time dropped to 0 msec -- caching DNS server is working.
+
+
+JumpStart II: Setting up the infosec.bcit.ca Domain
+----------------------------------------------------
+
+Step 4a: Check configuration tools
+
+  $ named-checkconf
+  (no output = no errors)
+
+Step 4b: Configuration files
+
+  --- /etc/named.conf ---
+
+  options {
+      listen-on port 53 { 127.0.0.1; 142.232.18.196; };
+      directory       "/var/named";
+      dump-file       "/var/named/data/cache_dump.db";
+      statistics-file "/var/named/data/named_stats.txt";
+      memstatistics-file "/var/named/data/named_mem_stats.txt";
+      recursing-file  "/var/named/data/named.recursing";
+      secroots-file   "/var/named/data/named.secroots";
+      allow-query     { localhost; 142.232.18.128/25; };
+      recursion yes;
+      dnssec-enable yes;
+      dnssec-validation yes;
+      bindkeys-file "/etc/named.root.key";
+      managed-keys-directory "/var/named/dynamic";
+      pid-file "/run/named/named.pid";
+      session-keyfile "/run/named/session.key";
+  };
+
+  logging {
+      channel default_debug {
+          file "data/named.run";
+          severity dynamic;
+      };
+  };
+
+  zone "." IN {
+      type hint;
+      file "named.ca";
+  };
+
+  include "/etc/named.rfc1912.zones";
+  include "/etc/named.root.key";
+  include "/etc/named/named.conf.local";
+
+  --- /etc/named/named.conf.local ---
+
+  zone "infosec.bcit.ca" {
+      type master;
+      file "/etc/named/zones/db.infosec.bcit.ca";
+  };
+
+  zone "18.232.142.in-addr.arpa" {
+      type master;
+      file "/etc/named/zones/db.142.232.18";
+  };
+
+  --- /etc/named/zones/db.infosec.bcit.ca (Forward Zone) ---
+
+  $TTL    604800
+  @       IN      SOA     server.infosec.bcit.ca. admin.infosec.bcit.ca. (
+                    1     ; Serial
+               604800     ; Refresh
+                86400     ; Retry
+              2419200     ; Expire
+               604800 )   ; Negative Cache TTL
+
+  ; name servers
+      IN      NS      server.infosec.bcit.ca.
+
+  ; A records
+  server      IN      A       142.232.18.196
+  L327S06A    IN      A       142.232.18.196
+  L327S07A    IN      A       142.232.18.197
+
+  --- /etc/named/zones/db.142.232.18 (Reverse Zone) ---
+
+  $TTL    604800
+  @       IN      SOA     server.infosec.bcit.ca. admin.infosec.bcit.ca. (
+                    1     ; Serial
+               604800     ; Refresh
+                86400     ; Retry
+              2419200     ; Expire
+               604800 )   ; Negative Cache TTL
+
+      IN      NS      server.infosec.bcit.ca.
+
+  196     IN      PTR     server.infosec.bcit.ca.
+  196     IN      PTR     L327S06A.infosec.bcit.ca.
+  197     IN      PTR     L327S07A.infosec.bcit.ca.
+
+Step 4c: Copy files into place
+
+  $ sudo cp named.conf /etc/named.conf
+  $ sudo cp named.conf.local /etc/named/
+  $ sudo mkdir -p /etc/named/zones
+  $ sudo cp db.* /etc/named/zones/
+
+  Note: Lab handout typo "mkdir /etc/named/zoned" should be "zones".
+
+Step 4d: Verify and restart
+
+  $ sudo named-checkconf
+  $ sudo named-checkzone infosec.bcit.ca /etc/named/zones/db.infosec.bcit.ca
+  zone infosec.bcit.ca/IN: loaded serial 1 OK
+  $ sudo named-checkzone 18.232.142.in-addr.arpa /etc/named/zones/db.142.232.18
+  zone 18.232.142.in-addr.arpa/IN: loaded serial 1 OK
+  $ sudo systemctl restart named
+
+Step 5: Test from partner's workstation
+
+  $ dig L327S06A.infosec.bcit.ca @142.232.18.196
+  ;; ANSWER SECTION:
+  L327S06A.infosec.bcit.ca. 604800 IN A 142.232.18.196
+
+  $ ping L327S06A.infosec.bcit.ca
+  64 bytes from 142.232.18.196: icmp_seq=1 ttl=64 time=0.5 ms
+
+
+Part 2: Setting up DHCP
+-------------------------
+
+Step 1: Server static IP is 142.232.18.196 (190 + workstation 6).
+Client should receive 142.232.18.166 (160 + workstation 6).
+
+Step 2: Partner's MAC address
+
+  $ ip link show eth0
+  link/ether 00:15:5d:01:06:07
+
+Step 3: Install and configure DHCP
+
+  $ sudo dnf install dhcp-server
+
+  --- /etc/dhcp/dhcpd.conf ---
+
+  authoritative;
+
+  subnet 142.232.18.128 netmask 255.255.255.128 {
+      range 142.232.18.160 142.232.18.189;
+      option domain-name-servers 142.232.18.196;
+      option domain-name "infosec.bcit.ca";
+      option routers 142.232.18.129;
+      option broadcast-address 142.232.18.255;
+      default-lease-time 600;
+      max-lease-time 7200;
+  }
+
+  host partner-client {
+      hardware ethernet 00:15:5d:01:06:07;
+      fixed-address 142.232.18.166;
+  }
+
+Step 4: Enable and start DHCP
+
+  $ sudo systemctl enable dhcpd
+  $ sudo systemctl start dhcpd
+  $ sudo firewall-cmd --add-service=dhcp
+  $ sudo firewall-cmd --permanent --add-service=dhcp
+
+Step 5: Test from client
+
+  Set client to DHCP via nmtui, then restart networking:
+  $ sudo nmcli connection down eth0 && sudo nmcli connection up eth0
+
+  Client received 142.232.18.166 as expected.
+
+Step 6: Troubleshooting
+
+  If DHCP fails, common causes:
+  1. BCIT network blocks DHCP broadcasts between VMs (security measure).
+  2. Server interface must be on the same subnet as the range in dhcpd.conf.
+  3. Check logs: sudo journalctl -u dhcpd -f
