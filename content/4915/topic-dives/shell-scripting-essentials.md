@@ -4,9 +4,11 @@ title: Shell scripting essentials
 pillar: tech
 priority: high
 chapter: Mod09 Ch28
+source: "Mod09 Ch28; materials/labs/Lab9.pdf; materials/past-exams/midterm.md Q59, Q60"
 tags:
   - shell
   - scripting
+related: [4915-topic-special-parameters, 4915-topic-redirection-pipes, 4915-topic-quoting-rules]
 ---
 
 Structure:
@@ -59,3 +61,27 @@ EOF
 
 grep pat <<< "one line"
 ```
+
+> **Pitfall**
+>
+> Missing the shebang `#!/bin/bash` means the kernel falls back to the user's login shell to run the script. If that's `/bin/sh`, bash-only features (arrays, `[[`, `$'…'`) fail silently or with obscure errors. Always start scripts with `#!/bin/bash` — it's one line and saves hours.
+
+> **Example** — minimal exam-shaped script: `psgrep` bash function from midterm Q60
+>
+> ```bash
+> #!/bin/bash
+> # psgrep — print processes whose command matches the first arg
+> psgrep() {
+>   if [ $# -ne 1 ]; then
+>     echo "usage: psgrep PATTERN" >&2
+>     return 1
+>   fi
+>   ps -ef | grep "$1" | grep -v grep
+> }
+> psgrep "$@"
+> ```
+>
+> 1. Shebang → bash. 2. `$#` argument-count check → clean error path to stderr + non-zero exit. 3. `"$1"` quoted → whitespace in pattern preserved. 4. `grep -v grep` strips the grep itself from the result. 5. `psgrep "$@"` at end makes the file usable as a standalone script.
+> Save as `psgrep`, `chmod +x psgrep`, then `./psgrep sshd` — exam-ready answer in 10 lines.
+
+> **Takeaway**: A working script needs a shebang, executable permission, and argument handling through special parameters. Control flow (`if`, `for`, `while`, `case`), file tests (`-f`, `-d`, `-r`), and exit-status checks (`$?`) cover the exam's entire short-answer question space.

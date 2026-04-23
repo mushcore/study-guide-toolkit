@@ -1,5 +1,5 @@
 ---
-id: exam-strategy-and-pitfalls
+id: 3522-exam-strategy-and-pitfalls
 title: "Exam strategy and top pitfalls — COMP 3522 final"
 pillar: process
 priority: high

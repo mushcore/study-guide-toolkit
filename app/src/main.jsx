@@ -36,6 +36,8 @@ import '../../content/_dist/4870.js';
 import '../../content/_dist/4911.js';
 import '../../content/_dist/4915.js';
 import '../../content/_dist/3522.js';
+import '../../content/_dist/COMP3975.js';
+import '../../content/_dist/COMP4537.js';
 import '../../content/_dist/_aggregator.js';
 
 import App from './App.jsx';

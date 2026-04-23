@@ -1,0 +1,94 @@
+# concept-pair: XSS protection — appears also on laravel-mvc-blade-q-03
+- id: laravel-mvc-blade-q-01
+  type: MCQ
+  topic: "MVC + Blade templating"
+  marks: 1
+  question: "In Laravel's MVC architecture, which directory contains the Controller files?"
+  choices:
+    - "resources/controllers/"
+    - "app/Http/Controllers/"
+    - "app/Controllers/"
+    - "routes/controllers/"
+  correct: 1
+  rationale: "Controllers live in `app/Http/Controllers/` — that is the directory Laravel's autoloader and `make:controller` both target. Option A (`resources/controllers/`) is wrong because `resources/` holds views, language files, and front-end assets, not PHP classes. Option C (`app/Controllers/`) is a plausible guess but Laravel's default namespace is `App\\Http\\Controllers`, which maps to `app/Http/Controllers/`. Option D (`routes/controllers/`) confuses routing files with controller classes — routes live in `routes/`, controllers do not."
+  bloom: remember
+  source: "intro_to_laravel.pptx slides 3–5"
+  tags: [pretest]
+
+# concept-pair: XSS protection — appears also on laravel-mvc-blade-q-01
+- id: laravel-mvc-blade-q-02
+  type: MCQ
+  topic: "MVC + Blade templating"
+  marks: 1
+  question: "A Blade template outputs a user-supplied comment with `{!! $comment !!}`. What security risk does this introduce?"
+  choices:
+    - "SQL injection, because Blade does not escape database queries"
+    - "CSRF, because unescaped output bypasses the CSRF token check"
+    - "Cross-site scripting (XSS), because raw HTML output lets attackers inject executable scripts"
+    - "Directory traversal, because the double-brace escaping is skipped"
+  correct: 2
+  rationale: "`{!! $var !!}` outputs raw, unescaped HTML. If `$comment` contains `<script>document.cookie='...'</script>`, that script executes in every visitor's browser — the definition of XSS. Option A (SQL injection) is unrelated to Blade's output syntax; SQL injection occurs when user input reaches a raw database query without parameterization. Option B (CSRF) is also unrelated; CSRF protection depends on the `@csrf` token in forms, not on output escaping. Option D (directory traversal) has nothing to do with the `{!! !!}` syntax — directory traversal is a file-path exploit. The safe alternative is `{{ $comment }}`, which HTML-encodes the value before output."
+  bloom: understand
+  source: "intro_to_laravel.pptx slide 25; intro_to_laravel_SCRIPT.docx §Cross site scripting attack protection"
+
+# concept-pair: @-directive syntax — appears also on laravel-mvc-blade-q-04
+- id: laravel-mvc-blade-q-03
+  type: MCQ
+  topic: "MVC + Blade templating"
+  marks: 1
+  question: "Which Blade @-directive marks the injection point in a parent layout where child templates insert their content?"
+  choices:
+    - "@section('content')"
+    - "@extends('layouts.master')"
+    - "@yield('content')"
+    - "@include('partials.header')"
+  correct: 2
+  rationale: "`@yield('content')` is placed in the parent layout and acts as a placeholder — it tells Blade where to insert the named section from the child template. `@section('content')` (option A) is the child-side directive that *defines* the block to inject; it is not the placeholder in the parent. `@extends('layouts.master')` (option B) tells a child which parent to use; it has no role in the parent file. `@include('partials.header')` (option D) embeds a partial view inline and is unrelated to the yield/section inheritance mechanism."
+  bloom: remember
+  source: "intro_to_laravel.pptx slides 16–19"
+
+# concept-pair: @-directive syntax — appears also on laravel-mvc-blade-q-03
+- id: laravel-mvc-blade-q-04
+  type: MCQ
+  topic: "MVC + Blade templating"
+  marks: 1
+  question: "A Blade template has `@foreach($products as $p)` but is missing the closing directive. What is the result?"
+  choices:
+    - "Laravel silently ignores the open directive and outputs nothing"
+    - "PHP processes it as a raw foreach loop and continues normally"
+    - "Blade fails to compile the template and throws a parse error"
+    - "The loop runs once for the first element and then stops"
+  correct: 2
+  rationale: "Every Blade opening @-directive requires a matching closing counterpart. `@foreach` must be paired with `@endforeach`. When the closing directive is absent, Blade's compiler cannot determine where the loop ends and throws a parse error — the template never renders. Option A is incorrect; Blade does not silently skip unclosed directives. Option B is incorrect; Blade is compiled to PHP, but the compilation step fails before any PHP execution occurs. Option D is a fabricated behavior that does not exist — Blade's parser rejects the malformed template entirely."
+  bloom: understand
+  source: "intro_to_laravel.pptx slide 22; intro_to_laravel_SCRIPT.docx §Control structures"
+
+- id: laravel-mvc-blade-q-05
+  type: MCQ
+  topic: "MVC + Blade templating"
+  marks: 1
+  question: "In the Blade component system, which tag wraps content and maps to `resources/views/components/master.blade.php`?"
+  choices:
+    - "<blade-master>"
+    - "<component name='master'>"
+    - "<x-master>"
+    - "@component('master')"
+  correct: 2
+  rationale: "Blade components use the `x-` prefix convention. `<x-master>` automatically resolves to `resources/views/components/master.blade.php`. Option A (`<blade-master>`) is not valid Blade syntax. Option B (`<component name='master'>`) is not how Blade components are invoked — there is no such element tag syntax in Laravel Blade. Option D (`@component('master')`) is the older Blade component syntax from early Laravel versions and does not map to the `resources/views/components/` directory used by the current anonymous-component system."
+  bloom: understand
+  source: "TIDBITS-components_config_db_SCRIPT.docx §Blade Components"
+
+- id: laravel-mvc-blade-q-06
+  type: MCQ
+  topic: "MVC + Blade templating"
+  marks: 1
+  question: "A controller returns `view('students.index', ['students' => $list])`. In which directory does Laravel look for the template file?"
+  choices:
+    - "app/Views/students/index.blade.php"
+    - "resources/views/students/index.blade.php"
+    - "public/views/students/index.blade.php"
+    - "storage/views/students/index.blade.php"
+  correct: 1
+  rationale: "Laravel resolves view dot-notation paths relative to `resources/views/`. The name `students.index` maps to `resources/views/students/index.blade.php`. Option A (`app/Views/`) is incorrect; view files are never stored under `app/` — that directory holds PHP classes (Models, Controllers, Middleware). Option C (`public/views/`) is where publicly accessible static assets live; Blade templates are server-side files and never belong there. Option D (`storage/views/`) is where Blade *compiles* cached views, not where the source templates are stored."
+  bloom: apply
+  source: "intro_to_laravel.pptx slides 3–5; intro_to_laravel_SCRIPT.docx §Creating your own blade template"

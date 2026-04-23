@@ -1,0 +1,44 @@
+- id: model-relationships-q-01
+  type: MCQ
+  topic: "Eloquent Model Relationships"
+  marks: 1
+  question: "A `Post` model can have many `Comment` records. Which method declaration correctly defines the one-to-many relationship on the `Post` model?"
+  choices:
+    - "public function comment() { return $this->hasMany(Comment::class); }"
+    - "public function comments() { return $this->hasMany(Comment::class); }"
+    - "public function comments() { return $this->belongsTo(Comment::class); }"
+    - "public function comments() { return $this->hasOne(Comment::class); }"
+  correct: 1
+  rationale: "The parent side of a one-to-many relationship uses `hasMany()`. The method name is conventionally plural (`comments`) because it returns a collection, not a single model. Option A uses the singular name `comment()` — not technically wrong in PHP, but it violates the convention that tells other developers (and `belongsTo` inference) which side of the relationship they are on. Option C uses `belongsTo()`, which is the *child* side declaration — it would go on `Comment`, not on `Post`. Option D uses `hasOne()`, which is correct only for a one-to-one relationship where `Post` owns exactly one `Comment`."
+  bloom: understand
+  source: "auth-with-breeze_SQLite_SCRIPT.docx; laravel_with_students_MySQL_SCRIPT.docx"
+
+- id: model-relationships-q-02
+  type: MCQ
+  topic: "Eloquent Model Relationships"
+  marks: 1
+  question: "Given `hasMany(Org::class)` declared on `User`, which of the following queries fetches only the current user's orgs using the relationship?"
+  choices:
+    - "Org::where('user_id', Auth::id())->get()"
+    - "Auth::user()->orgs()->latest('updated_at')->get()"
+    - "Org::all()->filter(fn($o) => $o->user_id == Auth::id())"
+    - "Auth::user()->org()->latest('updated_at')->get()"
+  correct: 1
+  rationale: "`Auth::user()->orgs()` traverses the `hasMany` relationship from the authenticated user model and returns a query builder scoped to that user's orgs. Chaining `->latest('updated_at')->get()` sorts and executes it. Option A is a manual foreign-key query — it works but bypasses the declared relationship, negating the purpose of defining `hasMany`. Option C fetches every org into memory first then filters in PHP — this is the `all()->where()` anti-pattern applied to collections. Option D uses the singular `->org()` instead of `->orgs()`; the method name must match what was declared on the User model (`orgs()`)."
+  bloom: apply
+  source: "auth-with-breeze_SQLite_SCRIPT.docx"
+
+- id: model-relationships-q-03
+  type: MCQ
+  topic: "Eloquent Model Relationships"
+  marks: 1
+  question: "An `Org` model has `belongsTo(User::class)`. What column does Eloquent expect to find in the `orgs` table by default?"
+  choices:
+    - "owner_id"
+    - "user_id"
+    - "org_user"
+    - "user_key"
+  correct: 1
+  rationale: "Eloquent infers the foreign key name by taking the related model name (`User`), converting it to snake_case, and appending `_id`. For `belongsTo(User::class)`, the expected column is `user_id`. If your migration used a different column name, you must pass it explicitly as the second argument to `belongsTo()`. Option A (`owner_id`) is a plausible custom name but is not the convention Eloquent uses. Option C (`org_user`) reverses the tables and does not follow the `{model}_id` convention. Option D (`user_key`) is a fabricated name with no basis in Eloquent's convention."
+  bloom: understand
+  source: "auth-with-breeze_SQLite_SCRIPT.docx; laravel_with_students_MySQL_SCRIPT.docx"

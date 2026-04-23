@@ -1,0 +1,85 @@
+id: js-oop
+name: "OOP in JS (classes, inheritance, composition)"
+tags: [OOP, classes, extends, super, constructor, typeof]
+prose: "JavaScript provides three object-creation syntaxes: Object Literal, Constructor Function, and ES6 Class. Classes support inheritance via extends and super. typeof [] returns 'object', not 'array'. Computed property access uses a variable's value as the key."
+cards:
+  - id: js-oop-card-01
+    type: cloze
+    front: "`typeof []` returns ___ in JavaScript."
+    back: "`\"object\"` — arrays are objects; use `Array.isArray()` to test for arrays."
+    bloom: remember
+    tags: [typeof, arrays]
+
+  - id: js-oop-card-02
+    type: name
+    front: "What keyword must you call before using `this` in a subclass constructor?"
+    back: "`super()` — omitting it throws a `ReferenceError` before `this` is accessible."
+    bloom: remember
+    tags: [extends, super, constructor]
+
+  - id: js-oop-card-03
+    type: cloze
+    front: "`let sandwich = { bread: 'white', filling: 'turkey' }` uses ___ syntax."
+    back: "Object Literal — not Constructor syntax; no `new` is involved."
+    bloom: remember
+    tags: [object-literal]
+
+  - id: js-oop-card-04
+    type: predict
+    front: |
+      ```js
+      let profile = { name: "Elon", gpa: 3.9 };
+      let arr = ["name", "gpa", "id"];
+      console.log(profile[arr[1]]);
+      ```
+      What does this print?
+    back: "`3.9` — `arr[1]` evaluates to `\"gpa\"`, so `profile[\"gpa\"]` returns `3.9`."
+    bloom: apply
+    tags: [computed-property, bracket-notation]
+
+  - id: js-oop-card-05
+    type: predict
+    front: |
+      ```js
+      let obj = { a: 1, b: 2, c: 3 };
+      console.log(obj["1"]);
+      ```
+      What does this print?
+    back: "`undefined` — the key `\"1\"` does not exist in the object."
+    bloom: apply
+    tags: [bracket-notation, undefined]
+
+  - id: js-oop-card-06
+    type: name
+    front: "What is wrong with the syntax `obj.[moreNums]`?"
+    back: "Invalid — dot and bracket notation cannot be combined for one access. Use `obj.moreNums` or `obj[moreNums]`."
+    bloom: understand
+    tags: [syntax, bracket-notation, dot-notation]
+
+  - id: js-oop-card-07
+    type: cloze
+    front: "In `class Student extends Person`, the keyword ___ sets up prototype-chain inheritance."
+    back: "`extends` — Student inherits all methods defined on Person.prototype."
+    bloom: remember
+    tags: [extends, inheritance]
+
+  - id: js-oop-card-08
+    type: predict
+    front: |
+      ```js
+      class Person {
+        constructor(name) { this.name = name; }
+      }
+      class Student extends Person {
+        constructor(name, gpa) {
+          super(name);
+          this.gpa = gpa;
+        }
+      }
+      let s = new Student("Ada", 4.0);
+      console.log(s instanceof Person);
+      ```
+      What does this print?
+    back: "`true` — Student's prototype chain includes Person.prototype."
+    bloom: apply
+    tags: [instanceof, inheritance, extends]

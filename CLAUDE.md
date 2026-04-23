@@ -22,12 +22,18 @@ Router. This directory is a monorepo of BCIT CST Term 4 study-guide tooling.
 
 ## Skills
 
-- `/author-course {id} [materials-path]` — Phase A automation: drives the 5-stage playbook in `ADD-NEW-COURSE.md §Phase A` (triage → course-level artifacts → per-module authoring → mock-exam → final audit). Pauses after each stage for review. Reads materials, produces the full `content/{id}/` tree enforcing STANDARDS at every audit gate.
-- `/audit-content {id}` — full audit of a `content/{id}/` tree against `content/STANDARDS.md` (pedagogical contract) + `content/SCHEMA.md` (hard-fail invariants). Writes `content/{id}/audit-report.md`. Called automatically by other skills; invoke directly to check enrichment depth anytime.
+- `/author-course {id} [materials-path]` — progress tracker: initializes `content/{id}/_scratch/progress.md` on first run, then tells you which stage skill to invoke next in a fresh session.
+- `/author-stage1 {id}` — Stage 1: reads all materials, produces the topic map.
+- `/author-stage1b {id}` — Stage 1b: produces voice guide + glossary.
+- `/author-stage2 {id}` — Stage 2: produces `course.yaml`, `exam-strategy-and-pitfalls.md`, cheat-sheet skeleton.
+- `/author-stage3 {id}` — Stage 3: authors one module (re-invoke in a fresh session per module).
+- `/author-stage4 {id}` — Stage 4: assembles `mock-exam.yaml`.
+- `/author-stage5 {id}` — Stage 5: final audit, fills cheat-sheet stubs, compiles + registers course.
+- `/audit-content {id}` — full audit of a `content/{id}/` tree against `content/STANDARDS.md` + `content/SCHEMA.md`. Writes `content/{id}/audit-report.md`. Called by stage skills; invoke directly anytime.
 - `/add-course {id}` — Phase B automation: calls `/audit-content` preflight, compiles the bundle, wires the two hardcoded touchpoints (`scripts/build-content.js`, `app/src/main.jsx`), handles annotation-variant dispatch in `App.jsx`, verifies `npm run build`.
 - `/enrich-course {id}` — for upgrading existing courses to current STANDARDS: reads materials + existing tree, runs the audit, and writes `content/{id}/enrichment-plan.md` (gap analysis + prioritized patch plan). Does not apply patches.
 
-**Typical new-course flow**: `/author-course {id}` → smoke-test dev server → `./deploy.sh`. The skill invokes `/audit-content` at every stage gate and `/add-course` at the final stage.
+**Typical new-course flow**: `/author-course {id}` (init) → fresh session `/author-stage1 {id}` → fresh session `/author-stage1b {id}` → ... → fresh session `/author-stage5 {id}` → smoke-test → `./deploy.sh`. Each stage skill updates the progress file and tells you the next command.
 
 ## Hardcoded course ids
 

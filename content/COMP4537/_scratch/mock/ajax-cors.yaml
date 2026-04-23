@@ -1,0 +1,88 @@
+- id: ajax-cors-q-01
+  type: MCQ
+  topic: "AJAX, CORS, and Same-Origin Policy"
+  marks: 2
+  question: |
+    An `XMLHttpRequest` object has just been constructed with `new XMLHttpRequest()`, but `open()` has not yet been called.
+    What is the value of `readyState` at this point?
+  choices:
+    - "0 (UNSENT)"
+    - "1 (OPENED)"
+    - "4 (DONE)"
+    - "5 (COMPLETE)"
+  correct: 0
+  rationale: |
+    `readyState` is set to 0 (UNSENT) immediately on construction, before any method is called on the object.
+    The `open()` call advances `readyState` to 1 (OPENED); it does not start at 1.
+    `readyState` 4 (DONE) is the terminal state indicating the operation is complete — confusing it with the initial state conflates end state with start state, a documented distractor (Slide 5, Quiz 6).
+    `readyState` 5 does not exist; the scale is strictly 0–4. Checking `readyState == 5` never fires (Slide 5, Quiz 6).
+  bloom: remember
+  source: "Slide 5, ISAQuiz6.pdf"
+
+# concept-variant-of: ajax-cors-q-01
+- id: ajax-cors-q-02
+  type: MCQ
+  topic: "AJAX, CORS, and Same-Origin Policy"
+  marks: 2
+  question: |
+    The following handler is attached to an XHR request:
+
+    ```js
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("result").innerHTML = this.responseText;
+      }
+    };
+    ```
+
+    The handler fires but the `if` block never executes.
+    The server returns HTTP 200 and the network tab shows a completed response.
+    Which `readyState` value is `this.readyState` most likely holding when the check fails?
+  choices:
+    - "3 (LOADING) — the response body is still arriving"
+    - "5 (COMPLETE) — the browser advances past DONE"
+    - "0 (UNSENT) — the object was never opened"
+    - "1 (OPENED) — open() was called but send() was not"
+  correct: 0
+  rationale: |
+    `onreadystatechange` fires on every state transition, including 1, 2, and 3 (LOADING), where the response body is still streaming in.
+    If `readyState` is 3 when the handler fires, the `== 4` check fails even though the server has responded — the transition to 4 (DONE) happens on a subsequent fire.
+    `readyState` 5 does not exist; the value never advances past 4 (Slide 5, Quiz 6). Believing the browser increments past DONE is a common distractor.
+    States 0 and 1 precede `send()`, so the handler would not have fired from network activity at those points.
+  bloom: apply
+  source: "Slide 5, ISAQuiz6.pdf"
+
+- id: ajax-cors-q-03
+  type: MCQ
+  topic: "AJAX, CORS, and Same-Origin Policy"
+  marks: 2
+  question: |
+    A browser script on `http://localhost:3000` uses XHR to send the following request:
+
+    ```js
+    xhttp.open("DELETE", "http://api.example.com/users/42", true);
+    xhttp.withCredentials = true;
+    xhttp.send();
+    ```
+
+    The server at `http://api.example.com` responds with:
+
+    ```
+    Access-Control-Allow-Origin: *
+    Access-Control-Allow-Credentials: true
+    ```
+
+    What does the browser do with the response?
+  choices:
+    - "Rejects the response — `withCredentials` requires a specific origin, not `*`"
+    - "Accepts the response — both CORS headers are present"
+    - "Rejects the response — DELETE always requires a separate preflight that was not shown"
+    - "Accepts the response — `withCredentials` is only checked for POST requests"
+  correct: 0
+  rationale: |
+    When `withCredentials` is `true`, the browser requires `Access-Control-Allow-Origin` to name a specific origin (e.g. `http://localhost:3000`), not the wildcard `*`. The wildcard and credentials flag are mutually exclusive; the browser rejects the response even if `Access-Control-Allow-Credentials: true` is present (Slide 5, Slide 9).
+    Thinking both CORS headers together are sufficient ignores the spec rule that `*` is never acceptable with credentials — the combination is invalid regardless of other headers.
+    The preflight distractor is accurate in isolation (DELETE is non-simple and does trigger a preflight), but the question's stated failure cause is the `*` + `withCredentials` conflict, not a missing preflight.
+    `withCredentials` applies to all HTTP methods, not only POST; limiting it to POST reflects a misconception about how the flag works.
+  bloom: analyze
+  source: "Slide 5, Slide 9, Slide 10"

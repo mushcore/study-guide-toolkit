@@ -3,57 +3,91 @@
 id: 4915-lesson-bash-scripting-essentials-only-as-deep-as-the-exam-requires
 title: Bash scripting essentials — only as deep as the exam requires
 hook: >-
-  The instructor said 'no hard scripting gymnastics'. But you WILL write a small script or function, AND a C function.
-  This is the floor.
+  You will write a small script or function on the exam. This lesson covers only
+  what's actually assessed: script anatomy, special parameters, control flow, and
+  bash function form.
 tags:
   - scripting
 module: Bash scripting & regex
+source: "Mod09 Ch28; materials/labs/Lab9.pdf; materials/past-exams/midterm.md Q59,Q60"
+related: [4915-topic-special-parameters, 4915-topic-redirection-pipes, 4915-topic-quoting-rules, 4915-topic-shell-expansions-7-types-in-order]
+bloom_levels: [remember, understand, apply]
 ---
 
-**Motivation.** The instructor's two explicit promises: "exam WILL have you write a C function" and "know the special parameters." If you only absorb two things from the whole course: the C-vs-bash function distinction, and `$0 $# $@ $* $?` — do it here.
+Here is a bash function. Before you read on, predict what the last line prints.
 
-### Anatomy of a script — walkthrough
+```bash
+add() {
+    return $(( $1 + $2 ))
+}
+result=$(add 3 4)
+echo "result=$result"
+```
+
+Most people predict `result=7`. The actual output is `result=` — an empty string. `$()` captures **stdout**. `return` sets the **exit status** (`$?`), not stdout. The function emitted nothing to stdout, so `$()` captured nothing, and `result` stayed empty.
+
+That one gap — between communicating a value and setting an exit code — is the hardest bash function trap on the exam. It falls out of understanding how scripts and functions are actually wired together. That's what this lesson builds.
+
+### Script anatomy — shebang, arguments, permissions
+
+Every graded script starts the same way: a shebang line, optional comments, then the body.
 
 > **Example**
 > #### Build `greet.sh` from scratch: write → chmod → run → observe args
 >
-> 1.  Create `greet.sh` in your editor with these 4 lines:
->     
->     ```bash
->     #!/bin/bash
->     # greet.sh — greets the caller with two args
->     echo "Hello $1! You are $2 years old."
->     echo "(script name: $0 · total args: $#)"
->     ```
->     
-> 2.  Make it executable: `chmod +x greet.sh`. Without `x` you can't run it as `./greet.sh`.
-> 3.  Run it: `./greet.sh alice 25`.
->     
->     ```bash
->     Hello alice! You are 25 years old.
->     (script name: ./greet.sh · total args: 2)
->     ```
->     
-> 4.  The `#!/bin/bash` (shebang) tells the kernel which interpreter to invoke when you `exec` the file. Without it, bash would try to interpret it; other shells might not.
-> 5.  Alternate invocation: `bash greet.sh alice 25` — works even without `chmod +x`, because you're explicitly naming the interpreter.
+> ```bash
+> #!/bin/bash
+> # greet.sh — greets the caller with two args
+> echo "Hello $1! You are $2 years old."
+> echo "(script name: $0 · total args: $#)"
+> ```
 >
-> Source chain: Mod09 script intro + Lab 9 warm-up. The instructor expects shebang + comments in a graded script — they're worth marks.
+> Make it executable, then run it:
+>
+> ```console
+> $ chmod +x greet.sh
+> $ ./greet.sh alice 25
+> Hello alice! You are 25 years old.
+> (script name: ./greet.sh · total args: 2)
+> ```
+>
+> Two things to notice. `#!/bin/bash` on line 1 — the **shebang** — tells the kernel which interpreter to hand this file to when you `exec` it. Without it, the behavior depends on your current shell; the exam counts on it being there, and graded scripts lose marks without it. `chmod +x` sets the execute permission bit: without `x`, `./greet.sh` returns "Permission denied." Invoking via `bash greet.sh alice 25` bypasses the need for `x` because you're naming the interpreter explicitly, but the `./` form requires the bit.
+>
+> Source: Mod09 Ch28 · midterm Q59. Both shebang and comments carry marks on graded scripts.
 
-### Special parameters — instructor's emphasis
+> **Q:** In `./greet.sh alice 25`, what is `$0` and what is `$#`?
+>
+> **A:** `$0` is `./greet.sh` — the script name exactly as invoked, path included. `$#` is `2` — the count of positional arguments, not counting `$0`. If you invoked the same script as `bash greet.sh alice 25`, then `$0` would be `greet.sh` — it reflects how you called it, not the file's base name alone.
 
-Memorize these nine — they appear on EVERY assessment
+### The nine special parameters — what the exam actually tests
 
-`$0` script name · `$1`..`$9` positional args · `${10}`\+ use braces · `$#` arg count · `"$@"` all args SEPARATE · `"$*"` all args JOINED · `$?` last exit · `$$` shell PID · `$!` last background PID
+These nine appear on every assessment. They work identically inside a script and inside a function — the context determines what they resolve to, but the names never change.
 
-$@ vs $* — the classic distinguish
+| Parameter | Resolves to |
+|---|---|
+| `$0` | Script name / path as invoked |
+| `$1` … `$9` | Positional arguments 1 through 9 |
+| `${10}` … | Arguments 10 and up — braces required |
+| `$#` | Count of positional arguments (not counting `$0`) |
+| `"$@"` | All positional args, each as a **separate word** |
+| `"$*"` | All positional args **joined** into one IFS-separated string |
+| `$?` | Exit status of the last command (0 = success, non-zero = error) |
+| `$$` | PID of the current shell |
+| `$!` | PID of the most recently backgrounded command |
+
+Three of these generate exam errors every semester: `$@` vs `$*` (the classic distinguish), `$?` timing (it's overwritten after every command), and `${10}` syntax (braces are not optional for double-digit indices). The next two sections drill the first two.
+
+### `"$@"` vs `"$*"` — the distinction the exam tests
+
+The two look the same when no argument contains whitespace. The gap opens the moment one does. This script makes the difference visible:
 
 ```console
 $ cat args.sh
 #!/bin/bash
 echo "count: $#"
-echo "dollar-at (one per line):"
+echo 'dollar-at (one per line):'
 for x in "$@"; do echo "  [$x]"; done
-echo "dollar-star (one per line):"
+echo 'dollar-star (one per line):'
 for x in "$*"; do echo "  [$x]"; done
 
 $ ./args.sh "hello world" foo bar
@@ -66,9 +100,17 @@ dollar-star (one per line):
   [hello world foo bar]
 ```
 
-`"$@"` preserved 3 separate args (3 loop iterations). `"$*"` joined them into ONE string with IFS spaces (1 iteration). Rule: **you almost always want `"$@"`**. Use `"$*"` only when you explicitly want to print a joined line.
+`"$@"` preserved three separate arguments — three loop iterations, with `hello world` intact as one word. `"$*"` joined them all into one IFS-separated string — one iteration, the space inside `hello world` now indistinguishable from the separator between arguments.
 
-$? — reading exit status
+The rule: **always use `"$@"` unless you explicitly want a single joined string.** Anywhere you're forwarding arguments to another command or iterating over them, `"$*"` will silently break when a user passes a filename with a space in it.
+
+> **Q:** You want a bash function to forward all its arguments to `grep`, preserving any argument that contains spaces. Which do you use — `"$@"` or `"$*"`?
+>
+> **A:** `"$@"`. It passes each argument as a separate word, so `"hello world"` arrives at `grep` as one two-word argument. `"$*"` joins everything into a single string first, which breaks argument parsing the moment any arg contains whitespace. Midterm Q60 is exactly this distinction, applied inside a function body.
+
+### `$?` — read it immediately or lose it
+
+`$?` holds the exit status of the last command. Zero means success; any non-zero value signals an error (the specific number is program-defined, but 0/non-zero is what you test in scripts).
 
 ```console
 $ ls greet.sh; echo "exit=$?"
@@ -80,78 +122,80 @@ ls: cannot access 'nothing.xyz': No such file or directory
 exit=2
 ```
 
-Exit 0 = success. Non-zero = some error. `$?` is rewritten after every command — read it *immediately* or capture it into a variable.
+The mechanic that trips people up: **`$?` is overwritten by every command.** Run one more command before reading `$?` and you get the new command's status, not the one you intended to check. If you need to act on an exit status more than one line later, capture it immediately: `status=$?`.
 
-### Control flow + test operators
+> **Q:** Which special parameter holds the PID of the most recently backgrounded command?
+>
+> **A:** `$!`. Don't confuse it with `$$` (the current shell's own PID) or `$?` (last exit status). `$!` is useful when you background a long job and want to `wait` on it explicitly later, or send it a signal with `kill`.
+
+### Control flow and test operators
+
+The four constructs the exam uses:
 
 ```bash
 if [ -f file ]; then echo yes; else echo no; fi
 for i in 1 2 3; do echo $i; done
-while read line; do echo $line; done < input.txt
+while read line; do echo "$line"; done < input.txt
 case "$1" in start) ... ;; stop) ... ;; *) ... ;; esac
 ```
 
-**File tests:** `-e` exists · `-f` regular · `-d` directory · `-r/-w/-x` perm · `-s` non-empty. **Numeric:** `-eq -ne -lt -le -gt -ge`. **String:** `=` `!=` `-z` empty `-n` non-empty.
+The `[ … ]` construct (also callable as `test`) evaluates a condition and sets `$?`. Know these three groups of operators:
 
-### Functions in bash — how they differ from C
+**File tests:** `-e` exists · `-f` regular file · `-d` directory · `-r/-w/-x` readable/writable/executable · `-s` non-empty
 
-C vs bash functions — instructor: "exam WILL ask"
+**Numeric comparison:** `-eq` `-ne` `-lt` `-le` `-gt` `-ge`
 
-flowchart LR subgraph C\["C function — formal params in signature"\] direction TB CSIG\["int add(int a, int b) {  
-return a + b;  
-}  
-  
-int r = add(3, 4); // r = 7"\] CTRAIT\["• Formal params: type + name in signature  
-• Compiled · typed return · strict types  
-• Scope isolated"\] CSIG --> CTRAIT end subgraph B\["Bash function — NO formal params"\] direction TB BSIG\["add() {  
-echo $(( $1 + $2 ))  
-}  
-  
-add 3 4 # prints 7"\] BTRAIT\["• Args via $1, $2, $@, $#  
-• Interpreted · stdout output · exit 0-255  
-• Can modify parent shell vars"\] BSIG --> BTRAIT end C -. "THE DIFFERENCE" .-> B classDef cstyle fill:#181822,stroke:#7aa2f7,color:#e5e5e5; classDef bstyle fill:#181a18,stroke:#9ece6a,color:#e5e5e5; class CSIG,CTRAIT cstyle; class BSIG,BTRAIT bstyle;
+**String comparison:** `=` equal · `!=` not equal · `-z` empty string · `-n` non-empty string
 
-Two signatures side by side. Note the *absence* of `(int a, int b)` in the bash form — that's the whole difference.
+### Functions in bash
 
-Instructor: "exam WILL have you write a C function"
-
-C *declares* types and param names in the signature: `int add(int a, int b)`. Bash *does not* — `add() { ... }`. Inside the bash function args are `$1`, `$2`, `$#`, `"$@"` (same rules as a script). "Return" in bash = `echo` the value or set exit status 0-255. In C, `return` returns a typed value.
-
-> **Example**
-> #### Worked example: a bash function and its C twin
->
-> 1.  **C version** — types declared, returns int:
->     
->     ```c
->     int add(int a, int b) {
->         return a + b;
->     }
->     int main(void) {
->         int r = add(3, 4);   // r = 7
->         return 0;
->     }
->     ```
->     
-> 2.  **Bash version** — no formal params, result echoed:
->     
->     ```bash
->     add() {
->         echo $(( $1 + $2 ))
->     }
->     result=$(add 3 4)   # result=7
->     ```
->     
-> 3.  To use the bash function's value elsewhere you *capture stdout* via `$(...)`. Bash functions don't "return" values in the C sense — their `return N` only sets exit status (`$?`, 0-255).
-> 4.  Line breaks matter in bash: the `;` or newline between `add 3 4` and the next statement is significant. In C, whitespace is free but semicolons end statements.
->
-> Instructor on review day: students miss this because they treat bash and C as similar — they are not. Read the prompt carefully: "write a C function" means formal parameters in the signature. Writing `add() { ... }` in answer to a C prompt scores zero.
-
-Check: Write a bash function that prints its first arg in uppercase.
+Bash function syntax: `name() { body; }`. There is no formal parameter list in the definition — arguments arrive through the same special parameters as a script.
 
 ```bash
-upper() { echo "$1" | tr 'a-z' 'A-Z'; }
+upper() {
+    echo "$1" | tr 'a-z' 'A-Z'
+}
+
+upper hello    # prints: HELLO
 ```
 
-Call with `upper hello` → `HELLO`. Check: Which special parameter holds the PID of the most recently backgrounded command?`$!`. Don't confuse with `$$` (current shell PID) or `$?` (last exit). Check: In the C *function signature* `int area(int w, int h)`, what are `w` and `h` called?Formal parameters. They declare the types and names the function expects. Bash function definitions have none of these.
+Two mechanics you must have cold before the exam.
 
-Sources: Mod09 Ch28 · Lab 9 · Review Apr 17
+**Mechanic 1 — no declared parameters.** The definition is `upper() { … }`, not `upper(str)`. You read arguments from `$1`, `$2`, `"$@"` inside the body. This is identical to how a script accesses its own arguments — which is why the nine special parameters cover both cases.
+
+**Mechanic 2 — `return` sets exit status, not a value.** `return N` sets `$?` to N (valid range 0–255) and does nothing else. To hand a computed value back to the caller, `echo` it and capture the output with `$(…)`:
+
+```bash
+add() {
+    echo $(( $1 + $2 ))    # write the result to stdout
+}
+
+result=$(add 3 4)          # $() captures stdout → result="7"
+echo $result               # prints: 7
+```
+
+```mermaid
+flowchart LR
+  A["caller:\nresult=\$(add 3 4)"] --> B["fork/exec\nadd() body runs"]
+  B --> C["echo \$(( 3 + 4 ))\nwrites '7' to stdout"]
+  C --> D["\$(...) captures stdout\nresult='7'"]
+  D --> E["caller continues\necho \$result → 7"]
+  classDef fn fill:#1a2a1a,stroke:#9ece6a,color:#e5e5e5
+  classDef cap fill:#1a1a2a,stroke:#7aa2f7,color:#e5e5e5
+  class B,C fn
+  class A,D,E cap
+```
+
+Inside a function, `$0` remains the *script* name — not the function name — and `$#` counts the function's own arguments, not the script's.
+
+> **Q:** You write `add() { return $(( $1 + $2 )); }` and then `result=$(add 3 4); echo $result`. What prints?
+>
+> **A:** Nothing — `result` is empty. `return` only sets `$?`; it writes nothing to stdout. `$()` captures stdout, which is empty, so `result` gets the empty string. To get `7` into `result`, replace `return` with `echo` inside the function body.
+
+> **Q:** Inside a function `foo()`, what does `$#` refer to — the script's argument count or `foo`'s?
+>
+> **A:** `foo`'s own argument count. Special parameters inside a function reflect that function's call context, not the outer script's. If the script was invoked with three args but you called `foo a b`, then inside `foo`, `$#` is `2`.
+
+> **Pitfall**: Omitting quotes around `"$@"` silently splits any argument that contains whitespace into separate tokens. `for x in $@` (unquoted) with one argument `"hello world"` loops twice — `hello`, then `world` — not once. The quoted form `"$@"` is correct in essentially every case; the unquoted form is a bug that hides until a filename with a space appears.
+
+> **Takeaway**: Bash scripting on the exam comes down to three things: the nine special parameters (`$0`, `$1`–`$9`, `${10}+`, `$#`, `"$@"`, `"$*"`, `$?`, `$$`, `$!`), the function form `name() { body; }` where arguments arrive through those same parameters, and the `return`/`echo` distinction — `return N` sets `$?` only; values travel via stdout captured with `$(…)`. Quote `"$@"` every time you forward or iterate arguments, and read `$?` before the next command overwrites it.

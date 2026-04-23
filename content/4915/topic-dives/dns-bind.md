@@ -4,12 +4,24 @@ title: DNS / BIND
 pillar: tech
 priority: high
 chapter: Mod08 Ch24
+source: "Mod08 Ch24; materials/labs/Lab3.pdf"
 tags:
   - networking
   - network
+related: [4915-topic-iptables-netfilter, 4915-topic-etc-passwd-etc-shadow-user-mgmt]
 ---
 
-Daemon `named`. Package `bind`, tools in `bind-utils` (dig, host, nslookup).
+Daemon `named`. Package `bind`, tools in `bind-utils` (dig, host, nslookup). A typical query walks from the client's resolver up the root → gTLD → authoritative chain (Source: Mod08 Ch24 + Lab 3).
+
+```mermaid
+graph LR
+  C["client<br/>/etc/resolv.conf"] -->|query| R["recursive resolver<br/>(caching)"]
+  R -->|no cache hit| Root["root name servers<br/>( . )"]
+  Root -->|referral| gTLD["gTLD servers<br/>(.ca)"]
+  gTLD -->|referral| Auth["authoritative server<br/>for bcit.ca"]
+  Auth -->|A / AAAA answer| R
+  R -->|cached answer| C
+```
 
 Main config `/etc/named.conf`. Zones in `/var/named/`.
 
@@ -47,3 +59,9 @@ Client: `/etc/resolv.conf` lists nameservers. `/etc/nsswitch.conf` order (`hosts
 > 8.  `sudo systemctl restart named`. Test: `dig @127.0.0.1 L327S06A.infosec.bcit.ca`.
 >
 > Source: `materials/labs/Lab3.pdf`. Step 7 (the two check tools) is the common exam MCQ — they validate syntax without restarting the daemon.
+
+> **Pitfall**
+>
+> Edit a zone file and you **must** run `rndc reload` (or restart `named`); editing on disk alone does not propagate. Always run `named-checkconf` + `named-checkzone` before reloading — a syntax error takes the entire nameserver down.
+
+> **Takeaway**: BIND's `named` serves DNS; zone files in `/var/named/` hold the records; `/etc/named.conf` glues them together. Always run `named-checkconf` and `named-checkzone` before restarting — the two-step validation is the common exam MCQ.

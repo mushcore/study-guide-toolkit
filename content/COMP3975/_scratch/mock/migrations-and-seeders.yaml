@@ -1,0 +1,29 @@
+- id: migrations-and-seeders-q-01
+  type: MCQ
+  topic: "Migrations and Seeders"
+  marks: 1
+  question: "In a Laravel migration, which method defines the table structure to be created, and which method reverses that change?"
+  choices:
+    - "create() and drop()"
+    - "up() and down()"
+    - "migrate() and rollback()"
+    - "build() and destroy()"
+  correct: 1
+  rationale: "Every Laravel migration class has two methods: `up()` defines what to build (typically calls `Schema::create()`), and `down()` defines how to reverse it (typically calls `Schema::dropIfExists()`). Option A (create and drop) names the Schema helper methods called *inside* `up()` and `down()`, not the migration methods themselves. Option C (migrate and rollback) are Artisan commands you run, not PHP method names inside the migration class. Option D (build and destroy) do not exist in Laravel's migration API."
+  bloom: remember
+  source: "laravel_with_students_MySQL_SCRIPT.docx"
+
+- id: migrations-and-seeders-q-02
+  type: MCQ
+  topic: "Migrations and Seeders"
+  marks: 1
+  question: "You want to drop all tables, re-run every migration, and then run all seeders in a single command. Which command does this?"
+  choices:
+    - "php artisan migrate --fresh"
+    - "php artisan migrate:refresh --seed"
+    - "php artisan db:seed --refresh"
+    - "php artisan migrate:reset && php artisan db:seed"
+  correct: 1
+  rationale: "`php artisan migrate:refresh --seed` rolls back every migration (dropping all tables), re-runs them in timestamp order to rebuild the schema, and then executes the `DatabaseSeeder`. This is the single-command development reset. Option A (`migrate --fresh`) is a real command that uses `DROP TABLE` instead of rolling back, but the `--fresh` flag on `migrate` is not the same as `migrate:refresh` — and it does not include seeding. Option C (`db:seed --refresh`) is not a valid flag; `db:seed` accepts `--class` but not `--refresh`. Option D chains two separate commands, which achieves a similar outcome but is not the single-command shortcut taught in the course."
+  bloom: remember
+  source: "laravel_with_students_MySQL_SCRIPT.docx; laravel_with_sqlite_API_SCRIPT.docx"

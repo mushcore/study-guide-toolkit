@@ -1,0 +1,34 @@
+- id: sql-promises-q-01
+  type: MCQ
+  topic: "Async DB queries with promises: chaining successive SQL calls"
+  marks: 2
+  question: |
+    A Node.js route handler runs this code:
+
+    ```js
+    const promiseCon = con.promise();
+
+    promiseCon
+      .query('SELECT * FROM patient WHERE patientid = ?', [id])
+      .then(([rows]) => {
+        if (rows.length === 0) throw new Error('Not found');
+        return promiseCon.query(
+          'UPDATE patient SET name = ? WHERE patientid = ?',
+          [newName, id]
+        );
+      })
+      .then(([result]) => res.json({ updated: result.affectedRows }))
+      .catch(err => res.status(500).json({ error: err.message }));
+    ```
+
+    What does `con.promise()` return, and why is the UPDATE placed inside the first `.then()` rather than after the chain?
+  choices:
+    - "`con.promise()` returns a resolved Promise containing the connection; the UPDATE is placed inside `.then()` only for readability"
+    - "`con.promise()` returns a promise-based wrapper around the connection whose `query()` calls return Promises; placing the UPDATE inside `.then()` guarantees it only runs after the SELECT result is available"
+    - "`con.promise()` converts the connection to async/await syntax; the UPDATE must be inside `.then()` because `await` cannot be used with `query()`"
+    - "`con.promise()` re-opens the database connection as a new socket; the UPDATE must follow the SELECT because two simultaneous connections would conflict"
+  correct: 1
+  rationale: |
+    `con.promise()` wraps the existing connection and returns an object whose `query()` method returns a Promise instead of accepting a callback. Placing the UPDATE query inside the first `.then()` handler enforces ordering: the handler only runs after the SELECT Promise settles, so `rows` is available to check existence before the UPDATE fires. Omitting this and firing the UPDATE outside the chain creates a race condition where both queries enter the MySQL queue simultaneously and the existence check is bypassed. Choice A targets the misconception that promise chaining is cosmetic — calling `.then()` is the mechanism that guarantees sequential execution, not a style choice. Choice C confuses `con.promise()` with `async/await` syntax — it returns a promise-based wrapper, not a syntax transformation; `await` can be used with `query()` on the wrapper. Choice D incorrectly describes `con.promise()` as creating a new socket; it wraps the same underlying connection.
+  bloom: apply
+  source: "Slide 11"

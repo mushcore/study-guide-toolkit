@@ -1,0 +1,149 @@
+id: public-private-keys
+name: "Symmetric and asymmetric encryption — key exchange and signing"
+tags: [asymmetric, symmetric, public-key, private-key, RSA, signing]
+prose: >
+  Symmetric encryption uses one secret key shared by both parties. Getting
+  that key to the other party over an untrusted network is the key exchange
+  problem. Asymmetric encryption solves this by giving each party a public key
+  (shared openly) and a private key (never shared). Signing and encryption use
+  opposite key directions: signing uses the sender's private key and is verified
+  with the sender's public key; encryption uses the receiver's public key and is
+  decrypted with the receiver's private key. RSA implements asymmetric
+  cryptography; Diffie-Hellman establishes a shared secret key without
+  transmitting it. Never conflate a secret key (symmetric) with a private key
+  (asymmetric).
+
+cards:
+  - id: public-private-keys-card-01
+    type: cloze
+    prompt: >
+      To verify a message signed by Amir, Tom uses Amir's {{public key}}.
+    answer: "public key"
+    explanation: >
+      Signing uses the sender's private key; anyone with the sender's public key
+      can verify the signature. Tom does not use his own keys to verify — he
+      uses the key that Amir shares openly.
+    example: >
+      Amir signs the outer envelope with amir_private_key. Tom calls
+      verify(outer, amir_public_key). If it opens, the message came from Amir.
+    source: "Slide 10, ISAQuiz11 Q9"
+    bloom: remember
+
+  - id: public-private-keys-card-02
+    type: cloze
+    prompt: >
+      Symmetric encryption uses {{one}} key shared between both parties;
+      asymmetric encryption uses a {{public/private}} key pair.
+    answer: "one; public/private"
+    explanation: >
+      Symmetric encryption's single secret key creates the key exchange
+      problem. Asymmetric encryption's key pair eliminates it: the public key
+      travels openly, the private key never leaves its owner.
+    example: >
+      AES (symmetric): Alice and Bob both hold the same 256-bit secret key.
+      RSA (asymmetric): Alice publishes alice_public_key; she keeps
+      alice_private_key secret.
+    source: "Slide 9, Slide 10"
+    bloom: remember
+
+  - id: public-private-keys-card-03
+    type: name
+    prompt: >
+      What problem does RSA solve, and what problem does Diffie-Hellman solve?
+    answer: >
+      RSA is an asymmetric encryption algorithm that enables encryption and
+      digital signing without a pre-shared secret key. Diffie-Hellman is a
+      key-exchange protocol that lets two parties derive a shared secret key
+      over an untrusted network without ever transmitting the key itself.
+    explanation: >
+      RSA and Diffie-Hellman address different halves of the key exchange
+      problem. RSA sidesteps symmetric key exchange entirely by using key
+      pairs. Diffie-Hellman makes symmetric key exchange safe by constructing
+      the shared secret mathematically on each side without sending it.
+    example: >
+      TLS uses Diffie-Hellman to establish a session secret key, then uses that
+      secret key with symmetric encryption (e.g., AES) for the bulk of the
+      data transfer.
+    source: "Slide 9"
+    bloom: understand
+
+  - id: public-private-keys-card-04
+    type: predict
+    prompt: >
+      Amir encrypted a message with Tom's public key and sent it. Tom receives
+      the ciphertext. Which key can open it?
+    answer: "Tom's private key"
+    explanation: >
+      Encryption for confidentiality uses the receiver's public key. The
+      mathematically linked private key — held only by Tom — is the only key
+      that can decrypt it. Anyone who intercepts the ciphertext cannot open it
+      without Tom's private key.
+    example: >
+      const inner = encrypt(message, tom_public_key);
+      // Only tom_private_key can decrypt `inner`
+      const message = decrypt(inner, tom_private_key);
+    source: "Slide 9, Slide 10"
+    bloom: apply
+
+  - id: public-private-keys-card-05
+    type: predict
+    prompt: >
+      ISAQuiz11 Q9 scenario: Amir sent a message to Tom using asymmetric
+      encryption. Amir signed the outer envelope with his private key. Which
+      key does Tom use to verify the authenticity of the message?
+    answer: "Amir's public key"
+    explanation: >
+      Verification uses the SENDER's public key — not the receiver's keys.
+      Amir signed with amir_private_key, so the paired amir_public_key is the
+      only key that can verify the signature. Tom's own keys are not involved
+      in verification. The distractors in ISAQuiz11 Q9 include Tom's private
+      key, Tom's public key, and Amir's private key — all wrong.
+    example: >
+      const inner = verify(outer, amir_public_key);
+      // Success → outer came from Amir and was not tampered with
+    source: "Slide 10, ISAQuiz11 Q9"
+    bloom: analyze
+
+  - id: public-private-keys-card-06
+    type: name
+    prompt: >
+      Complete the key direction table for asymmetric encryption:
+      (a) Signing — sender uses ___, receiver verifies with ___.
+      (b) Encryption — sender uses ___, receiver decrypts with ___.
+    answer: >
+      (a) Signing: sender uses sender's private key; receiver verifies with
+      sender's public key.
+      (b) Encryption: sender uses receiver's public key; receiver decrypts with
+      receiver's private key.
+    explanation: >
+      Signing and encryption use opposite key directions. Signing proves
+      authorship (private key in, public key to verify). Encryption ensures
+      confidentiality (public key in, private key to open). Confusing these
+      two directions is the root cause of ISAQuiz11 Q9 wrong answers.
+    example: >
+      Amir→Tom:
+        sign:    amir_private_key   → verified with amir_public_key
+        encrypt: tom_public_key     → decrypted with tom_private_key
+    source: "Slide 9, Slide 10, ISAQuiz11"
+    bloom: analyze
+
+  - id: public-private-keys-card-07
+    type: name
+    prompt: >
+      What is the difference between a secret key and a private key?
+    answer: >
+      A secret key is the shared key used in symmetric encryption — both
+      parties hold the same key. A private key is one half of an asymmetric
+      key pair — only its owner holds it, and it is paired with a public key
+      that is shared openly. The two terms describe different cryptographic
+      systems and must not be used interchangeably.
+    explanation: >
+      In web development, "secret key" appears in contexts like session tokens,
+      JWT signing secrets (symmetric HMAC), and OAuth client secrets. "Private
+      key" appears in RSA-based JWT signing and TLS. Both must stay
+      confidential, but they operate under different models.
+    example: >
+      JWT with HS256: signed with a secret key (symmetric — same key verifies).
+      JWT with RS256: signed with a private key (asymmetric — public key verifies).
+    source: "Slide 11"
+    bloom: understand

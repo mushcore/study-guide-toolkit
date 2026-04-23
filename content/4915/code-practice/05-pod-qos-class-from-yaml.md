@@ -6,6 +6,7 @@ lang: bash
 variant: starter-solution
 tags:
   - kubernetes
+source: "Mod10D; materials/labs/Lab10.pdf; materials/past-exams/comp4915_quiz4.md"
 ---
 
 ## Prompt
@@ -34,4 +35,4 @@ Reasoning: Has BOTH requests and limits set for CPU and memory → not BestEffor
 
 ## Why
 
-Decision tree: NO requests+NO limits=BestEffort. All requests==limits=Guaranteed. Anything else=Burstable. Eviction order under memory pressure: BestEffort first, then Burstable, then Guaranteed.
+**Source**: Mod10D CGroups + Lab 10. Decision tree: NO requests+NO limits=BestEffort. All requests==limits=Guaranteed. Anything else=Burstable. Eviction order under memory pressure: BestEffort first, then Burstable, then Guaranteed. Common wrong: calling this "Guaranteed" because both requests and limits are set — Guaranteed requires requests *equal* limits for every container and every resource; merely having both present is Burstable.

@@ -1,0 +1,85 @@
+id: express-framework
+topics:
+  - id: express-framework
+    name: "Express: Routing, Middleware, RESTful Endpoints"
+    tags: [express, routing, middleware, rest, npm]
+    prose: "Express is an npm package that adds declarative routing and a composable middleware pipeline to Node.js. It is the standard framework for building RESTful APIs in Node.js server-side development."
+    priority: mid
+    source: "Slide 8"
+    cards:
+
+      - id: express-framework-card-01
+        type: cloze
+        prompt: "To install Express in a Node.js project, first run {{npm init --yes}} to create package.json, then run {{npm install express}} to add the package."
+        answer: "npm init --yes; npm install express"
+        bloom: remember
+        source: "Slide 8"
+        explanation: "npm init --yes creates package.json, which records installed packages as dependencies. Without it, running npm install still downloads the package but does not lock the version for reproducible installs."
+        example: "`npm init --yes && npm install express` — the two commands that scaffold an Express project from scratch."
+
+      - id: express-framework-card-02
+        type: name
+        prompt: "What is middleware in the context of Express?"
+        answer: "An Express function in the request pipeline that can read, modify, or short-circuit the request before the route handler."
+        bloom: understand
+        source: "Slide 8"
+        explanation: "Middleware is registered with app.use() and runs in order before the matching route handler. A middleware that does not call next() and does not send a response will stall the request."
+        example: "`app.use(express.json())` is middleware that parses incoming JSON bodies and populates req.body before any route handler runs."
+
+      - id: express-framework-card-03
+        type: name
+        prompt: "What is the difference between PUT and PATCH in a RESTful API?"
+        answer: "PUT replaces the entire resource. PATCH updates a single property."
+        bloom: understand
+        source: "Slide 8"
+        explanation: "Sending a PUT with only a subset of fields erases the omitted fields — the whole record is replaced. PATCH is a surgical update; only the named property changes. These are distinct operations and should not be used interchangeably."
+        example: "PUT /api/v1/patients/1 with body `{name: 'Ali'}` replaces the full patient record. PATCH /api/v1/patients/1 with `{name: 'Ali'}` changes only the name field."
+
+      - id: express-framework-card-04
+        type: cloze
+        prompt: "To list all patients, the client calls {{GET}} {{/api/v1/patients/}}. To get a single patient with id 3, the client calls {{GET}} {{/api/v1/patients/3}}."
+        answer: "GET /api/v1/patients/; GET /api/v1/patients/3"
+        bloom: apply
+        source: "Slide 8"
+        explanation: "The collection URL returns all resources. Appending /:id scopes the request to one resource. This URL design follows RESTful convention — the resource name is plural and the id is a path segment, not a query parameter."
+        example: "`app.get('/api/v1/patients', handler)` catches the list-all request. `app.get('/api/v1/patients/:id', handler)` catches the single-resource request; the id is available as req.params.id."
+
+      - id: express-framework-card-05
+        type: cloze
+        prompt: "To read the server port from an environment variable with a local fallback, write: `const PORT = {{process.env.PORT}} || {{8888}}`."
+        answer: "process.env.PORT; 8888"
+        bloom: apply
+        source: "Slide 8"
+        explanation: "process.env.PORT reads the PORT variable set by the hosting platform (Heroku, Render, etc.). If not set, the value is undefined, so the || fallback kicks in. Hard-coding the port breaks deployment to platforms that assign ports dynamically."
+        example: "`const PORT = process.env.PORT || 8888;` — undefined || 8888 evaluates to 8888 in local development, and the platform-assigned port in production."
+
+      - id: express-framework-card-06
+        type: name
+        prompt: "Is POST idempotent? Explain why."
+        answer: "No. POST creates a new resource each time it is called, so repeated identical requests produce multiple records."
+        bloom: understand
+        source: "Slide 8"
+        explanation: "An operation is idempotent if applying it multiple times produces the same result as applying it once. POST violates this: each call creates an additional server-side resource. PUT is idempotent — applying the same replacement twice leaves the record in the same state."
+        example: "POST /api/v1/patients twice creates two patient records. PUT /api/v1/patients/1 twice leaves one patient record in the replaced state — the second call changes nothing observable."
+
+      - id: express-framework-card-07
+        type: cloze
+        prompt: "The CORS middleware header {{Access-Control-Allow-Origin}} permits any origin. The header {{Access-Control-Allow-Headers}} is required when the browser preflight includes Content-Type."
+        answer: "Access-Control-Allow-Origin; Access-Control-Allow-Headers"
+        bloom: apply
+        source: "Slide 8"
+        explanation: "Browsers send a preflight OPTIONS request for cross-origin requests that carry Content-Type: application/json. The server must respond with Access-Control-Allow-Headers: Content-Type or the preflight fails and the actual request is never sent."
+        example: |
+          ```js
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+          ```
+
+      - id: express-framework-card-08
+        type: name
+        prompt: "What happens if a custom middleware function does not call next() and does not send a response?"
+        answer: "The request stalls permanently — the client never receives a response and the connection times out."
+        bloom: understand
+        source: "Slide 8"
+        explanation: "next() passes control to the next middleware in the pipeline or to the matched route handler. Without it and without res.send()/res.json(), Express has nowhere to forward the request and the pipeline stops silently."
+        example: "CORS middleware must call next() after setting headers; omitting next() means GET /api/v1/patients never reaches the app.get handler and the browser receives no response."

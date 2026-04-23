@@ -1,0 +1,24 @@
+- id: html-css-review-q-01
+  type: MCQ
+  topic: "HTML DOM Structure, CSS Box Model, Selectors, and Attributes"
+  marks: 2
+  question: |
+    What is the correct order of the CSS box model layers, from **inside to outside**?
+  choices:
+    - "margin → padding → border → content"
+    - "content → border → padding → margin"
+    - "content → padding → border → margin"
+    - "margin → border → padding → content"
+  correct: 2
+  rationale: |
+    The CSS box model places the content layer at the center, surrounded outward by padding (space
+    between content and border), then border (the visible edge), then margin (transparent space
+    separating the element from its neighbors). Distractor A (`margin → padding → border → content`)
+    is the exact wrong order tested in ISAQuiz1 Q1 — it reverses the model entirely, targeting
+    students who memorize the layer names without knowing their direction. Distractor B
+    (`content → border → padding → margin`) swaps padding and border, targeting students who
+    confuse which layer is closer to the content. Distractor D mirrors the ISAQuiz1 wrong option
+    that starts from the outside in but mis-orders the middle two layers.
+  bloom: remember
+  tags: [pretest]
+  source: "Slide 1, ISAQuiz1 Q1"

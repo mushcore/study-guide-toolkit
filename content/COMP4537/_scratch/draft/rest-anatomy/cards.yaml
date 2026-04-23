@@ -1,0 +1,109 @@
+id: rest-anatomy
+cards:
+  - id: rest-anatomy-card-01
+    type: name
+    prompt: "What is an endpoint?"
+    answer: "The URL where the API server is listening."
+    explanation: "The endpoint is the address you send your request to. Example: https://api.example.com/v1/patients/ — the server listens at this URL for incoming requests."
+    example: "https://api.example.com/v1/patients/1/ is the endpoint for patient #1."
+    source: "Slide 3"
+    bloom: remember
+
+  - id: rest-anatomy-card-02
+    type: cloze
+    prompt: "GET requests can be ________, POST requests cannot."
+    answer: "bookmarked"
+    explanation: "GET data appears in the URL. The browser can save and replay that URL as a bookmark. POST data is in the request body, which the browser does not capture in a bookmark."
+    example: "A search query like GET /patients?name=Alice can be bookmarked. POST /patients/ with a JSON body cannot."
+    source: "Slide 8, Quiz 6"
+    bloom: remember
+
+  - id: rest-anatomy-card-03
+    type: cloze
+    prompt: "PUT replaces the ________ resource; PATCH updates a ________ property."
+    answer: "entire; single"
+    explanation: "PUT is idempotent and replaces the full record at the URI. PATCH applies partial modifications. Sending PUT with a partial object overwrites omitted fields."
+    example: "PUT /patients/1 with {name: Bob, age: 25} replaces all fields. PATCH /patients/1 with {age: 26} updates only age."
+    source: "Slide 8"
+    bloom: understand
+
+  - id: rest-anatomy-card-04
+    type: name
+    prompt: "What does idempotent mean?"
+    answer: "An operation is idempotent if applying it multiple times produces the same result as applying it once."
+    explanation: "GET, PUT, DELETE, and HEAD are idempotent. POST and PATCH are not. Sending the same DELETE request twice leaves the resource in the same state (deleted) as sending it once."
+    example: "DELETE /patients/1 called 10 times: patient #1 is deleted after the first call. The remaining 9 calls find nothing to delete — same final state."
+    source: "Slide 8"
+    bloom: understand
+
+  - id: rest-anatomy-card-05
+    type: predict
+    prompt: "Which HTTP method should you use to send 1 GB of data to a server?"
+    answer: "POST"
+    explanation: "GET appends data to the URL, which has a length limit enforced by browsers and servers. POST places data in the request body, which has no size limit."
+    example: "Uploading a large file: POST /files/ with the file data in the body."
+    source: "Slide 8, Quiz 6, Quiz 7"
+    bloom: apply
+
+  - id: rest-anatomy-card-06
+    type: predict
+    prompt: "A user edits their profile on a social network. All fields are replaced with the new values. Which HTTP method is correct?"
+    answer: "PUT"
+    explanation: "PUT replaces the entire resource. When all fields are being replaced, PUT is the correct method. Use PATCH only when updating a subset of fields."
+    example: "PUT /users/99 with the full updated profile object."
+    source: "Slide 8, Quiz 7"
+    bloom: apply
+
+  - id: rest-anatomy-card-07
+    type: name
+    prompt: "What status code does a server return when a new resource is successfully created?"
+    answer: "201 Created"
+    explanation: "201 Created signals that a new resource was created. It is returned after a successful POST or some PUT requests. A plain 200 OK means success without creation."
+    example: "POST /patients/ → 201 Created with Location: /patients/42/"
+    source: "Slide 8"
+    bloom: remember
+
+  - id: rest-anatomy-card-08
+    type: predict
+    prompt: "Is it safe to send a username and password using GET? Why or why not?"
+    answer: "No. GET data appears in the URL, exposing credentials in browser history, server logs, and proxy logs."
+    explanation: "GET appends data as query parameters in the URL. That URL is visible in browser history, server access logs, and any network intermediary. Credentials sent via GET are not confidential."
+    example: "GET /login?username=alice&password=secret123 — the password is visible in the URL bar and logs."
+    source: "Slide 8, Quiz 7"
+    bloom: analyze
+
+  - id: rest-anatomy-card-09
+    type: cloze
+    prompt: "Status codes in the ________ range indicate client errors."
+    answer: "4xx"
+    explanation: "The first digit of a status code indicates the category: 1xx informational, 2xx success, 3xx redirect, 4xx client error, 5xx server error. A 404 Not Found and 401 Unauthorized are both client errors."
+    example: "404 Not Found: the client requested a resource that does not exist."
+    source: "Slide 8"
+    bloom: remember
+
+  - id: rest-anatomy-card-10
+    type: name
+    prompt: "Name the two types of headers in an API call and one example of each."
+    answer: "Request headers (e.g., API-key) and response headers (e.g., content-type)."
+    explanation: "Request headers carry metadata from client to server: the API key identifies the caller, count and pageNo control pagination. Response headers carry metadata back: status is the HTTP code, content-type describes the resource format."
+    example: "Request header: API-Key: abc123. Response header: Content-Type: application/json."
+    source: "Slide 3"
+    bloom: understand
+
+  - id: rest-anatomy-card-11
+    type: cloze
+    prompt: "GET responses can be ________ by the browser; POST responses cannot."
+    answer: "cached"
+    explanation: "Browsers and CDNs cache GET responses because GET is safe and idempotent — the same request reliably returns the same resource. POST changes server state, so caching the response would be incorrect."
+    example: "GET /patients/ returns a cached list on the second call. POST /patients/ always hits the server to create a new record."
+    source: "Slide 8, Quiz 6"
+    bloom: understand
+
+  - id: rest-anatomy-card-12
+    type: predict
+    prompt: "Which HTTP method do you use to delete patient #5 from the system?"
+    answer: "DELETE /patients/5/"
+    explanation: "DELETE removes the specified resource. It requires only the resource identifier in the URL. No request body is needed."
+    example: "DELETE https://api.example.com/v1/patients/5/"
+    source: "Slide 8"
+    bloom: apply

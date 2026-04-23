@@ -6,6 +6,7 @@ lang: bash
 variant: starter-solution
 tags:
   - networking
+source: "Mod07 Ch21; materials/labs/Lab7.pdf"
 ---
 
 ## Prompt

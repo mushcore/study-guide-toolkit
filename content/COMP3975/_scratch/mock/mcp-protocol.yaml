@@ -1,0 +1,29 @@
+- id: mcp-protocol-q-01
+  type: MCQ
+  topic: "Model Context Protocol"
+  marks: 1
+  question: "Which organization created Model Context Protocol?"
+  choices:
+    - "OpenAI"
+    - "Meta"
+    - "Google"
+    - "Anthropic"
+  correct: 3
+  rationale: "Anthropic created and maintains Model Context Protocol as an open standard for connecting AI models to external tools, resources, and data sources. This is tested verbatim in past-exam Q4. Option A (OpenAI) is the creator of the GPT model family and the function-calling API, not MCP. Option B (Meta) develops the LLaMA model family; MCP is not their protocol. Option C (Google) provides Gemini and Vertex AI; MCP was designed by Anthropic independent of Google's offerings."
+  bloom: remember
+  source: "laravel_mcp.pptx slides 1–10; final-practice.docx Q4"
+
+- id: mcp-protocol-q-02
+  type: MCQ
+  topic: "Model Context Protocol"
+  marks: 1
+  question: "An MCP server exposes a `GET /summaries/weekly` endpoint that returns pre-computed data for the AI to read. Which MCP primitive does this represent?"
+  choices:
+    - "Tools (MCP) — because the AI invokes an endpoint"
+    - "Prompts (MCP) — because it returns formatted text"
+    - "Resources (MCP) — because it exposes a data source"
+    - "Bindings (MCP) — because it connects to external data"
+  correct: 2
+  rationale: "Resources (MCP) are data sources the AI loads into context — files, database queries, or data endpoints. A read-only summary endpoint that returns data for the AI to consume is a Resource. Option A (Tools) is incorrect: Tools are executable actions with potential side effects, such as creating a record or running a script. The endpoint described is read-only with no side effects. Option B (Prompts) is also incorrect: Prompts are reusable LLM interaction templates — structured input to the model, not data returned by an endpoint. Option D (Bindings) is an Azure Functions concept, not an MCP primitive — the three MCP primitives are Tools, Resources, and Prompts only."
+  bloom: understand
+  source: "laravel_mcp.pptx slides 1–10; final-practice.docx Q3"

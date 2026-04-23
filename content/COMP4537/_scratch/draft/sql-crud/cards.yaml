@@ -1,0 +1,89 @@
+id: "sql-crud"
+name: "SQL CRUD: querying and modifying data"
+tags: [SQL, SELECT, INSERT, UPDATE, DELETE, WHERE, JOIN, CRUD, GROUP-BY, subquery]
+prose: "SQL CRUD covers the four core database operations — SELECT, INSERT, UPDATE, DELETE — along with filtering (WHERE), grouping (GROUP BY/HAVING), pattern matching (LIKE), joins, and subqueries. The most common exam traps are WHERE on aggregates (use HAVING), bare-comma joins (Cartesian product), and IS vs = for string comparisons."
+cards:
+  - id: sql-crud-card-01
+    type: cloze
+    source: "Slide 7"
+    bloom: remember
+    front: "HAVING filters {{aggregated groups after GROUP BY}}; WHERE filters individual rows before grouping."
+    explanation: "WHERE runs before GROUP BY and cannot see aggregate results. HAVING runs after GROUP BY and can filter on COUNT, AVG, etc."
+    example: |
+      SELECT Country, COUNT(CustomerID) AS c
+      FROM Customers
+      GROUP BY Country
+      HAVING c > 2;
+
+  - id: sql-crud-card-02
+    type: predict
+    source: "Slide 7"
+    bloom: apply
+    front: "The patient table has 3 rows. The visit table has 3 rows. What does `SELECT * FROM patient, visit` return?"
+    answer: "9 rows — the Cartesian product pairs every patient row with every visit row."
+    explanation: "A bare comma in FROM produces a Cartesian product: every row in the left table is joined with every row in the right table. The correct equi-join adds WHERE patient.patientid = visit.patientid to return only matched rows."
+    example: |
+      -- Cartesian (wrong)
+      SELECT * FROM patient, visit;
+      -- Equi-join (right)
+      SELECT * FROM patient, visit
+      WHERE patient.patientid = visit.patientid;
+
+  - id: sql-crud-card-03
+    type: name
+    source: "Slide 7, Quiz 10"
+    bloom: remember
+    front: "Which SQL keyword retrieves only unique values from a column?"
+    answer: "DISTINCT"
+    explanation: "SELECT DISTINCT Country FROM Customers returns one row per unique country value, eliminating duplicates from the result set."
+    example: |
+      SELECT DISTINCT Country FROM Customers;
+
+  - id: sql-crud-card-04
+    type: cloze
+    source: "Slide 7, Quiz 10"
+    bloom: apply
+    front: "Use {{parameterized queries}} with `?` placeholders — never string interpolation — to prevent SQL injection."
+    explanation: "Template-literal SQL concatenates user input directly into the query string. A crafted input can alter the query's logic. Parameterized queries pass user data as a separate argument; the driver treats it as data, never as SQL syntax."
+    example: |
+      // Vulnerable
+      db.query(`SELECT * FROM Users WHERE name = '${userInput}'`);
+      // Safe
+      db.query('SELECT * FROM Users WHERE name = ?', [userInput]);
+
+  - id: sql-crud-card-05
+    type: cloze
+    source: "Slide 7, Quiz 10"
+    bloom: remember
+    front: "In a LIKE pattern, `%` matches {{zero or more characters}} and `_` matches exactly one character."
+    explanation: "LIKE is used in WHERE clauses for pattern matching. WHERE Country LIKE 'A%' returns every country starting with 'A'. The underscore wildcard matches a single character at that position."
+    example: |
+      -- Countries starting with 'A'
+      SELECT * FROM Customers WHERE Country LIKE 'A%';
+      -- Names starting with 'a' or 'B'
+      SELECT * FROM Customers
+      WHERE name LIKE 'a%' OR name LIKE 'B%';
+
+  - id: sql-crud-card-06
+    type: predict
+    source: "Quiz 10"
+    bloom: analyze
+    front: "A developer writes `WHERE department is 'HR'`. What happens, and what is the correct fix?"
+    answer: "Syntax error. `IS` tests for NULL, not string equality. Replace with `WHERE department = 'HR'`."
+    explanation: "`IS` and `IS NOT` are reserved for NULL comparisons: `WHERE column IS NULL`. Using IS with a string literal is invalid SQL syntax. The equality operator = handles string comparisons."
+    example: |
+      -- Wrong
+      SELECT * FROM Employees WHERE department is 'HR';
+      -- Right
+      SELECT * FROM Employees WHERE department = 'HR';
+
+  - id: sql-crud-card-07
+    type: name
+    source: "Slide 7"
+    bloom: apply
+    front: "You want every product whose price exceeds the catalogue average. Write the SQL using a subquery."
+    answer: "SELECT * FROM Products WHERE price > (SELECT AVG(price) FROM Products);"
+    explanation: "The inner SELECT runs first and returns the average price as a scalar. The outer WHERE compares each row's price against that scalar. This pattern extends to MAX, MIN, or any aggregate."
+    example: |
+      SELECT * FROM Products
+      WHERE price > (SELECT AVG(price) FROM Products);

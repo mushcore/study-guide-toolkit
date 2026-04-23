@@ -1,0 +1,167 @@
+id: "db-relational-design"
+name: "Relational DB design: keys, relationships, and normalization"
+tags:
+  - MySQL
+  - primary-key
+  - foreign-key
+  - 1NF
+  - 2NF
+  - referential-integrity
+  - 1:M
+  - M:M
+prose: >
+  A relational database stores each entity in its own table. A primary key
+  uniquely identifies each row; a foreign key links a child table to a parent
+  table's primary key. That link encodes a 1:M relationship. M:M relationships
+  require a junction table. Referential integrity guarantees every foreign key
+  value points to an existing primary key. First normal form (1NF) requires
+  atomic values per cell. Second normal form (2NF) requires every non-key
+  column to depend on the whole primary key.
+cards:
+
+  - id: db-relational-design-card-01
+    type: cloze
+    bloom: remember
+    source: "Slide 7"
+    front: >
+      A {{primary key}} is a column that uniquely identifies each row in a
+      table and cannot be NULL.
+    back: >
+      primary key
+    explanation: >
+      The primary key enforces row uniqueness. Every table should have one.
+      The patientid column in the Patient table is a primary key.
+    example: >
+      In CREATE TABLE patient, the line PRIMARY KEY(patientid) declares
+      patientid as the primary key.
+
+  - id: db-relational-design-card-02
+    type: cloze
+    bloom: remember
+    source: "Slide 7"
+    front: >
+      A {{foreign key}} is a column in a child table that references the
+      primary key of a parent table.
+    back: >
+      foreign key
+    explanation: >
+      The foreign key is the link between tables. patientid in the Visit
+      table is a foreign key referencing patientid in Patient.
+    example: >
+      CONSTRAINT fk_has_patient FOREIGN KEY(patientid) REFERENCES patient(patientid)
+
+  - id: db-relational-design-card-03
+    type: cloze
+    bloom: understand
+    source: "Slide 7, Slide 29-30"
+    front: >
+      {{Referential integrity}} means every foreign key value in a child table
+      has a matching primary key value in the parent table.
+    back: >
+      Referential integrity
+    explanation: >
+      Deleting a parent row with matching child rows breaks referential
+      integrity. MySQL blocks such deletions when a foreign key constraint
+      is active.
+    example: >
+      Deleting a patient row that has visit rows violates referential
+      integrity — the visit rows become orphans pointing to a non-existent
+      patient.
+
+  - id: db-relational-design-card-04
+    type: cloze
+    bloom: understand
+    source: "Slide 7, Quiz 10"
+    front: >
+      A table satisfies {{first normal form (1NF)}} when every column holds
+      one atomic value per row and no repeating groups exist.
+    back: >
+      first normal form (1NF)
+    explanation: >
+      Storing multiple visit dates in one column ("2002-01-01, 2019-09-09")
+      violates 1NF. Splitting into separate visit rows with one date each
+      satisfies 1NF.
+    example: >
+      Patient table with visitDate1, visitDate2, visitDate3 columns violates
+      1NF. A separate Visit table with one visitDate per row satisfies 1NF.
+
+  - id: db-relational-design-card-05
+    type: cloze
+    bloom: analyze
+    source: "Slide 10, Quiz 10"
+    front: >
+      A table satisfies {{second normal form (2NF)}} when it satisfies 1NF
+      and every non-key column depends on the entire primary key, not a
+      subset.
+    back: >
+      second normal form (2NF)
+    explanation: >
+      A table with PersonID (PK), Name, City, Country satisfies 1NF (atomic
+      values) but violates 2NF because Country depends on City, not on
+      PersonID.
+    example: >
+      ISAQuiz10 Q5: the professor's answer is "violates 2NF, but complies
+      with 1NF" — the table has atomic values (1NF passes) but City/Country
+      depend on each other rather than on PersonID (2NF fails).
+
+  - id: db-relational-design-card-06
+    type: predict
+    bloom: apply
+    source: "Slide 7, Quiz 10"
+    front: >
+      The patient table has 3 rows. The visit table has 3 rows.
+      What does `SELECT * FROM patient, visit` return?
+    back: >
+      9 rows — the Cartesian product of 3 × 3.
+    explanation: >
+      A Cartesian join pairs every row from the first table with every row
+      from the second. No WHERE clause filters the result, so all combinations
+      are included: 3 × 3 = 9.
+    example: >
+      ISAQuiz10 Q6: identical column names in both tables do not reduce row
+      count. The result is always n × m rows.
+
+  - id: db-relational-design-card-07
+    type: diagram
+    bloom: analyze
+    source: "Quiz 10, Q4"
+    front: >
+      Two tables are shown below. Identify the relationship type between them.
+
+      person table: personID (PK), name, dob
+      birthCertificate table: certID (PK), personID (FK), issueDate
+
+      The personID column in birthCertificate is unique — no person appears
+      twice in that column.
+    back: >
+      1:1 — one person has exactly one birth certificate; one certificate
+      belongs to exactly one person.
+    explanation: >
+      When the foreign key column in the child table is constrained to be
+      unique, each parent row maps to at most one child row. That is a 1:1
+      relationship, not 1:M.
+    example: >
+      ISAQuiz10 Q4: the person/birthCertificate schema is a classic 1:1.
+      Contrast with Patient/Visit where one patient can have many visit rows
+      (1:M).
+
+  - id: db-relational-design-card-08
+    type: name
+    bloom: apply
+    source: "Slide 7, Slide 65-68"
+    front: >
+      An Author table and a Book table need to be linked so that one author
+      can write many books and one book can have many authors. What table
+      structure do you add, and what does its primary key consist of?
+    back: >
+      Add a junction table (e.g., AuthorBook) with a composite primary key
+      made up of authorid (FK) and bookid (FK).
+    explanation: >
+      No single foreign key can represent M:M. A junction table decomposes
+      the M:M into two 1:M relationships: Author → AuthorBook and
+      Book → AuthorBook. The composite PK (authorid + bookid) uniquely
+      identifies each author–book pairing.
+    example: >
+      AuthorBook(authorid FK, bookid FK, PRIMARY KEY(authorid, bookid)) with
+      FOREIGN KEY(authorid) REFERENCES author(authorid) and FOREIGN
+      KEY(bookid) REFERENCES book(bookid).

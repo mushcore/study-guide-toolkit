@@ -8,6 +8,7 @@ tags:
   - text-processing
   - scripting
   - processes
+source: "Mod09 Ch28; materials/labs/Lab9.pdf; materials/past-exams/midterm.md Q60"
 ---
 
 ## Prompt

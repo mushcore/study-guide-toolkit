@@ -1,0 +1,28 @@
+- id: public-private-keys-q-01
+  type: MCQ
+  topic: "Asymmetric encryption — signing and verification key directions"
+  marks: 2
+  question: |
+    Amir signs a message using asymmetric encryption and sends it to Tom.
+    Tom wants to verify that the message came from Amir and was not altered.
+    Which key does Tom use?
+  choices:
+    - "Tom's private key"
+    - "Tom's public key"
+    - "Amir's private key"
+    - "Amir's public key"
+  correct: 3
+  rationale: |
+    Verification uses the sender's public key. Amir signed the message with Amir's private key —
+    only Amir holds that key, so only Amir could have produced a valid signature. Tom uses Amir's
+    public key to verify the signature: if the check passes, the message came from Amir and was
+    not tampered with in transit. Tom's own keys play no role in this verification step. Option A
+    is the most seductive wrong answer, confirmed by ISAQuiz11 Q9: students confuse "verify" with
+    "decrypt" and reach for the receiver's private key. Decryption of a confidential inner envelope
+    uses the receiver's private key — but verification of a signature is a separate operation with
+    the opposite key direction. Option B (Tom's public key) would be used only if Tom had signed
+    something himself and needed external parties to verify it. Option C (Amir's private key) is
+    the key Amir used to sign — it is kept secret and never shared, so Tom cannot hold it.
+  bloom: understand
+  source: "Slide 9, Slide 10, ISAQuiz11 Q9"
+  tags: []

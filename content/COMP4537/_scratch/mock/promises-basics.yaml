@@ -1,0 +1,78 @@
+- id: promises-basics-q-01
+  type: MCQ
+  topic: "Promises: Constructor, States, and Eager Execution"
+  marks: 2
+  question: |
+    What is the output of the following code?
+
+    ```js
+    const fn1 = () => new Promise((resolve, reject) => {
+      console.log(1);
+      resolve('success');
+    });
+
+    fn1().then((res) => {
+      console.log(res);
+    });
+
+    console.log('start');
+    ```
+  choices:
+    - "`1`, `start`, `success`"
+    - "`start`, `1`, `success`"
+    - "`1`, `success`, `start`"
+    - "`start`, `success`, `1`"
+  correct: 0
+  rationale: |
+    The executor runs eagerly — immediately on construction, before any `.then()` is attached or any subsequent synchronous statement executes. `console.log(1)` fires first because it sits inside the executor. `resolve('success')` changes the Promise state to fulfilled synchronously, but the `.then()` callback is not called at that moment; it is enqueued as a microtask. `console.log('start')` is the next synchronous statement and runs before the microtask queue drains, so `start` appears second. Only after the call stack empties does the microtask queue drain, printing `success` last. Distractor B targets the misconception that the executor is deferred until a consumer attaches — students who believe `.then()` triggers the executor would expect `start` first. Distractor C targets students who assume `resolve()` calls the `.then()` handler inline, before returning to the outer synchronous code. Distractor D targets students who believe both the executor and the handler are deferred, placing all async activity after synchronous code.
+  bloom: apply
+  source: "Slide 6, ISAQuiz8 Q2"
+
+# concept-variant-of: promises-basics-q-01
+- id: promises-basics-q-02
+  type: MCQ
+  topic: "Promises: Constructor, States, and Eager Execution"
+  marks: 2
+  question: |
+    What is the output of the following code?
+
+    ```js
+    let promise = new Promise(function(resolve, reject) {
+      console.log('2');
+      reject('3');
+      resolve('4');
+      console.log('5');
+    });
+    promise.then(
+      (val)    => console.log(val),
+      (reason) => console.log(reason)
+    );
+    console.log('1');
+    ```
+  choices:
+    - "`2`, `5`, `1`, `3`"
+    - "`2`, `5`, `1`, `4`"
+    - "`2`, `5`, `3`, `1`"
+    - "`1`, `2`, `5`, `3`"
+  correct: 0
+  rationale: |
+    The executor runs eagerly, so `console.log('2')` fires first. `reject('3')` immediately transitions the Promise to rejected and enqueues the rejection handler as a microtask with argument `'3'`. `resolve('4')` arrives after the Promise is already settled — settlement is permanent, so this call is silently ignored and `'4'` never appears in the output. `console.log('5')` still executes synchronously inside the executor. After the executor returns, `promise.then(...)` registers the handlers (the rejection handler is already queued). `console.log('1')` runs synchronously. Only after the call stack empties does the microtask queue drain, invoking the rejection handler and printing `'3'`. Distractor B targets the misconception that `resolve()` wins over `reject()` because it follows it, causing `'4'` instead of `'3'`. Distractor C targets students who believe microtasks drain immediately after `reject()` fires, printing `'3'` before the synchronous `console.log('1')`. Distractor D targets students who expect the executor to be deferred, placing the synchronous `console.log('1')` before the executor body.
+  bloom: analyze
+  source: "Slide 6, ISAQuiz8 Q3"
+
+- id: promises-basics-q-03
+  type: MCQ
+  topic: "Promises: Constructor, States, and Eager Execution"
+  marks: 2
+  question: |
+    Which statement about Promise states is **incorrect**?
+  choices:
+    - "A pending Promise can be fulfilled with a value or rejected with a reason."
+    - "Once a Promise is settled, calling `resolve()` or `reject()` again on it has no effect."
+    - "A Promise transitions from pending to fulfilled when `resolve()` is called, and from pending to rejected when `reject()` is called."
+    - "A pending Promise cannot be fulfilled with a value or rejected with a reason."
+  correct: 3
+  rationale: |
+    The incorrect statement is D. A Promise in the pending state is precisely the state in which it *can* be fulfilled or rejected — that is the only state from which a transition is possible. `resolve(value)` transitions pending to fulfilled; `reject(reason)` transitions pending to rejected. Once a Promise leaves the pending state it is settled, and all subsequent calls to `resolve()` or `reject()` are silent no-ops (statement B). Statement A and C correctly describe valid one-way transitions. Distractor A looks suspicious to students who conflate "pending" with "not yet usable," but pending is the active, transitionable state. Distractor B mirrors a real pitfall — some students assume multiple `resolve()` calls each trigger a `.then()` handler, which is false. Distractor C is a restatement of the correct state-machine transitions and is therefore a true statement, not the incorrect one.
+  bloom: remember
+  source: "Slide 6, ISAQuiz8 Q4"

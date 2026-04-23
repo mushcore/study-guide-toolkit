@@ -1,0 +1,17 @@
+- id: restful-url-design-q-01
+  type: MCQ
+  topic: "RESTful URL Design and API Versioning"
+  marks: 2
+  question: |
+    A team publishes `GET /getPatient/1` on day one.
+    Six months later they want to add versioning. Which statement is true?
+  choices:
+    - "They can add `/v1/` to the path without breaking existing clients because the resource ID stays the same."
+    - "Adding `/v1/` retroactively is itself a breaking change — every existing client must update its endpoint string."
+    - "Versioning is only required when the HTTP method changes, not when the path structure changes."
+    - "The unversioned path `/getPatient/1` automatically redirects to `/v1/getPatient/1` once versioning is enabled."
+  correct: 1
+  rationale: |
+    API versioning must be designed in from the first public release. Clients that start calling `/getPatient/1` on day one have hard-coded that path. Renaming it to `/v1/patients/1` breaks every existing integration — that rename is itself a breaking change. Option A presents a common misconception: students assume the ID value is what clients depend on, not the URL structure; but REST clients bind to the full URL, not just the numeric segment. Option C conflates HTTP method changes (which are a separate kind of breaking change) with URL structural changes; both require a version bump for established clients. Option D invents automatic redirect behaviour — no framework creates redirects automatically when versioning is added; redirects must be explicitly configured, and even then existing clients pointing to the old path are broken until the redirect is live.
+  bloom: analyze
+  source: "Slide 8, Slide 11, Lesson 17"

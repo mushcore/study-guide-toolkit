@@ -1,0 +1,47 @@
+# concept-pair: colon syntax — appears also on artisan-composer-q-02
+- id: artisan-composer-q-01
+  type: MCQ
+  topic: "Artisan CLI and Composer"
+  marks: 1
+  question: "Which command correctly creates a new Laravel migration file for a `products` table?"
+  choices:
+    - "php artisan make-migration create_products_table"
+    - "php artisan make:migration create_products_table"
+    - "composer make:migration create_products_table"
+    - "artisan make:migration create_products_table"
+  correct: 1
+  rationale: "Artisan commands use colon-separated namespaces: `make:migration` (with a colon). The full invocation is always prefixed `php artisan`. Option A (`make-migration` with a hyphen) is the classic exam distractor from past-exam Q6 — hyphenated forms do not exist in Artisan. Option C (`composer make:migration`) confuses Artisan with Composer; `composer` manages dependencies, not app code generation. Option D (`artisan make:migration`) omits the required `php` prefix — `artisan` is a PHP script and must be invoked as `php artisan`."
+  bloom: remember
+  source: "intro_to_laravel.pptx; final-practice.docx Q6"
+  tags: [pretest]
+
+# concept-pair: colon syntax — appears also on artisan-composer-q-01
+- id: artisan-composer-q-02
+  type: MCQ
+  topic: "Artisan CLI and Composer"
+  marks: 1
+  question: "A teammate cloned the repository. The `vendor/` folder is absent. Which command restores all PHP dependencies?"
+  choices:
+    - "php artisan install"
+    - "npm install"
+    - "composer install"
+    - "composer create-project"
+  correct: 2
+  rationale: "`composer install` reads `composer.json` (and `composer.lock` for exact versions) and downloads all listed dependencies into `vendor/`. This is the standard command for restoring dependencies after a clone. Option A (`php artisan install`) does not exist; Artisan has no `install` command for Composer packages. Option B (`npm install`) installs JavaScript dependencies from `package.json`, not PHP packages. Option D (`composer create-project`) scaffolds a brand-new project — running it inside an existing project would overwrite files rather than restore `vendor/`."
+  bloom: remember
+  source: "intro_to_laravel.pptx; intro_to_laravel_SCRIPT.docx"
+
+- id: artisan-composer-q-03
+  type: MCQ
+  topic: "Artisan CLI and Composer"
+  marks: 1
+  question: "Which Artisan command opens an interactive REPL that boots the full Laravel application so you can test Eloquent models without writing a controller?"
+  choices:
+    - "php artisan repl"
+    - "php artisan test"
+    - "php artisan serve"
+    - "php artisan tinker"
+  correct: 3
+  rationale: "`php artisan tinker` launches a PsySH REPL with the full Laravel environment booted. You can call `\\App\\Models\\Student::all()`, create records, or test relationships interactively without writing a controller or opening a browser. Option A (`php artisan repl`) does not exist — the correct name is `tinker`. Option B (`php artisan test`) runs the PHPUnit test suite, not an interactive REPL. Option C (`php artisan serve`) starts the development HTTP server at `localhost:8000` — it is a web server, not a REPL."
+  bloom: remember
+  source: "intro_to_laravel.pptx; intro_to_laravel_SCRIPT.docx"

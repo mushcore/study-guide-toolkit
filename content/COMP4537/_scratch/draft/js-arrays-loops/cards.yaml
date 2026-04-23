@@ -1,0 +1,98 @@
+id: js-arrays-loops
+name: "Arrays, loops, iteration patterns"
+tags: [arrays, for-loop, iteration, index, break, continue]
+prose: "JavaScript arrays are sparse objects. Unassigned slots return undefined. Loop boundaries with <= instead of < cause an off-by-one that reads undefined on the last pass."
+cards:
+  - id: js-arrays-loops-card-01
+    type: predict
+    prompt: "Predict the output: arr = []; arr[1] = 1234; console.log(arr[0]);"
+    answer: "undefined"
+    explanation: "Index 0 was never assigned. Unassigned sparse slots return undefined, not an error."
+    example: |
+      let arr = [];
+      arr[1] = 1234;
+      console.log(arr[0]); // undefined — index 0 was never assigned
+    source: "ISAQuiz2"
+    bloom: apply
+
+  - id: js-arrays-loops-card-02
+    type: predict
+    prompt: "arr = ['a','b','c','d','e','f']; What does arr[arr.length / 2] return?"
+    answer: "'d'"
+    explanation: "arr.length is 6. 6/2 = 3. arr[3] is 'd' (zero-indexed: a=0, b=1, c=2, d=3)."
+    example: |
+      const arr = ['a', 'b', 'c', 'd', 'e', 'f'];
+      console.log(arr[arr.length / 2]); // arr[3] = 'd'
+    source: "ISAQuiz2"
+    bloom: apply
+
+  - id: js-arrays-loops-card-03
+    type: cloze
+    prompt: "Using `i <= arr.length` in a for-loop causes the last iteration to read arr[___], which returns ___."
+    answer: "arr.length; undefined"
+    explanation: "arr.length is one past the last valid index. That slot does not exist and evaluates to undefined."
+    example: |
+      const arr = [1, 2, 3];
+      for (let i = 0; i <= arr.length; i++) {
+        console.log(arr[i]); // final pass: arr[3] = undefined
+      }
+    source: "ISAQuiz2"
+    bloom: understand
+
+  - id: js-arrays-loops-card-04
+    type: predict
+    prompt: "How many lines does this print? for(let i=0;i<3;i++){for(let j=0;j<3;j++){console.log(i,j);}}"
+    answer: "9"
+    explanation: "Two nested loops each running 3 iterations produce 3 × 3 = 9 total iterations."
+    example: |
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          console.log(i, j); // 9 lines total
+        }
+      }
+    source: "ISAQuiz2"
+    bloom: apply
+
+  - id: js-arrays-loops-card-05
+    type: name
+    prompt: "What term describes an array where some index slots were never assigned?"
+    answer: "sparse array"
+    explanation: "A sparse array has holes — integer keys that were skipped. Holes read as undefined."
+    source: "ISAQuiz2"
+    bloom: remember
+
+  - id: js-arrays-loops-card-06
+    type: predict
+    prompt: "Predict the output: for(let i=0;i<5;i++){if(i===2)break; console.log(i);}"
+    answer: "0, 1"
+    explanation: "break fires when i===2 before console.log executes for that iteration. Only 0 and 1 are logged."
+    example: |
+      for (let i = 0; i < 5; i++) {
+        if (i === 2) break;
+        console.log(i); // 0, 1
+      }
+    source: "ISAQuiz2"
+    bloom: apply
+
+  - id: js-arrays-loops-card-07
+    type: predict
+    prompt: "console.log(parseInt('Hello123')) — what does this return?"
+    answer: "NaN"
+    explanation: "parseInt reads left-to-right. The string starts with 'H', not a digit, so parsing fails immediately."
+    example: |
+      console.log(parseInt("Hello123")); // NaN
+      console.log(parseInt("123Hello")); // 123
+    source: "ISAQuiz2"
+    bloom: apply
+
+  - id: js-arrays-loops-card-08
+    type: cloze
+    prompt: "Setting arr.length = 4 on a 6-element array ___ elements at index 4 and 5."
+    answer: "deletes"
+    explanation: "Reducing arr.length truncates the array. Elements at the removed indices are permanently deleted."
+    example: |
+      const arr = [1, 2, 3, 4, 5, 6];
+      arr.length = 4;
+      console.log(arr); // [1, 2, 3, 4]
+    source: "ISAQuiz2"
+    bloom: understand

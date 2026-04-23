@@ -14,7 +14,7 @@ pedagogy: concreteness-fading
 
 ## A concrete example: three ways to do the same thing
 
-You need all students who have a school assigned, sorted by first name, selecting three columns. Here are all three patterns in the professor's preference order:
+You need all students who have a school assigned, sorted by first name, selecting three columns. Here are all three patterns in Laravel's recommended order:
 
 ```php
 // 1. Eloquent ORM — preferred
@@ -76,7 +76,7 @@ The `?` placeholder is replaced safely by Laravel's PDO binding — never concat
 
 ## When to use each pattern
 
-The professor's preference hierarchy is explicit: Eloquent first, Query Builder second, raw SQL only when needed.
+The standard hierarchy in Laravel codebases is explicit: Eloquent first, Query Builder second, raw SQL only when needed.
 
 | Pattern | Use when |
 |---|---|
@@ -84,7 +84,7 @@ The professor's preference hierarchy is explicit: Eloquent first, Query Builder 
 | Query Builder | No model available, or the query is complex enough that Eloquent's API is awkward. |
 | Raw SQL | You need SQL syntax that Query Builder cannot produce. |
 
-> **Q:** You are writing a controller action that selects `FirstName`, `LastName`, `School` from `students`, filters out null schools, and sorts by `FirstName`. You do not need model instances. Which pattern does the professor prefer in this situation?
+> **Q:** You are writing a controller action that selects `FirstName`, `LastName`, `School` from `students`, filters out null schools, and sorts by `FirstName`. You do not need model instances. Which pattern does Laravel convention recommend for this situation, and why?
 > **A:** Query Builder — `DB::table('students')->select([...])->whereNotNull('School')->orderBy('FirstName')->get()`. Eloquent would also be acceptable, but if there is no need for a typed model, Query Builder is the second-choice pattern explicitly demonstrated in the source material.
 
 ## Inspecting the actual SQL

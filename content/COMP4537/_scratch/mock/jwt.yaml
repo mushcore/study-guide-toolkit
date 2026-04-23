@@ -1,0 +1,86 @@
+- id: jwt-q-01
+  type: MCQ
+  topic: "JWT — structure and components"
+  marks: 2
+  question: |
+    A JWT produced by `jwt.sign({ username }, TOKEN_SECRET, { algorithm: 'HS256' })` has
+    which three parts, in order?
+  choices:
+    - "Header, Payload, and Certificate"
+    - "Header, Body, and Footer"
+    - "Header, Payload, and Signature"
+    - "Header, Body, and Digest"
+  correct: 2
+  rationale: |
+    A JWT is three Base64url-encoded strings joined by dots: header, payload, and signature.
+    The header declares the algorithm and token type. The payload carries claims such as username
+    and expiry. The signature is the HMAC of the header and payload computed with the secret key —
+    it proves the token was not tampered with. Option A is the primary distractor in ISAQuiz11 Q5:
+    "Certificate" has no meaning in JWT; a certificate is an X.509 structure used in TLS, not a JWT
+    component. Option B replaces both correct terms: "Body" is not a JWT term (the correct term is
+    Payload), and "Footer" does not exist in the specification. Option D combines the wrong "Body"
+    term with "Digest," which is a raw hash output — not the same as a keyed HMAC signature.
+  bloom: remember
+  source: "Slide 10, ISAQuiz11 Q5"
+  tags: []
+
+# concept-variant-of: jwt-q-01
+- id: jwt-q-02
+  type: MCQ
+  topic: "JWT — signing mechanism and secret key"
+  marks: 2
+  question: |
+    A server signs a JWT using `jwt.sign({ username }, TOKEN_SECRET, { algorithm: 'HS256' })`.
+    The token is later returned by the client. How does the server verify the token has not
+    been tampered with?
+  choices:
+    - "It decrypts the token with the secret key and checks the payload matches its session store"
+    - "It recomputes the HS256 signature over the received header and payload using the secret key and compares it to the token's signature"
+    - "It calls a third-party certificate authority to verify the token's certificate"
+    - "It hashes the entire token with bcrypt and compares the result to a stored hash"
+  correct: 1
+  rationale: |
+    JWT verification is stateless: the server recomputes the HS256 signature by running HMAC-SHA256
+    over the Base64url-encoded header and payload using the same secret key used at signing time.
+    If the recomputed signature matches the signature in the token, the token is authentic and
+    unmodified. No database lookup or session store is required. Option A conflates JWT with
+    session-based authentication: JWT does not use a session store, and the token is not encrypted —
+    it is signed. A common trap is to say the server "decrypts" the token; HS256 is HMAC, not
+    encryption. Option C is a misconception about asymmetric JWT variants (RS256 uses a
+    certificate-authority-backed key pair), but even then the server verifies a signature using its
+    own key, not an external certificate authority call. Option D confuses bcrypt (a slow
+    password-hashing function) with the keyed HMAC used for JWT signing; bcrypt is used for password
+    storage, not token verification.
+  bloom: analyze
+  source: "Slide 10, ISAQuiz11 Q7"
+  tags: []
+
+- id: jwt-q-03
+  type: MCQ
+  topic: "JWT — storage security and XSS exposure"
+  marks: 2
+  question: |
+    A developer stores a JWT in `localStorage` instead of an HttpOnly cookie.
+    What attack does this enable that HttpOnly cookie storage prevents?
+  choices:
+    - "An attacker can intercept the JWT over the network because localStorage is not encrypted"
+    - "An injected script can call `localStorage.getItem('token')` and exfiltrate the JWT"
+    - "The JWT expires immediately because localStorage clears on tab close"
+    - "Cross-site request forgery (CSRF) attacks, because the browser sends localStorage values automatically"
+  correct: 1
+  rationale: |
+    Storing a JWT in `localStorage` makes it readable by any JavaScript on the page, including
+    injected scripts from a Cross-Site Scripting (XSS) attack. An attacker who achieves XSS calls
+    `localStorage.getItem('token')` and ships the value to their server. An HttpOnly cookie is
+    invisible to JavaScript — the browser holds it and sends it on requests, but the page script
+    never sees the value, so there is nothing to steal via XSS. Option A is wrong: localStorage
+    stores data in the browser's memory and is not transmitted over the network by itself; the
+    Secure flag on cookies (not storage location) addresses interception. Option C is wrong:
+    localStorage persists across tabs and sessions until explicitly cleared; sessionStorage clears
+    on tab close, but JWT expiry is controlled by the `expiresIn` claim, not storage. Option D
+    inverts the CSRF mechanism: the browser automatically sends cookies (which is why SameSite
+    matters), not localStorage values; localStorage does not participate in automatic credential
+    sending, so CSRF is not its primary risk.
+  bloom: apply
+  source: "Slide 10, Slide 11, ISAQuiz11 Q8"
+  tags: []

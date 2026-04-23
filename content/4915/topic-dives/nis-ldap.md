@@ -4,10 +4,22 @@ title: NIS + LDAP
 pillar: tech
 priority: high
 chapter: Mod07 Ch21
+source: "Mod07 Ch21; materials/labs/Lab7.pdf"
 tags:
   - networking
   - network
+related: [4915-topic-dns-bind, 4915-topic-etc-passwd-etc-shadow-user-mgmt, 4915-topic-ssh-keys-tunneling]
 ---
+
+An LDAP Distinguished Name (DN) is read right-to-left like a postal address — country at the root, specific entry at the leaf. The tree below is the `cn=alice` example used in Lab 7 (Source: Mod07 Ch21 + Lab 7).
+
+```mermaid
+graph TD
+  DC1["dc=ca"] --> DC2["dc=bcit"]
+  DC2 --> DC3["dc=infosec"]
+  DC3 --> OU["ou=users"]
+  OU --> Alice["cn=alice"]
+```
 
 #### NIS
 
@@ -55,3 +67,9 @@ Hierarchical directory. More scalable than NIS.
 > 5.  Over TLS instead: `ldapsearch -H ldaps://...` (port 636).
 >
 > Read a DN right-to-left like a postal address: CA → BCIT → INFOSEC → users unit → alice. That's how the tree walks.
+
+> **Pitfall**
+>
+> NIS maps are *flat*; LDAP is *hierarchical*. You cannot migrate NIS directly into LDAP without designing a DN tree first. The common migration tool is `migrate_passwd.pl` from the MigrationTools kit — but the schema decisions (where users live, where groups live) happen before any tool runs.
+
+> **Takeaway**: NIS (YP) is the legacy flat-map directory; LDAP is the modern tree-structured replacement. Read an LDAP DN right-to-left like a postal address: country → org → OU → entry. Both provide centralized users; LDAP also authenticates services.

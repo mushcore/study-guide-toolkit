@@ -1,0 +1,49 @@
+# concept-pair: JWT token structure — appears also on jwt-authentication-q-02
+- id: jwt-authentication-q-01
+  type: MCQ
+  topic: "JWT Authentication"
+  marks: 1
+  question: "A JWT token string is structured as three dot-separated sections. What are those sections, in order?"
+  choices:
+    - "payload.header.signature"
+    - "header.signature.payload"
+    - "header.payload.signature"
+    - "claims.header.token"
+  correct: 2
+  rationale: "A JWT is always structured as `header.payload.signature` — three base64-encoded sections separated by dots. The header declares the algorithm; the payload carries claims; the signature is computed from the first two and the secret key. Option A reverses header and payload, which is never the case. Option B places the signature in the middle — the signature always comes last because it is derived from the preceding two sections. Option D uses non-standard names that do not correspond to JWT terminology; 'claims' is what the payload *contains*, not the section name."
+  bloom: remember
+  source: "PHP_JWT.pptx; laravel-jwt_SCRIPT.docx"
+  tags: [pretest]
+
+# concept-pair: reserved claims — appears also on jwt-authentication-q-03
+# concept-pair: JWT token structure — appears also on jwt-authentication-q-01
+- id: jwt-authentication-q-02
+  type: MCQ
+  topic: "JWT Authentication"
+  marks: 1
+  question: "Which reserved JWT claim identifies the intended recipient application of the token?"
+  choices:
+    - "iss (issuer)"
+    - "sub (subject)"
+    - "aud (audience)"
+    - "jti (JWT ID)"
+  correct: 2
+  rationale: "The `aud` (audience) claim identifies which application or service is the intended consumer of the token. When present, the receiving service must verify it is the intended audience. Option A (`iss`) is the issuer — it identifies *who created* the token, not who should receive it. Option B (`sub`) is the subject — it identifies *who the token is about* (typically the user's ID), not the recipient application. Option D (`jti`) is the JWT ID — a unique identifier for this specific token used to prevent replay attacks; it does not identify the recipient."
+  bloom: remember
+  source: "PHP_JWT.pptx; laravel-jwt_SCRIPT.docx"
+
+# concept-pair: reserved claims — appears also on jwt-authentication-q-02
+- id: jwt-authentication-q-03
+  type: MCQ
+  topic: "JWT Authentication"
+  marks: 1
+  question: "Which Composer package does this course use for JWT authentication in Laravel?"
+  choices:
+    - "tymon/jwt-auth"
+    - "php-open-source-saver/jwt-auth"
+    - "laravel/passport"
+    - "firebase/php-jwt"
+  correct: 1
+  rationale: "`php-open-source-saver/jwt-auth` is the package used throughout this course. It is distinct from `tymon/jwt-auth` — a very common real-world package that is explicitly identified as the wrong choice in the course materials. Option A (`tymon/jwt-auth`) is the most common distractor: it is a real and popular package, but it uses a different namespace and setup sequence. Option C (`laravel/passport`) is Laravel's OAuth2 implementation — it uses long-lived personal access tokens, not compact JWTs in the RFC 7519 sense. Option D (`firebase/php-jwt`) is a generic PHP JWT library, not the Laravel-integrated package taught in this course."
+  bloom: remember
+  source: "laravel-jwt_SCRIPT.docx; PHP_JWT.pptx"

@@ -1,0 +1,77 @@
+# concept-pair: retrieving a record — appears also on eloquent-orm-q-03
+- id: eloquent-orm-q-01
+  type: MCQ
+  topic: "Eloquent ORM"
+  marks: 1
+  question: "Which Eloquent method fetches every row from the table and returns an Eloquent Collection?"
+  choices:
+    - "User::get()"
+    - "User::all()"
+    - "User::all()->get()"
+    - "User::select()->all()"
+  correct: 1
+  rationale: "`User::all()` is the correct method — it executes a `SELECT *` query and returns an Eloquent Collection of model instances. Option A (`User::get()`) is invalid as a static call on the model class; `->get()` is a terminal method on a builder chain, not a standalone class method. Option C (`User::all()->get()`) is a real past-exam distractor: `all()` already executes and returns a Collection; calling `->get()` again on a Collection is meaningless and would error. Option D (`User::select()->all()`) reverses the correct chain order — `all()` is a terminal shorthand and cannot follow `select()`."
+  bloom: remember
+  source: "final-practice.docx Q9; laravel_with_students_MySQL_SCRIPT.docx"
+  tags: [pretest]
+
+- id: eloquent-orm-q-02
+  type: MCQ
+  topic: "Eloquent ORM"
+  marks: 1
+  question: "A controller calls `Student::create(['FirstName' => 'Ana', 'School' => 'BCIT'])` and gets a MassAssignmentException. What is the most likely cause?"
+  choices:
+    - "The `students` table does not exist in the database"
+    - "The model is missing a `$fillable` array listing the allowed fields"
+    - "The `create()` method requires the `--api` flag to be set on the controller"
+    - "Mass assignment is disabled globally in `config/database.php`"
+  correct: 1
+  rationale: "Eloquent's mass assignment protection blocks `create()` unless the model declares a `$fillable` array listing the permitted field names. When `$fillable` is absent, any `create()` or `fill()` call throws a `MassAssignmentException`. Option A (missing table) would produce a different error — a PDO or query exception, not a MassAssignmentException. Option C (controller flag) is invented — the `--api` flag affects route generation, not mass assignment behavior. Option D (global config) is also incorrect; mass assignment protection is model-level, controlled by the `$fillable` property, not a global config setting."
+  bloom: understand
+  source: "laravel_with_students_MySQL_SCRIPT.docx; laravel_with_sqlite_API_SCRIPT.docx"
+
+# concept-pair: retrieving a record — appears also on eloquent-orm-q-01
+- id: eloquent-orm-q-03
+  type: MCQ
+  topic: "Eloquent ORM"
+  marks: 1
+  question: "A `show($id)` controller method calls `Student::findOrFail($id)`. The student with that ID does not exist. What happens next?"
+  choices:
+    - "The method returns `null` and execution continues"
+    - "Laravel throws a MassAssignmentException and returns a 500 response"
+    - "Laravel throws a ModelNotFoundException and automatically returns a 404 HTTP response"
+    - "The method returns an empty Eloquent Collection"
+  correct: 2
+  rationale: "`findOrFail()` is designed specifically for the missing-record scenario. When no row matches the given ID, it throws a `ModelNotFoundException`. Laravel's exception handler converts that exception to a 404 HTTP response automatically — no manual check is needed. Option A (`null` return) describes the behavior of `find()`, not `findOrFail()`. Option B (MassAssignmentException) is raised by `create()` or `fill()` without `$fillable` — it has nothing to do with `findOrFail()`. Option D (empty Collection) is what methods like `where()->get()` return when nothing matches; `findOrFail()` raises an exception instead."
+  bloom: apply
+  source: "laravel_with_sqlite_API_SCRIPT.docx; laravel_with_students_MySQL_SCRIPT.docx"
+
+- id: eloquent-orm-q-04
+  type: MCQ
+  topic: "Eloquent ORM"
+  marks: 1
+  question: "You need students whose `School` is not null, ordered by `FirstName`. Which Eloquent chain is correct?"
+  choices:
+    - "Student::all()->whereNotNull('School')->orderBy('FirstName')"
+    - "Student::whereNotNull('School')->orderBy('FirstName')->get()"
+    - "Student::where('School', '!=', null)->orderBy('FirstName')"
+    - "DB::table('students')->whereNotNull('School')->orderBy('FirstName')"
+  correct: 1
+  rationale: "The correct pattern starts the chain on the model class (`Student::whereNotNull(...)`), adds any additional clauses, and terminates with `->get()` to execute the query and return results. Option A is a classic exam trap: `Student::all()` fetches *every* row first, then the subsequent `where` filters in PHP memory — it does not add a SQL WHERE clause. This also does not call `->get()` at the end. Option C (`where('School', '!=', null)`) uses a comparison against PHP `null`, not the SQL IS NOT NULL check; use `whereNotNull()` for that. Option D uses Query Builder (`DB::table()`), which is the second-choice pattern — valid but not idiomatic Eloquent."
+  bloom: apply
+  source: "laravel_with_students_MySQL_SCRIPT.docx"
+
+- id: eloquent-orm-q-05
+  type: MCQ
+  topic: "Eloquent ORM"
+  marks: 1
+  question: "Which Artisan command generates both a model class and its corresponding migration file in a single step?"
+  choices:
+    - "php artisan make:model Student --migration"
+    - "php artisan make:model Student -m"
+    - "php artisan make:model Student && php artisan make:migration"
+    - "php artisan make:migration Student -m"
+  correct: 1
+  rationale: "The `-m` flag (shorthand for `--migration`) passed to `make:model` tells Artisan to generate both the model file and a timestamped migration file in one command. Option A (`--migration`) is actually a valid long-form flag — however, the source material consistently demonstrates `-m` as the canonical shorthand; if `--migration` were a choice alongside `-m`, `-m` is the tested form. Option C (two chained commands) achieves the same result but is not the single-command shortcut being tested. Option D swaps the command; `make:migration` creates only a migration, and passing `-m` to it has no defined behavior."
+  bloom: remember
+  source: "laravel_with_students_MySQL_SCRIPT.docx; intro_to_laravel.pptx"

@@ -35,6 +35,18 @@ related: [laravel-mvc-blade, rest-api-design]
 
 Both macros accept `->only([...])` and `->except([...])` to restrict which routes are registered.
 
+```mermaid
+graph LR
+    Req[HTTP Request] --> Router[routes/api.php]
+    Router -->|"Route::apiResource match"| MW[Middleware stack]
+    MW -->|"auth:sanctum, throttle"| Ctrl["Controller@method\ne.g. StudentsController@index"]
+    Ctrl --> Model[Eloquent Model]
+    Model --> DB[(Database)]
+    DB --> Model
+    Model --> Ctrl
+    Ctrl -->|"response()->json(...)"| Resp[JSON Response]
+```
+
 ## Route caching commands
 
 | Command | Effect |

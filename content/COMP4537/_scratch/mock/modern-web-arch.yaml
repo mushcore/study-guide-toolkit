@@ -1,0 +1,19 @@
+- id: modern-web-arch-q-01
+  type: MCQ
+  topic: "Modern Web Architecture Trends"
+  marks: 2
+  question: |
+    A news organization runs a website, a mobile app, and a smart-TV interface —
+    all displaying the same article content. The backend stores articles once and
+    delivers them via API; each frontend renders them independently.
+    Which architectural pattern describes this backend design?
+  choices:
+    - "Serverless architecture — the backend runs as stateless cloud functions invoked per request."
+    - "Headless architecture — the backend is decoupled from the frontend presentation layer."
+    - "Monolithic architecture — all three frontends share a single deployable unit."
+    - "Edge computing — content is processed close to the user rather than in a central data center."
+  correct: 1
+  rationale: |
+    Headless architecture decouples the backend (data and logic) from the frontend (presentation). The backend exposes content via API; any number of distinct frontends consume the same API and render content in whatever format suits their interface. This is the exact pattern described — one backend, three independent frontends. Option A (serverless) targets the misconception that headless and serverless are the same thing; serverless is an infrastructure decision about who manages servers, not a decision about frontend coupling. Option C (monolithic) targets students who confuse the fact that all three frontends share one backend with those frontends sharing a single deployable unit — they share an API, not a codebase. Option D (edge computing) is a distractor for students who associate distributed delivery (content reaching multiple devices) with edge processing; edge computing is about geographic proximity of compute nodes, not about frontend decoupling.
+  bloom: apply
+  source: "Slide 8, Lesson 18"

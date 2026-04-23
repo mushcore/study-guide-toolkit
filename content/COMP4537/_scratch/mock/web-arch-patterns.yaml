@@ -1,0 +1,35 @@
+- id: web-arch-patterns-q-01
+  type: MCQ
+  topic: "Web Architectural Patterns"
+  marks: 2
+  question: |
+    A startup deploys its entire product — UI, business logic, and database access —
+    as a single deployable unit. The team needs to add a coupon feature.
+    What must happen before the new code reaches users?
+  choices:
+    - "Only the UI component is redeployed; business logic and data access layers continue running."
+    - "The entire application must be shut down, recompiled, and redeployed."
+    - "The coupon feature is deployed as a separate service without touching the running app."
+    - "The database access layer is updated independently while the rest of the app stays live."
+  correct: 1
+  rationale: |
+    Monolithic architecture packages all components into one deployable unit. Any change — even to a single feature — requires shutting down, rebuilding, and redeploying the entire application. Option A describes layered architecture behaviour where individual layers can theoretically be replaced, not a monolith where no such boundary exists. Option C describes MSA — the ability to deploy a single service without touching others is the defining advantage that motivated the migration away from monolithic design. Option D is a distractor targeting students who confuse layered architecture (where layers are logical boundaries) with truly independent deployability; in a monolith, the layers are logical, not process-level.
+  bloom: understand
+  source: "Slide 2, Lesson 15"
+
+- id: web-arch-patterns-q-02
+  type: MCQ
+  topic: "Web Architectural Patterns"
+  marks: 2
+  question: |
+    In the API-centric architecture pattern, what is the role of the API gateway?
+  choices:
+    - "It stores data for all backend services so they share a common database."
+    - "It routes every client HTTP request to the appropriate backend service and returns JSON to the client."
+    - "It renders HTML pages on the server and sends them directly to the browser."
+    - "It handles only authentication; all other requests bypass it and reach services directly."
+  correct: 1
+  rationale: |
+    In API-centric MSA, the API gateway is the sole entry point for all client requests. The client never calls individual services directly; the gateway routes each request to the correct service, which returns JSON, and the gateway relays the response. Option A confuses the gateway with a shared database — MSA explicitly avoids shared data stores to preserve service independence. Option C describes server-side rendering (SSR), which is the opposite of the API-first / headless pattern; in API-centric design, the client handles all rendering. Option D describes an authentication proxy, a limited deployment pattern where only auth goes through a gateway; full API-centric design routes all traffic, not just auth.
+  bloom: analyze
+  source: "Slide 2, Lesson 15"

@@ -39,7 +39,7 @@ export const ShortcutOverlay = ({ open, onClose }) => {
   if (!open) return null;
   const rows = [
     ['⌘K · /', 'Open command palette'],
-    ['j · k', 'Next / previous card'],
+    ['j · k', 'prev / next card'],
     ['1–5', 'Leitner rating (again → easy)'],
     ['space', 'Reveal answer'],
     ['?', 'Show this overlay'],

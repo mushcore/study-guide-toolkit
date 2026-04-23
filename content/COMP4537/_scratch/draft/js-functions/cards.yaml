@@ -1,0 +1,104 @@
+id: js-functions
+name: "Function declarations, callbacks, first-class functions, closures"
+tags: [callbacks, higher-order, closures, return-types, parameter, argument]
+prose: "JavaScript functions are first-class values: assignable, passable, and returnable. Parameters are definition-site placeholders; arguments are call-site values. A function with no return statement returns undefined. A closure retains access to enclosing-scope variables after that scope exits."
+cards:
+  - id: js-functions-card-01
+    type: cloze
+    prompt: "A function's {{parameter}} is the variable name in the definition; the {{argument}} is the actual value passed at the call site."
+    answer: "parameter; argument"
+    explanation: "These two terms are not synonyms. The definition declares parameters; the caller supplies arguments. COMP4537 quizzes test this distinction by name."
+    example: |
+      function greet(name) { return "Hi " + name; }  // name is the parameter
+      greet("John");                                   // "John" is the argument
+    source: "ISAQuiz3"
+    bloom: remember
+
+  - id: js-functions-card-02
+    type: predict
+    prompt: |
+      What does this code print?
+      ```js
+      function foo(n) {
+        var s = 0;
+        for (let i = 0; i < n; i++) { s += i; }
+      }
+      console.log(foo(3));
+      ```
+    answer: "undefined"
+    explanation: "foo has no return statement. JavaScript implicitly returns undefined. The computed value of s is never exposed."
+    source: "ISAQuiz3"
+    bloom: apply
+
+  - id: js-functions-card-03
+    type: predict
+    prompt: |
+      What does this code print?
+      ```js
+      function subtract(a, b) { return a - b; }
+      console.log(subtract(23, 12) - subtract(10, 3));
+      ```
+    answer: "4"
+    explanation: "subtract(23,12) returns 11. subtract(10,3) returns 7. 11 - 7 = 4."
+    source: "ISAQuiz3"
+    bloom: apply
+
+  - id: js-functions-card-04
+    type: predict
+    prompt: |
+      What does this code print?
+      ```js
+      function checkString(s) { return s === "John"; }
+      checkString("John");
+      ```
+    answer: "Nothing is printed."
+    explanation: "The function returns true, but the return value is discarded. No console.log exists at the call site."
+    source: "ISAQuiz3"
+    bloom: analyze
+
+  - id: js-functions-card-05
+    type: name
+    prompt: "What is a function that either accepts a function as an argument or returns a function called?"
+    answer: "A higher-order function"
+    explanation: "Array.map, Array.filter, and Array.forEach are examples. They accept a callback function as their argument."
+    source: "Slide 3"
+    bloom: remember
+
+  - id: js-functions-card-06
+    type: cloze
+    prompt: "A {{closure}} is a function that retains access to variables from its {{enclosing scope}} after that scope has exited."
+    answer: "closure; enclosing scope"
+    explanation: "The inner function in hiGenerator closes over greeting. Even after hiGenerator returns, greeting remains accessible through the closure's scope chain."
+    example: |
+      function hiGenerator(greeting) {
+        return function(name) {
+          return greeting + ', ' + name;
+        };
+      }
+      const sayHi = hiGenerator('Hello');
+      console.log(sayHi('World')); // Hello, World
+    source: "ISAQuiz6"
+    bloom: understand
+
+  - id: js-functions-card-07
+    type: predict
+    prompt: |
+      What does this code print?
+      ```js
+      function tripleNumber(n) { return n * 3; }
+      for (let i = 0; i < 4; i++) {
+        console.log(tripleNumber(i));
+      }
+      ```
+    answer: "0, 3, 6, 9 (each on a separate line)"
+    explanation: "i iterates 0–3. tripleNumber multiplies each by 3: 0*3=0, 1*3=3, 2*3=6, 3*3=9."
+    source: "ISAQuiz3"
+    bloom: apply
+
+  - id: js-functions-card-08
+    type: name
+    prompt: "What term describes a function passed as an argument to another function, to be called later?"
+    answer: "A callback"
+    explanation: "The receiving higher-order function calls the callback — synchronously or asynchronously. Array.map's argument is a callback."
+    source: "Slide 3"
+    bloom: remember

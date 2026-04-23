@@ -1,0 +1,29 @@
+- id: laravel-routing-controllers-q-01
+  type: MCQ
+  topic: "Routes and Resource Controllers"
+  marks: 1
+  question: "You use `Route::apiResource('invoices', InvoiceController::class)`. How many routes does Laravel register, and which two controller methods are intentionally omitted compared to `Route::resource()`?"
+  choices:
+    - "7 routes; none are omitted — apiResource is identical to resource"
+    - "5 routes; `create` and `edit` are omitted because JSON APIs do not serve HTML forms"
+    - "5 routes; `store` and `destroy` are omitted to prevent unauthorized writes"
+    - "3 routes; only `index`, `show`, and `store` are registered"
+  correct: 1
+  rationale: "`Route::apiResource()` registers 5 routes: index, store, show, update, and destroy. It omits `create` and `edit` because those methods return HTML forms for creating or editing records — irrelevant for a JSON API where the client handles its own UI. Option A is incorrect: `resource()` registers 7 routes while `apiResource()` registers 5. Option C is wrong about which methods are omitted; `store` and `destroy` are included in apiResource — they handle creating and deleting records. Option D (3 routes) is not correct for either resource macro."
+  bloom: understand
+  source: "laravel_with_sqlite_API_SCRIPT.docx; intro_to_laravel_SCRIPT.docx"
+
+- id: laravel-routing-controllers-q-02
+  type: MCQ
+  topic: "Routes and Resource Controllers"
+  marks: 1
+  question: "After adding a new route to `routes/api.php`, a developer hits that path and gets a 404. No typos in the URL. What is the most likely fix?"
+  choices:
+    - "Restart the database because route registration requires a fresh connection"
+    - "Run `php artisan route:clear` to remove the stale route cache"
+    - "Add `->name()` to the route definition so Laravel can find it"
+    - "Move the route to `routes/web.php` so the framework picks it up"
+  correct: 1
+  rationale: "Laravel caches routes to a single file for performance. If you added a route after caching, the new route is invisible until you clear the cache with `php artisan route:clear`. This is the most common cause of 'route not found' bugs right after adding a new declaration. Option A (restarting the database) has no effect on route resolution — routes are PHP files, not database records. Option C (adding `->name()`) assigns a named alias and has nothing to do with whether the route is registered at all. Option D (moving to `web.php`) would change the middleware group; it would not fix a caching issue, and API routes belong in `api.php`."
+  bloom: apply
+  source: "laravel_with_sqlite_API_SCRIPT.docx"

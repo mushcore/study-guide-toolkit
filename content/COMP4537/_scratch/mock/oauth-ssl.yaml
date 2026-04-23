@@ -1,0 +1,29 @@
+- id: oauth-ssl-q-01
+  type: MCQ
+  topic: "OAuth 2.0 — bearer token and authorization model"
+  marks: 2
+  question: |
+    After a user clicks "Login with Google" and approves the consent screen,
+    Google issues a bearer token to ClientApp. An attacker intercepts the token.
+    What access does the attacker gain?
+  choices:
+    - "No access — the bearer token is bound to the original user's IP address"
+    - "Read-only access — bearer tokens cannot be used to modify data"
+    - "Full authorization for the scopes the token covers, because anyone who holds this token is implicitly granted authorization"
+    - "Temporary read access for 60 seconds, because bearer tokens always expire in under a minute"
+  correct: 2
+  rationale: |
+    A bearer token grants authorization by possession alone: anyone who holds this token is
+    implicitly granted authorization. The server does not verify the holder's identity beyond
+    checking that the token is valid and unexpired. An attacker who intercepts the token has
+    the same access as ClientApp for every scope the token covers. This is why bearer tokens
+    must be transmitted exclusively over HTTPS and kept out of logs, URLs, and browser-accessible
+    storage. Option A is wrong: bearer tokens are not IP-bound; the bearer model specifically
+    omits any proof-of-identity requirement beyond possession. Option B is wrong: the token's
+    scope is set at the consent screen and can include write permissions; bearer does not imply
+    read-only. Option D is wrong: bearer tokens issued by OAuth 2.0 providers such as Google
+    typically last much longer than 60 seconds (often hours or months); expiry duration is
+    provider-configured and scope-dependent.
+  bloom: apply
+  source: "Slide 11"
+  tags: []

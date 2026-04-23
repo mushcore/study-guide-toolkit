@@ -1,0 +1,89 @@
+id: restful-url-design
+topics:
+  - id: restful-url-design
+    name: "RESTful URL Design and API Versioning"
+    tags: [REST, URL-design, versioning, plural-nouns, URI]
+    prose: "RESTful URLs use plural nouns to name resource collections, path parameters to address individual resources, and the HTTP method — not a verb in the URI — to express the action. API versioning in the URI path allows an API to evolve without breaking existing clients."
+    priority: mid
+    source: "Slide 8, Slide 11"
+    cards:
+      - id: restful-url-design-card-01
+        type: cloze
+        prompt: "RESTful APIs name resource collections with {{plural nouns}}. A collection of patients lives at `/patients`; one patient lives at `/patients/{{id}}`."
+        answer: "plural nouns; id"
+        explanation: "Plural nouns signal a collection. Appending an ID segment narrows the address to one item. The HTTP method then expresses what to do with that item."
+        example: "`/orders` is the collection. `/orders/42` is order number 42."
+        source: "Slide 11"
+        bloom: remember
+
+      - id: restful-url-design-card-02
+        type: name
+        prompt: "What is wrong with the URI `/getPatient/1` in a RESTful API?"
+        answer: "It uses a verb in the URI. The correct form is `/patients/1` — the HTTP method (`GET`) expresses the action."
+        explanation: "REST's uniform-interface constraint requires that the URI identify a resource, not describe an operation. HTTP methods supply the operation. Mixing verbs into paths forces a new URI for every action."
+        example: "Wrong: `GET /getPatient/1`. Correct: `GET /patients/1`."
+        source: "Slide 11"
+        bloom: understand
+
+      - id: restful-url-design-card-03
+        type: cloze
+        prompt: "POST /orders {{creates a new resource}}; PUT /orders/1 {{replaces an existing one}}."
+        answer: "creates a new resource; replaces an existing one"
+        explanation: "POST targets the collection and appends a new item. PUT targets a specific URI and replaces the entire resource at that address. Confusing them sends the wrong HTTP method to the wrong endpoint."
+        example: "`POST /patients` — body contains new patient data, server assigns the ID. `PUT /patients/7` — body contains the complete replacement for patient 7."
+        source: "Slide 8"
+        bloom: remember
+
+      - id: restful-url-design-card-04
+        type: name
+        prompt: "Where does the version number belong in a RESTful URI, and what does the unversioned path point to?"
+        answer: "The version belongs in the URI path, e.g. `/v1/catalog`. The unversioned path `/catalog` redirects to the latest version using an HTTP 3xx status code."
+        explanation: "Placing the version in the URI makes versioning explicit and stable. The unversioned path acts as a convenience pointer so callers who always want the latest do not need to track the current version number."
+        example: "`/v1/patients/` is pinned to version 1. `/patients/` redirects to `/v2/patients/` when v2 becomes latest."
+        source: "Slide 11"
+        bloom: understand
+
+      - id: restful-url-design-card-05
+        type: cloze
+        prompt: "API versioning should be introduced {{before the first public release}}, not added retroactively, because adding it later {{breaks existing clients}} that are already calling the unversioned path."
+        answer: "before the first public release; breaks existing clients"
+        explanation: "Clients that start calling `/patients/1` on day one have no version prefix baked in. Inserting `/v1/` later forces every client to update their endpoint strings — that change is itself a breaking change."
+        example: "Client code: `fetch('/patients/1')`. After adding versioning: `fetch('/v1/patients/1')`. Every client must update."
+        source: "Slide 11"
+        bloom: understand
+
+      - id: restful-url-design-card-06
+        type: name
+        prompt: "Name three situations that require releasing a new API version."
+        answer: "1. The format of the response data changes. 2. A field type changes (e.g., integer to float). 3. An endpoint is removed or its behaviour fundamentally changes."
+        explanation: "These are all breaking changes — existing clients that parse the response or call the endpoint will fail without modification. Non-breaking additions (new optional fields, new endpoints) do not require a new version."
+        example: "Changing a patient's `age` field from integer to a string `'28 years'` breaks clients that do arithmetic on it. That requires v2."
+        source: "Slide 11"
+        bloom: understand
+
+      - id: restful-url-design-card-07
+        type: cloze
+        prompt: "In a URI, the {{query string}} — the `?key=value` portion — passes values to customize output, while the {{URI path}} identifies which resource is being addressed."
+        answer: "query string; URI path"
+        explanation: "Path encodes identity; query string encodes customization. Use path parameters for `GET /patients/1` (identity) and query strings for `GET /patients?page=2&limit=10` (filtering)."
+        example: "`http://example.com/api/orders/1?format=summary` — path identifies order 1; query string requests summary format."
+        source: "Slide 11"
+        bloom: remember
+
+      - id: restful-url-design-card-08
+        type: name
+        prompt: "A client always wants the latest version of your API without updating their code. What URI design pattern supports this?"
+        answer: "An unversioned path (e.g., `/catalog`) that redirects to the latest version (e.g., `/v2/catalog`) using an HTTP 3xx status code."
+        explanation: "The redirect approach lets the server advance the latest pointer without changing what the client calls. The client follows the redirect automatically. Clients that need stability should pin to a versioned URI."
+        example: "`GET /catalog` → `302 Found` → `Location: /v2/catalog`. The client follows and gets the v2 response."
+        source: "Slide 11"
+        bloom: apply
+
+      - id: restful-url-design-card-09
+        type: cloze
+        prompt: "The REST recommendation from Slide 11 is to use {{plural nouns}} for defining resources, because the same path then serves both the {{collection}} (all items) and a {{single item}} (by appending `/{id}`)."
+        answer: "plural nouns; collection; single item"
+        explanation: "A plural noun reads naturally as a collection: `/patients` means 'all patients.' Appending an ID narrows to one: `/patients/42` means 'patient 42.' Singular nouns break this symmetry — `/patient` cannot cleanly represent the collection."
+        example: "`/orders` → list all orders. `/orders/5` → order #5 specifically."
+        source: "Slide 11"
+        bloom: remember

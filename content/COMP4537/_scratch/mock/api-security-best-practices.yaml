@@ -1,0 +1,63 @@
+- id: api-security-best-practices-q-01
+  type: MCQ
+  topic: "API security — SQL injection prevention"
+  marks: 2
+  question: |
+    An Express route builds a query this way:
+
+    ```js
+    const query = `UPDATE users SET email='${newEmail}' WHERE id=${userId}`;
+    database.query(query);
+    ```
+
+    Which change prevents SQL injection in this code?
+  choices:
+    - "Replace single quotes in `newEmail` using `.replace(/'/g, '')`"
+    - "Wrap the template literal in `JSON.stringify()` before passing it to `database.query()`"
+    - "Use a parameterized query: `database.query('UPDATE users SET email=? WHERE id=?', [newEmail, userId])`"
+    - "Validate that `newEmail` matches an email regex before running the query"
+  correct: 2
+  rationale: |
+    Parameterized queries pass user input as bound data values through the database driver's
+    protocol layer. The driver treats the entire substituted value as a string literal — SQL syntax
+    inside the value never executes. This separates SQL structure from data at the protocol level.
+    Option A is the explicit wrong-answer pattern confirmed in ISAQuiz12 Q2: `.replace()` strips
+    single quotes but is bypassable with hex encodings, multi-byte characters, and other vectors
+    that do not rely on the single-quote character. It is not a fix. Option B wraps the already-
+    constructed injection-vulnerable string in JSON encoding, which does not prevent the injected
+    SQL from executing once the driver receives it. Option D applies input validation (an email
+    regex) — useful as a secondary layer but not sufficient alone, because regex-valid email values
+    can still carry SQL payloads when interpolated into template literals.
+  bloom: apply
+  source: "Slide 12, ISAQuiz12 Q2"
+  tags: []
+
+- id: api-security-best-practices-q-02
+  type: MCQ
+  topic: "API security — broken object-level authorization (BOLA)"
+  marks: 2
+  question: |
+    A student successfully authenticates and then sends `PUT /api/users/99/edit-profile`
+    even though their own user ID is 42. The server updates user 99's profile without
+    returning an error. Which OWASP API vulnerability does this illustrate?
+  choices:
+    - "Mass Assignment — the server auto-binds all request body fields to the model"
+    - "Broken Object-Level Authorization (BOLA) — the server checks authentication but not ownership of object 99"
+    - "Excessive Data Exposure — the server returns more fields than the client requested"
+    - "Security Misconfiguration — the server has a hardcoded admin credential"
+  correct: 1
+  rationale: |
+    Broken Object-Level Authorization (BOLA) occurs when a server verifies that a user is
+    authenticated but fails to verify that the authenticated user owns the specific object
+    being acted on. Here the server confirms the student is logged in, but never checks whether
+    user 42 has the right to modify user 99's profile. The fix is object-level access control
+    that verifies ownership at the resource level, not just at the user level. Option A describes
+    Mass Assignment, which is about injecting unexpected model properties (e.g., `isAdmin: true`)
+    via a raw request body — the vulnerability here is not about body field binding. Option C
+    describes Excessive Data Exposure, which is a response-side problem about returning too much
+    data — not about who is allowed to trigger an operation. Option D describes Security
+    Misconfiguration, which involves hardcoded secrets or default credentials — not about
+    authorization logic on object ownership.
+  bloom: understand
+  source: "Slide 12, ISAQuiz12 Q7, ISAQuiz12 Q10"
+  tags: []

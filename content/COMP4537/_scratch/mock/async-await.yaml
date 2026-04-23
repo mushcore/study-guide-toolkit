@@ -1,0 +1,25 @@
+- id: async-await-q-01
+  type: MCQ
+  topic: "async/await: Cleaner Syntax Over Promises"
+  marks: 2
+  question: |
+    What does the following function return when invoked?
+
+    ```js
+    async function greet() {
+      return "Hello";
+    }
+
+    const result = greet();
+    console.log(typeof result);
+    ```
+  choices:
+    - "`object`"
+    - "`string`"
+    - "`undefined`"
+    - "`function`"
+  correct: 0
+  rationale: |
+    An `async` function always returns a Promise, regardless of what the function body returns. The runtime wraps the bare return value `"Hello"` in `Promise.resolve("Hello")` automatically. A Promise is an object, so `typeof result` evaluates to `"object"`. The `.then()` handler on the returned Promise would receive the string `"Hello"`, but `result` itself is a Promise object. Distractor B targets students who conflate the fulfilled value (`"Hello"`, a string) with the return type of the async function itself — the string is what the Promise resolves with, not what the function returns to the caller. Distractor C targets the misconception that async functions with no explicit `await` return nothing, or that the return value is lost because the function is asynchronous. Distractor D targets students who believe that because `async` transforms the function, calling it returns another function rather than executing it.
+  bloom: understand
+  source: "Slide 9, ISAQuiz8 Q11"

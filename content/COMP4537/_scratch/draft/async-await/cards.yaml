@@ -1,0 +1,110 @@
+id: async-await
+name: "async/await syntax, relationship to promises, async function return type"
+tags: [async, await, promise, syntax]
+prose: >
+  async/await is syntactic sugar over Promises. An async function always returns a Promise
+  wrapping its return value. await pauses the async function — not the thread — until the
+  awaited Promise settles, then resumes with the fulfilled value or throws on rejection.
+  Omitting await when calling a Promise-returning function is a common silent bug that
+  yields a Promise object instead of the resolved value.
+cards:
+  - id: async-await-card-01
+    type: cloze
+    bloom: remember
+    source: "Slide 9 (slide 3)"
+    front: "An async function always returns a ___."
+    back: "Promise"
+    explanation: >
+      The async keyword wraps the function's return value in Promise.resolve(), so every
+      invocation produces a Promise regardless of what the body returns.
+    example: |
+      async function greet() { return "Hello"; }
+      // greet() returns Promise<"Hello">, not the string directly
+
+  - id: async-await-card-02
+    type: name
+    bloom: remember
+    source: "ISAQuiz8 Q11"
+    front: "What JavaScript type does an async function return upon invocation?"
+    back: "object (a Promise is an object)"
+    explanation: >
+      typeof on a Promise yields "object". ISAQuiz8 Q11 tests exactly this: the return
+      type of an async function invocation is object, because Promises are objects.
+    example: |
+      async function foo() { return 42; }
+      typeof foo(); // "object" — it's a Promise
+
+  - id: async-await-card-03
+    type: cloze
+    bloom: understand
+    source: "Slide 9 (slide 52)"
+    front: "async/await is syntactic sugar over ___; every await is equivalent to a ___ callback."
+    back: "Promises; .then()"
+    explanation: >
+      await expr desugars to expr.then(value => /* rest of function */). The underlying
+      Promise and microtask-queue mechanics are unchanged.
+    example: |
+      // These are equivalent:
+      const val = await somePromise;
+      somePromise.then(val => { /* rest */ });
+
+  - id: async-await-card-04
+    type: predict
+    bloom: apply
+    source: "Slide 9 (slide 3)"
+    front: |
+      Predict the output:
+      ```js
+      async function double(n) { return n * 2; }
+      const result = double(5);
+      console.log(result);
+      ```
+    back: "Logs a Promise object, not 10."
+    explanation: >
+      double(5) returns a Promise, not the number 10. To get 10, you need:
+      double(5).then(v => console.log(v)) or await double(5) inside an async function.
+    example: |
+      // Fix:
+      async function main() {
+        const result = await double(5);
+        console.log(result); // 10
+      }
+
+  - id: async-await-card-05
+    type: predict
+    bloom: apply
+    source: "Slide 9 (slide 52)"
+    front: |
+      Predict what happens:
+      ```js
+      function load() {
+        const data = await fetch("/api");
+        return data;
+      }
+      ```
+    back: "SyntaxError — await is only valid inside an async function."
+    explanation: >
+      await cannot appear in a non-async function. The fix is to declare load() as
+      async function load(). Omitting async when using await is caught at parse time.
+    example: |
+      // Fix:
+      async function load() {
+        const data = await fetch("/api");
+        return data;
+      }
+
+  - id: async-await-card-06
+    type: name
+    bloom: understand
+    source: "Slide 9 (slide 5)"
+    front: "Does await block the JavaScript thread?"
+    back: "No — it pauses the async function only; other code continues on the thread."
+    explanation: >
+      await suspends the async function and schedules its continuation on the microtask
+      queue. The event loop remains free to run other callbacks while the function is paused.
+    example: |
+      async function slow() {
+        await delay(1000); // pauses slow(), not the thread
+      }
+      slow();
+      console.log("runs immediately — thread not blocked");

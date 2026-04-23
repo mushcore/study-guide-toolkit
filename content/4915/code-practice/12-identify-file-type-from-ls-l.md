@@ -6,6 +6,7 @@ lang: bash
 variant: starter-solution
 tags:
   - linux
+source: "Mod02 Ch6"
 ---
 
 ## Prompt
@@ -50,4 +51,4 @@ mysqld.sock: socket (s)
 
 ## Why
 
-7 types total. First char of ls -l line: - plain, d dir, b block, c char, l symlink, s socket, p pipe.
+**Source**: Mod02 Ch6 + Lab 2. 7 types total. First char of ls -l line: - plain, d dir, b block, c char, l symlink, s socket, p pipe. Common wrong: confusing `b` (block, buffered — whole disks, partitions) with `c` (character, unbuffered — `/dev/null`, TTYs); the mnemonic is "block = storage, char = stream".

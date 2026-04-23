@@ -1,0 +1,205 @@
+id: ajax-cors
+name: "AJAX, CORS, and Same-Origin Policy"
+tags: [AJAX, CORS, SOP, preflight, OPTIONS, XMLHttpRequest, readyState]
+prose: >
+  AJAX lets browser scripts send HTTP requests without page reloads, using XMLHttpRequest.
+  The Same-Origin Policy blocks cross-origin reads; CORS lets the server explicitly permit them
+  via response headers. readyState transitions 0–4; DONE is 4. Preflight (OPTIONS) fires
+  before non-simple cross-origin requests.
+
+cards:
+  - id: ajax-cors-card-01
+    type: cloze
+    bloom: remember
+    source: "Slide 5"
+    front: "readyState {{4}} means the XMLHttpRequest operation is DONE."
+    back: "4"
+    explanation: >
+      readyState values are 0 (UNSENT) through 4 (DONE). DONE is 4, not 5.
+      This is a direct exam trap documented in domain-specific pitfalls.
+    example: "if (this.readyState == 4 && this.status == 200) { ... }"
+
+  - id: ajax-cors-card-02
+    type: cloze
+    bloom: remember
+    source: "Slide 5"
+    front: >
+      The four readyState values in order are: 0=UNSENT, 1=OPENED,
+      2={{HEADERS_RECEIVED}}, 3=LOADING, 4=DONE.
+    back: "HEADERS_RECEIVED"
+    explanation: >
+      State 2 fires when send() has been called and the server has returned
+      response headers, before the body arrives.
+    example: "case 2: console.log('Headers available');"
+
+  - id: ajax-cors-card-03
+    type: name
+    bloom: remember
+    source: "Slide 5"
+    front: "What does SOP stand for, and what does it do?"
+    back: "Same-Origin Policy — a browser rule that blocks scripts from reading cross-origin responses."
+    explanation: >
+      Origin = protocol + domain + port. SOP compares the document origin
+      to the request target origin and blocks reads when they differ.
+    example: "http://localhost:3000 vs http://localhost:8000 — different ports = different origins."
+
+  - id: ajax-cors-card-04
+    type: name
+    bloom: understand
+    source: "Slide 5"
+    front: "What header must a server include to allow any origin to read its AJAX response?"
+    back: "Access-Control-Allow-Origin: *"
+    explanation: >
+      CORS is configured server-side via response headers. The wildcard value permits
+      all origins. A specific origin value restricts access to that origin only.
+    example: 'res.setHeader("Access-Control-Allow-Origin", "*");'
+
+  - id: ajax-cors-card-05
+    type: predict
+    bloom: apply
+    source: "Slide 5, Quiz 6"
+    front: >
+      What does the browser do when this handler fires?
+      ```js
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("demo").innerHTML = this.responseText;
+      }
+      ```
+    back: "Writes the response text into the #demo element. Fires only when the request is complete (readyState 4) and successful (HTTP 200)."
+    explanation: >
+      The double condition guards against partial states (readyState 1–3) and
+      failed requests (non-200 status codes). Both must be true to act.
+    example: "Standard AJAX success handler pattern from Slide 5."
+
+  - id: ajax-cors-card-06
+    type: name
+    bloom: understand
+    source: "Slide 5"
+    front: "What triggers a preflight request?"
+    back: >
+      A cross-origin request using a non-simple method (anything other than GET/POST)
+      or a custom request header.
+    explanation: >
+      The browser sends an OPTIONS preflight first to ask the server whether it
+      permits the intended method/headers from this origin. Simple GET and
+      form-encoded POST do not trigger preflight.
+    example: "DELETE, PUT, or a JSON Content-Type header on a cross-origin POST all trigger preflight."
+
+  - id: ajax-cors-card-07
+    type: cloze
+    bloom: understand
+    source: "Slide 5"
+    front: >
+      A preflight is an {{OPTIONS}} request the browser sends before a non-simple
+      cross-origin request to verify server permissions.
+    back: "OPTIONS"
+    explanation: >
+      OPTIONS is an HTTP method used to describe the communication options for
+      a target resource. Browsers use it for CORS negotiation.
+    example: "OPTIONS /api/data HTTP/1.1  Origin: http://localhost:3000"
+
+  - id: ajax-cors-card-08
+    type: name
+    bloom: remember
+    source: "Slide 5"
+    front: "What is an origin, precisely?"
+    back: "Protocol + domain + port — all three must match for two URLs to share the same origin."
+    explanation: >
+      Changing any single component creates a different origin. http vs https = different.
+      port 3000 vs port 8000 = different. lab.example.com vs example.com = different.
+    example: "http://localhost:3000 and https://localhost:3000 are different origins."
+
+  - id: ajax-cors-card-09
+    type: predict
+    bloom: apply
+    source: "Slide 5"
+    front: >
+      A script on http://localhost:3000 calls:
+      ```js
+      xhttp.withCredentials = true;
+      ```
+      and the server responds with `Access-Control-Allow-Origin: *`.
+      What happens?
+    back: "The browser rejects the response. withCredentials requires a specific origin in Access-Control-Allow-Origin, not the wildcard."
+    explanation: >
+      Credentials (cookies, Authorization headers) and the wildcard origin are
+      mutually exclusive. The server must name the specific allowed origin.
+    example: 'Access-Control-Allow-Origin: http://localhost:3000  (not *)'
+
+  - id: ajax-cors-card-10
+    type: name
+    bloom: remember
+    source: "Quiz 6"
+    front: "Which HTTP method can be bookmarked? GET or POST?"
+    back: "GET — query parameters sit in the URL, making it bookmarkable. POST data is in the body and cannot be bookmarked."
+    explanation: >
+      GET requests encode parameters in the URL. POST requests place data in the
+      request body with content-type application/x-www-form-urlencoded.
+    example: "GET /search?q=ajax vs POST /search (body: q=ajax)"
+
+  - id: ajax-cors-card-11
+    type: predict
+    bloom: analyze
+    source: "ISAQuiz7 Q4"
+    front: >
+      A student writes:
+      ```js
+      const server = http.createServer((req, res) => {
+        req.writeHead(200, { "Content-Type": "text/html" });
+        req.write("<h1>Hello</h1>");
+        req.end();
+      });
+      ```
+      What is wrong?
+    back: "req is the incoming request stream — it has no writeHead, write, or end methods. All three calls must use res (the response object)."
+    explanation: >
+      http.createServer passes (req, res). req is readable (incoming data).
+      res is writable (outgoing response). Calling write methods on req throws.
+    example: "Correct: res.writeHead(200, ...); res.write(...); res.end();"
+
+  - id: ajax-cors-card-12
+    type: cloze
+    bloom: apply
+    source: "Slide 5"
+    front: >
+      The AJAX four-step lifecycle is: (1) create XMLHttpRequest, (2) attach
+      {{onreadystatechange}} handler, (3) call open(), (4) call send().
+    back: "onreadystatechange"
+    explanation: >
+      The handler must be attached before open() and send() so it is registered
+      before any state transitions can fire.
+    example: "xhttp.onreadystatechange = function() { if (this.readyState == 4 ...) { ... } };"
+
+  - id: ajax-cors-card-13
+    type: name
+    bloom: understand
+    source: "Slide 5"
+    front: "Who configures CORS — the browser, the client script, or the server?"
+    back: "The server — CORS is implemented by adding Access-Control-Allow-* headers to the HTTP response."
+    explanation: >
+      SOP is enforced by the browser. CORS is the server's mechanism to signal
+      that cross-origin access is permitted. The client script has no control over it.
+    example: 'res.setHeader("Access-Control-Allow-Origin", "*");  // server-side'
+
+  - id: ajax-cors-card-14
+    type: predict
+    bloom: analyze
+    source: "Slide 5"
+    front: >
+      readyState is 2. What has just happened?
+    back: "send() was called and the server returned response headers. The body has not yet arrived."
+    explanation: >
+      State 2 (HEADERS_RECEIVED) means the HTTP response headers are available
+      via getResponseHeader(), but responseText is not yet populated.
+    example: "xhttp.getResponseHeader('Content-Type') is usable at readyState 2."
+
+  - id: ajax-cors-card-15
+    type: name
+    bloom: remember
+    source: "Slide 5"
+    front: "What does the withCredentials flag on XMLHttpRequest do?"
+    back: "Includes cookies and Authorization headers in cross-origin requests. Requires the server to name a specific origin (not *) and set Access-Control-Allow-Credentials: true."
+    explanation: >
+      Without withCredentials = true, cross-origin requests strip cookies and
+      auth headers. With it, the browser sends them but enforces stricter CORS rules.
+    example: "xhttp.withCredentials = true;"

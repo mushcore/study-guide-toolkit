@@ -6,6 +6,7 @@ lang: bash
 variant: starter-solution
 tags:
   - networking
+source: "Mod08 Ch25; materials/labs/Lab8.pdf"
 ---
 
 ## Prompt
@@ -32,4 +33,4 @@ iptables -A INPUT -j DROP
 
 ## Why
 
-Allow loopback, allow ESTABLISHED (so responses work), allow SSH from subnet only, DROP everything else. Order matters — rules evaluated top-down.
+**Source**: Mod08 Ch25 + Lab 8. Allow loopback, allow ESTABLISHED (so responses work), allow SSH from subnet only, DROP everything else. Order matters — rules evaluated top-down; the SSH allow must *precede* the terminal `-j DROP`. Common wrong: writing `-A` after `-P INPUT DROP` without an explicit allow — the default DROP catches the SSH packet and you lock yourself out.

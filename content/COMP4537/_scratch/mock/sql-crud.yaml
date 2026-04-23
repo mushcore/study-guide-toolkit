@@ -1,0 +1,33 @@
+- id: sql-crud-q-01
+  type: MCQ
+  topic: "SQL CRUD: querying and modifying data"
+  marks: 2
+  question: "Which SQL statement retrieves all columns and all rows from a table named `orders`?"
+  choices:
+    - "`SELECT all FROM orders;`"
+    - "`SELECT * FROM orders;`"
+    - "`GET * FROM orders;`"
+    - "`FETCH orders;`"
+  correct: 1
+  rationale: |
+    `SELECT * FROM orders` is valid SQL: `*` is the wildcard that returns every column, and `FROM orders` identifies the source table. Choice A is the trap directly tested in ISAQuiz10 Q7 — `all` is not a valid SQL keyword in a SELECT column list; the statement produces a syntax error. Choice C uses `GET`, which is not a SQL keyword; SQL uses SELECT for reads. Choice D uses `FETCH`, which is a cursor operation in some SQL dialects, not a standalone table query — it does not retrieve all rows from a named table without a preceding cursor declaration.
+  bloom: remember
+  source: "Slide 7, Quiz 10 Q7"
+  tags: [pretest]
+
+- id: sql-crud-q-02
+  type: MCQ
+  topic: "SQL CRUD: querying and modifying data"
+  marks: 2
+  question: |
+    You want to retrieve all rows from an `employees` table where `department` equals `'HR'`. Which query is correct?
+  choices:
+    - "`SELECT * FROM employees WHERE department IS 'HR';`"
+    - "`SELECT * FROM employees WHERE department = 'HR';`"
+    - "`SELECT *.* FROM employees WHERE department = 'HR';`"
+    - "`SELECT * FROM employees WHERE department != 'HR';`"
+  correct: 1
+  rationale: |
+    `WHERE department = 'HR'` uses the equality operator `=`, which is the correct SQL operator for matching a column value against a string literal. Choice A uses `IS`, which tests for NULL (`WHERE column IS NULL`) — using `IS` with a non-NULL string literal is not valid standard SQL for equality comparison; this misconception was a live wrong-answer option in ISAQuiz10 Q12. Choice C uses `*.*`, which is not valid SQL syntax — `SELECT *` retrieves all columns from all identified tables, but `*.*` is not a recognized column specifier in this context. Choice D uses `!=`, which returns all employees who are NOT in HR — the opposite of the intended query.
+  bloom: apply
+  source: "Slide 7, Quiz 10 Q12"

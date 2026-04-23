@@ -1,0 +1,59 @@
+id: password-hashing
+name: "Password hashing with bcrypt"
+tags: [bcrypt, hash, salt, password-storage]
+prose: "Passwords must be hashed before storage. bcrypt.hash() is async (returns a Promise — must be awaited). The cost factor controls hashing iterations (2^CF). bcrypt.compare() verifies a plaintext against a stored hash and returns a boolean — it never decrypts."
+cards:
+  - id: password-hashing-card-01
+    type: cloze
+    prompt: "The second argument to `bcrypt.hash()` is the {{cost factor}}, which controls the number of hashing iterations."
+    answer: "cost factor"
+    explanation: "The cost factor (also called salt rounds) determines how many iterations bcrypt performs internally. With a cost factor of 10, bcrypt runs 2^10 = 1,024 iterations. A higher value makes each hash computation slower, which increases resistance to brute-force attacks."
+    example: "const hash = await bcrypt.hash(password, 10); // 10 is the cost factor"
+    source: "Slide 11"
+    bloom: remember
+
+  - id: password-hashing-card-02
+    type: name
+    prompt: "Why should you hash passwords instead of encrypting them before storing them in a database?"
+    answer: "Hashing is one-way — the server cannot reverse a hash, and no decryption key exists. Encryption is reversible: whoever holds the server's key can decrypt all stored passwords. If the server is compromised, an attacker gains the key and can recover every encrypted password. A hash breach exposes only hashes, not the original passwords."
+    explanation: "The fundamental property needed for password storage is irreversibility. Hashing provides that. Encryption does not — the decryption key always exists somewhere, and it lives on the same server as the data."
+    example: "Attacker breaches DB + server: encrypted passwords → decrypt with stolen key → all passwords exposed. Hashed passwords → only hashes → originals unrecoverable."
+    source: "Slide 9"
+    bloom: understand
+
+  - id: password-hashing-card-03
+    type: predict
+    prompt: |
+      What type does `h` have after this line, and how do you fix it?
+
+      ```js
+      const h = bcrypt.hash('secret', 10);
+      ```
+    answer: "`h` is a Promise, not a hash string. Fix it by adding `await`: `const h = await bcrypt.hash('secret', 10);`"
+    explanation: "`bcrypt.hash()` is an asynchronous function — it returns a Promise. Without `await`, the variable receives the unresolved Promise object. Any subsequent `bcrypt.compare()` call against this value will return `false`, breaking all logins silently."
+    example: |
+      // Wrong — h is a Promise object
+      const h = bcrypt.hash('secret', 10);
+
+      // Correct — h is the hash string
+      const h = await bcrypt.hash('secret', 10);
+    source: "Slide 11"
+    bloom: apply
+
+  - id: password-hashing-card-04
+    type: cloze
+    prompt: "`bcrypt.compare(plaintext, hash)` returns a {{boolean}} — it never decrypts the hash."
+    answer: "boolean"
+    explanation: "`bcrypt.compare()` hashes the submitted plaintext using the parameters embedded in the stored hash string and compares the result. It returns `true` if they match and `false` otherwise. The original password is never recovered — hashing is one-way by design."
+    example: "const match = await bcrypt.compare(req.body.password, user.password); // true or false"
+    source: "Slide 11"
+    bloom: remember
+
+  - id: password-hashing-card-05
+    type: name
+    prompt: "What does a cost factor of 10 mean in `bcrypt.hash(password, 10)`, and why does a higher cost factor improve security?"
+    answer: "A cost factor of 10 means bcrypt performs 2^10 = 1,024 internal hashing iterations to produce the final hash. A higher cost factor makes each hash computation slower. An attacker attempting millions of brute-force guesses per second pays the full computation cost for every guess, making large-scale attacks significantly more expensive."
+    explanation: "The cost factor is the work factor. Doubling it (e.g., from 10 to 11) doubles the computation time per hash. Legitimate users log in once and barely notice the delay. Attackers running billions of attempts are slowed proportionally."
+    example: "CF 10 → 2^10 = 1,024 iterations. CF 12 → 2^12 = 4,096 iterations. Same password, ~4x harder to brute-force."
+    source: "Slide 11"
+    bloom: understand

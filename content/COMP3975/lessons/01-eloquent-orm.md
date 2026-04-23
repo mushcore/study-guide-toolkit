@@ -187,7 +187,7 @@ Laravel returns validation errors automatically. Invalid requests never reach `c
 
 ## Eloquent vs Query Builder vs raw SQL
 
-The professor's explicit preference hierarchy places Eloquent first:
+The standard Laravel data-access hierarchy is:
 
 | Pattern | Syntax | When to use |
 |---|---|---|
@@ -199,5 +199,7 @@ The professor's explicit preference hierarchy places Eloquent first:
 > **A:** `Student::whereNotNull('School')->orderBy('FirstName')->get()` — chain builder methods on the model class and terminate with `->get()`.
 
 ---
+
+> **Pitfall:** `Student::all()->where(...)` loads every row into PHP memory before filtering. For any server-side filter, use `Student::where(...)->get()` so the database does the work. This exact pattern appeared on the past exam as a distractor.
 
 > **Takeaway:** Eloquent ORM maps your PHP model to a database table. You read with `all()`, `find()`, `findOrFail()`, and builder chains ending in `->get()`. You write with property assignment plus `save()`, or with `create()` backed by a `$fillable` array. The `$fillable` whitelist is not optional — it is the guard between user input and your database schema.

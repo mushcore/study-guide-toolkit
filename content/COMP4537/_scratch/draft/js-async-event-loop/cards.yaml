@@ -1,0 +1,121 @@
+id: js-async-event-loop
+name: "Asynchronous JS, single-threaded non-blocking model, event queue"
+tags: [async, event-loop, setTimeout, single-thread, non-blocking]
+prose: "JavaScript's single-threaded non-blocking model runs all code on one thread by delegating I/O to the OS and resuming via callbacks. The event loop drains the entire microtask queue before pulling the next macrotask, so Promise .then callbacks always execute before setTimeout callbacks when both are ready."
+cards:
+  - id: js-async-event-loop-card-01
+    type: cloze
+    prompt: "JavaScript is {{single-threaded non-blocking}}: one thread handles all requests by delegating I/O to the OS and resuming via callbacks."
+    answer: "single-threaded non-blocking"
+    explanation: "One thread executes JS code. The thread never blocks on I/O because Node.js offloads I/O to the OS and receives a callback when done."
+    example: |
+      // Only one thing runs at a time, but I/O doesn't block execution
+      // Node.js hands file reads to the OS and continues running other code
+    source: "Slide 4"
+    bloom: remember
+
+  - id: js-async-event-loop-card-02
+    type: name
+    prompt: "What is the JavaScript runtime mechanism that dequeues callbacks when the call stack is empty?"
+    answer: "The event loop"
+    explanation: "The event loop checks after each synchronous run-to-completion: drain all microtasks, then pull one macrotask. It repeats this cycle indefinitely."
+    example: |
+      // Event loop pseudo-code:
+      // while (true) {
+      //   runSynchronousCode();
+      //   drainMicrotaskQueue();   // ALL pending microtasks
+      //   runOneMacrotask();       // ONE setTimeout/setInterval/I/O callback
+      // }
+    source: "Slide 4"
+    bloom: remember
+
+  - id: js-async-event-loop-card-03
+    type: predict
+    prompt: |
+      What is the output of this code?
+      ```js
+      setTimeout(function() { console.log(1); console.log(2); console.log(3); }, 500);
+      console.log(4);
+      ```
+    answer: "4, then 1, 2, 3"
+    explanation: "console.log(4) is synchronous and runs immediately. The setTimeout callback is a macrotask queued after at least 500 ms. The call stack must empty before any macrotask fires."
+    example: |
+      // Sync runs first, macrotasks run after the stack clears
+    source: "ISAQuiz6"
+    bloom: apply
+
+  - id: js-async-event-loop-card-04
+    type: predict
+    prompt: |
+      What is the output of this code?
+      ```js
+      setTimeout(function() { console.log(1); }, 1);
+      new Promise(function(resolve) {
+        console.log(2);
+        resolve();
+      }).then(function() { console.log(4); });
+      console.log(3);
+      ```
+    answer: "2, 3, 4, 1"
+    explanation: "Executor runs eagerly: 2 prints. resolve() enqueues .then as a microtask. console.log(3) runs sync. Stack empties → microtask queue drains (4). Then the macrotask fires (1)."
+    example: |
+      // Order: sync → microtasks → macrotasks
+    source: "ISAQuiz8"
+    bloom: apply
+
+  - id: js-async-event-loop-card-05
+    type: cloze
+    prompt: "The Promise executor runs {{eagerly}}: it executes immediately when `new Promise(executor)` is called, before any following synchronous statement."
+    answer: "eagerly"
+    explanation: "Eager execution means the executor is not deferred. It runs synchronously on the call stack the instant the Promise is constructed."
+    example: |
+      new Promise((resolve) => {
+        console.log('runs now'); // sync, not deferred
+        resolve();
+      });
+      console.log('runs second');
+      // Output: 'runs now', 'runs second'
+    source: "ISAQuiz8"
+    bloom: understand
+
+  - id: js-async-event-loop-card-06
+    type: name
+    prompt: "Which queue drains completely before the next macrotask runs: microtask queue or macrotask queue?"
+    answer: "The microtask queue drains completely first."
+    explanation: "After the call stack empties, the event loop drains all pending microtasks (Promise .then callbacks) before pulling even one macrotask (setTimeout, I/O callback)."
+    example: |
+      // If you resolve 10 Promises before a setTimeout fires,
+      // all 10 .then callbacks run before the setTimeout callback.
+    source: "Slide 4, ISAQuiz8"
+    bloom: understand
+
+  - id: js-async-event-loop-card-07
+    type: predict
+    prompt: |
+      Which of the following are native async (Web API-backed) and which are synchronous?
+      - setTimeout
+      - setInterval
+      - forEach
+      - console.log
+    answer: "setTimeout and setInterval are native async; forEach and console.log are synchronous."
+    explanation: "setTimeout and setInterval delegate to the runtime timer subsystem and return callbacks as macrotasks. forEach iterates inline on the call stack. console.log writes to stdout synchronously."
+    example: |
+      // forEach is NOT async even if you pass an async function to it
+      [1, 2, 3].forEach(async (n) => { await doSomething(n); }); // Promises discarded
+    source: "ISAQuiz8"
+    bloom: analyze
+
+  - id: js-async-event-loop-card-08
+    type: cloze
+    prompt: "If a Promise executor never calls `resolve()` or `reject()`, the Promise stays {{pending}} and all attached `.then()` callbacks {{never run}}."
+    answer: "pending; never run"
+    explanation: "Microtask callbacks only enqueue when the Promise transitions to fulfilled or rejected. A permanently pending Promise means its reaction callbacks are never dispatched."
+    example: |
+      new Promise((resolve) => {
+        console.log(1); // runs
+        // resolve never called
+      }).then(() => console.log(2)); // never runs
+      console.log(3); // runs
+      // Output: 1, 3
+    source: "ISAQuiz8"
+    bloom: analyze

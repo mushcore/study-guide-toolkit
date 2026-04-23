@@ -91,13 +91,14 @@ modules:
             bloom: apply
           - type: name
             prompt: >-
-              In the professor's data-access hierarchy, which pattern comes first: Eloquent ORM, Query Builder, or raw
-              SQL?
+              In Laravel's recommended data-access hierarchy, which pattern comes first: Eloquent ORM, Query Builder, or
+              raw SQL?
             answer: Eloquent ORM
             explanation: >-
-              The professor explicitly orders patterns as Eloquent first, Query Builder second, raw SQL third. Eloquent
-              is preferred because it is readable, relationship-aware, and ties closely to the model layer. Query
-              Builder and raw SQL are fallbacks for complex or vendor-specific queries.
+              Laravel's documented preference order is Eloquent first (typed model instances, readable, relationship-aware),
+              Query Builder second (fluent chaining without a model), raw SQL third (plain strings, highest maintenance
+              cost). Eloquent is preferred because it ties directly to the model layer and works with all Laravel
+              first-party features.
             example: >-
               Use Student::all() before reaching for DB::table('students')->get(), and reach for DB::select() only as a
               last resort.
@@ -122,8 +123,8 @@ modules:
             answer: tinker
             explanation: >-
               php artisan tinker opens a REPL with full Laravel context. You can call any Eloquent method directly —
-              Student::all(), new Student(), save() — and see results instantly. It is the professor's recommended tool
-              for verifying model behavior.
+              Student::all(), new Student(), save() — and see results instantly. It is the standard tool
+              for verifying model behavior during development — no browser or controller needed.
             example: >-
               In tinker: `\App\Models\Student::all()` returns the full collection; `$s = new \App\Models\Student();
               $s->FirstName='Joe'; $s->save();` inserts a row.
@@ -375,13 +376,14 @@ modules:
         cards:
           - type: cloze
             prompt: >-
-              In the professor's preference hierarchy, the order from most to least preferred is {{Eloquent ORM}}, then
+              In Laravel's standard data-access preference order, from most to least preferred: {{Eloquent ORM}}, then
               {{Query Builder}}, then {{raw SQL}}.
             answer: Eloquent ORM, Query Builder, raw SQL
             explanation: >-
-              The professor explicitly ranks these three patterns. Eloquent is preferred because it works with typed
-              model instances. Query Builder is second — it works without a model and chains fluently. Raw SQL is last —
-              it forces you to write and maintain SQL strings manually.
+              Laravel ranks these three patterns by abstraction level and maintenance cost. Eloquent is preferred
+              because it works with typed model instances and integrates with all first-party features. Query Builder is
+              second — it chains fluently without requiring a model. Raw SQL is last — it forces you to write and
+              maintain SQL strings manually.
             example: |
               ```php
               // 1st — Eloquent
@@ -539,8 +541,10 @@ modules:
               {{@endsection}} to define its content block.
             answer: '@extends(''layouts.master''), @section(''content''), @endsection'
             explanation: >-
-              @extends triggers layout loading. @section opens the named block. @endsection closes it. Omitting
-              @endsection causes a Blade parse error.
+              @extends tells the child which parent layout to inherit. @section opens a named block in the child;
+              @endsection closes it. Blade's compiler replaces @yield('content') in the parent with everything between
+              @section and @endsection in the child. Without @endsection the compiler cannot locate the block boundary
+              and throws a parse error — the template never renders.
             example: '`@extends(''layouts.master'')` loads `resources/views/layouts/master.blade.php`.'
             source: intro_to_laravel.pptx slides 18–19; intro_to_laravel_SCRIPT.docx §Creating your own blade template
             bloom: remember
@@ -551,8 +555,10 @@ modules:
               !!}`?
             answer: '{{ $var }}'
             explanation: >-
-              `{{ }}` calls htmlspecialchars() internally, converting `<`, `>`, and `&` to HTML entities. `{!! !!}`
-              outputs raw HTML and bypasses this protection entirely.
+              `{{ }}` calls htmlspecialchars() internally, converting `<`, `>`, and `&` to HTML entities — safe by
+              default. `{!! !!}` outputs raw HTML and bypasses this protection; an attacker who controls the value can
+              inject `<script>` tags that execute in every visitor's browser (XSS). Use `{{ }}` by default; switch to
+              `{!! !!}` only when you control the source entirely and have already sanitized the value.
             example: >-
               `{{ "<script>alert('xss')</script>" }}` renders as visible text. `{!! "<script>alert('xss')</script>" !!}`
               executes the script.
@@ -643,7 +649,7 @@ modules:
             example: >-
               Controller: `$users = User::all(); return view('users.index', compact('users'));`. The view receives
               `$users` as a variable — it never calls the database.
-            source: intro_to_laravel.pptx slides 3–5
+            source: laravel_with_students_MySQL_SCRIPT.docx
             bloom: understand
           - id: mvc-blade-card-11
             type: cloze
@@ -908,3 +914,1184 @@ modules:
               ```
             source: laravel_with_sqlite_API_SCRIPT.docx
             bloom: apply
+  - id: api-and-auth
+    name: API and Authentication
+    topics:
+      - id: rest-api-design
+        name: REST API design in Laravel
+        tags:
+          - rest
+          - api
+          - json
+          - http-methods
+          - laravel
+          - resource-controller
+        prose: >-
+          Laravel's resource controller maps HTTP verbs to controller methods through Route::resource(). A working
+          API requires route registration, validation, $fillable on the model, proper JSON responses, and 404 handling.
+        source: laravel_with_sqlite_API_SCRIPT.docx
+        cards:
+          - id: rest-api-card-01
+            type: cloze
+            prompt: >-
+              To register all five RESTful routes for a StudentsController, add
+              {{Route::resource('students', StudentsController::class)}} to routes/api.php.
+            answer: Route::resource('students', StudentsController::class)
+            explanation: >-
+              Route::resource() maps GET, POST, PUT, and DELETE verbs to index, store, show, update, and destroy
+              methods in one declaration, eliminating five separate Route:: calls.
+            example: |
+              // Replaces five individual routes with one line:
+              Route::resource('students', StudentsController::class);
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: remember
+          - id: rest-api-card-02
+            type: name
+            prompt: >-
+              Which HTTP status code should store() return when a new resource is successfully created, and how do
+              you set it with response()->json()?
+            answer: "201 — pass it as the second argument: response()->json($data, 201)"
+            explanation: >-
+              201 Created signals that a new resource was created (not merely retrieved). Returning 200 on a POST is
+              technically incorrect and misleads API consumers who inspect status codes.
+            example: "return response()->json($student, 201); // not response()->json($student);"
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: understand
+          - id: rest-api-card-03
+            type: cloze
+            prompt: >-
+              Without a {{$fillable}} array on an Eloquent model, calling Student::create([...]) throws a
+              MassAssignmentException.
+            answer: $fillable
+            explanation: >-
+              $fillable is a whitelist of attributes that may be set via mass assignment (create() or fill()). Laravel
+              blocks all other attributes to prevent accidental or malicious data injection.
+            example: |
+              protected $fillable = ['FirstName', 'LastName', 'School'];
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: understand
+          - id: rest-api-card-04
+            type: name
+            prompt: What does findOrFail($id) return when the record does not exist in the database?
+            answer: It throws a ModelNotFoundException, which Laravel converts to a 404 response.
+            explanation: >-
+              findOrFail() eliminates the manual if (!$model) check. The thrown ModelNotFoundException is caught by
+              Laravel's exception handler and converted to an HTTP 404 response automatically.
+            example: |
+              $student = Student::findOrFail($id); // 404 if missing — no if-check needed
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: understand
+          - id: rest-api-card-05
+            type: predict
+            lang: php
+            prompt: >-
+              This store() method is called with a POST body missing the 'School' field. What HTTP status code does
+              Laravel return?
+            code: |
+              public function store(Request $request)
+              {
+                  $request->validate([
+                      'FirstName' => 'required',
+                      'LastName'  => 'required',
+                      'School'    => 'required',
+                  ]);
+                  $student = Student::create([...]);
+                  return response()->json($student, 201);
+              }
+            answer: >-
+              422 Unprocessable Entity — validate() halts execution and Laravel returns a JSON error body listing the
+              failed 'School' rule.
+            explanation: >-
+              $request->validate() throws a ValidationException when any rule fails. Laravel's exception handler
+              converts it to a 422 response with a structured JSON body — no additional code is required in the
+              controller.
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: apply
+          - id: rest-api-card-06
+            type: name
+            prompt: >-
+              Where in a Laravel project is CORS configured, and what does the default wildcard value allow?
+            answer: >-
+              config/cors.php — the default allowed_origins ['*'] permits requests from any origin for all HTTP
+              methods.
+            explanation: >-
+              Laravel includes HandleCors middleware by default. The wildcard is fine for development but should be
+              narrowed to specific domains in production. After changing config/cors.php, run php artisan config:clear
+              to invalidate the cache.
+            example: |
+              // config/cors.php
+              'allowed_origins' => ['*'],  // allow any origin
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: understand
+          - id: rest-api-card-07
+            type: cloze
+            prompt: >-
+              The Artisan command to create an API resource controller for the Student model is:
+              php artisan {{make:controller api/StudentsController --api --model=Student}}.
+            answer: make:controller api/StudentsController --api --model=Student
+            explanation: >-
+              --api omits create() and edit() (which render HTML forms, not useful in a JSON API). --model=Student
+              injects route-model binding into the scaffolded methods automatically.
+            example: |
+              php artisan make:controller api/StudentsController --api --model=Student
+              # Creates: app/Http/Controllers/api/StudentsController.php
+            source: laravel_with_sqlite_API_SCRIPT.docx
+            bloom: remember
+      - id: jwt-authentication
+        name: JWT Authentication
+        tags:
+          - jwt
+          - authentication
+          - bearer-token
+          - laravel
+          - api
+        prose: >-
+          JWT (JSON Web Token) is a stateless authentication mechanism. The server signs a token on login; every request
+          carries that token; the server re-verifies the signature. No session table required.
+        source: "PHP_JWT.pptx; laravel-jwt_SCRIPT.docx"
+        cards:
+          - id: jwt-auth-card-01
+            type: cloze
+            prompt: "A JWT token has three dot-separated sections: {{header}}.{{payload}}.{{signature}}, all base64-encoded."
+            answer: "header, payload, signature"
+            explanation: >-
+              The header declares the algorithm (e.g. HS256). The payload holds claims (user data + metadata). The
+              signature is a hash of header + payload using the server's secret — it proves the token was not tampered
+              with.
+            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0MiIsImlhdCI6MTcxNjIzOTAyMn0.SflKxwRJSMeKKF2Q
+            source: PHP_JWT.pptx slide 9
+            bloom: remember
+          - id: jwt-auth-card-02
+            type: name
+            prompt: Which part of a JWT token proves the payload has not been modified after issuance?
+            answer: The signature
+            explanation: >-
+              The server computes the signature by hashing base64(header) + '.' + base64(payload) with its secret key.
+              On each request it recomputes the hash — any payload change breaks the match and the request is rejected.
+            source: PHP_JWT.pptx slide 5
+            bloom: understand
+          - id: jwt-auth-card-03
+            type: cloze
+            prompt: "The JWT reserved claim {{iat}} records the Unix timestamp when the token was issued."
+            answer: iat
+            explanation: >-
+              'Issued At' — a required baseline for validating nbf and exp. All time-based claims are relative to or
+              compared against iat.
+            source: PHP_JWT.pptx slide 8
+            bloom: remember
+          - id: jwt-auth-card-04
+            type: cloze
+            prompt: >-
+              The JWT reserved claim {{iss}} identifies which application produced the token and can be used to reject
+              tokens from other apps.
+            answer: iss
+            explanation: >-
+              'Issuer' — typically set to a domain name or app identifier. A server can check this field to refuse
+              tokens minted by a different service.
+            example: '"iss": "your-app.com"'
+            source: PHP_JWT.pptx slide 8
+            bloom: understand
+          - id: jwt-auth-card-05
+            type: cloze
+            prompt: >-
+              The JWT reserved claim {{nbf}} sets the earliest timestamp at which the token is considered valid;
+              it must be >= iat.
+            answer: nbf
+            explanation: >-
+              'Not Before' — allows issuing a token that is not yet valid (e.g. starts 10 seconds after creation).
+              Requests arriving before this timestamp are rejected even if the signature is valid.
+            source: PHP_JWT.pptx slide 8
+            bloom: understand
+          - id: jwt-auth-card-06
+            type: cloze
+            prompt: >-
+              The JWT reserved claim {{exp}} is the Unix timestamp after which the token is no longer accepted; it must
+              be greater than both iat and nbf.
+            answer: exp
+            explanation: >-
+              'Expiration Time' — the primary expiry guard. If the current time exceeds exp, the server returns 401
+              regardless of signature validity.
+            example: '"exp": 1716242622  // iat + 3600 = expires in 1 hour'
+            source: PHP_JWT.pptx slide 8
+            bloom: remember
+          - id: jwt-auth-card-07
+            type: cloze
+            prompt: >-
+              The JWT reserved claim {{sub}} identifies the principal the token is about — in Laravel JWT it stores the
+              user's primary key.
+            answer: sub
+            explanation: >-
+              'Subject' — getJWTIdentifier() on the User model returns $this->getKey(), which becomes the sub claim
+              value. The server uses sub to look up the user on protected requests.
+            source: "PHP_JWT.pptx slide 9; laravel-jwt_SCRIPT.docx"
+            bloom: understand
+          - id: jwt-auth-card-08
+            type: name
+            prompt: >-
+              Which JWT reserved claim identifies the intended recipient(s) of the token, allowing a server to reject
+              tokens not addressed to it?
+            answer: aud (audience)
+            explanation: >-
+              'Audience' — prevents a valid token issued for app-A from being accepted by app-B. The server checks
+              that its own identifier appears in the aud claim.
+            source: PHP_JWT.pptx slide 9
+            bloom: understand
+          - id: jwt-auth-card-09
+            type: name
+            prompt: >-
+              Which JWT reserved claim provides a unique identifier for each individual token, used to prevent replay
+              attacks?
+            answer: jti (JWT ID)
+            explanation: >-
+              'JWT ID' — a UUID or similar unique string. By storing seen jti values, a server can reject a token that
+              has already been used, even if it is still within its expiry window.
+            source: PHP_JWT.pptx slide 9
+            bloom: analyze
+          - id: jwt-auth-card-10
+            type: cloze
+            prompt: >-
+              The JWT Composer package used in this course is {{php-open-source-saver/jwt-auth}}, NOT tymon/jwt-auth.
+            answer: php-open-source-saver/jwt-auth
+            explanation: >-
+              These are two different packages with different namespaces and different setup steps. Using tymon/jwt-auth
+              is the most common setup mistake. The service provider for the correct package is
+              PHPOpenSourceSaver\JWTAuth\Providers\LaravelServiceProvider.
+            source: laravel-jwt_SCRIPT.docx
+            bloom: remember
+          - id: jwt-auth-card-11
+            type: cloze
+            prompt: >-
+              After login, the client sends the JWT on every protected request using the header:
+              {{Authorization}}: {{Bearer}} <token>.
+            answer: "Authorization, Bearer"
+            explanation: >-
+              The auth:api middleware reads this header, strips the 'Bearer ' prefix, and validates the token signature
+              and expiry. No cookie. No session. The token is the only credential.
+            example: "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            source: laravel-jwt_SCRIPT.docx
+            bloom: remember
+          - id: jwt-auth-card-12
+            type: name
+            prompt: >-
+              Name the two methods the User model must implement when it implements the JWTSubject interface.
+            answer: getJWTIdentifier() and getJWTCustomClaims()
+            explanation: >-
+              getJWTIdentifier() returns the value stored in the 'sub' claim (typically $this->getKey()).
+              getJWTCustomClaims() returns an array of any extra payload fields — returning [] is valid for basic auth.
+            source: laravel-jwt_SCRIPT.docx
+            bloom: remember
+          - id: jwt-auth-card-13
+            type: predict
+            lang: php
+            prompt: What does Auth::attempt($credentials) return on a successful login in a JWT-configured app?
+            code: |
+              $credentials = $request->only('email', 'password');
+              $result = Auth::attempt($credentials);
+              // What is $result on success?
+            answer: >-
+              The JWT token string (not just true). On failure it returns false.
+            explanation: >-
+              In a JWT-guarded app, Auth::attempt() returns the signed token string directly when credentials are
+              valid. This differs from session-based auth where attempt() returns a boolean. The token is then returned
+              to the client in the JSON response.
+            source: laravel-jwt_SCRIPT.docx
+            bloom: apply
+          - id: jwt-auth-card-14
+            type: cloze
+            prompt: >-
+              After installing php-open-source-saver/jwt-auth, run {{php artisan jwt:secret}} to generate the signing
+              key written to .env.
+            answer: php artisan jwt:secret
+            explanation: >-
+              This writes JWT_SECRET=... to .env. The secret is used to sign and verify every token. Without it the
+              package cannot produce valid signatures.
+            source: laravel-jwt_SCRIPT.docx
+            bloom: remember
+          - id: jwt-auth-card-15
+            type: name
+            prompt: >-
+              In config/auth.php, what driver value must you set for the 'api' guard to enable JWT authentication?
+            answer: "'driver' => 'jwt'"
+            explanation: >-
+              Without this, the auth:api middleware does not know to use JWT. It would fall back to session or
+              token-based auth and reject all Bearer token requests. The 'provider' must also be set to 'users'.
+            example: |
+              'api' => [
+                  'driver'   => 'jwt',
+                  'provider' => 'users',
+              ],
+            source: laravel-jwt_SCRIPT.docx
+            bloom: apply
+      - id: session-auth-breeze
+        name: Session Authentication with Breeze
+        tags:
+          - authentication
+          - session
+          - breeze
+          - laravel
+          - tailwind
+        prose: >-
+          Laravel Breeze scaffolds a complete session-auth system in two commands. It uses Tailwind CSS for views and
+          wires register/login/logout/password-reset flow. Protect routes with ->middleware(['auth']).
+        source: auth-with-breeze_SQLite_SCRIPT.docx
+        cards:
+          - id: session-auth-card-01
+            type: cloze
+            prompt: >-
+              Install Breeze with: `{{composer require laravel/breeze --dev}}` followed by `{{php artisan
+              breeze:install}}`.
+            answer: "composer require laravel/breeze --dev; php artisan breeze:install"
+            explanation: >-
+              The first command pulls the package as a dev dependency; the second publishes routes, controllers, and
+              Blade views into your project. Both steps are required — the package alone does nothing until the
+              installer runs.
+            source: auth-with-breeze_SQLite_SCRIPT.docx
+            bloom: remember
+          - id: session-auth-card-02
+            type: name
+            prompt: Which CSS framework does Laravel Breeze use for its scaffolded views?
+            answer: Tailwind CSS
+            explanation: >-
+              Breeze is built on Tailwind CSS. The older laravel/ui package uses Bootstrap instead. This distinction is
+              explicitly tested — do not substitute one for the other.
+            source: auth-with-breeze_SQLite_SCRIPT.docx
+            bloom: remember
+          - id: session-auth-card-03
+            type: name
+            prompt: Name the Auth facade call that returns the full authenticated User model.
+            answer: Auth::user()
+            explanation: >-
+              Auth::user() returns the authenticated User Eloquent model (or null if unauthenticated). Auth::id()
+              returns only the primary key integer. Use the facade form, not auth()->user().
+            source: auth-with-breeze_SQLite_SCRIPT.docx
+            bloom: understand
+          - id: session-auth-card-04
+            type: cloze
+            prompt: >-
+              To restrict all routes in a group to logged-in users, write:
+              `Route::middleware({{'auth'}})->group(function () { ... });`
+            answer: "'auth'"
+            explanation: >-
+              The 'auth' middleware checks for a valid session and redirects unauthenticated visitors to /login.
+              Chaining it on a route group applies protection to every route inside.
+            source: auth-with-breeze_SQLite_SCRIPT.docx
+            bloom: apply
+          - id: session-auth-card-05
+            type: name
+            prompt: What does the 'verified' middleware require beyond what 'auth' already checks?
+            answer: The user's email address must be verified
+            explanation: >-
+              'auth' only requires a valid session. 'verified' additionally checks that the user has clicked the email
+              verification link. A logged-in but unverified user is redirected to /verify-email.
+            source: auth-with-breeze_SQLite_SCRIPT.docx
+            bloom: understand
+          - id: session-auth-card-06
+            type: cloze
+            prompt: >-
+              Breeze stores all auth routes in `{{routes/auth.php}}`, which is included from `routes/web.php` via
+              `require __DIR__.'/auth.php'`.
+            answer: routes/auth.php
+            explanation: >-
+              Breeze separates auth routes from application routes to keep web.php clean. The require statement at the
+              bottom of web.php loads all register/login/logout/password-reset/verify-email routes.
+            source: auth-with-breeze_SQLite_SCRIPT.docx
+            bloom: remember
+          - id: session-auth-card-07
+            type: name
+            prompt: >-
+              Which first-party Laravel package provides token authentication as an alternative to Breeze's
+              session-based auth?
+            answer: Sanctum
+            explanation: >-
+              Sanctum issues personal access tokens stored in the database (via createToken()). Breeze manages
+              server-side sessions with cookies. Both are first-party Laravel packages; Sanctum is the token-based
+              alternative for SPA and mobile API clients.
+            source: auth-with-breeze_SQLite_SCRIPT.docx
+            bloom: understand
+          - id: session-auth-card-08
+            type: predict
+            lang: php
+            prompt: >-
+              What does Auth::id() return when called inside a controller method protected by the 'auth' middleware?
+            code: |
+              Route::middleware('auth')->group(function () {
+                  Route::get('/orgs', [OrgController::class, 'index']);
+              });
+
+              // Inside OrgController::index():
+              return Auth::id();
+            answer: >-
+              The authenticated user's integer primary key (e.g. 1, 2, 3). It is guaranteed non-null here because
+              the 'auth' middleware blocks unauthenticated requests before they reach the controller.
+            explanation: >-
+              Auth::id() returns null for unauthenticated requests. Because the route has 'auth' middleware, only
+              authenticated requests arrive at the controller — so the return value is always an integer in this
+              context.
+            source: auth-with-breeze_SQLite_SCRIPT.docx
+            bloom: apply
+  - id: swagger-and-curl
+    name: Swagger/OpenAPI and cURL
+    topics:
+      - id: swagger-openapi
+        name: OpenAPI and Swagger Documentation
+        tags:
+          - swagger
+          - openapi
+          - l5-swagger
+          - laravel
+          - api-docs
+        prose: >-
+          OpenAPI is the specification language (YAML/JSON contract); Swagger is the toolset that reads it (UI, Editor,
+          Codegen). The l5-swagger package brings Swagger tools into Laravel via @OA\ annotations on controllers.
+        source: "swagger-with-laravel.pptx; Laravel_L5Swagger_SCRIPT_2026.docx"
+        cards:
+          - id: swagger-card-01
+            type: name
+            prompt: What is the difference between OpenAPI and Swagger?
+            answer: >-
+              OpenAPI is the specification language (YAML/JSON contract). Swagger is the toolset (UI, Editor, Codegen)
+              that reads that spec.
+            explanation: >-
+              This distinction is consistently tested. Using 'Swagger' to mean the spec is incorrect. The spec language
+              is OpenAPI; the interactive browser docs are Swagger UI.
+            example: >-
+              `php artisan l5-swagger:generate` produces an OpenAPI JSON file. Swagger UI reads that file and renders
+              the /api/documentation page.
+            source: swagger-with-laravel.pptx slide 2
+            bloom: remember
+          - id: swagger-card-02
+            type: cloze
+            prompt: The Composer package that integrates Swagger tools into Laravel is {{darkaonline/l5-swagger}}.
+            answer: darkaonline/l5-swagger
+            explanation: >-
+              This is the canonical package name used in this course. It is also referred to as l5-swagger. The install
+              command is `composer require darkaonline/l5-swagger -W`.
+            example: composer require darkaonline/l5-swagger -W
+            source: "swagger-with-laravel.pptx slide 4; Laravel_L5Swagger_SCRIPT_2026.docx Step 1"
+            bloom: remember
+          - id: swagger-card-03
+            type: cloze
+            prompt: "The two required fields in an `@OA\\Info` annotation are {{title}} and {{version}}."
+            answer: "title, version"
+            explanation: >-
+              Without both fields, l5-swagger generates an invalid OpenAPI document. The `description` and `contact`
+              fields are optional. `@OA\\Info` belongs on the abstract base Controller class.
+            example: '#[OA\Info(title: "My API", version: "1.0.0")]'
+            source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 3"
+            bloom: remember
+          - id: swagger-card-04
+            type: cloze
+            prompt: >-
+              After adding or changing `@OA\ annotations`, regenerate the documentation with
+              {{php artisan l5-swagger:generate}}.
+            answer: php artisan l5-swagger:generate
+            explanation: >-
+              This command compiles all annotations in the project into a single OpenAPI JSON document. Swagger UI reads
+              that document. Without regenerating, the UI shows stale docs.
+            example: >-
+              Add #[OA\Get(...)] above index(), then run `php artisan l5-swagger:generate`, then refresh
+              /api/documentation.
+            source: "swagger-with-laravel.pptx slide 7; Laravel_L5Swagger_SCRIPT_2026.docx Step 6"
+            bloom: remember
+          - id: swagger-card-05
+            type: name
+            prompt: What URL does Swagger UI serve by default after installing l5-swagger?
+            answer: /api/documentation
+            explanation: >-
+              The l5-swagger package auto-registers this route when installed. Visiting it after generating docs shows
+              the interactive Swagger UI page.
+            source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 7"
+            bloom: remember
+          - id: swagger-card-06
+            type: name
+            prompt: What does `@OA\Response` specify inside an endpoint annotation?
+            answer: >-
+              A single HTTP response — its status code, description, and optionally the shape of the returned JSON.
+            explanation: >-
+              `@OA\Response` is nested inside `@OA\Get`, `@OA\Post`, etc. You declare one per expected status code
+              (200, 201, 404, 422). The `content` field links to a schema for the body shape.
+            example: "new OA\\Response(response: 200, description: \"List of all students\", content: new OA\\JsonContent(...))"
+            source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 5"
+            bloom: understand
+          - id: swagger-card-07
+            type: predict
+            lang: php
+            prompt: >-
+              This annotated method is added and `php artisan l5-swagger:generate` is run. What does Swagger UI show
+              at /api/documentation for this endpoint?
+            code: |
+              #[OA\Get(
+                  path: "/api/students/{id}",
+                  tags: ["Students"],
+                  summary: "Get a student by ID",
+                  parameters: [
+                      new OA\Parameter(
+                          name: "id", in: "path", required: true,
+                          schema: new OA\Schema(type: "integer")
+                      )
+                  ],
+                  responses: [
+                      new OA\Response(response: 200, description: "Student details"),
+                      new OA\Response(response: 404, description: "Student not found")
+                  ]
+              )]
+              public function show(int $id): JsonResponse { ... }
+            answer: >-
+              Swagger UI shows a GET /api/students/{id} entry under the Students tag. It includes an integer input
+              field for the `id` path parameter and documents two responses: 200 and 404. The Try it out button calls
+              the live endpoint.
+            explanation: >-
+              Each `@OA\Parameter` with `in: "path"` becomes an input field in Swagger UI. Each `@OA\Response` becomes
+              a row in the responses table. The tag groups the endpoint under a collapsible section.
+            source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 5"
+            bloom: apply
+          - id: swagger-card-08
+            type: cloze
+            prompt: >-
+              To publish the l5-swagger config file into your project, run
+              `php artisan vendor:publish --provider={{L5Swagger\\L5SwaggerServiceProvider}}`.
+            answer: "L5Swagger\\L5SwaggerServiceProvider"
+            explanation: >-
+              This step copies config/l5-swagger.php into your project. Without it, Swagger UI serves a blank or broken
+              page because there is no config to read.
+            example: 'php artisan vendor:publish --provider="L5Swagger\L5SwaggerServiceProvider"'
+            source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 2"
+            bloom: remember
+          - id: swagger-card-09
+            type: name
+            prompt: Where in a Laravel project does the `@OA\Info` annotation belong, and why?
+            answer: >-
+              On the abstract base Controller class in app/Http/Controllers/Controller.php. It must appear exactly once
+              and provides global API metadata (title, version) for the entire OpenAPI document.
+            explanation: >-
+              Placing it on the base class ensures one canonical location. l5-swagger scans the whole project for
+              annotations; `@OA\Info` appearing more than once or not at all causes generation errors.
+            source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 3"
+            bloom: understand
+          - id: swagger-card-10
+            type: cloze
+            prompt: >-
+              To auto-regenerate Swagger docs on every request during development, set
+              {{L5_SWAGGER_GENERATE_ALWAYS}}=true in your .env file.
+            answer: L5_SWAGGER_GENERATE_ALWAYS
+            explanation: >-
+              This is convenient during development but should not be left on in production — regenerating on every
+              request is expensive. Restart the dev server after changing this variable.
+            source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 8"
+            bloom: understand
+          - id: swagger-card-11
+            type: name
+            prompt: What annotation defines a reusable data model that can be referenced across multiple endpoint responses?
+            answer: "@OA\\Schema"
+            explanation: >-
+              Defining a schema once and referencing it via `ref: "#/components/schemas/Name"` avoids repeating
+              property lists in every `@OA\Response`. Swagger UI renders schemas as expandable model panels.
+            example: '#[OA\Schema(schema: "Student", properties: [new OA\Property(property: "id", type: "integer")])]'
+            source: "swagger-with-laravel.pptx slide 9; Laravel_L5Swagger_SCRIPT_2026.docx Step 4"
+            bloom: understand
+          - id: swagger-card-12
+            type: predict
+            lang: php
+            prompt: >-
+              A developer adds a new `@OA\Post` annotation to store() but does NOT run
+              `php artisan l5-swagger:generate`. What does /api/documentation show?
+            code: |
+              // New annotation added above store()
+              #[OA\Post(path: "/api/students", summary: "Create student", ...)]
+              public function store(Request $request) { ... }
+              // Developer refreshes /api/documentation without regenerating
+            answer: >-
+              The old documentation. The POST /api/students endpoint does not appear. Swagger UI serves the previously
+              generated OpenAPI JSON, which does not include the new annotation.
+            explanation: >-
+              l5-swagger does not watch for annotation changes automatically. The generate step is a required manual
+              compile. Setting L5_SWAGGER_GENERATE_ALWAYS=true in .env is the only way to avoid this.
+            source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 6; swagger-with-laravel.pptx slide 7"
+            bloom: apply
+      - id: curl-http-client
+        name: cURL HTTP Client
+        tags:
+          - curl
+          - http-client
+          - laravel
+          - api
+        prose: >-
+          PHP's cURL extension makes HTTP requests from server-side code. The five-step sequence curl_init →
+          curl_setopt → curl_exec → curl_close → json_decode is the core pattern.
+        source: cURL.pptx
+        cards:
+          - id: curl-card-01
+            type: name
+            prompt: What does `curl_init()` return?
+            answer: A cURL handle
+            explanation: >-
+              The cURL handle is a PHP resource that identifies the session. Every subsequent curl_setopt(),
+              curl_exec(), and curl_close() call requires it as the first argument.
+            example: "`$ch = curl_init();` — $ch is now the cURL handle for this session."
+            source: cURL.pptx slide 4
+            bloom: remember
+          - id: curl-card-02
+            type: cloze
+            prompt: >-
+              Setting `curl_setopt($ch, CURLOPT_RETURNTRANSFER, true)` causes `curl_exec()` to
+              {{return the response as a string}} instead of {{printing it to the screen}}.
+            answer: "return the response as a string; printing it to the screen"
+            explanation: >-
+              Without CURLOPT_RETURNTRANSFER set to true, curl_exec() outputs the response body directly to the browser
+              and returns true. The variable you assign gets true, not the data — json_decode() then returns null.
+            source: cURL.pptx slide 5
+            bloom: understand
+          - id: curl-card-03
+            type: cloze
+            prompt: >-
+              The five-step cURL sequence is: {{curl_init()}} → {{curl_setopt()}} → {{curl_exec()}} →
+              {{curl_close()}} → {{json_decode()}}.
+            answer: "curl_init(); curl_setopt(); curl_exec(); curl_close(); json_decode()"
+            explanation: >-
+              Each step is mandatory for a complete REST API call. Skipping curl_close() leaks memory; skipping
+              json_decode() leaves you with a raw JSON string rather than a usable PHP array.
+            source: cURL.pptx slide 4
+            bloom: remember
+          - id: curl-card-04
+            type: predict
+            lang: php
+            prompt: What is the value of `$response` after this code runs, and why?
+            code: |
+              $ch = curl_init();
+              curl_setopt($ch, CURLOPT_URL, 'https://api.example.com/students');
+              // CURLOPT_RETURNTRANSFER is NOT set
+              $response = curl_exec($ch);
+              curl_close($ch);
+            answer: >-
+              `$response` is `true` (boolean), not the response body. Without CURLOPT_RETURNTRANSFER, curl_exec()
+              prints directly to screen and returns true on success.
+            explanation: >-
+              This is the most common cURL bug. The response appears on screen unintentionally, and json_decode(true,
+              true) returns null — no error is thrown.
+            source: cURL.pptx slide 5
+            bloom: apply
+          - id: curl-card-05
+            type: name
+            prompt: Which cURL option stores the HTTP response in a variable rather than printing it?
+            answer: CURLOPT_RETURNTRANSFER
+            explanation: >-
+              Set it to true before calling curl_exec(). It is required for any API call where you need to process the
+              response in PHP rather than display it directly.
+            source: cURL.pptx slide 5
+            bloom: remember
+          - id: curl-card-06
+            type: cloze
+            prompt: >-
+              To make a POST request with cURL, set `CURLOPT_POST` to `{{true}}` and provide the request body via
+              `{{CURLOPT_POSTFIELDS}}`.
+            answer: "true; CURLOPT_POSTFIELDS"
+            explanation: >-
+              CURLOPT_POST switches the HTTP method. CURLOPT_POSTFIELDS accepts the body — pass a JSON-encoded string
+              for REST APIs and pair it with a Content-Type: application/json header via CURLOPT_HTTPHEADER.
+            source: cURL.pptx slide 5
+            bloom: understand
+          - id: curl-card-07
+            type: cloze
+            prompt: >-
+              `json_decode($response, true)` converts a JSON string into a PHP {{associative array}}. Omitting the
+              second argument returns a {{stdClass object}} instead.
+            answer: "associative array; stdClass object"
+            explanation: >-
+              The boolean true flag is the toggle for array vs object output. Most Laravel code expects associative
+              arrays, so always pass true for REST API responses.
+            source: cURL.pptx slide 5
+            bloom: understand
+  - id: localization-module
+    name: Localization
+    topics:
+      - id: laravel-localization
+        name: Laravel Localization
+        tags:
+          - localization
+          - laravel
+          - i18n
+          - locale
+        prose: >-
+          Laravel's localization system lets you serve translated text by locale. The __() helper retrieves translated
+          strings; trans_choice() handles pluralization. PHP and JSON translation files serve different use cases.
+        source: "localization.pptx; laravel-localization.docx"
+        cards:
+          - id: locale-card-01
+            type: cloze
+            prompt: >-
+              The Laravel helper for retrieving a translated string is {{__()}} — not trans(), t(), i18n(), or
+              translate().
+            answer: __() (double underscore)
+            explanation: >-
+              `__()` is the canonical form. The exam (past-exam Q2) uses all four wrong variants as distractors. No
+              other helper name is acceptable in an exam answer.
+            example: "`{{ __('messages.welcome') }}` in Blade; `__('Submit')` in a PHP file."
+            source: "localization.pptx slide 6; final-practice.docx Q2"
+            bloom: remember
+          - id: locale-card-02
+            type: cloze
+            prompt: >-
+              A locale is a string like {{`'en'`}}, `'fr'`, or `'de'` that identifies the language (and optionally
+              region) for the active request.
+            answer: "'en' (or any valid locale string)"
+            explanation: >-
+              The locale string is the lookup key Laravel uses to find the correct translation directory or JSON file.
+              Setting it incorrectly causes all translations to fall back silently.
+            example: "`App::setLocale('fr')` sets the locale to French for the current request."
+            source: localization.pptx slide 3
+            bloom: remember
+          - id: locale-card-03
+            type: name
+            prompt: >-
+              A PHP file at `resources/lang/en/messages.php` that returns an associative array of translated strings
+              is called what?
+            answer: PHP translation file
+            explanation: >-
+              PHP translation files group named keys under a file namespace. `__('messages.welcome')` uses dot notation
+              to look up `welcome` inside `messages.php` for the active locale.
+            example: "return ['welcome' => 'Welcome to our application'];"
+            source: localization.pptx slide 4
+            bloom: remember
+          - id: locale-card-04
+            type: cloze
+            prompt: >-
+              JSON translation files live at `resources/lang/{{locale}}.json` and use the {{English phrase}} as the
+              lookup key.
+            answer: "locale (e.g. 'fr'); English phrase"
+            explanation: >-
+              Because the English phrase is the key, no dot notation is needed: `__('Submit')` resolves directly. This
+              works for simple UI strings; PHP files are better for structured domain text.
+            example: "`resources/lang/fr.json`: `{ \"Submit\": \"Envoyer\" }` — retrieved with `__('Submit')` when locale is `'fr'`."
+            source: localization.pptx slide 5
+            bloom: understand
+          - id: locale-card-05
+            type: name
+            prompt: Which Laravel helper handles pluralized translations using pipe-delimited rules?
+            answer: trans_choice()
+            explanation: >-
+              `trans_choice()` evaluates rules like `'{0} No apples|{1} One apple|[2,*] :count apples'` against the
+              count argument. `__()` cannot select between plural forms.
+            example: "`trans_choice('messages.apples', 3)` returns `'3 apples'`."
+            source: localization.pptx slides 6–7
+            bloom: understand
+          - id: locale-card-06
+            type: cloze
+            prompt: The default locale is set in `{{config/app.php}}` under the key `'locale'`.
+            answer: config/app.php
+            explanation: >-
+              This file is the single source for application-wide locale defaults. Runtime switching via
+              `App::setLocale()` overrides it for the current request only — the config value is unchanged.
+            example: "`'locale' => env('APP_LOCALE', 'en')` in config/app.php sets English as the default."
+            source: localization.pptx slide 8
+            bloom: remember
+          - id: locale-card-07
+            type: name
+            prompt: Which two `App` facade methods read and write the active locale at runtime?
+            answer: App::setLocale() and App::getLocale()
+            explanation: >-
+              `App::setLocale('fr')` switches the locale for the current request. `App::getLocale()` returns the
+              current value. Middleware typically calls `setLocale()` once per request based on session data.
+            example: "In middleware: `App::setLocale(Session::get('locale'))` — then every `__()` call uses French."
+            source: localization.pptx slide 8
+            bloom: remember
+          - id: locale-card-08
+            type: predict
+            lang: php
+            prompt: What does this code print for each call?
+            code: |
+              // resources/lang/en/messages.php contains:
+              // 'items' => '{0} No items|{1} One item|[2,*] :count items'
+
+              echo trans_choice('messages.items', 0) . "\n";
+              echo trans_choice('messages.items', 1) . "\n";
+              echo trans_choice('messages.items', 7) . "\n";
+            answer: "No items\nOne item\n7 items"
+            explanation: >-
+              Each call matches the first pipe-delimited rule that covers its count. `{0}` matches 0, `{1}` matches 1,
+              and `[2,*]` matches 7. `:count` is replaced with the numeric argument.
+            source: localization.pptx slide 7
+            bloom: apply
+          - id: locale-card-09
+            type: cloze
+            prompt: >-
+              The correct path for a JSON French translation file is `resources/lang/{{fr.json}}`, not
+              `resources/lang/fr/messages.json`.
+            answer: fr.json
+            explanation: >-
+              JSON translation files sit directly inside `resources/lang/` as `{locale}.json`. PHP translation files go
+              inside a locale subdirectory (`resources/lang/{locale}/filename.php`). Confusing the two causes lookups
+              to fail silently.
+            example: "`resources/lang/fr.json` for JSON; `resources/lang/fr/messages.php` for PHP array."
+            source: "localization.pptx slides 3-5; final-practice.docx Q1"
+            bloom: understand
+  - id: cloud-deployment
+    name: Cloud Deployment
+    topics:
+      - id: azure-static-web-apps
+        name: Azure Static Web Apps and Functions
+        tags:
+          - azure
+          - azure-functions
+          - serverless
+          - typescript
+          - static-web-apps
+        prose: >-
+          Azure Static Web Apps hosts a SPA front end and an Azure Functions backend together. Azure Functions are
+          event-driven — each function has one trigger and optional bindings declared in function.json.
+        source: "ts-function-apps.pptx; static-web-apps-SCRIPT.docx"
+        cards:
+          - id: azure-swa-card-01
+            type: cloze
+            prompt: >-
+              Azure Functions is an {{event-driven}}, serverless compute service that runs TypeScript/JavaScript
+              without managing servers.
+            answer: event-driven
+            explanation: >-
+              Event-driven means the function only runs when a trigger fires. Azure handles all server management;
+              you pay per execution.
+            source: ts-function-apps.pptx slide 2
+            bloom: remember
+          - id: azure-swa-card-02
+            type: name
+            prompt: >-
+              What is the term for the event that starts an Azure Function — for example, an incoming HTTP request
+              or a timer tick?
+            answer: trigger (Azure)
+            explanation: >-
+              Every Azure Function has exactly one trigger. The trigger is declared in function.json and determines what
+              wakes the function up. Common triggers: HTTP, Timer, Queue, Blob, Event Hub.
+            source: ts-function-apps.pptx slide 4
+            bloom: remember
+          - id: azure-swa-card-03
+            type: cloze
+            prompt: >-
+              A {{binding (Azure)}} connects an Azure Function to an input or output data source declaratively
+              in function.json — no SDK boilerplate needed in the function body.
+            answer: binding (Azure)
+            explanation: >-
+              Bindings differ from triggers: a trigger starts the function; bindings are optional and handle data
+              connections. Azure injects input-binding data and flushes output-binding writes automatically.
+            source: ts-function-apps.pptx slide 8
+            bloom: understand
+          - id: azure-swa-card-04
+            type: name
+            prompt: >-
+              One trigger + zero or many ___: what is the Azure Functions term for the optional declarative
+              connections that read from queues, write to blobs, etc.?
+            answer: bindings (Azure)
+            explanation: >-
+              A trigger fires the function (one required). Bindings wire it to other services (zero or many). Both are
+              declared in function.json. Conflating the two is a common exam error on this topic.
+            source: "ts-function-apps.pptx slides 4, 8"
+            bloom: understand
+          - id: azure-swa-card-05
+            type: cloze
+            prompt: >-
+              The configuration file that declares triggers and bindings for an Azure Function is called
+              {{function.json}}.
+            answer: function.json
+            explanation: >-
+              function.json lives in the function's folder. It lists every binding (including the trigger) with type,
+              direction (in/out), and name.
+            source: ts-function-apps.pptx slide 5
+            bloom: remember
+          - id: azure-swa-card-06
+            type: cloze
+            prompt: >-
+              An HTTP-triggered Azure Function written in TypeScript receives two parameters: a {{Context}} and an
+              {{HttpRequest}}.
+            answer: "Context, HttpRequest"
+            explanation: >-
+              Context carries context.res (the HTTP response), context.bindings (binding data), and context.log.
+              HttpRequest exposes .query, .body, .headers, and .method.
+            source: ts-function-apps.pptx slide 7
+            bloom: remember
+          - id: azure-swa-card-07
+            type: name
+            prompt: >-
+              Azure Static Web Apps hosts both a SPA front end and a serverless backend under one URL. What
+              technology powers the backend API?
+            answer: Azure Functions
+            explanation: >-
+              Requests to /api/* route to Azure Functions; all other paths serve the static SPA. Both live in the same
+              GitHub repo and deploy together via GitHub Actions.
+            source: static-web-apps-SCRIPT.docx
+            bloom: understand
+      - id: azure-laravel-deployment
+        name: Azure Laravel Deployment
+        tags:
+          - azure
+          - laravel
+          - deployment
+          - app-service
+        prose: >-
+          Deploying a Laravel app to Azure App Service requires a startup.sh script that runs migrations, caches config,
+          and sets Nginx. Environment variables are set in the Azure portal, not in a .env file.
+        source: "resources/Fixes 2026.html; resources/Steps to Azure Deployment.html"
+        cards:
+          - id: azure-deploy-card-01
+            type: cloze
+            prompt: >-
+              The shell script in the Laravel project root that runs at Azure App Service startup is called
+              {{startup.sh}}. Azure executes it via the Startup Command:
+              {{bash /home/site/wwwroot/startup.sh}}.
+            answer: "startup.sh; bash /home/site/wwwroot/startup.sh"
+            explanation: >-
+              Azure App Service has no persistent state between container restarts. The startup script creates the
+              SQLite file, sets permissions, runs migrations, and caches Laravel config so the app is ready to serve
+              requests. Without it, the container starts with a broken Laravel install.
+            example: "Startup Command field value: `bash /home/site/wwwroot/startup.sh`"
+            source: "resources/Steps to Azure Deployment.html step 6"
+            bloom: remember
+          - id: azure-deploy-card-02
+            type: name
+            prompt: >-
+              Where do you set Laravel environment variables (APP_KEY, DB_CONNECTION, etc.) when deploying to Azure
+              App Service — instead of using a .env file?
+            answer: Azure portal → Settings → Configuration → Application settings
+            explanation: >-
+              Azure containers do not persist files between restarts, and committing .env to git exposes secrets.
+              Application settings in the portal are injected as environment variables at runtime.
+            example: "Keys to add: APP_KEY, APP_DEBUG, APP_STORAGE, DB_CONNECTION, DB_DATABASE"
+            source: "resources/Steps to Azure Deployment.html step 5"
+            bloom: remember
+          - id: azure-deploy-card-03
+            type: cloze
+            prompt: >-
+              In the startup script, after clearing the config cache, run {{php artisan config:cache}} to compile
+              environment variables into PHP. Similarly, {{php artisan view:cache}} pre-compiles Blade templates.
+            answer: "php artisan config:cache; php artisan view:cache"
+            explanation: >-
+              `config:cache` is critical on Azure because there is no .env file. It bakes Application settings values
+              into `bootstrap/cache/config.php`. If you skip it, config reads fall through to .env (absent) and the
+              app throws null-config errors.
+            source: "resources/Fixes 2026.html startup.sh listing"
+            bloom: understand
+          - id: azure-deploy-card-04
+            type: cloze
+            prompt: >-
+              `php artisan migrate {{--force}}` is used in the startup script because Azure's PHP container is treated
+              as a {{production}} environment, which causes the normal migrate command to require interactive
+              confirmation.
+            answer: "--force; production"
+            explanation: >-
+              Laravel detects a non-local APP_ENV and shows a confirmation prompt for destructive operations. `--force`
+              bypasses that prompt so the startup script can run non-interactively.
+            example: "`php /home/site/wwwroot/artisan migrate --force`"
+            source: "resources/Fixes 2026.html startup.sh listing"
+            bloom: understand
+          - id: azure-deploy-card-05
+            type: name
+            prompt: >-
+              What is the absolute path where startup.sh must be placed in the Azure App Service container so that
+              the Startup Command resolves correctly?
+            answer: /home/site/wwwroot/startup.sh
+            explanation: >-
+              Azure maps the deployed application root to `/home/site/wwwroot/`. The startup script is committed to
+              the project root (same level as `artisan`, `composer.json`) and lands at that path after deployment.
+            example: "Project root: startup.sh (same level as artisan) → Azure: /home/site/wwwroot/startup.sh"
+            source: "resources/Steps to Azure Deployment.html steps 2 and 6"
+            bloom: apply
+  - id: mcp-module
+    name: Model Context Protocol
+    topics:
+      - id: mcp-protocol
+        name: Model Context Protocol
+        tags:
+          - mcp
+          - ai
+          - laravel
+          - json-rpc
+          - tools
+        prose: >-
+          Model Context Protocol is Anthropic's open standard for connecting AI models to external tools, resources,
+          and data sources. It uses JSON-RPC 2.0 over STDIO or SSE transports.
+        source: laravel_mcp.pptx
+        cards:
+          - id: mcp-card-01
+            type: cloze
+            prompt: >-
+              {{Model Context Protocol}} is Anthropic's open standard for connecting AI models to external tools,
+              resources, and data sources.
+            answer: Model Context Protocol
+            explanation: >-
+              The full name — not 'MCP protocol' or 'Anthropic protocol' — is the canonical term. It is an open
+              standard, meaning any vendor can implement a compliant client or server.
+            example: Claude acting as an MCP client sends a JSON-RPC request to a Laravel MCP server to invoke a tool.
+            source: laravel_mcp.pptx slide 2
+            bloom: remember
+          - id: mcp-card-02
+            type: name
+            prompt: Name the three primitives that an MCP server can expose, in the order specified by the course.
+            answer: "Tools (MCP), Resources (MCP), Prompts (MCP)"
+            explanation: >-
+              Tools are callable actions (side effects); Resources are read-only data sources; Prompts are reusable
+              LLM templates. The course-canonical order is Tools → Resources → Prompts.
+            example: "A to-do MCP server exposes: Tool = AddTodo, Resource = ListTodos (read), Prompt = SummarizeTodos."
+            source: laravel_mcp.pptx slide 4
+            bloom: remember
+          - id: mcp-card-03
+            type: name
+            prompt: What is the definition of Tools (MCP)?
+            answer: Callable actions the AI can invoke — such as API calls, running scripts, or multi-step workflows.
+            explanation: >-
+              Tools have side effects. They are executable functions, not data endpoints or UI components. This
+              distinction is the most-tested wrong answer in past exams (Q3).
+            example: A tool named AddTodo accepts a 'title' parameter and inserts a row in the database.
+            source: "laravel_mcp.pptx slide 4; final-practice.docx Q3"
+            bloom: understand
+          - id: mcp-card-04
+            type: name
+            prompt: What is the definition of Resources (MCP)?
+            answer: Data sources exposed to the AI — such as local files, database queries, or cloud documents.
+            explanation: >-
+              Resources are read-only. The AI loads resource content into its context window. Unlike Tools, Resources
+              do not trigger side effects.
+            example: A resource named TodoList returns all current to-do items as JSON for the AI to read.
+            source: laravel_mcp.pptx slide 4
+            bloom: understand
+          - id: mcp-card-05
+            type: cloze
+            prompt: >-
+              Model Context Protocol uses {{JSON-RPC 2.0}} as its message format. Every request includes a method
+              name, an id, and optional params.
+            answer: JSON-RPC 2.0
+            explanation: >-
+              JSON-RPC 2.0 defines a lightweight remote procedure call format over JSON. It is the wire protocol for
+              all MCP client-server communication, regardless of transport.
+            example: 'A tools/list request: { "jsonrpc": "2.0", "id": 1, "method": "tools/list" }'
+            source: "laravel_mcp.pptx slides 2-5"
+            bloom: remember
+          - id: mcp-card-06
+            type: name
+            prompt: Name the two transport options Model Context Protocol supports and describe when each is used.
+            answer: "STDIO (local, same-machine processes) and SSE — Server-Sent Events (remote servers over HTTP streaming)."
+            explanation: >-
+              STDIO connects processes on the same machine via stdin/stdout — ideal for local development tools. SSE
+              uses HTTP and works for network-accessible MCP servers.
+            example: "The laravel_mcp.pptx demo server uses type: 'http' in mcp.json, which means SSE transport."
+            source: "laravel_mcp.pptx slides 2, 12"
+            bloom: understand
+          - id: mcp-card-07
+            type: name
+            prompt: What is MCP composability?
+            answer: >-
+              The MCP property where a client can also act as a server, enabling nested or chained agent architectures.
+            explanation: >-
+              Because the protocol is symmetric, any node can simultaneously receive requests (server role) and send
+              requests (client role). Multi-agent orchestration uses the same JSON-RPC 2.0 protocol without custom
+              bridges.
+            example: Agent A calls Agent B's tools; Agent B calls Agent C's tools. Each hop is a standard JSON-RPC 2.0 message.
+            source: laravel_mcp.pptx slide 10
+            bloom: understand
+          - id: mcp-card-08
+            type: predict
+            lang: php
+            prompt: What HTTP method and JSON-RPC method name are used to discover available tools on an MCP server?
+            code: |
+              // MCP client wants to list all tools the server exposes.
+              $body = json_encode([
+                  'jsonrpc' => '2.0',
+                  'id'      => 1,
+                  'method'  => /* ??? */,
+              ]);
+            answer: "POST request; method is \"tools/list\". The server responds with a JSON array of tool descriptors."
+            explanation: >-
+              tools/list is the standard MCP discovery method. Clients call it before invoking individual tools to
+              learn what capabilities the server exposes.
+            source: "laravel_mcp.pptx slides 4-5"
+            bloom: apply
+          - id: mcp-card-09
+            type: predict
+            lang: text
+            prompt: >-
+              A server exposes a route that returns all task rows as JSON (read-only). An AI reads this data before
+              answering "what tasks are overdue?". Which MCP primitive applies — Tools, Resources, or Prompts?
+            code: |
+              Scenario:
+              - Route: GET /mcp/tasks
+              - Behaviour: returns JSON array (read-only, no side effects)
+              - AI purpose: load task data into context
+            answer: "Resources (MCP) — a read-only data source loaded into the AI's context, not a side-effecting action."
+            explanation: >-
+              The distinguishing factor is side effects. Tools create, update, or trigger things. Resources only expose
+              data for reading. A plain data-fetch endpoint maps to Resources.
+            source: laravel_mcp.pptx slide 4
+            bloom: apply
+      - id: laravel-mcp-implementation
+        name: Laravel MCP Server Implementation
+        tags:
+          - mcp
+          - laravel
+          - server
+          - json-rpc
+          - sse
+        prose: >-
+          Building an MCP server in Laravel means implementing the tools/list and tools/call endpoints. Each tool
+          definition needs name, description, and inputSchema. SSE transport serves remote clients.
+        source: laravel_mcp.pptx
+        cards:
+          - id: mcp-impl-card-01
+            type: cloze
+            prompt: "An MCP tool definition has three required fields: {{name}}, {{description}}, and {{inputSchema}}."
+            answer: "name, description, inputSchema"
+            explanation: >-
+              The LLM reads 'description' to decide when to invoke the tool. 'inputSchema' is a JSON Schema object
+              that declares the argument types and required fields.
+            source: laravel_mcp.pptx slide 4
+            bloom: remember
+          - id: mcp-impl-card-02
+            type: cloze
+            prompt: >-
+              The {{description}} field of an MCP tool definition is read by the LLM — not just developers — to
+              decide when and how to invoke the tool.
+            answer: description
+            explanation: >-
+              A vague description causes missed or incorrect invocations. The description must state what the tool
+              does, what system it affects, and what it returns.
+            source: laravel_mcp.pptx slide 4
+            bloom: understand
+          - id: mcp-impl-card-03
+            type: name
+            prompt: Which MCP transport uses a persistent HTTP connection with Server-Sent Events — SSE or STDIO?
+            answer: SSE
+            explanation: >-
+              SSE keeps an HTTP connection open so the server can stream messages back to the client. It is the correct
+              transport for any Laravel app accessible over HTTP. STDIO uses stdin/stdout pipes for locally-spawned
+              processes only.
+            source: laravel_mcp.pptx slide 12
+            bloom: remember
+          - id: mcp-impl-card-04
+            type: name
+            prompt: >-
+              A Laravel app is deployed to a public URL. A developer wants Claude Desktop to call its MCP tools.
+              Which transport should the mcp.json config specify?
+            answer: "SSE (type: http)"
+            explanation: >-
+              SSE is for remote HTTP-accessible servers. STDIO requires the client to spawn the server as a local
+              subprocess, which is incompatible with a deployed web app.
+            example: '`"type": "http"` in mcp.json points to the server URL and uses SSE transport.'
+            source: laravel_mcp.pptx slide 12
+            bloom: apply
+          - id: mcp-impl-card-05
+            type: name
+            prompt: >-
+              What is the term for an MCP architecture where a single app simultaneously acts as both an MCP client
+              and an MCP server?
+            answer: MCP composability
+            explanation: >-
+              Composability means the client and server roles are independent — the same Laravel app can call external
+              MCP tools in one controller while exposing its own tools to Claude via a separate MCP server class.
+            source: laravel_mcp.pptx slide 10
+            bloom: understand
+          - id: mcp-impl-card-06
+            type: cloze
+            prompt: >-
+              An MCP server exposes two required JSON-RPC 2.0 endpoints: {{tools/list}} (returns available tool
+              definitions) and {{tools/call}} (executes a named tool with arguments).
+            answer: "tools/list, tools/call"
+            explanation: >-
+              tools/list lets any MCP client discover what the server can do. tools/call triggers execution and returns
+              a result. Both use the JSON-RPC 2.0 envelope — not plain REST.
+            source: "laravel_mcp.pptx slides 11-12"
+            bloom: remember

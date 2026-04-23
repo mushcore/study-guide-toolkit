@@ -31,6 +31,7 @@ const CourseView = ({ courseId, onJumpTopic, onJumpRoute }) => {
     { key: 'mock',       title: 'Mock Exam',      sub: 'timed MCQ · mirrors real format',   meta: course.format },
     { key: 'code',       title: courseId === '4911' ? 'Code Annotation' : 'Code / Applied', sub: courseId === '4911' ? 'line-by-line reading' : 'starter + solution',  meta: 'practice' },
     { key: 'cheat',      title: 'Cheat Sheet',    sub: 'printable · exam-eve',               meta: '8.5×11' },
+    { key: 'flash',      title: 'Flash Cards',    sub: 'all topics · sequential deck',       meta: `${total} cards` },
   ];
 
   const startTopRecall = () => {

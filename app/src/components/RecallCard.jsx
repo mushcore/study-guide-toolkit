@@ -157,7 +157,7 @@ const RecallCard = ({ topic, onRate, onNext, onPrev, idxInQueue, queueLen, onJum
             <div className="kb-list">
               <div className="kb"><span>Reveal</span><kbd>space</kbd></div>
               <div className="kb"><span>Rate</span><kbd>1-5</kbd></div>
-              <div className="kb"><span>Next / prev</span><kbd>j · k</kbd></div>
+              <div className="kb"><span>prev / next</span><kbd>j · k</kbd></div>
               <div className="kb"><span>Palette</span><kbd>⌘K</kbd></div>
             </div>
           </div>

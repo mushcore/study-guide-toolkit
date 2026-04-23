@@ -1,0 +1,140 @@
+id: modern-web-arch
+cards:
+
+  - id: modern-web-arch-card-01
+    type: cloze
+    prompt: >
+      AI-as-a-Service (AIaaS) means cloud providers expose ________ as API-accessible
+      services. Examples include Google Cloud AI, ________, and Azure Cognitive Services.
+    answer: "pre-trained AI models; AWS AI Services"
+    explanation: >
+      AIaaS removes the need to build or train models from scratch. Developers call
+      an API endpoint and receive AI results (image classification, language processing,
+      speech transcription). The model infrastructure is entirely managed by the provider.
+    example: >
+      A web app that calls the AWS Rekognition API to detect faces in uploaded photos
+      is using AIaaS — no ML training pipeline required.
+    source: "Slide 8"
+    bloom: remember
+
+  - id: modern-web-arch-card-02
+    type: name
+    prompt: >
+      What is the mechanism behind edge computing, and what problem does it solve?
+    answer: >
+      Edge computing processes data closer to the source (user's device or regional
+      node) rather than in a centralized data center. It solves high latency caused
+      by long-distance round-trips between users and central servers.
+    explanation: >
+      By moving compute to nodes geographically close to users, edge computing cuts
+      the physical distance data must travel. Shorter distance means lower latency
+      and faster response — critical for real-time applications, IoT telemetry,
+      and low-latency gaming.
+    example: >
+      A CDN that processes image transformations at a regional edge node near the
+      user, rather than routing to a central data center on another continent,
+      is applying edge computing.
+    source: "Slide 8"
+    bloom: understand
+
+  - id: modern-web-arch-card-03
+    type: name
+    prompt: >
+      What does headless architecture decouple, and what is the primary benefit
+      for organizations with multiple frontend clients?
+    answer: >
+      Headless architecture decouples the frontend presentation layer from the
+      backend data and logic layers. The benefit: multiple frontends (web, mobile,
+      IoT) can consume the same backend API without the backend containing any
+      frontend-specific logic.
+    explanation: >
+      In a traditional CMS, the backend controls both content storage and HTML
+      rendering. A headless CMS handles only content storage and delivers it via
+      API. Frontend teams choose any rendering technology; the backend is unchanged.
+    example: >
+      A news organization's website, mobile app, and smart-TV interface all call
+      the same headless CMS API to retrieve articles. Each frontend renders
+      content differently without requiring separate backends.
+    source: "Slide 8"
+    bloom: understand
+
+  - id: modern-web-arch-card-04
+    type: name
+    prompt: >
+      What core concept does Domain-Driven Design (DDD) use to enforce separation
+      of concerns between business domains in a large system?
+    answer: >
+      Bounded contexts. Each business domain is isolated within a boundary where
+      its model is consistent and a team has clear ownership. Changes inside one
+      bounded context do not affect others.
+    explanation: >
+      DDD recognizes that large systems contain multiple business domains (payments,
+      inventory, recommendations) that have different rules and language. Bounded
+      contexts prevent domain models from bleeding into each other, making the
+      system easier to change and reason about.
+    example: >
+      In an e-commerce system, the "order" concept in the payments domain means
+      something different than "order" in the warehouse domain. DDD gives each
+      domain its own bounded context so both definitions coexist without collision.
+    source: "Slide 8"
+    bloom: understand
+
+  - id: modern-web-arch-card-05
+    type: name
+    prompt: >
+      What problem did Uber face that motivated DOMA (Domain-Oriented Microservice
+      Architecture), and what structural change did DOMA introduce?
+    answer: >
+      Uber's MSA grew to hundreds of services with overlapping responsibilities
+      and no clear boundaries. Maintaining consistency, scaling, and collaboration
+      became difficult. DOMA reorganized services into domain groups, each with
+      clear ownership and a domain-level API boundary.
+    explanation: >
+      Raw MSA at scale produces coordination failures: teams don't know which
+      service owns what, duplicated logic accumulates, and changes have unpredictable
+      blast radius. DOMA applies DDD's bounded-context thinking to service organization,
+      restoring clarity at the organizational level.
+    example: >
+      After DOMA, Uber's "maps" domain group owns all location and routing services
+      under one boundary. Other domains call the maps domain API rather than
+      reaching into individual map services directly.
+    source: "Slide 8"
+    bloom: understand
+
+  - id: modern-web-arch-card-06
+    type: cloze
+    prompt: >
+      In serverless architecture, the developer is responsible only for ________.
+      The cloud provider automatically handles ________, scaling, and server management.
+    answer: "the function logic (and API contract); deployment"
+    explanation: >
+      "Serverless" describes who manages infrastructure, not whether infrastructure
+      exists. Servers still run the code — AWS, Azure, or GCP manages them.
+      The developer never provisions, patches, or scales servers; those concerns
+      are fully delegated to the provider.
+    example: >
+      An AWS Lambda function that resizes uploaded images runs on real AWS servers.
+      The developer writes only the resize logic; AWS handles everything else.
+      At zero traffic, zero servers are allocated and no cost accrues.
+    source: "Slide 8"
+    bloom: remember
+
+  - id: modern-web-arch-card-07
+    type: name
+    prompt: >
+      A developer uses Google AutoML to fine-tune an image classifier without writing
+      any ML training code. What broader category of tooling does this represent,
+      and name two other platforms in the same category?
+    answer: >
+      AutoML / no-code AI. Other platforms: HuggingFace, Kaggle.
+    explanation: >
+      AutoML platforms abstract the ML engineering layer. Users provide labeled data
+      and configure training runs; the platform handles architecture search, training,
+      and deployment. This extends AIaaS downward — not just consuming pre-trained
+      models, but customizing them without deep ML expertise.
+    example: >
+      A retail company uses Google AutoML Vision to train a product defect detector
+      from 2,000 labeled photos. No ML engineer on staff — the platform produces
+      a deployable model endpoint the web team calls via API.
+    source: "Slide 8"
+    bloom: understand

@@ -6,68 +6,169 @@ hook: Short lesson, high MCQ density.
 tags:
   - boot
 module: Package management & boot
+source: "Mod05 Ch10-11; materials/past-exams/midterm.md Q16, Q35"
+related: [4915-topic-boot-sequence-run-levels-memorize, 4915-topic-etc-passwd-etc-shadow-user-mgmt, 4915-topic-permissions-chmod-umask]
 ---
 
-flowchart LR BIOS\["BIOS  
+You log into a remote server and run `runlevel`. It prints `3`. A junior admin says: *"Runlevel 3 means networking is disabled — you'll need to go to runlevel 5 before you can SSH in."*
+
+Something in that statement is wrong. Before reading further, identify the error. One sentence is enough — hold your answer until the run-level section reveals it.
+
+## Seven players, one handoff chain
+
+The boot process is not one program doing everything. It is a chain of seven distinct programs, each doing a narrow job and then passing control to the next. Learning who does what collapses every boot-related MCQ into a lookup.
+
+A **BIOS** (or UEFI on modern hardware) is firmware burned into the motherboard. It runs before any OS code. Its sole job: run a power-on self-test, locate a bootable device, load the first 512-byte sector of that device (the **MBR**, Master Boot Record) into RAM, and jump to it.
+
+The **bootloader** (GRUB on Fedora/RHEL) lives in the MBR and in a small partition. It presents a boot menu, reads `/boot/grub2/grub.cfg`, loads the compressed kernel image (`/boot/vmlinuz-*`) plus an initial RAM disk (`initramfs`) into memory, and hands control to the kernel entry point.
+
+The **kernel** decompresses itself, initializes the CPU, memory controller, and storage drivers, mounts the root filesystem read-only (so `fsck` can run safely), then starts exactly one process — **PID 1** — and waits.
+
+On modern Fedora/RHEL that PID 1 is **systemd**. On older SysV systems it was `/sbin/init`. Either way, this process is the ancestor of every other process on the machine. It reads its configuration and decides which run level (SysV) or which target unit (systemd) to reach.
+
+**rc.sysinit** is the run-level-independent setup script. It runs before any run-level-specific work. It mounts `/proc` (the kernel's virtual filesystem for process information), activates swap, runs `fsck` on filesystems listed in `/etc/fstab`, mounts those filesystems read-write, and enables disk quotas.
+
+**rc N** is run-level-specific. For whatever run level N was chosen, init looks inside `/etc/rc.d/rcN.d/`. That directory contains symlinks to service scripts in `/etc/rc.d/init.d/`. Scripts whose names start with `K` (kill) run first — in numeric order — to stop services that don't belong at this run level. Scripts starting with `S` (start) run next to bring up services that do belong. The two-digit number after the letter is the priority: `K05innd` stops before `K10ntpd`, `S10network` starts before `S55sshd`.
+
+Finally, the **login prompt** appears — a graphical display manager (`gdm`) for run level 5, or a text `tty` for run level 3.
+
+## The boot chain
+
+flowchart LR BIOS["BIOS  
 POST  
-find boot dev"\] --> GRUB\["MBR/GRUB  
+find boot dev"] --> GRUB["MBR/GRUB  
 bootloader  
-pick kernel"\] GRUB --> KERNEL\["kernel  
+pick kernel"] GRUB --> KERNEL["kernel  
 init hardware  
-mount root RO"\] KERNEL --> INIT\["init / systemd  
-PID 1"\] INIT --> RCSYS\["rc.sysinit  
+mount root RO"] KERNEL --> INIT["init / systemd  
+PID 1"] INIT --> RCSYS["rc.sysinit  
 mount /proc, swap  
-fsck, fstab"\] RCSYS --> RCN\["rc N  
+fsck, fstab"] RCSYS --> RCN["rc N  
 /etc/rc.d/rcN.d  
-K\* stop → S\* start"\] RCN --> LOGIN\["login  
-gdm or tty"\] classDef boot fill:#181822,stroke:#7aa2f7,color:#e5e5e5; classDef sys fill:#181a18,stroke:#9ece6a,color:#e5e5e5; class BIOS,GRUB,KERNEL boot; class INIT,RCSYS,RCN,LOGIN sys;
+K* stop → S* start"] RCN --> LOGIN["login  
+gdm or tty"] classDef boot fill:#181822,stroke:#7aa2f7,color:#e5e5e5; classDef sys fill:#181a18,stroke:#9ece6a,color:#e5e5e5; class BIOS,GRUB,KERNEL boot; class INIT,RCSYS,RCN,LOGIN sys;
 
-flowchart LR subgraph RL\["System V run levels — MEMORIZE (instructor)"\] direction LR L0\["0  
+Blue = firmware and kernel stages (you have no processes yet). Green = init and userland stages (PID 1 is now running). The kernel-to-init handoff is the moment the machine becomes a running OS.
+
+> **Q:** What is the difference between rc.sysinit and rc N in the boot sequence?
+>
+> **A:** `rc.sysinit` runs first and does work that is independent of which run level you're booting into: mounting `/proc`, activating swap, running `fsck`, mounting filesystems. `rc N` runs second and is run-level-specific: it reads `/etc/rc.d/rcN.d/` and starts or stops services according to which run level was requested. Every boot goes through `rc.sysinit`; the particular `rc N` depends on the target level.
+
+## Run levels
+
+Back to the opening error. Runlevel 3 is **multi-user, text mode, with full services and full networking**. The junior admin confused it with runlevel 2, which is multi-user *without* networking. A server running at runlevel 3 is the standard headless production state — SSH works, services are running, no GUI. Runlevel 5 adds the graphical login screen; it does not add networking.
+
+flowchart LR subgraph RL["System V run levels — MEMORIZE (exam-tested)"] direction LR L0["0  
 halt  
-power off"\] L1\["1  
+power off"] L1["1  
 single user  
-rescue / root"\] L2\["2  
+rescue / root"] L2["2  
 multi NO net  
-minimal"\] L3\["3  
+minimal"] L3["3  
 multi TEXT  
-full svcs, no GUI"\] L4\["4  
+full svcs, no GUI"] L4["4  
 unused  
-custom"\] L5\["5  
+custom"] L5["5  
 multi + GUI  
-X11 / GDM"\] L6\["6  
+X11 / GDM"] L6["6  
 reboot  
-restart"\] end classDef halt fill:#201818,stroke:#f7768e,color:#f7768e; classDef res fill:#201c15,stroke:#e0af68,color:#e0af68; classDef gray fill:#181818,stroke:#737373,color:#a3a3a3; classDef good fill:#1a2218,stroke:#9ece6a,color:#9ece6a; classDef gui fill:#181822,stroke:#7aa2f7,color:#7aa2f7; class L0,L6 halt; class L1 res; class L2,L4 gray; class L3 good; class L5 gui;
+restart"] end classDef halt fill:#201818,stroke:#f7768e,color:#f7768e; classDef res fill:#201c15,stroke:#e0af68,color:#e0af68; classDef gray fill:#181818,stroke:#737373,color:#a3a3a3; classDef good fill:#1a2218,stroke:#9ece6a,color:#9ece6a; classDef gui fill:#181822,stroke:#7aa2f7,color:#7aa2f7; class L0,L6 halt; class L1 res; class L2,L4 gray; class L3 good; class L5 gui;
 
-Change: `init N` / `telinit N`. SysV default in `/etc/inittab`. systemd targets: poweroff(0), rescue(1), multi-user(3), graphical(5), reboot(6). `systemctl get-default` / `systemctl set-default graphical.target`.  
-**Traps:** RL 2 has NO network · RL 3 = full svcs text · RL 5 = GUI. Midterm Q35 + sample Q5.  
-Sources: Mod05 Ch10-11 · Review Apr 17
+The exam tests levels 1, 3, and 5 almost exclusively. Levels 0 and 6 are transitions (halt, reboot), not stable states. Level 2 is an edge case (networking stripped). Level 4 is unused.
 
-### Boot sequence
+**Switching run level now (temporary):** `init N` or `telinit N` on SysV; `systemctl isolate multi-user.target` on systemd. The change takes effect immediately and does not survive a reboot.
 
-BIOS → MBR/GRUB → kernel → init/systemd (PID 1) → `rc.sysinit` → `rc N` (runs scripts in `/etc/rc.d/rcN.d/`: K\* kill first, S\* start after) → login prompt.
+**Setting the default (permanent):** On SysV, edit `/etc/inittab` — find the `id:3:initdefault:` line and change the digit. With systemd: `systemctl set-default multi-user.target` (text) or `systemctl set-default graphical.target` (GUI). Check the current default with `systemctl get-default`.
 
-### Run levels (MEMORIZE)
+> **Q:** Your workstation boots to a GUI. You want it to boot permanently to text mode. Which command do you run?
+>
+> **A:** `systemctl set-default multi-user.target`. This writes a symlink that systemd reads on the next boot. By contrast, `systemctl isolate multi-user.target` drops to text mode right now but the change is lost on reboot. An exam question that specifies *permanent* is always asking for `set-default`.
 
-| # | Meaning |
-| --- | --- |
-| 0 | halt |
-| 1 | single user / rescue |
-| 2 | multi-user, NO network |
-| 3 | multi-user, text — **full services, no GUI** |
-| 4 | unused |
-| 5 | multi-user + GUI (X) |
-| 6 | reboot |
+## Users and auth: two files, one split
 
-### Users / auth files
+Every interactive user account exists in two files. Understanding *why* there are two — not one — makes all seven fields of each file obvious rather than memorized.
 
-`/etc/passwd` (world-readable, 7 fields): `user:x:UID:GID:GECOS:home:shell`.  
-`/etc/shadow` (root-only 600, 9 fields): hashes + aging.  
-`useradd -m u`, `userdel -r u`, `passwd u`, `chage`.
+The original design put password hashes in `/etc/passwd`. That file must be world-readable so that programs like `ls`, `ps`, and `id` can translate numeric UIDs into usernames. A world-readable hash file is a brute-force target: anyone with a copy can run an offline dictionary attack. The fix was **shadow passwords**: move the hashes into a second file (`/etc/shadow`) readable only by root, while leaving the non-sensitive account metadata in the world-readable `/etc/passwd`.
 
-umask default 022 → files 644, dirs 755. (666 & ~022 = 644.)
+### /etc/passwd — the public record
 
-### PAM
+Seven colon-separated fields per line:
 
-Pluggable Authentication Modules. Config: `/etc/pam.d/<service>`. Lets you change auth method without recompiling apps.
+```
+login-name : x : UID : GID : GECOS : home-dir : shell
+```
 
-Check: Runlevel 3 vs 5?3 = text mode with all services (a normal server). 5 = graphical login (X11). (Midterm Q35.)
+- **login-name** — the username (`alice`, `root`).
+- **x** — literal `x`, meaning the real hash is in `/etc/shadow`. Before shadow passwords this field held the hash itself.
+- **UID** — numeric user ID. Root is always 0. System service accounts are typically below 1000; regular human users start at 1000.
+- **GID** — the user's primary group ID, which must have a matching entry in `/etc/group`.
+- **GECOS** — freeform comment, typically the user's full name. Non-sensitive, historically used for user contact info.
+- **home-dir** — absolute path to the user's home directory.
+- **shell** — program launched at interactive login. For normal users: `/bin/bash`. For service accounts that must never have interactive access: `/sbin/nologin` or `/bin/false` — either refuses an interactive session at the login step.
+
+```console
+alice:x:1001:1001:Alice Wong:/home/alice:/bin/bash
+daemon:x:2:2:Daemon:/sbin:/sbin/nologin
+```
+
+### /etc/shadow — the secret half
+
+Nine colon-separated fields per line, in the same user order as `/etc/passwd`:
+
+```
+login-name : hashed-password : last-change : min : max : warn : inactive : expire : flag
+```
+
+- **hashed-password** — the salted hash. A `*` or `!` in this field locks the account (no login via password).
+- **last-change** — days since the Unix epoch (1970-01-01) when the password was last changed.
+- **min / max** — minimum days before the user may change the password again; maximum days before they must.
+- **warn** — days before expiry to warn the user.
+- **inactive / expire** — days of inactivity after expiry before the account is disabled; absolute expiry date.
+
+The file is **owned by root, mode 0600** — root-only read/write, no permissions for group or other. This is what the exam asks: which file holds hashes (`/etc/shadow`), and what permissions does it have (`0600`).
+
+### umask — computing default permissions
+
+When a process creates a file, the kernel starts with a **base permission** of `0666` (rw-rw-rw-) for files and `0777` (rwxrwxrwx) for directories, then strips out any bits set in the **umask**. The formula: `actual = base AND NOT(umask)`.
+
+The system-wide default umask is `022`:
+
+```
+file:  0666 & ~022  =  0666 & 0755  =  0644   (rw-r--r--)
+dir:   0777 & ~022  =  0777 & 0755  =  0755   (rwxr-xr-x)
+```
+
+Reading it as bits: `022` octal is `000 010 010` — it removes the group-write bit and the other-write bit. Everyone can read what you create; only you can write it.
+
+> **Q:** What mode does `umask 027` produce for a new file? For a new directory?
+>
+> **A:** `file: 0666 & ~027 = 0640` (rw-r-----). `dir: 0777 & ~027 = 0750` (rwxr-x---). Umask `027` octal is `000 010 111` — it removes group-write, other-read, other-write, and other-execute. Group can read (and execute directories) but cannot write; others get nothing.
+
+### User management commands
+
+```console
+$ useradd -m alice          # create user, create home dir from /etc/skel
+$ passwd alice              # set password → updates /etc/shadow
+$ chage -l alice            # list password aging info
+$ chage -M 90 alice         # require password change every 90 days
+$ userdel -r alice          # delete user AND remove home directory
+$ chown -R jack /home/jack/candy   # recursively change ownership to jack
+```
+
+The `chown -R` flag is uppercase. `chown -r` does not exist — `chown` has only `-R` for recursive traversal. This is midterm Q16's trap: option D (`chown -r jack ...`) is wrong for exactly this reason.
+
+## PAM — changing auth without recompiling
+
+**PAM** (Pluggable Authentication Modules) is a framework that decouples authentication policy from the programs that need to authenticate users. Without PAM, every binary that checks passwords — `login`, `sshd`, `sudo`, `su`, `vsftpd` — contains its own auth code. Switching from local passwords to LDAP or Kerberos requires recompiling all of them.
+
+With PAM, each service has a config file at `/etc/pam.d/<service>`. That file defines a stack of PAM modules to run in sequence. Changing the auth backend means editing a text file. The binary never changes.
+
+PAM modules fall into four types: **auth** (verify the user's identity), **account** (check account validity — is it expired? is it allowed to log in now?), **password** (change credentials), **session** (set up and tear down the session environment — mount home directory, apply resource limits, log activity).
+
+> **Q:** Why does Linux use two files (`/etc/passwd` and `/etc/shadow`) instead of one?
+>
+> **A:** `/etc/passwd` must be world-readable so that any program can translate UIDs to usernames. If it were root-only, commands like `ls -l` and `ps aux` would show only numeric IDs. But storing password hashes in a world-readable file lets any user copy the hashes and attack them offline. Shadow passwords solve this by moving hashes to `/etc/shadow` (mode 0600, root-only), while `/etc/passwd` keeps only the non-sensitive fields that programs legitimately need.
+
+> **Pitfall**: Two traps appear on nearly every exam. First, `systemctl isolate multi-user.target` switches run level immediately but does not persist across reboot; `systemctl set-default multi-user.target` makes the change permanent. An exam question specifying *permanent default* always wants `set-default`. Second, `chown -R` is uppercase. `chown -r` is not a valid flag — `chown` only has `-R` for recursive. Midterm Q16 puts `-r` as a distractor; the correct answer is `-R jack /home/jack/candy`.
+
+> **Takeaway**: Boot is a seven-stage handoff: BIOS → GRUB → kernel → init/systemd (PID 1) → rc.sysinit (run-level-independent setup) → rc N (K\* stop, S\* start) → login prompt. Run levels encode which services run: 1 is single-user rescue, 3 is full multi-user text (the normal server state, networking included), 5 is multi-user with a GUI. User identity lives in `/etc/passwd` (7 fields, world-readable); secrets live in `/etc/shadow` (9 fields, mode 0600). PAM decouples authentication policy from the binaries that enforce it, so you can switch auth backends by editing `/etc/pam.d/<service>` without touching compiled code.

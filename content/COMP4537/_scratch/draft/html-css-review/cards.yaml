@@ -1,0 +1,114 @@
+id: html-css-review
+name: "HTML DOM structure, CSS box model, selectors, attributes"
+tags: [HTML, CSS, DOM, box-model, selectors, attributes]
+prose: "The CSS box model layers every element in four concentric zones: content, padding, border, margin. Selectors target elements by type, class, or combination; commas group them, spaces express ancestry. The `color` property changes text color; `background-color` changes the background. HTML attributes use either single or double quotes. `<!DOCTYPE html>` precedes `<html>`, and `<head>` and `<body>` are direct children of `<html>`."
+cards:
+  - id: html-css-review-card-01
+    type: cloze
+    prompt: "The CSS box model layers from inside out are: {{content}}, {{padding}}, {{border}}, {{margin}}."
+    answer: "content; padding; border; margin"
+    explanation: "The content layer holds text and child elements. Padding adds transparent space inside the border. The border wraps padding. Margin separates the element from its neighbors."
+    example: |
+      /* Box model layers, inside to outside */
+      /* content → padding → border → margin */
+      .box {
+        padding: 10px;   /* inside border */
+        border: 2px solid black;
+        margin: 20px;    /* outside border */
+      }
+    source: "ISAQuiz1"
+    bloom: remember
+
+  - id: html-css-review-card-02
+    type: cloze
+    prompt: "To change an element's background color in CSS, use the property {{background-color}}, not {{color}}."
+    answer: "background-color; color"
+    explanation: "`color` changes text color. `background-color` changes the element's background. ISAQuiz1 tests this distinction directly."
+    example: |
+      p {
+        color: black;            /* text is black */
+        background-color: yellow; /* background is yellow */
+      }
+    source: "ISAQuiz1"
+    bloom: remember
+
+  - id: html-css-review-card-03
+    type: cloze
+    prompt: "The CSS grouping selector `h1, h2, p { color: red; }` targets {{all three element types}}. Without the comma, `h1 h2 p` targets {{a <p> nested inside an <h2> inside an <h1>}}."
+    answer: "all three element types; a <p> nested inside an <h2> inside an <h1>"
+    explanation: "Commas group independent selectors. Spaces create descendant selectors — a completely different relationship."
+    example: |
+      /* Grouping — applies to h1, h2, and p */
+      h1, h2, p { color: red; }
+
+      /* Descendant — only p inside h2 inside h1 */
+      h1 h2 p { color: blue; }
+    source: "ISAQuiz1"
+    bloom: understand
+
+  - id: html-css-review-card-04
+    type: cloze
+    prompt: "In HTML, `<!DOCTYPE html>` must appear {{before the <html> element}}. `<head>` and `<body>` are direct children of {{<html>}}."
+    answer: "before the <html> element; <html>"
+    explanation: "The DOCTYPE declaration tells the browser which version of HTML to parse. It is not an element — it has no closing tag and is not part of the DOM tree."
+    example: |
+      <!DOCTYPE html>
+      <html>
+        <head>...</head>
+        <body>...</body>
+      </html>
+    source: "ISAQuiz1"
+    bloom: remember
+
+  - id: html-css-review-card-05
+    type: name
+    prompt: "What two attributes does an `<img>` element use to specify the image file and its fallback text?"
+    answer: "`src` and `alt`"
+    explanation: "`src` provides the file path or URL. `alt` provides text the browser displays when the image cannot load, and assistive technology reads aloud."
+    example: |
+      <img src="photo.jpg" alt="A red barn in a field">
+    source: "ISAQuiz1"
+    bloom: remember
+
+  - id: html-css-review-card-06
+    type: name
+    prompt: "What are the three ways to attach CSS to an HTML document?"
+    answer: "External `<link>` in `<head>`, internal `<style>` in `<head>`, inline `style` attribute on an element"
+    explanation: "External stylesheets are most maintainable. Internal styles scope to one page. Inline styles have the highest specificity and are hardest to override."
+    example: |
+      <!-- External -->
+      <link rel="stylesheet" href="styles.css">
+
+      <!-- Internal -->
+      <style>p { color: red; }</style>
+
+      <!-- Inline -->
+      <p style="color: red;">Text</p>
+    source: "ISAQuiz1"
+    bloom: remember
+
+  - id: html-css-review-card-07
+    type: cloze
+    prompt: "The CSS selector `div.container` matches a {{<div> element that also has the class `container`}}. A space between them — `div .container` — would instead match {{an element with class `container` that is a descendant of a `<div>`}}."
+    answer: "<div> element that also has the class `container`; an element with class `container` that is a descendant of a `<div>`"
+    explanation: "No space between element and class name means both conditions must apply to the same element. A space creates a descendant relationship."
+    example: |
+      /* Targets <div class="container"> */
+      div.container { border: 1px solid; }
+
+      /* Targets any .container inside any div */
+      div .container { border: 1px solid; }
+    source: "ISAQuiz1"
+    bloom: understand
+
+  - id: html-css-review-card-08
+    type: name
+    prompt: "Which CSS units are valid for specifying font size?"
+    answer: "`px`, `em`, and `%` are all valid CSS units for font size."
+    explanation: "`px` is absolute. `em` is relative to the parent element's font size. `%` is relative to the inherited font size. All three appear in ISAQuiz1."
+    example: |
+      p { font-size: 16px; }
+      h2 { font-size: 1.5em; }
+      small { font-size: 80%; }
+    source: "ISAQuiz1"
+    bloom: remember

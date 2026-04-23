@@ -1,0 +1,989 @@
+duration_seconds: 3600
+pass_mark: 0.6
+questions:
+  - id: artisan-composer-q-01
+    type: MCQ
+    topic: Artisan CLI and Composer
+    marks: 1
+    question: Which command correctly creates a new Laravel migration file for a `products` table?
+    choices:
+      - php artisan make-migration create_products_table
+      - php artisan make:migration create_products_table
+      - composer make:migration create_products_table
+      - artisan make:migration create_products_table
+    correct: 1
+    rationale: >-
+      Artisan commands use colon-separated namespaces: `make:migration` (with a colon). The full invocation is always
+      prefixed `php artisan`. Option A (`make-migration` with a hyphen) is the classic exam distractor from past-exam Q6
+      — hyphenated forms do not exist in Artisan. Option C (`composer make:migration`) confuses Artisan with Composer;
+      `composer` manages dependencies, not app code generation. Option D (`artisan make:migration`) omits the required
+      `php` prefix — `artisan` is a PHP script and must be invoked as `php artisan`.
+    bloom: remember
+    source: intro_to_laravel.pptx; final-practice.docx Q6
+    tags:
+      - pretest
+  - id: artisan-composer-q-02
+    type: MCQ
+    topic: Artisan CLI and Composer
+    marks: 1
+    question: A teammate cloned the repository. The `vendor/` folder is absent. Which command restores all PHP dependencies?
+    choices:
+      - php artisan install
+      - npm install
+      - composer install
+      - composer create-project
+    correct: 2
+    rationale: >-
+      `composer install` reads `composer.json` (and `composer.lock` for exact versions) and downloads all listed
+      dependencies into `vendor/`. This is the standard command for restoring dependencies after a clone. Option A (`php
+      artisan install`) does not exist; Artisan has no `install` command for Composer packages. Option B (`npm install`)
+      installs JavaScript dependencies from `package.json`, not PHP packages. Option D (`composer create-project`)
+      scaffolds a brand-new project — running it inside an existing project would overwrite files rather than restore
+      `vendor/`.
+    bloom: remember
+    source: intro_to_laravel.pptx; intro_to_laravel_SCRIPT.docx
+  - id: artisan-composer-q-03
+    type: MCQ
+    topic: Artisan CLI and Composer
+    marks: 1
+    question: >-
+      Which Artisan command opens an interactive REPL that boots the full Laravel application so you can test Eloquent
+      models without writing a controller?
+    choices:
+      - php artisan repl
+      - php artisan test
+      - php artisan serve
+      - php artisan tinker
+    correct: 3
+    rationale: >-
+      `php artisan tinker` launches a PsySH REPL with the full Laravel environment booted. You can call
+      `\App\Models\Student::all()`, create records, or test relationships interactively without writing a controller or
+      opening a browser. Option A (`php artisan repl`) does not exist — the correct name is `tinker`. Option B (`php
+      artisan test`) runs the PHPUnit test suite, not an interactive REPL. Option C (`php artisan serve`) starts the
+      development HTTP server at `localhost:8000` — it is a web server, not a REPL.
+    bloom: remember
+    source: intro_to_laravel.pptx; intro_to_laravel_SCRIPT.docx
+  - id: azure-laravel-deployment-q-01
+    type: MCQ
+    topic: Azure Laravel Deployment
+    marks: 1
+    question: >-
+      When deploying a Laravel app to Azure App Service, where must the `startup.sh` file be placed so Azure can find
+      and execute it?
+    choices:
+      - Inside the `public/` directory alongside `index.php`
+      - In the `storage/` directory so the container can write to it
+      - In the project root, alongside `artisan` and `composer.json`
+      - In `.github/workflows/` as part of the GitHub Actions pipeline
+    correct: 2
+    rationale: >-
+      `startup.sh` must reside in the project root — the same level as `artisan`, `composer.json`, and `.env.example`.
+      Azure references it as `/home/site/wwwroot/startup.sh` and the Startup Command field in the portal calls `bash
+      /home/site/wwwroot/startup.sh`. Option A (`public/`) is where web-accessible static files and `index.php` live —
+      putting a shell script there exposes it publicly and is not where Azure looks for the startup script. Option B
+      (`storage/`) is Laravel's runtime cache directory; Azure does not look there for startup scripts. Option D
+      (`.github/workflows/`) is where GitHub Actions CI/CD workflow files live — Azure reads those only during
+      build/deploy, not on each container start.
+    bloom: remember
+    source: resources/Steps to Azure Deployment.html; resources/Fixes 2026.html
+  - id: azure-static-web-apps-q-01
+    type: MCQ
+    topic: Azure Static Web Apps
+    marks: 1
+    question: >-
+      An Azure Function should write a record to Azure Blob Storage every time it processes an HTTP request. Adding this
+      output capability requires:
+    choices:
+      - A second HTTP trigger pointed at the Blob Storage endpoint
+      - An output binding declared in function.json
+      - A new Azure Function app with a Blob trigger
+      - A timer trigger set to run after each HTTP trigger fires
+    correct: 1
+    rationale: >-
+      Bindings connect a function to input or output data sources without SDK code in the function body. An output
+      binding for Blob Storage is declared in `function.json` and Azure injects the write capability. The function still
+      starts from its single HTTP trigger — you never add a second trigger. Option A is incorrect: a function has
+      exactly one trigger; adding a second trigger would create a separate function, not add an output capability.
+      Option C would create an entirely separate Function App with a Blob trigger, which fires when a blob is *created*
+      — not when an HTTP request comes in. Option D uses a timer trigger, which fires on a schedule, not in response to
+      another function's execution.
+    bloom: understand
+    source: ts-function-apps.pptx; static-web-apps-SCRIPT.docx
+  - id: azure-static-web-apps-q-02
+    type: MCQ
+    topic: Azure Static Web Apps
+    marks: 1
+    question: In an Azure Static Web App, what happens when a browser request arrives at `/api/students`?
+    choices:
+      - Azure serves the static SPA index.html and the SPA's router handles the path
+      - Azure routes the request to the matching Azure Function in the backend folder
+      - Azure returns a 404 because API routes must be defined in the SPA's router
+      - Azure redirects the request to a separate App Service running the API
+    correct: 1
+    rationale: >-
+      Azure Static Web Apps routes all requests starting with `/api/` to the Azure Functions backend automatically.
+      Requests to all other paths serve the static SPA files. This split routing is built into the service. Option A
+      describes how SPAs handle client-side routing — that applies to paths *not* under `/api/`. Option C is incorrect —
+      `/api/` paths are always routed to functions, not 404'd. Option D is incorrect — Azure Static Web Apps does not
+      redirect to a separate App Service; the Functions backend is co-deployed in the same service.
+    bloom: understand
+    source: ts-function-apps.pptx; static-web-apps-SCRIPT.docx
+  - id: azure-static-web-apps-q-03
+    type: MCQ
+    topic: Azure Static Web Apps
+    marks: 1
+    question: >-
+      Deployment to Azure Static Web Apps is configured by linking a GitHub repository. After the link is made, what
+      triggers a new deployment automatically?
+    choices:
+      - Running `php artisan deploy` from the project root
+      - Every push to the linked branch, via a GitHub Actions workflow Azure generates
+      - Manually clicking 'Deploy' in the Azure portal on each change
+      - A scheduled cron job defined in `function.json`
+    correct: 1
+    rationale: >-
+      When you link a GitHub repository to Azure Static Web Apps, Azure automatically generates a GitHub Actions
+      workflow file in `.github/workflows/`. Every push to the linked branch triggers this workflow, which builds and
+      deploys the app. Option A (`php artisan deploy`) is not a real Artisan command and has nothing to do with Azure
+      Static Web Apps. Option C (manual portal click) describes non-automated deployment; Azure Static Web Apps is
+      designed for continuous deployment. Option D (cron in function.json) would define a timer trigger for a Function,
+      not a deployment pipeline.
+    bloom: remember
+    source: static-web-apps-SCRIPT.docx
+  - id: curl-http-client-q-01
+    type: MCQ
+    topic: cURL HTTP Client
+    marks: 1
+    question: |-
+      A developer writes the following cURL code:
+
+      ```php
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, 'https://api.example.com/data');
+      $response = curl_exec($ch);
+      curl_close($ch);
+      $data = json_decode($response, true);
+      ```
+
+      The `json_decode()` call fails. What is the most likely reason?
+    choices:
+      - The URL is set before the handle is initialized
+      - >-
+        CURLOPT_RETURNTRANSFER was not set to true, so curl_exec() printed to screen and returned true, not the response
+        string
+      - json_decode() requires the response to be decoded with base64_decode() first
+      - curl_close() must be called after json_decode(), not before
+    correct: 1
+    rationale: >-
+      Without `CURLOPT_RETURNTRANSFER => true`, `curl_exec()` outputs the response body directly to the browser and
+      returns the boolean `true`. The variable `$response` holds `true`, not the JSON string, so `json_decode(true,
+      true)` returns `null`. This is the single most common cURL mistake. Option A is incorrect — `curl_setopt()` can be
+      called at any point after `curl_init()`, and `CURLOPT_URL` can even be passed directly to `curl_init()`. Option C
+      is fabricated — REST API responses are not base64-encoded; they are plain JSON strings. Option D is also incorrect
+      — `curl_close()` frees the handle, and once freed the response string is already in `$response`; calling
+      `json_decode()` after `curl_close()` is the normal sequence.
+    bloom: apply
+    source: cURL.pptx slides 4–5
+  - id: eloquent-orm-q-01
+    type: MCQ
+    topic: Eloquent ORM
+    marks: 1
+    question: Which Eloquent method fetches every row from the table and returns an Eloquent Collection?
+    choices:
+      - User::get()
+      - User::all()
+      - User::all()->get()
+      - User::select()->all()
+    correct: 1
+    rationale: >-
+      `User::all()` is the correct method — it executes a `SELECT *` query and returns an Eloquent Collection of model
+      instances. Option A (`User::get()`) is invalid as a static call on the model class; `->get()` is a terminal method
+      on a builder chain, not a standalone class method. Option C (`User::all()->get()`) is a real past-exam distractor:
+      `all()` already executes and returns a Collection; calling `->get()` again on a Collection is meaningless and
+      would error. Option D (`User::select()->all()`) reverses the correct chain order — `all()` is a terminal shorthand
+      and cannot follow `select()`.
+    bloom: remember
+    source: final-practice.docx Q9; laravel_with_students_MySQL_SCRIPT.docx
+    tags:
+      - pretest
+  - id: eloquent-orm-q-02
+    type: MCQ
+    topic: Eloquent ORM
+    marks: 1
+    question: >-
+      A controller calls `Student::create(['FirstName' => 'Ana', 'School' => 'BCIT'])` and gets a
+      MassAssignmentException. What is the most likely cause?
+    choices:
+      - The `students` table does not exist in the database
+      - The model is missing a `$fillable` array listing the allowed fields
+      - The `create()` method requires the `--api` flag to be set on the controller
+      - Mass assignment is disabled globally in `config/database.php`
+    correct: 1
+    rationale: >-
+      Eloquent's mass assignment protection blocks `create()` unless the model declares a `$fillable` array listing the
+      permitted field names. When `$fillable` is absent, any `create()` or `fill()` call throws a
+      `MassAssignmentException`. Option A (missing table) would produce a different error — a PDO or query exception,
+      not a MassAssignmentException. Option C (controller flag) is invented — the `--api` flag affects route generation,
+      not mass assignment behavior. Option D (global config) is also incorrect; mass assignment protection is
+      model-level, controlled by the `$fillable` property, not a global config setting.
+    bloom: understand
+    source: laravel_with_students_MySQL_SCRIPT.docx; laravel_with_sqlite_API_SCRIPT.docx
+  - id: eloquent-orm-q-03
+    type: MCQ
+    topic: Eloquent ORM
+    marks: 1
+    question: >-
+      A `show($id)` controller method calls `Student::findOrFail($id)`. The student with that ID does not exist. What
+      happens next?
+    choices:
+      - The method returns `null` and execution continues
+      - Laravel throws a MassAssignmentException and returns a 500 response
+      - Laravel throws a ModelNotFoundException and automatically returns a 404 HTTP response
+      - The method returns an empty Eloquent Collection
+    correct: 2
+    rationale: >-
+      `findOrFail()` is designed specifically for the missing-record scenario. When no row matches the given ID, it
+      throws a `ModelNotFoundException`. Laravel's exception handler converts that exception to a 404 HTTP response
+      automatically — no manual check is needed. Option A (`null` return) describes the behavior of `find()`, not
+      `findOrFail()`. Option B (MassAssignmentException) is raised by `create()` or `fill()` without `$fillable` — it
+      has nothing to do with `findOrFail()`. Option D (empty Collection) is what methods like `where()->get()` return
+      when nothing matches; `findOrFail()` raises an exception instead.
+    bloom: apply
+    source: laravel_with_sqlite_API_SCRIPT.docx; laravel_with_students_MySQL_SCRIPT.docx
+  - id: eloquent-orm-q-04
+    type: MCQ
+    topic: Eloquent ORM
+    marks: 1
+    question: You need students whose `School` is not null, ordered by `FirstName`. Which Eloquent chain is correct?
+    choices:
+      - Student::all()->whereNotNull('School')->orderBy('FirstName')
+      - Student::whereNotNull('School')->orderBy('FirstName')->get()
+      - Student::where('School', '!=', null)->orderBy('FirstName')
+      - DB::table('students')->whereNotNull('School')->orderBy('FirstName')
+    correct: 1
+    rationale: >-
+      The correct pattern starts the chain on the model class (`Student::whereNotNull(...)`), adds any additional
+      clauses, and terminates with `->get()` to execute the query and return results. Option A is a classic exam trap:
+      `Student::all()` fetches *every* row first, then the subsequent `where` filters in PHP memory — it does not add a
+      SQL WHERE clause. This also does not call `->get()` at the end. Option C (`where('School', '!=', null)`) uses a
+      comparison against PHP `null`, not the SQL IS NOT NULL check; use `whereNotNull()` for that. Option D uses Query
+      Builder (`DB::table()`), which is the second-choice pattern — valid but not idiomatic Eloquent.
+    bloom: apply
+    source: laravel_with_students_MySQL_SCRIPT.docx
+  - id: eloquent-orm-q-05
+    type: MCQ
+    topic: Eloquent ORM
+    marks: 1
+    question: Which Artisan command generates both a model class and its corresponding migration file in a single step?
+    choices:
+      - php artisan make:model Student --migration
+      - php artisan make:model Student -m
+      - php artisan make:model Student && php artisan make:migration
+      - php artisan make:migration Student -m
+    correct: 1
+    rationale: >-
+      The `-m` short flag is the Artisan shorthand that generates both the model file and a timestamped migration in a
+      single command. The source material (laravel_with_students_MySQL_SCRIPT.docx) demonstrates only `-m`; it is the
+      form the exam tests. Option A (`--migration`) is the long-form spelling of the same flag — it produces the same
+      two files — but exam questions about Artisan flags test the shorthand `-m`, not the long form. When both appear as
+      choices, `-m` is the intended answer. Option C achieves the same outcome using two separate commands chained with
+      `&&` — this is not a "single command" and defeats the purpose of the shortcut. Option D inverts the command:
+      `make:migration` creates only a migration file; passing `-m` to it has no defined behavior and does not generate a
+      model.
+    bloom: remember
+    source: laravel_with_students_MySQL_SCRIPT.docx; intro_to_laravel.pptx
+  - id: jwt-authentication-q-01
+    type: MCQ
+    topic: JWT Authentication
+    marks: 1
+    question: A JWT token string is structured as three dot-separated sections. What are those sections, in order?
+    choices:
+      - payload.header.signature
+      - header.signature.payload
+      - header.payload.signature
+      - claims.header.token
+    correct: 2
+    rationale: >-
+      A JWT is always structured as `header.payload.signature` — three base64-encoded sections separated by dots. The
+      header declares the algorithm; the payload carries claims; the signature is computed from the first two and the
+      secret key. Option A reverses header and payload, which is never the case. Option B places the signature in the
+      middle — the signature always comes last because it is derived from the preceding two sections. Option D uses
+      non-standard names that do not correspond to JWT terminology; 'claims' is what the payload *contains*, not the
+      section name.
+    bloom: remember
+    source: PHP_JWT.pptx; laravel-jwt_SCRIPT.docx
+    tags:
+      - pretest
+  - id: jwt-authentication-q-02
+    type: MCQ
+    topic: JWT Authentication
+    marks: 1
+    question: Which reserved JWT claim identifies the intended recipient application of the token?
+    choices:
+      - iss (issuer)
+      - sub (subject)
+      - aud (audience)
+      - jti (JWT ID)
+    correct: 2
+    rationale: >-
+      The `aud` (audience) claim identifies which application or service is the intended consumer of the token. When
+      present, the receiving service must verify it is the intended audience. Option A (`iss`) is the issuer — it
+      identifies *who created* the token, not who should receive it. Option B (`sub`) is the subject — it identifies
+      *who the token is about* (typically the user's ID), not the recipient application. Option D (`jti`) is the JWT ID
+      — a unique identifier for this specific token used to prevent replay attacks; it does not identify the recipient.
+    bloom: remember
+    source: PHP_JWT.pptx; laravel-jwt_SCRIPT.docx
+  - id: jwt-authentication-q-03
+    type: MCQ
+    topic: JWT Authentication
+    marks: 1
+    question: Which Composer package does this course use for JWT authentication in Laravel?
+    choices:
+      - tymon/jwt-auth
+      - php-open-source-saver/jwt-auth
+      - laravel/passport
+      - firebase/php-jwt
+    correct: 1
+    rationale: >-
+      `php-open-source-saver/jwt-auth` is the package used throughout this course. It is distinct from `tymon/jwt-auth`
+      — a very common real-world package that is explicitly identified as the wrong choice in the course materials.
+      Option A (`tymon/jwt-auth`) is the most common distractor: it is a real and popular package, but it uses a
+      different namespace and setup sequence. Option C (`laravel/passport`) is Laravel's OAuth2 implementation — it uses
+      long-lived personal access tokens, not compact JWTs in the RFC 7519 sense. Option D (`firebase/php-jwt`) is a
+      generic PHP JWT library, not the Laravel-integrated package taught in this course.
+    bloom: remember
+    source: laravel-jwt_SCRIPT.docx; PHP_JWT.pptx
+  - id: laravel-localization-q-01
+    type: MCQ
+    topic: Laravel Localization
+    marks: 1
+    question: You are adding French translations to a Laravel app. Where do you place the JSON translation file for French?
+    choices:
+      - resources/views/lang/fr.json
+      - storage/lang/fr.json
+      - resources/lang/fr.json
+      - app/lang/fr.json
+    correct: 2
+    rationale: >-
+      JSON translation files live directly under `resources/lang/` named after the locale code — so
+      `resources/lang/fr.json`. This is tested verbatim in past-exam Q1. Option A (`resources/views/lang/`) confuses the
+      `resources/views/` view directory with the `resources/lang/` translation directory — a common distractor. Option B
+      (`storage/lang/`) is where Laravel writes framework-generated files, not developer-authored translation files.
+      Option D (`app/lang/`) has no standard meaning in Laravel's directory layout; translation files are never stored
+      under `app/`.
+    bloom: remember
+    source: localization.pptx slides 1–11; final-practice.docx Q1
+    tags:
+      - pretest
+  - id: laravel-localization-q-02
+    type: MCQ
+    topic: Laravel Localization
+    marks: 1
+    question: >-
+      A Blade template needs to display a localized greeting stored under the key `messages.greeting` in a PHP
+      translation file. Which expression is correct?
+    choices:
+      - "{{ translate('messages.greeting') }}"
+      - "{{ lang('messages.greeting') }}"
+      - "{{ i18n('messages.greeting') }}"
+      - "{{ __('messages.greeting') }}"
+    correct: 3
+    rationale: >-
+      `__()` (double underscore) is Laravel's canonical translation helper. For a PHP translation file, dot notation
+      means: look in `resources/lang/{locale}/messages.php` for the key `greeting`. This is tested in past-exam Q2.
+      Option A (`translate()`) is not a Laravel function — it is a common guess from developers with other framework
+      backgrounds. Option B (`lang()`) is not the correct helper in Laravel; `lang()` is sometimes confused with the
+      `Lang` facade's static method but is not a standalone helper function. Option C (`i18n()`) does not exist in
+      Laravel — it is borrowed from JavaScript i18n conventions, not PHP.
+    bloom: remember
+    source: localization.pptx slides 1–11; final-practice.docx Q2
+  - id: laravel-localization-q-03
+    type: MCQ
+    topic: Laravel Localization
+    marks: 1
+    question: Which Laravel helper handles pluralization rules such as `'{0} No items|{1} One item|[2,*] :count items'`?
+    choices:
+      - __() with a count argument
+      - trans_choice()
+      - App::pluralize()
+      - Str::plural()
+    correct: 1
+    rationale: >-
+      `trans_choice()` is the dedicated pluralization helper. It accepts a translation key and a count; it selects the
+      correct pipe-delimited variant and replaces `:count` with the number. Option A (`__()` with a count argument) is
+      incorrect — `__()` does not accept a count argument for pluralization; its second argument is for parameter
+      replacement, not plural selection. Option C (`App::pluralize()`) does not exist in Laravel. Option D
+      (`Str::plural()`) is a string utility that derives the English plural form of a word (e.g., `'apple'` →
+      `'apples'`) — it does not handle translation files or locale-aware plural rules.
+    bloom: understand
+    source: localization.pptx slides 1–11; laravel-localization.docx
+  - id: laravel-localization-q-04
+    type: MCQ
+    topic: Laravel Localization
+    marks: 1
+    question: >-
+      A language-switcher route stores `'fr'` in the session. Which call inside a middleware applies that locale to the
+      current request?
+    choices:
+      - App::locale('fr')
+      - session()->setLocale('fr')
+      - App::setLocale('fr')
+      - config('app.locale', 'fr')
+    correct: 2
+    rationale: >-
+      `App::setLocale('fr')` is the correct facade call for changing the active locale at runtime. The middleware reads
+      the stored value from the session and calls this method so every subsequent `__()` lookup uses the French
+      translation files. Option A (`App::locale('fr')`) uses the wrong method name — `getLocale()` reads the locale,
+      `setLocale()` sets it. Option B (`session()->setLocale('fr')`) is invented — the session facade has no `setLocale`
+      method; locale state lives in the App facade, not the session. Option D (`config('app.locale', 'fr')`) reads a
+      config value with a fallback; it does not override the runtime locale.
+    bloom: apply
+    source: localization.pptx slides 1–11; laravel-localization.docx
+  - id: laravel-mcp-implementation-q-01
+    type: MCQ
+    topic: Laravel MCP Implementation
+    marks: 1
+    question: After installing `laravel/mcp`, which Artisan command scaffolds a new MCP server class?
+    choices:
+      - php artisan make:controller McpController --mcp
+      - php artisan make:mcp-server TodoServer
+      - php artisan mcp:create server TodoServer
+      - php artisan vendor:publish --tag=mcp-server
+    correct: 1
+    rationale: >-
+      `php artisan make:mcp-server TodoServer` is the generator provided by the `laravel/mcp` package. It creates a
+      server class that registers tools, handles `tools/list` requests, and routes `tools/call` invocations. Option A
+      (`make:controller --mcp`) is invented — the `--mcp` flag does not exist on `make:controller`; MCP servers are not
+      plain HTTP controllers. Option C reverses the colon-separated namespace incorrectly; the command is
+      `make:mcp-server`, not `mcp:create server`. Option D (`vendor:publish --tag=mcp-server`) publishes config/stubs,
+      not generates runtime classes; it is a one-time setup step, not a code generator.
+    bloom: remember
+    source: laravel_mcp.pptx slides 1–12
+  - id: laravel-mvc-blade-q-01
+    type: MCQ
+    topic: MVC + Blade templating
+    marks: 1
+    question: In Laravel's MVC architecture, which directory contains the Controller files?
+    choices:
+      - resources/controllers/
+      - app/Http/Controllers/
+      - app/Controllers/
+      - routes/controllers/
+    correct: 1
+    rationale: >-
+      Controllers live in `app/Http/Controllers/` — that is the directory Laravel's autoloader and `make:controller`
+      both target. Option A (`resources/controllers/`) is wrong because `resources/` holds views, language files, and
+      front-end assets, not PHP classes. Option C (`app/Controllers/`) is a plausible guess but Laravel's default
+      namespace is `App\Http\Controllers`, which maps to `app/Http/Controllers/`. Option D (`routes/controllers/`)
+      confuses routing files with controller classes — routes live in `routes/`, controllers do not.
+    bloom: remember
+    source: intro_to_laravel.pptx slides 3–5
+    tags:
+      - pretest
+  - id: laravel-mvc-blade-q-02
+    type: MCQ
+    topic: MVC + Blade templating
+    marks: 1
+    question: A Blade template outputs a user-supplied comment with `{!! $comment !!}`. What security risk does this introduce?
+    choices:
+      - SQL injection, because Blade does not escape database queries
+      - CSRF, because unescaped output bypasses the CSRF token check
+      - Cross-site scripting (XSS), because raw HTML output lets attackers inject executable scripts
+      - Directory traversal, because the double-brace escaping is skipped
+    correct: 2
+    rationale: >-
+      `{!! $var !!}` outputs raw, unescaped HTML. If `$comment` contains `<script>document.cookie='...'</script>`, that
+      script executes in every visitor's browser — the definition of XSS. Option A (SQL injection) is unrelated to
+      Blade's output syntax; SQL injection occurs when user input reaches a raw database query without parameterization.
+      Option B (CSRF) is also unrelated; CSRF protection depends on the `@csrf` token in forms, not on output escaping.
+      Option D (directory traversal) has nothing to do with the `{!! !!}` syntax — directory traversal is a file-path
+      exploit. The safe alternative is `{{ $comment }}`, which HTML-encodes the value before output.
+    bloom: understand
+    source: intro_to_laravel.pptx slide 25; intro_to_laravel_SCRIPT.docx §Cross site scripting attack protection
+  - id: laravel-mvc-blade-q-03
+    type: MCQ
+    topic: MVC + Blade templating
+    marks: 1
+    question: Which Blade @-directive marks the injection point in a parent layout where child templates insert their content?
+    choices:
+      - "@section('content')"
+      - "@extends('layouts.master')"
+      - "@yield('content')"
+      - "@include('partials.header')"
+    correct: 2
+    rationale: >-
+      `@yield('content')` is placed in the parent layout and acts as a placeholder — it tells Blade where to insert the
+      named section from the child template. `@section('content')` (option A) is the child-side directive that *defines*
+      the block to inject; it is not the placeholder in the parent. `@extends('layouts.master')` (option B) tells a
+      child which parent to use; it has no role in the parent file. `@include('partials.header')` (option D) embeds a
+      partial view inline and is unrelated to the yield/section inheritance mechanism.
+    bloom: remember
+    source: intro_to_laravel.pptx slides 16–19
+  - id: laravel-mvc-blade-q-04
+    type: MCQ
+    topic: MVC + Blade templating
+    marks: 1
+    question: A Blade template has `@foreach($products as $p)` but is missing the closing directive. What is the result?
+    choices:
+      - Laravel silently ignores the open directive and outputs nothing
+      - PHP processes it as a raw foreach loop and continues normally
+      - Blade fails to compile the template and throws a parse error
+      - The loop runs once for the first element and then stops
+    correct: 2
+    rationale: >-
+      Every Blade opening @-directive requires a matching closing counterpart. `@foreach` must be paired with
+      `@endforeach`. When the closing directive is absent, Blade's compiler cannot determine where the loop ends and
+      throws a parse error — the template never renders. Option A is incorrect; Blade does not silently skip unclosed
+      directives. Option B is incorrect; Blade is compiled to PHP, but the compilation step fails before any PHP
+      execution occurs. Option D is a fabricated behavior that does not exist — Blade's parser rejects the malformed
+      template entirely.
+    bloom: understand
+    source: intro_to_laravel.pptx slide 22; intro_to_laravel_SCRIPT.docx §Control structures
+  - id: laravel-mvc-blade-q-05
+    type: MCQ
+    topic: MVC + Blade templating
+    marks: 1
+    question: In the Blade component system, which tag wraps content and maps to `resources/views/components/master.blade.php`?
+    choices:
+      - <blade-master>
+      - <component name='master'>
+      - <x-master>
+      - "@component('master')"
+    correct: 2
+    rationale: >-
+      Blade components use the `x-` prefix convention. `<x-master>` automatically resolves to
+      `resources/views/components/master.blade.php`. Option A (`<blade-master>`) is not valid Blade syntax. Option B
+      (`<component name='master'>`) is not how Blade components are invoked — there is no such element tag syntax in
+      Laravel Blade. Option D (`@component('master')`) is the older Blade component syntax from early Laravel versions
+      and does not map to the `resources/views/components/` directory used by the current anonymous-component system.
+    bloom: understand
+    source: TIDBITS-components_config_db_SCRIPT.docx §Blade Components
+  - id: laravel-mvc-blade-q-06
+    type: MCQ
+    topic: MVC + Blade templating
+    marks: 1
+    question: >-
+      A controller returns `view('students.index', ['students' => $list])`. In which directory does Laravel look for the
+      template file?
+    choices:
+      - app/Views/students/index.blade.php
+      - resources/views/students/index.blade.php
+      - public/views/students/index.blade.php
+      - storage/views/students/index.blade.php
+    correct: 1
+    rationale: >-
+      Laravel resolves view dot-notation paths relative to `resources/views/`. The name `students.index` maps to
+      `resources/views/students/index.blade.php`. Option A (`app/Views/`) is incorrect; view files are never stored
+      under `app/` — that directory holds PHP classes (Models, Controllers, Middleware). Option C (`public/views/`) is
+      where publicly accessible static assets live; Blade templates are server-side files and never belong there. Option
+      D (`storage/views/`) is where Blade *compiles* cached views, not where the source templates are stored.
+    bloom: apply
+    source: intro_to_laravel.pptx slides 3–5; intro_to_laravel_SCRIPT.docx §Creating your own blade template
+  - id: laravel-routing-controllers-q-01
+    type: MCQ
+    topic: Routes and Resource Controllers
+    marks: 1
+    question: >-
+      You use `Route::apiResource('invoices', InvoiceController::class)`. How many routes does Laravel register, and
+      which two controller methods are intentionally omitted compared to `Route::resource()`?
+    choices:
+      - 7 routes; none are omitted — apiResource is identical to resource
+      - 5 routes; `create` and `edit` are omitted because JSON APIs do not serve HTML forms
+      - 5 routes; `store` and `destroy` are omitted to prevent unauthorized writes
+      - 3 routes; only `index`, `show`, and `store` are registered
+    correct: 1
+    rationale: >-
+      `Route::apiResource()` registers 5 routes: index, store, show, update, and destroy. It omits `create` and `edit`
+      because those methods return HTML forms for creating or editing records — irrelevant for a JSON API where the
+      client handles its own UI. Option A is incorrect: `resource()` registers 7 routes while `apiResource()` registers
+      5. Option C is wrong about which methods are omitted; `store` and `destroy` are included in apiResource — they
+      handle creating and deleting records. Option D (3 routes) is not correct for either resource macro.
+    bloom: understand
+    source: laravel_with_sqlite_API_SCRIPT.docx; intro_to_laravel_SCRIPT.docx
+  - id: laravel-routing-controllers-q-02
+    type: MCQ
+    topic: Routes and Resource Controllers
+    marks: 1
+    question: >-
+      After adding a new route to `routes/api.php`, a developer hits that path and gets a 404. No typos in the URL. What
+      is the most likely fix?
+    choices:
+      - Restart the database because route registration requires a fresh connection
+      - Run `php artisan route:clear` to remove the stale route cache
+      - Add `->name()` to the route definition so Laravel can find it
+      - Move the route to `routes/web.php` so the framework picks it up
+    correct: 1
+    rationale: >-
+      Laravel caches routes to a single file for performance. If you added a route after caching, the new route is
+      invisible until you clear the cache with `php artisan route:clear`. This is the most common cause of 'route not
+      found' bugs right after adding a new declaration. Option A (restarting the database) has no effect on route
+      resolution — routes are PHP files, not database records. Option C (adding `->name()`) assigns a named alias and
+      has nothing to do with whether the route is registered at all. Option D (moving to `web.php`) would change the
+      middleware group; it would not fix a caching issue, and API routes belong in `api.php`.
+    bloom: apply
+    source: laravel_with_sqlite_API_SCRIPT.docx
+  - id: mcp-protocol-q-01
+    type: MCQ
+    topic: Model Context Protocol
+    marks: 1
+    question: Which organization created Model Context Protocol?
+    choices:
+      - OpenAI
+      - Meta
+      - Google
+      - Anthropic
+    correct: 3
+    rationale: >-
+      Anthropic created and maintains Model Context Protocol as an open standard for connecting AI models to external
+      tools, resources, and data sources. This is tested verbatim in past-exam Q4. Option A (OpenAI) is the creator of
+      the GPT model family and the function-calling API, not MCP. Option B (Meta) develops the LLaMA model family; MCP
+      is not their protocol. Option C (Google) provides Gemini and Vertex AI; MCP was designed by Anthropic independent
+      of Google's offerings.
+    bloom: remember
+    source: laravel_mcp.pptx slides 1–10; final-practice.docx Q4
+  - id: mcp-protocol-q-02
+    type: MCQ
+    topic: Model Context Protocol
+    marks: 1
+    question: >-
+      An MCP server exposes a `GET /summaries/weekly` endpoint that returns pre-computed data for the AI to read. Which
+      MCP primitive does this represent?
+    choices:
+      - Tools (MCP) — because the AI invokes an endpoint
+      - Prompts (MCP) — because it returns formatted text
+      - Resources (MCP) — because it exposes a data source
+      - Bindings (MCP) — because it connects to external data
+    correct: 2
+    rationale: >-
+      Resources (MCP) are data sources the AI loads into context — files, database queries, or data endpoints. A
+      read-only summary endpoint that returns data for the AI to consume is a Resource. Option A (Tools) is incorrect:
+      Tools are executable actions with potential side effects, such as creating a record or running a script. The
+      endpoint described is read-only with no side effects. Option B (Prompts) is also incorrect: Prompts are reusable
+      LLM interaction templates — structured input to the model, not data returned by an endpoint. Option D (Bindings)
+      is an Azure Functions concept, not an MCP primitive — the three MCP primitives are Tools, Resources, and Prompts
+      only.
+    bloom: understand
+    source: laravel_mcp.pptx slides 1–10; final-practice.docx Q3
+  - id: migrations-and-seeders-q-01
+    type: MCQ
+    topic: Migrations and Seeders
+    marks: 1
+    question: >-
+      In a Laravel migration, which method defines the table structure to be created, and which method reverses that
+      change?
+    choices:
+      - create() and drop()
+      - up() and down()
+      - migrate() and rollback()
+      - build() and destroy()
+    correct: 1
+    rationale: >-
+      Every Laravel migration class has two methods: `up()` defines what to build (typically calls `Schema::create()`),
+      and `down()` defines how to reverse it (typically calls `Schema::dropIfExists()`). Option A (create and drop)
+      names the Schema helper methods called *inside* `up()` and `down()`, not the migration methods themselves. Option
+      C (migrate and rollback) are Artisan commands you run, not PHP method names inside the migration class. Option D
+      (build and destroy) do not exist in Laravel's migration API.
+    bloom: remember
+    source: laravel_with_students_MySQL_SCRIPT.docx
+  - id: migrations-and-seeders-q-02
+    type: MCQ
+    topic: Migrations and Seeders
+    marks: 1
+    question: >-
+      You want to drop all tables, re-run every migration, and then run all seeders in a single command. Which command
+      does this?
+    choices:
+      - php artisan migrate --fresh
+      - php artisan migrate:refresh --seed
+      - php artisan db:seed --refresh
+      - php artisan migrate:reset && php artisan db:seed
+    correct: 1
+    rationale: >-
+      `php artisan migrate:refresh --seed` rolls back every migration (dropping all tables), re-runs them in timestamp
+      order to rebuild the schema, and then executes the `DatabaseSeeder`. This is the single-command development reset.
+      Option A (`migrate --fresh`) is a real command that uses `DROP TABLE` instead of rolling back, but the `--fresh`
+      flag on `migrate` is not the same as `migrate:refresh` — and it does not include seeding. Option C (`db:seed
+      --refresh`) is not a valid flag; `db:seed` accepts `--class` but not `--refresh`. Option D chains two separate
+      commands, which achieves a similar outcome but is not the single-command shortcut taught in the course.
+    bloom: remember
+    source: laravel_with_students_MySQL_SCRIPT.docx; laravel_with_sqlite_API_SCRIPT.docx
+  - id: model-relationships-q-01
+    type: MCQ
+    topic: Eloquent Model Relationships
+    marks: 1
+    question: >-
+      A `Post` model can have many `Comment` records. Which method declaration correctly defines the one-to-many
+      relationship on the `Post` model?
+    choices:
+      - public function comment() { return $this->hasMany(Comment::class); }
+      - public function comments() { return $this->hasMany(Comment::class); }
+      - public function comments() { return $this->belongsTo(Comment::class); }
+      - public function comments() { return $this->hasOne(Comment::class); }
+    correct: 1
+    rationale: >-
+      The parent side of a one-to-many relationship uses `hasMany()`. The method name is conventionally plural
+      (`comments`) because it returns a collection, not a single model. Option A uses the singular name `comment()` —
+      not technically wrong in PHP, but it violates the convention that tells other developers (and `belongsTo`
+      inference) which side of the relationship they are on. Option C uses `belongsTo()`, which is the *child* side
+      declaration — it would go on `Comment`, not on `Post`. Option D uses `hasOne()`, which is correct only for a
+      one-to-one relationship where `Post` owns exactly one `Comment`.
+    bloom: understand
+    source: auth-with-breeze_SQLite_SCRIPT.docx; laravel_with_students_MySQL_SCRIPT.docx
+  - id: model-relationships-q-02
+    type: MCQ
+    topic: Eloquent Model Relationships
+    marks: 1
+    question: >-
+      Given `hasMany(Org::class)` declared on `User`, which of the following queries fetches only the current user's
+      orgs using the relationship?
+    choices:
+      - Org::where('user_id', Auth::id())->get()
+      - Auth::user()->orgs()->latest('updated_at')->get()
+      - Org::all()->filter(fn($o) => $o->user_id == Auth::id())
+      - Auth::user()->org()->latest('updated_at')->get()
+    correct: 1
+    rationale: >-
+      `Auth::user()->orgs()` traverses the `hasMany` relationship from the authenticated user model and returns a query
+      builder scoped to that user's orgs. Chaining `->latest('updated_at')->get()` sorts and executes it. Option A is a
+      manual foreign-key query — it works but bypasses the declared relationship, negating the purpose of defining
+      `hasMany`. Option C fetches every org into memory first then filters in PHP — this is the `all()->where()`
+      anti-pattern applied to collections. Option D uses the singular `->org()` instead of `->orgs()`; the method name
+      must match what was declared on the User model (`orgs()`).
+    bloom: apply
+    source: auth-with-breeze_SQLite_SCRIPT.docx
+  - id: model-relationships-q-03
+    type: MCQ
+    topic: Eloquent Model Relationships
+    marks: 1
+    question: >-
+      An `Org` model has `belongsTo(User::class)`. What column does Eloquent expect to find in the `orgs` table by
+      default?
+    choices:
+      - owner_id
+      - user_id
+      - org_user
+      - user_key
+    correct: 1
+    rationale: >-
+      Eloquent infers the foreign key name by taking the related model name (`User`), converting it to snake_case, and
+      appending `_id`. For `belongsTo(User::class)`, the expected column is `user_id`. If your migration used a
+      different column name, you must pass it explicitly as the second argument to `belongsTo()`. Option A (`owner_id`)
+      is a plausible custom name but is not the convention Eloquent uses. Option C (`org_user`) reverses the tables and
+      does not follow the `{model}_id` convention. Option D (`user_key`) is a fabricated name with no basis in
+      Eloquent's convention.
+    bloom: understand
+    source: auth-with-breeze_SQLite_SCRIPT.docx; laravel_with_students_MySQL_SCRIPT.docx
+  - id: query-builder-and-raw-sql-q-01
+    type: MCQ
+    topic: Query Builder and Raw SQL
+    marks: 1
+    question: >-
+      Which Query Builder chain correctly selects `name` and `email` from the `users` table where `active` is not null,
+      ordered by `name`?
+    choices:
+      - DB::table('users')->select(['name', 'email'])->whereNotNull('active')->orderBy('name')->get()
+      - DB::select('users')->where('active', '!=', null)->orderBy('name')->get()
+      - DB::table('users')->select(['name', 'email'])->whereNotNull('active')->orderBy('name')
+      - User::table('users')->select(['name', 'email'])->whereNotNull('active')->get()
+    correct: 0
+    rationale: >-
+      The correct Query Builder chain starts with `DB::table('table_name')`, chains fluent methods, and terminates with
+      `->get()` to execute and return results. Option B misuses `DB::select()` — that method takes a raw SQL string, not
+      a table name, and does not support fluent chaining. Option C is identical to the correct answer except it omits
+      `->get()` at the end; without it, the chain returns a Builder object, not a result set. Option D calls
+      `User::table('users')` — `table()` is a `DB` facade method, not a model static method; calling it on a model class
+      is a runtime error.
+    bloom: apply
+    source: TIDBITS-components_config_db_SCRIPT.docx
+  - id: query-builder-and-raw-sql-q-02
+    type: MCQ
+    topic: Query Builder and Raw SQL
+    marks: 1
+    question: What does `DB::select('SELECT * FROM students WHERE School = ?', ['Mining'])` return?
+    choices:
+      - An Eloquent Collection of Student model instances
+      - A single Student model instance
+      - An array of stdClass objects
+      - A Builder object that requires ->get() to execute
+    correct: 2
+    rationale: >-
+      `DB::select()` executes a raw SQL query and returns a plain PHP array of `stdClass` objects — one per row. Unlike
+      Eloquent, there is no model wrapping; properties are accessed as `$row->School`, not as model methods. Option A
+      (Eloquent Collection) is what Eloquent model queries return; raw SQL bypasses the ORM entirely. Option B (single
+      model instance) is what `findOrFail()` returns for a single record, not raw SQL. Option D (Builder object)
+      describes what you get from an un-terminated Query Builder chain (missing `->get()`); `DB::select()` is not a
+      Query Builder call and executes immediately.
+    bloom: understand
+    source: TIDBITS-components_config_db_SCRIPT.docx
+  - id: rest-api-design-q-01
+    type: MCQ
+    topic: REST API Design
+    marks: 1
+    question: >-
+      A `store()` controller method successfully creates a new resource. Which HTTP status code and `response()->json()`
+      call correctly signals creation to the client?
+    choices:
+      - return response()->json($resource);
+      - return response()->json($resource, 200);
+      - return response()->json($resource, 201);
+      - return response()->json($resource, 204);
+    correct: 2
+    rationale: >-
+      HTTP 201 Created is the correct status code when a new resource has been persisted. It is passed as the second
+      argument to `response()->json()`. Option A omits the status code — the default is 200 OK, which means 'the request
+      succeeded and here is a representation,' not 'a new resource was created.' Option B explicitly sends 200, same
+      issue. Option D sends 204 No Content — that is correct for successful deletes or updates where no body is
+      returned, not for a newly created resource that the client needs to reference.
+    bloom: apply
+    source: laravel_with_sqlite_API_SCRIPT.docx
+  - id: rest-api-design-q-02
+    type: MCQ
+    topic: REST API Design
+    marks: 1
+    question: Which file should contain `Route::apiResource('products', ProductController::class)` for a JSON API?
+    choices:
+      - routes/web.php
+      - routes/api.php
+      - app/Http/Controllers/ProductController.php
+      - config/routes.php
+    correct: 1
+    rationale: >-
+      `routes/api.php` is for stateless API routes — it applies no session middleware, returns JSON by default, and
+      prefixes all URLs with `/api/`. `Route::apiResource()` belongs here. Option A (`routes/web.php`) is for
+      browser-facing routes that carry sessions, CSRF protection, and cookie-based authentication — appropriate for
+      Blade apps, not JSON APIs. Option C is a controller file, not a route file; you never define routes inside
+      controller classes. Option D (`config/routes.php`) does not exist in Laravel — route configuration is not part of
+      the `config/` directory.
+    bloom: understand
+    source: laravel_with_sqlite_API_SCRIPT.docx
+  - id: rest-api-design-q-03
+    type: MCQ
+    topic: REST API Design
+    marks: 1
+    question: >-
+      A `store()` method calls `$request->validate(['name' => 'required'])` and the `name` field is missing. What does
+      Laravel return automatically?
+    choices:
+      - A 500 Internal Server Error with a stack trace
+      - A 404 Not Found response
+      - A 422 Unprocessable Entity response with a JSON error body
+      - A 200 OK response with a null body
+    correct: 2
+    rationale: >-
+      When `$request->validate()` finds a failed rule in an API context, Laravel automatically returns a 422
+      Unprocessable Entity response with a JSON body listing each field's validation errors. Execution stops before
+      reaching `Student::create()`. Option A (500) is a server error indicating a crash — validation failure is not a
+      crash, it is an expected control flow. Option B (404) means 'resource not found' — it has nothing to do with
+      request body validation. Option D (200 with null) would mean the request succeeded, which is incorrect when
+      validation fails.
+    bloom: understand
+    source: laravel_with_sqlite_API_SCRIPT.docx
+  - id: session-auth-breeze-q-01
+    type: MCQ
+    topic: Session Authentication with Breeze
+    marks: 1
+    question: Which CSS framework does Laravel Breeze use for its scaffolded views?
+    choices:
+      - Bootstrap
+      - Bulma
+      - Foundation
+      - Tailwind CSS
+    correct: 3
+    rationale: >-
+      Laravel Breeze scaffolds all its authentication views using Tailwind CSS utility classes. The course materials
+      explicitly distinguish Breeze (Tailwind) from `laravel/ui` (Bootstrap). Option A (Bootstrap) is the framework used
+      by `laravel/ui` — the older authentication scaffolding package that Breeze replaced. Confusing Bootstrap with
+      Breeze is a documented exam error. Option B (Bulma) and Option C (Foundation) are real CSS frameworks but are
+      never used by Laravel Breeze; they are plausible-sounding distractors for a student who cannot recall the correct
+      name.
+    bloom: remember
+    source: auth-with-breeze_SQLite_SCRIPT.docx
+  - id: session-auth-breeze-q-02
+    type: MCQ
+    topic: Session Authentication with Breeze
+    marks: 1
+    question: >-
+      Inside a controller protected by the `auth` middleware, which call returns the authenticated user's primary key as
+      an integer?
+    choices:
+      - Auth::user()->primary()
+      - Auth::id()
+      - session('user_id')
+      - request()->userId()
+    correct: 1
+    rationale: >-
+      `Auth::id()` is the facade call that returns the authenticated user's integer primary key directly. It is
+      equivalent to `Auth::user()->id` but more concise. Option A (`Auth::user()->primary()`) is invented — `primary()`
+      is not a method on the User model. Option C (`session('user_id')`) reads a raw session key — while Breeze does
+      store the user ID in the session, reading it directly is not the correct idiomatic pattern; `Auth::id()` is the
+      authoritative call. Option D (`request()->userId()`) does not exist — `request()` provides access to the HTTP
+      request object, not authentication state.
+    bloom: remember
+    source: auth-with-breeze_SQLite_SCRIPT.docx
+  - id: swagger-openapi-q-01
+    type: MCQ
+    topic: Swagger and OpenAPI
+    marks: 1
+    question: A developer says 'I documented my API in Swagger.' What is the precise technical correction?
+    choices:
+      - The documentation format is called REST — Swagger is only the editor
+      - The specification language is OpenAPI; Swagger is the toolset (UI, Editor, Codegen) that reads it
+      - Swagger and OpenAPI are identical terms and the statement is correct
+      - OpenAPI is a product sold by SmartBear; Swagger is the open standard
+    correct: 1
+    rationale: >-
+      OpenAPI is the specification language — a YAML or JSON contract describing an API's paths, parameters, and
+      schemas. Swagger is the toolset built around that spec: Swagger UI renders interactive docs, Swagger Editor lets
+      you write and validate specs, and Swagger Codegen generates client libraries. This distinction is directly tested
+      in past-exam Q8. Option A is incorrect — REST describes an architectural style, not a documentation format, and is
+      unrelated to the spec-vs-toolset distinction. Option C is explicitly wrong — OpenAPI and Swagger are distinct
+      concepts. Option D reverses the reality: OpenAPI is the open standard (maintained by the Linux Foundation), and
+      Swagger refers to SmartBear's toolset.
+    bloom: understand
+    source: swagger-with-laravel.pptx; final-practice.docx Q8
+    tags:
+      - pretest
+  - id: swagger-openapi-q-02
+    type: MCQ
+    topic: Swagger and OpenAPI
+    marks: 1
+    question: >-
+      After adding a new `@OA\Post` annotation to a controller, a developer refreshes `/api/documentation` but sees no
+      change. What is the missing step?
+    choices:
+      - Restart the Laravel dev server to reload PHP classes
+      - Run `php artisan l5-swagger:generate` to recompile the OpenAPI document
+      - Clear the route cache with `php artisan route:clear`
+      - Publish the l5-swagger config again with `vendor:publish`
+    correct: 1
+    rationale: >-
+      `php artisan l5-swagger:generate` is the compile step that reads all `@OA\` annotations in the project and writes
+      a fresh OpenAPI JSON document. Swagger UI at `/api/documentation` serves that compiled JSON — it does not read
+      annotations directly. Without regenerating, the UI shows the previous state. Option A (restarting the server)
+      reloads PHP but does not trigger annotation compilation; the stale JSON document is still served. Option C (route
+      cache) is unrelated to documentation generation. Option D (`vendor:publish`) copies config files from the package
+      — a one-time setup step, not a documentation regeneration step.
+    bloom: apply
+    source: swagger-with-laravel.pptx; Laravel_L5Swagger_SCRIPT_2026.docx
+  - id: swagger-openapi-q-03
+    type: MCQ
+    topic: Swagger and OpenAPI
+    marks: 1
+    question: The `@OA\Info` annotation must appear exactly once in a Laravel project. Where is the correct location for it?
+    choices:
+      - Directly above the `routes/api.php` file's first Route declaration
+      - In a dedicated `swagger.php` config file under `config/`
+      - On the abstract base `Controller` class in `app/Http/Controllers/Controller.php`
+      - On each individual controller method that the API exposes
+    correct: 2
+    rationale: >-
+      `@OA\Info` provides the top-level API metadata (title, version, description) required by the OpenAPI
+      specification. It belongs on the abstract base `Controller` class because l5-swagger scans PHP files for
+      annotations and the base controller is the single, shared ancestor of all controllers — placing it there ensures
+      it appears exactly once. Option A (above a route definition) is incorrect; `routes/api.php` contains route
+      declarations, not PHP classes, and l5-swagger does not scan route files for annotations. Option B
+      (`config/swagger.php`) is also wrong — annotation-based docs are written in PHP files, not config files. Option D
+      (on each controller method) would duplicate `@OA\Info`, which is invalid — the OpenAPI spec allows only one Info
+      object.
+    bloom: understand
+    source: swagger-with-laravel.pptx; Laravel_L5Swagger_SCRIPT_2026.docx

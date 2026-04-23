@@ -1,0 +1,201 @@
+id: nodejs-modules
+cards:
+
+  - id: nodejs-modules-card-01
+    type: name
+    bloom: remember
+    source: "Quiz 7, Q1"
+    front: |
+      Which of these is NOT a built-in Node.js module?
+        A) http
+        B) url
+        C) mysql
+        D) fs
+    back: |
+      C) mysql. mysql is an external module — you must install it with `npm install mysql`.
+      http, url, and fs ship with Node.js and need no installation.
+    explanation: |
+      Built-in modules are part of the Node.js runtime. External modules live in npm's registry and must be listed in package.json after installation.
+    example: |
+      const http = require('http');   // built-in — no install needed
+      const mysql = require('mysql'); // external — npm install mysql first
+
+  - id: nodejs-modules-card-02
+    type: name
+    bloom: remember
+    source: "Quiz 7, Q2"
+    front: |
+      Which built-in Node.js module gives you access to the file system?
+    back: |
+      fs — the File System module.
+      Load it with: const fs = require('fs');
+    explanation: |
+      fs exposes file I/O operations. The primary async method for reading files is fs.readFile(filename, callback).
+    example: |
+      const fs = require('fs');
+      fs.readFile('index.html', function(err, data) {
+        // err is null if successful; data holds the file contents
+      });
+
+  - id: nodejs-modules-card-03
+    type: cloze
+    bloom: understand
+    source: "Quiz 7, Q3; Slide 4"
+    front: |
+      Given:
+        const url = require('url');
+        const address = 'http://localhost:8000/admin.html?user=123';
+        const parsed = url.parse(address, true);
+
+      `parsed.pathname` returns _______.
+      `parsed.path` returns _______.
+    back: |
+      parsed.pathname → '/admin.html'
+      parsed.path     → '/admin.html?user=123'
+    explanation: |
+      pathname stops at the '?' delimiter — it holds only the path segment.
+      path includes the pathname PLUS the query string.
+      Using path as a filename will fail because no file on disk is named '/admin.html?user=123'.
+    example: |
+      console.log(parsed.pathname); // '/admin.html'
+      console.log(parsed.path);     // '/admin.html?user=123'
+      console.log(parsed.search);   // '?user=123'
+      console.log(parsed.query);    // { user: '123' }
+
+  - id: nodejs-modules-card-04
+    type: predict
+    bloom: apply
+    source: "Quiz 7, Q3; Slide 4"
+    front: |
+      What does this code log?
+
+        const url = require('url');
+        const address = 'http://localhost:8000/admin.html?user=123';
+        const parsed = url.parse(address, true);
+        console.log(parsed.pathname);
+    back: |
+      /admin.html
+    explanation: |
+      pathname extracts the path component without the query string.
+      The query string '?user=123' is separated into parsed.search and parsed.query, not included in pathname.
+    example: |
+      // Common wrong answer: '/admin.html?user=123' — that is parsed.path, not parsed.pathname
+
+  - id: nodejs-modules-card-05
+    type: predict
+    bloom: analyze
+    source: "Quiz 7, Q4; Slide 4"
+    front: |
+      What does this code send to the client?
+
+        http.createServer(function(req, res) {
+          req.writeHead(200, { 'Content-Type': 'text/html' });
+          req.write('Hello');
+          req.end();
+        }).listen(8000);
+    back: |
+      Nothing — and it throws a TypeError at runtime.
+      req.writeHead, req.write, and req.end are not functions on the request object.
+      The response must be written through res, not req.
+    explanation: |
+      req is the IncomingMessage — it represents data flowing IN from the client.
+      res is the ServerResponse — it represents data flowing OUT to the client.
+      Only res has writeHead, write, and end.
+    example: |
+      // Correct:
+      http.createServer(function(req, res) {
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.write('Hello');
+        res.end();
+      }).listen(8000);
+
+  - id: nodejs-modules-card-06
+    type: cloze
+    bloom: apply
+    source: "Quiz 7, Q5; Slide 4"
+    front: |
+      To import a custom module at './modules/math.js', you write:
+
+        const math = require(_______);
+    back: |
+      require('./modules/math')
+      or
+      require('./modules/math.js')
+
+      Both work — the .js extension is optional.
+    explanation: |
+      Custom modules always use a relative path beginning with './' or '../'.
+      Without the './' prefix, Node.js looks in node_modules (built-in and npm packages), not the local filesystem.
+    example: |
+      const math = require('./modules/math');    // works
+      const math = require('./modules/math.js'); // also works
+      const math = require('math');              // WRONG — looks in node_modules
+
+  - id: nodejs-modules-card-07
+    type: name
+    bloom: remember
+    source: "Slide 4, Slide 11"
+    front: |
+      What command installs an external npm module called 'express' and what file records it as a dependency?
+    back: |
+      Install:   npm install express   (or: npm i express)
+      Recorded in: package.json
+    explanation: |
+      npm init --yes creates a package.json with default values.
+      Every npm install adds the module to node_modules/ and records its version in package.json under "dependencies".
+    example: |
+      npm init --yes          # create package.json
+      npm install express     # install and record dependency
+      # package.json now lists: "express": "^4.x.x"
+
+  - id: nodejs-modules-card-08
+    type: predict
+    bloom: apply
+    source: "Slide 4"
+    front: |
+      A Node.js http server is created but `.listen()` is never called. What happens when you run the file?
+    back: |
+      The server starts, then immediately exits — no port is bound, no connections are accepted.
+      The process has nothing to keep it alive.
+    explanation: |
+      .listen(port) binds the server to a TCP port and keeps the event loop running.
+      Without it, Node.js finishes executing the synchronous code and exits because no async work is pending.
+    example: |
+      // Missing .listen() — server exits immediately:
+      http.createServer(function(req, res) { ... });
+
+      // Correct:
+      http.createServer(function(req, res) { ... }).listen(8080);
+
+  - id: nodejs-modules-card-09
+    type: name
+    bloom: understand
+    source: "Slide 4"
+    front: |
+      What are the three response methods used inside http.createServer, and what does each do?
+    back: |
+      res.writeHead(statusCode, headers) — sets HTTP status code and response headers
+      res.write(data)                    — sends a chunk of the response body
+      res.end()                          — signals the response is finished (required)
+    explanation: |
+      writeHead must be called before write. end must always be called — without it the client hangs waiting for more data.
+    example: |
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.write('<h1>Hello</h1>');
+      res.end();
+
+  - id: nodejs-modules-card-10
+    type: cloze
+    bloom: understand
+    source: "Slide 11"
+    front: |
+      To read an environment variable named PORT in Node.js, you write:
+
+        const port = _______.PORT;
+    back: |
+      process.env.PORT
+    explanation: |
+      process.env is an object containing all environment variables set in the shell or OS.
+      If PORT is not set, process.env.PORT returns undefined — not an error.
+    example: |
+      const port = process.env.PORT;  // undefined if not set in environment

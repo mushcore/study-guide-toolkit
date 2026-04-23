@@ -1,0 +1,61 @@
+id: api-documentation
+name: "API documentation with OpenAPI / Swagger"
+tags: [swagger, OpenAPI, documentation, JSON]
+prose: >
+  OpenAPI / Swagger is an Interface Description Language for describing RESTful APIs in
+  a machine-readable JSON or YAML file (swagger.json). It documents endpoints, request
+  parameters, request body schemas, response schemas, status codes, and authentication
+  requirements. The starting point is the sample from editor.swagger.io; you customize
+  the paths block in VS Code using the Swagger Viewer extension to preview the rendered docs.
+cards:
+  - id: api-documentation-card-01
+    type: cloze
+    prompt: "Swagger is an {{Interface Description Language}} for describing RESTful APIs expressed using JSON."
+    answer: "Interface Description Language"
+    explanation: >
+      The slide defines Swagger using the Wikipedia description: an Interface Description
+      Language (IDL). IDLs describe the shape and contract of an interface — in this case,
+      a REST API — independent of any specific implementation language.
+    example: "Just as an IDL for a library describes its function signatures, swagger.json describes an API's endpoint signatures."
+    source: "Slide 11"
+    bloom: remember
+
+  - id: api-documentation-card-02
+    type: name
+    prompt: "What format does a swagger.json file use?"
+    answer: "JSON (or YAML) — a machine-readable specification format."
+    explanation: >
+      OpenAPI / Swagger specs are written in JSON or YAML. The file is machine-readable,
+      meaning tools like Swagger UI can parse it directly to render interactive documentation
+      or generate client code without any additional human-authored prose.
+    example: "A swagger.json file stores endpoint definitions as nested JSON objects under the \"paths\" key."
+    source: "Slide 11"
+    bloom: remember
+
+  - id: api-documentation-card-03
+    type: name
+    prompt: "What is the starting point for creating a swagger.json for your project?"
+    answer: "Download the sample from editor.swagger.io (File > Convert and Save as JSON), then customize it."
+    explanation: >
+      Rather than writing a swagger.json from scratch, you download a valid, well-structured
+      sample from editor.swagger.io. That sample provides the correct top-level skeleton
+      (openapi, info, paths) so you only need to replace the example paths with your own endpoints.
+    example: "Open editor.swagger.io, go to File > Convert and Save as JSON, then open the file in VS Code and edit the paths block."
+    source: "Slide 11"
+    bloom: understand
+
+  - id: api-documentation-card-04
+    type: name
+    prompt: "What four things does an OpenAPI spec document about each endpoint?"
+    answer: "Path, HTTP method, request schema (parameters or body), and response schema (status codes + body shape)."
+    explanation: >
+      Every entry in the paths block of a swagger.json covers: (1) the URL path, (2) the
+      HTTP method (get, post, etc.), (3) the request shape — path/query parameters or a
+      requestBody schema — and (4) the response definitions, mapping each status code to a
+      description and optional body schema. Authentication is documented at the spec or
+      operation level separately.
+    example: >
+      A GET /patients entry names the path, specifies \"get\", lists any query params, and
+      maps status 200 to a schema describing the returned patient array.
+    source: "Slide 11"
+    bloom: understand

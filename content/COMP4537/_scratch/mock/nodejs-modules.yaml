@@ -1,0 +1,27 @@
+- id: nodejs-modules-q-01
+  type: MCQ
+  topic: "Node.js Modules"
+  marks: 2
+  question: |
+    Given the following code:
+
+    ```js
+    const url = require('url');
+    const address = 'http://localhost:8000/admin.html?user=123';
+    const parsed = url.parse(address, true);
+    ```
+
+    Which expression prints `/admin.html` — the path without the query string?
+  choices:
+    - "`console.log(parsed.pathname)`"
+    - "`console.log(parsed.path)`"
+    - "`console.log(parsed.search)`"
+    - "`console.log(parsed.host)`"
+  correct: 0
+  rationale: |
+    `parsed.pathname` returns only the path segment of the URL — everything after the origin up to (but not including) the `?` character, giving `/admin.html` (ISAQuiz7 Q3, Slide 4).
+    `parsed.path` includes the query string, returning `/admin.html?user=123`; using it as a filename means the server looks for a file whose name contains `?user=123`, which does not exist even when `admin.html` does — this is the documented exam trap (ISAQuiz7 Q3).
+    `parsed.search` returns the raw query string portion including the `?`, giving `?user=123`.
+    `parsed.host` returns the host and port (`localhost:8000`), not the path at all.
+  bloom: understand
+  source: "Slide 4, ISAQuiz7.pdf Q3"

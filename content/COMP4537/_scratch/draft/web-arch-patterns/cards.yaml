@@ -1,0 +1,175 @@
+id: web-arch-patterns
+cards:
+
+  - id: web-arch-patterns-card-01
+    type: name
+    prompt: >
+      What architectural pattern bundles all application logic — UI, business logic,
+      and data access — into a single deployable unit?
+    answer: Monolithic architecture
+    explanation: >
+      Monolithic architecture treats the entire application as one piece. All code compiles
+      together, deploys together, and runs on one process. This makes it simple to start
+      but expensive to change as complexity grows.
+    example: >
+      A small e-commerce site where routing, product logic, and database queries all live
+      in one Express app is monolithic. Deploying a coupon feature requires shutting down
+      the entire site.
+    source: "Slide 2"
+    bloom: remember
+
+  - id: web-arch-patterns-card-02
+    type: cloze
+    prompt: >
+      In monolithic architecture, adding a new feature requires three steps:
+      (1) ________ the entire application, (2) add the feature, (3) ________ before
+      redeploying.
+    answer: "(1) shut down; (3) recompile"
+    explanation: >
+      Because all code is bundled together, the whole system must stop before any part
+      of it changes. MSA avoids this by letting you redeploy individual services without
+      touching others.
+    example: >
+      Compare to MSA: Netflix can push a fix to its recommendation service while
+      video streaming and billing continue running uninterrupted.
+    source: "Slide 2"
+    bloom: remember
+
+  - id: web-arch-patterns-card-03
+    type: name
+    prompt: >
+      Name the four layers of layered (n-Tier) architecture, from top to bottom.
+    answer: "Presentation Layer, Business Layer, Application Layer, Data Access Layer"
+    explanation: >
+      Each layer handles one functional concern. Presentation handles UI; Business handles
+      logic and decisions; Application holds shared libraries; Data Access handles database
+      reads and writes. Strict layer boundaries enforce separation of concerns.
+    example: >
+      In a banking app, the Business Layer checks authorization before the Data Access
+      Layer executes any SQL — no UI code ever touches financial records directly.
+    source: "Slide 2"
+    bloom: remember
+
+  - id: web-arch-patterns-card-04
+    type: cloze
+    prompt: >
+      In layered architecture, the ________ layer controls the application's logic,
+      decision making, and routing of requests.
+    answer: Business Layer
+    explanation: >
+      The Business Layer sits between the Presentation Layer and the Application Layer.
+      It is where authorization decisions, workflow logic, and request routing live —
+      keeping these concerns out of both the UI and the database code.
+    example: >
+      "Should this user be allowed to transfer funds?" — that question is answered in
+      the Business Layer, not in the Presentation Layer that received the button click.
+    source: "Slide 2"
+    bloom: remember
+
+  - id: web-arch-patterns-card-05
+    type: name
+    prompt: >
+      MSA stands for ________ Architecture. What is the equivalent term on the slides,
+      and how do they differ in this course?
+    answer: >
+      MSA = Microservice Architecture. SOA = Service-Oriented Architecture.
+      In this course they refer to the same thing — do not contrast them.
+    explanation: >
+      The slides explicitly note: "MSA: Microservice Architecture / SOA: Service-Oriented
+      Architecture — slightly different but refer the same thing in this course."
+      Treating SOA as a predecessor or separate pattern is incorrect in this context.
+    example: >
+      Messenger (MSA service) runs independently from Facebook's core app. Either
+      "MSA" or "SOA" would be correct labels for that relationship in COMP4537.
+    source: "Slide 2"
+    bloom: understand
+
+  - id: web-arch-patterns-card-06
+    type: name
+    prompt: >
+      In MSA, services communicate with each other exclusively through what mechanism?
+      Name one consequence of this constraint.
+    answer: >
+      Services communicate only via API calls.
+      Consequence: high-frequency inter-service communication generates many network
+      round-trips, increasing latency compared to in-process calls in a monolith.
+    explanation: >
+      API-only communication enforces loose coupling — no service can reach into
+      another service's database or memory directly. This independence enables
+      independent deployment but adds network overhead.
+    example: >
+      In the COMP4537 API-centric MSA diagram, the client hits an API gateway, which
+      routes requests to separate services in Japan, USA, UAE, and Korea — every
+      hop is an API call returning JSON.
+    source: "Slide 2"
+    bloom: understand
+
+  - id: web-arch-patterns-card-07
+    type: name
+    prompt: >
+      What architectural pattern runs small, stateless functions in the cloud without
+      the developer managing server infrastructure?
+    answer: Serverless / Function-as-a-Service (FaaS)
+    explanation: >
+      In serverless architecture, a cloud provider handles all infrastructure: provisioning,
+      scaling, and patching. The developer writes only the function logic and defines the
+      API contract. "The server is developed by someone else and made available via API calls."
+    example: >
+      Sending an API request to an image-processing service that resizes and crops photos
+      is serverless from the caller's perspective — no server to provision, pay for when
+      idle, or patch.
+    source: "Slide 2"
+    bloom: remember
+
+  - id: web-arch-patterns-card-08
+    type: name
+    prompt: >
+      MVC stands for what three components, and what is each component responsible for?
+    answer: >
+      Model (data and business rules), View (UI rendering), Controller (receives input,
+      coordinates Model and View).
+    explanation: >
+      MVC separates the three concerns that recur in every UI-driven application: what
+      data exists, how it is displayed, and how user actions change it. Keeping them
+      separate makes each component independently testable and replaceable.
+    example: >
+      GitHub was originally built on Ruby on Rails, an MVC framework. The "repository"
+      object is the Model; the HTML page displaying commits is the View; the endpoint
+      handling a push event is the Controller.
+    source: "Slide 2"
+    bloom: remember
+
+  - id: web-arch-patterns-card-09
+    type: cloze
+    prompt: >
+      MVVM improves on MVC by adding ________, which synchronizes the View and Model
+      automatically without the developer writing explicit event handlers.
+    answer: two-way data binding (via a ViewModel)
+    explanation: >
+      In MVVM, the ViewModel exposes data streams. When either the View or the Model
+      changes, the ViewModel propagates the update in both directions automatically.
+      This is why frameworks like Angular and Vue are described as MVVM-based.
+    example: >
+      In a Vue form, editing an input field immediately updates the underlying data
+      object and re-renders any computed display — no `addEventListener` required.
+    source: "Slide 2"
+    bloom: understand
+
+  - id: web-arch-patterns-card-10
+    type: name
+    prompt: >
+      You are designing a system for a large company where multiple teams each own
+      a distinct function (payments, inventory, notifications). Deployments must be
+      independent. Which architectural pattern fits, and name two companies that use it?
+    answer: >
+      MSA (Microservice Architecture). Companies: any two from Uber, Netflix, Amazon,
+      eBay, SoundCloud, Groupon, realtor.com.
+    explanation: >
+      MSA lets each team own, deploy, and scale their service independently. The
+      coordination cost is API contracts between services — the benefit is that no
+      team blocks another's deployment cycle.
+    example: >
+      Amazon's checkout service, recommendation engine, and inventory tracker are
+      separate MSA services. A bug in recommendations does not halt checkout.
+    source: "Slide 2"
+    bloom: analyze

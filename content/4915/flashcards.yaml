@@ -8,10 +8,13 @@ modules:
           - filesystem
           - fundamentals
         prose: Flashcards covering Filesystem.
+        source: "Mod02 Ch6; materials/past-exams/midterm.md Q18, Q25"
         cards:
           - type: name
             prompt: What is the Unix root directory?
             answer: '`/` — a single forward slash. Not `/root` (that''s root user''s home).'
+            explanation: Unix filesystems form a single inverted tree with `/` at the top; every mount point attaches below it. `/root` is just the home directory of the root user and sits at `/root`, not at the top of the tree.
+            bloom: remember
           - type: name
             prompt: Inode contents?
             answer: |-
@@ -25,15 +28,25 @@ modules:
               8. Data-block pointers
 
               **NOT filename.**
+            explanation: The inode is the on-disk metadata record for a file; the filename lives in the parent directory entry that maps name → inode number. This separation is exactly what makes hard links possible — multiple names can point at the same inode.
+            bloom: remember
           - type: name
             prompt: Why can't hard links cross filesystems?
             answer: Inode numbers are unique only within a single filesystem.
+            explanation: A hard link is an extra directory entry pointing at an inode. Inode 5 on `/dev/sda1` is not the same object as inode 5 on `/dev/sdb1` — scope is per-FS. Soft links dodge this by storing the target *pathname* as data, so they cross FS freely.
+            example: "`ln /mnt/usb/file ~/link` → fails (`Invalid cross-device link`). `ln -s /mnt/usb/file ~/link` → works; the link file's contents is the literal string `/mnt/usb/file`."
+            bloom: understand
           - type: name
             prompt: To link a file such that it exists even after original is deleted, which type?
             answer: '**Hard link**. Soft/symbolic would dangle if target deleted.'
+            explanation: Unlink just decrements the inode's link count; the file's data survives until the count hits zero. A symlink holds a pathname, so if that path disappears the symlink dangles.
+            example: "`ln a b; rm a; cat b` → still works. `ln -s a c; rm a; cat c` → `No such file or directory`."
+            bloom: remember
           - type: name
             prompt: Which permission set belongs to a symbolic link?
             answer: Real systems show `lrwxrwxrwx` — type `l`, all rwx. On midterm Q32, the closest option was `lrwxrwxrw-` (typo in original exam — last x dropped).
+            explanation: Symlink permissions are ignored by the kernel — access is always resolved against the target's perms. The shown `rwxrwxrwx` is a cosmetic convention so users don't get confused by restricted-looking symlinks.
+            bloom: remember
           - type: name
             prompt: Name the 7 Unix file types shown in ls -l first char.
             answer: |-
@@ -44,118 +57,189 @@ modules:
               5. `l` symlink
               6. `s` socket
               7. `p` named pipe
+            explanation: The first character of `ls -l` output encodes the inode's type field. Block and character devices differ in whether I/O is buffered in fixed-size blocks (disks) or streamed byte-by-byte (terminals, `/dev/null`).
+            bloom: remember
           - type: name
             prompt: What two entries does every directory contain?
             answer: '`.` (self) and `..` (parent).'
+            explanation: These are real directory entries written at `mkdir` time — `.` points to the directory's own inode, `..` to its parent's. `cd ..` works because of this link; the root directory's `..` points to itself.
+            bloom: remember
           - type: name
             prompt: 'You mounted Windows D: at /mnt/win. How do you cd to D:\\work\\faxes in Linux?'
             answer: '`cd /mnt/win/work/faxes`.'
+            explanation: Mounting grafts a foreign filesystem onto the Linux tree at the mount point. Drive letters and backslashes don't exist in Linux — everything becomes a subtree of `/` using forward slashes.
+            bloom: understand
           - type: name
             prompt: Linux command to create a directory?
             answer: '`mkdir`.'
+            explanation: "`mkdir` writes a new directory entry in the parent and allocates an inode with type `d`. Use `-p` to create missing intermediate parents in one call."
+            example: "`mkdir -p /tmp/a/b/c` creates all three if absent; plain `mkdir /tmp/a/b/c` fails unless `/tmp/a/b` already exists."
+            bloom: remember
           - type: name
             prompt: 'T/F: Linux can read files on partitions formatted for DOS/OS2/Windows?'
             answer: TRUE — with appropriate filesystem drivers (vfat, ntfs-3g, etc.).
+            explanation: The VFS layer dispatches syscalls to whichever filesystem driver handles the mount. As long as a driver module is loaded (vfat, exfat, ntfs-3g), the partition mounts like any other.
+            bloom: remember
       - id: 4915-permissions
         name: Permissions
         tags:
           - permissions
           - fundamentals
         prose: '10-char ls display: [type][u][g][o]. Each rwx triplet = 3 bits.'
+        source: "Mod02 Ch6-7; materials/past-exams/midterm.md Q16, Q32"
         cards:
           - type: name
             prompt: Make jack owner of all files under /home/jack/candy?
             answer: '`chown -R jack /home/jack/candy`. Capital -R, not -r.'
+            explanation: "`chown` is the one common tool that uses capital `-R` for recursion — every other tool (grep, cp, ls, rm) uses lowercase `-r`. Lowercase `-r` is not a valid chown flag."
+            example: "`chown -R jack:jack /home/jack/candy` also fixes group. Confirm with `ls -l /home/jack/candy | head`."
+            bloom: remember
           - type: name
             prompt: '`chmod 755 file` — owner/group/other?'
             answer: owner rwx (7=4+2+1), group r-x (5=4+0+1), other r-x (5=4+0+1).
+            explanation: Each octal digit is a 3-bit permission triplet. `chmod 755` sets absolutely — it wipes any other bits. Use `chmod +x` to only *add* the execute bit without touching the rest.
+            example: "`chmod 755 script.sh; ls -l script.sh` → `-rwxr-xr-x`. `chmod 644 data.txt` → `-rw-r--r--`."
+            bloom: remember
+          - type: predict
+            prompt: "After `umask 022 && chmod 600 secret.txt && ls -l secret.txt`, what does `ls -l` show?"
+            answer: "`-rw-------`. umask only applies to *new* files; explicit chmod overrides it."
+            explanation: "umask subtracts from creation defaults (666 for files, 777 for dirs) — it never touches existing files. `chmod` sets the bits absolutely, so 600 wins regardless of the current umask."
+            example: "`touch new.txt; ls -l new.txt` → `-rw-r--r--` (666 & ~022). Now `chmod 600 new.txt` → `-rw-------`."
+            source: "research-mod01-02.md §Permissions; Mod02 Ch7; materials/labs/Lab2.pdf"
+            bloom: apply
           - type: name
             prompt: umask 022 — new file and dir permissions?
             answer: File 644 (666 & ~022), dir 755 (777 & ~022).
+            explanation: umask is a bitmask of bits to *remove* from defaults. Files start at 666 (no execute), directories at 777 (execute = traverse). 022 clears w from group and other.
+            example: "`umask 022; touch f; ls -l f` → `-rw-r--r--`. `mkdir d; ls -ld d` → `drwxr-xr-x`."
+            bloom: remember
       - id: 4915-chroot
         name: chroot
         tags:
           - containers
           - kubernetes
         prose: Flashcards covering chroot.
+        source: "Mod10C Ch10; materials/labs/Lab10.pdf"
         cards:
           - type: name
             prompt: What does chroot do?
             answer: Changes apparent root directory for a process — filesystem-level jail.
+            explanation: After chroot, the process sees the new directory as `/` and cannot `cd` above it through normal path resolution. It predates namespaces and is the mental prototype for modern container filesystem isolation — containers layer MNT namespaces + pivot_root on top for a stronger jail.
+            bloom: remember
       - id: 4915-umask
         name: umask
         tags:
           - permissions
           - sysadmin
         prose: '10-char ls display: [type][u][g][o]. Each rwx triplet = 3 bits.'
+        source: "Mod02 Ch7; materials/labs/Lab2.pdf"
         cards:
           - type: name
             prompt: Calculate directory perms with umask 027.
             answer: 777 & ~027 = 750. Owner rwx, group r-x, other nothing.
+            explanation: Directory default is 777 because execute on a directory means "traverse" — needed to cd into it. umask 027 clears w from group (2) and rwx from other (7), leaving 750.
+            example: "`umask 027; mkdir shared; ls -ld shared` → `drwxr-x---`."
+            bloom: apply
+          - type: predict
+            prompt: "umask 077 is set. `touch secret; mkdir private; ls -l secret; ls -ld private` — predict the mode strings."
+            answer: "`-rw-------` and `drwx------`. 666 & ~077 = 600; 777 & ~077 = 700."
+            explanation: umask 077 clears rwx from group and other entirely — only the owner keeps any access. This is the standard paranoia umask for private workspaces.
+            example: "Compare: `umask 022; touch f` → `-rw-r--r--`; `umask 077; touch g` → `-rw-------`."
+            source: "research-mod01-02.md §Permissions; Mod02 Ch7; materials/labs/Lab2.pdf; midterm Q16 proximal"
+            bloom: apply
       - id: 4915-flags
         name: Flags
         tags:
           - shell
         prose: Flashcards covering Flags.
+        source: "Mod01 Ch4"
         cards:
           - type: name
             prompt: Can you combine single-letter flags? Example?
             answer: Yes. `ls -r -x` same as `ls -rx`. Most commands accept combined short options.
+            explanation: POSIX `getopt`-style short options are single-character and bundleable. Long options (GNU style, `--reverse`) cannot be bundled because the parser needs word boundaries.
+            example: "`ls -lah` = `ls -l -a -h`. `tar -czf` = `tar -c -z -f`."
+            bloom: understand
       - id: 4915-setgid
         name: setgid
         tags:
           - permissions
           - fundamentals
         prose: Flashcards covering setgid.
+        source: "Mod02 Ch7"
         cards:
           - type: name
             prompt: What does setgid do on a file vs a directory?
             answer: 'On a file: process runs with the file''s group GID. On a directory: new files inherit the directory''s group (collaboration pattern).'
+            explanation: setgid repurposes the same bit for two behaviors. On executables it elevates group privileges during execution; on directories it changes the default-group policy so team-shared folders stay owned by the shared group.
+            bloom: remember
       - id: 4915-setuid
         name: setuid
         tags:
           - permissions
           - fundamentals
         prose: Flashcards covering setuid.
+        source: "Mod02 Ch7"
         cards:
           - type: name
             prompt: What does setuid do?
             answer: 'Executable runs with the file owner''s UID regardless of who launched it. Classic example: /usr/bin/passwd runs as root.'
+            explanation: setuid is how unprivileged users perform privileged operations like changing their own password — the binary flips the effective UID to root for the duration of the call. The security footprint is significant; misused setuid binaries are a classic privilege-escalation vector.
+            bloom: remember
       - id: 4915-hard-link
         name: Hard link
         tags:
           - filesystem
           - fundamentals
         prose: 'An inode holds: owner, group, modes, timestamps (atime/mtime/ctime), size, link count, type, data-block pointers. NOT filename.'
+        source: "Mod02 Ch6; materials/past-exams/midterm.md Q24, Q58"
         cards:
           - type: name
             prompt: Can you tell which of two hard-linked files is the 'original'?
             answer: No. Both are equal directory entries pointing to the same inode. There is no 'original' after the link is made.
+            explanation: Hard link = extra directory entry pointing at an inode. Inode scope is per-FS, so crossing FS breaks the pointer. Soft links store the pathname as data and cross FS freely. (research-mod01-02.md §Hard vs Soft Link)
+            example: "`ln /mnt/usb/file ~/link` → fails (cross-FS). `ln -s /mnt/usb/file ~/link` → works; the link file contains the text '/mnt/usb/file'."
+            bloom: understand
+          - type: predict
+            prompt: "`echo hi > a; ln a b; rm a; cat b` — what prints?"
+            answer: "`hi`. Removing `a` only decrements the link count; the inode (and its data) survives because `b` still points at it."
+            explanation: "`rm` is literally `unlink` — it removes the directory entry, not the file data. Data is freed only when link count drops to 0 AND no process holds the file open."
+            example: "Contrast soft links: `echo hi > a; ln -s a c; rm a; cat c` → `No such file or directory` (symlink dangles)."
+            source: "research-mod01-02.md §Hard vs Soft Link; materials/past-exams/midterm.md Q24, Q58"
+            bloom: apply
       - id: 4915-soft-link
         name: Soft link
         tags:
           - filesystem
           - fundamentals
         prose: 'An inode holds: owner, group, modes, timestamps (atime/mtime/ctime), size, link count, type, data-block pointers. NOT filename.'
+        source: "Mod02 Ch6; materials/past-exams/midterm.md Q32, Q58"
         cards:
           - type: name
             prompt: How do you create a soft link?
             answer: '`ln -s target linkname`. Creates a new file whose content is the pathname of the target.'
+            explanation: A symlink is its own tiny file; the data block just stores the target path as a string. That's why `ls -l` shows `link -> target` — the kernel follows the stored path on access.
+            example: "`ln -s /etc/nginx/sites-available/site.conf /etc/nginx/sites-enabled/site.conf` — standard nginx enable pattern."
+            bloom: understand
       - id: 4915-storage
         name: Storage
         tags:
           - fundamentals
         prose: Flashcards covering Storage.
+        source: "Mod05 Ch10"
         cards:
           - type: name
             prompt: 'Performance difference: rotating disk vs SSD for file access?'
             answer: Rotating (HDD) slower due to seek time. SSD much faster but has **limited write cycles** per cell.
+            explanation: HDDs pay a mechanical seek cost (~5-10 ms) on every non-sequential access; SSDs are uniform-latency but each flash cell wears out after ~1000-100000 program/erase cycles, making wear-leveling a critical firmware concern.
+            bloom: remember
       - id: 4915-fstab
         name: fstab
         tags:
           - filesystem
           - sysadmin
         prose: Flashcards covering fstab.
+        source: "Mod05 Ch10"
         cards:
           - type: name
             prompt: Basic fstab fields you MUST know?
@@ -166,16 +250,21 @@ modules:
               4. Options
 
               (Per instructor: NOT the last 2 — dump and fsck pass.)
+            explanation: "`/etc/fstab` is the declarative mount table read at boot and by `mount -a`. The last two fields (dump frequency, fsck pass order) are legacy holdovers — modern systems rarely rely on them."
+            bloom: remember
       - id: 4915-acl
         name: ACL
         tags:
           - permissions
           - fundamentals
         prose: Flashcards covering ACL.
+        source: "Review Apr 17 (explicitly out of scope)"
         cards:
           - type: name
             prompt: Do you need ACL (Access Control List) details on the exam?
             answer: No. Instructor said ACL details not needed.
+            explanation: ACLs (getfacl/setfacl) layer per-user/per-group permissions on top of the classic owner/group/other model — useful in the wild but explicitly out of scope for this course.
+            bloom: remember
   - id: shell-text
     name: Shell, redirection & text processing
     topics:
@@ -184,235 +273,382 @@ modules:
         tags:
           - shell
         prose: Process substitution &lt;(cmd), &gt;(cmd) is a bash feature beyond basic 7.
+        source: "Mod01 Ch4-5, Mod04 Ch9"
         cards:
           - type: name
             prompt: What does Ctrl+D do at a shell prompt?
             answer: End of input / log out of shell. (Midterm Q15.)
+            explanation: Ctrl+D sends EOF to the terminal's line discipline. At an interactive shell with an empty line, reading EOF on stdin exits the shell; inside a program it closes the input stream.
+            bloom: remember
           - type: name
             prompt: What does `cd ~` do?
             answer: Change to your account's home directory.
+            explanation: "`~` is a shell expansion (tilde expansion, step 2 of the 7) that evaluates to `$HOME`. `~user` expands to user's home; `~+` is `$PWD`, `~-` is `$OLDPWD`."
+            bloom: remember
           - type: name
             prompt: By default, Linux command arguments are separated by what?
             answer: Spaces or tabs (white space, per default IFS).
+            explanation: IFS (Internal Field Separator) defaults to space/tab/newline. Word splitting (step 6 of 7 expansions) uses IFS to chop unquoted variable expansions into arg tokens.
+            bloom: remember
           - type: name
             prompt: How do you run a bash command in the background?
             answer: 'Terminate with `&`. Example: `long_task &`.'
+            explanation: "`&` forks the command and returns control to the shell immediately. The job continues running; capture its PID with `$!`, and `wait` to synchronize."
+            example: "`sleep 60 & echo $!` — prints the sleep PID so you can kill it."
+            bloom: understand
           - type: name
             prompt: Which command changes your login shell?
             answer: '`chsh`.'
+            explanation: "`chsh` edits the user's /etc/passwd shell field. The new shell must be listed in `/etc/shells` for security."
+            bloom: remember
           - type: name
             prompt: What's the Linux account with special admin privileges called?
             answer: Superuser (also known as root).
+            explanation: Root is UID 0 — the kernel's permission checks skip for UID 0, so root can do essentially anything. This is why sudo carefully controls who can assume root identity.
+            bloom: remember
           - type: name
             prompt: Which command sends a signal to a process?
             answer: '`kill`. (Despite the name, it can send any signal, not just SIGKILL.)'
+            explanation: "`kill -l` lists all 31+ signals. Default is SIGTERM (15) — a polite request. SIGKILL (9) is the nuclear option and cannot be caught or ignored."
+            example: "`kill -HUP $(pgrep nginx)` asks nginx to reload config. `kill -9 1234` force-terminates PID 1234."
+            bloom: remember
           - type: name
             prompt: What is a Unix PPID?
             answer: Parent Process ID.
+            explanation: Every process except init/systemd has a parent that spawned it via fork. PPID is used by process-tree tools (`pstree`) and signal propagation.
+            bloom: remember
           - type: name
             prompt: How to find currently defined aliases?
             answer: '`alias` — run with no arguments.'
+            explanation: Aliases are the first name-resolution step in bash (before keywords, functions, builtins, $PATH). `alias` with no args prints the full table; `unalias name` removes one.
+            bloom: remember
           - type: name
             prompt: Command to display value of variable myvar?
             answer: '`echo $myvar` (or `echo "$myvar"` to preserve spaces).'
+            explanation: Unquoted `$var` goes through word splitting — whitespace inside the value becomes separate args. Quoting with double quotes suppresses word splitting but still expands `$var`.
+            example: "`v='a  b'; echo $v` → `a b` (split). `echo \"$v\"` → `a  b` (preserved)."
+            bloom: remember
           - type: name
             prompt: What does a pipe `|` do?
             answer: Connects stdout of one process to stdin of the next.
+            explanation: "`|` creates a kernel pipe (anonymous FIFO); the shell runs both commands concurrently with the pipe's read end as cmd2's fd0 and write end as cmd1's fd1. Stderr stays on fd2 and is NOT piped unless you `2>&1` first."
+            example: "`ps aux | grep nginx | wc -l` — three processes running in parallel, streaming data."
+            bloom: remember
           - type: name
             prompt: Bring background job number 2 to foreground?
             answer: '`fg %2`.'
+            explanation: Jobs are numbered per-shell (`jobs` lists them). `fg %N` moves job N to foreground, `bg %N` resumes it in background. `%%` or bare `fg` picks the current job.
+            bloom: remember
           - type: name
             prompt: Which command pushes a directory on the stack?
             answer: '`pushd`.'
+            explanation: "`pushd dir` cd's to `dir` and pushes the old dir on the stack; `popd` returns. Useful for temporary excursions. `dirs` prints the stack."
+            bloom: remember
       - id: 4915-text-utils
         name: Text utils
         tags:
           - fundamentals
         prose: Flashcards covering Text utils.
+        source: "Mod02 Ch7; materials/labs/Lab4.pdf"
         cards:
           - type: name
             prompt: What does `grep` do?
             answer: Reads through files and displays lines matching a pattern.
+            explanation: grep (global regex print) scans input line-by-line and prints matches. Name comes from the ed command `g/re/p`. Works on stdin when no file given.
+            bloom: remember
           - type: name
             prompt: Correct command to search for word 'superman' in SuperHeroes?
             answer: '`grep -w superman SuperHeroes`. `-w` matches whole word.'
+            explanation: Without `-w`, `grep superman` also matches `supermanager` or `antisuperman`. `-w` requires non-word chars at both boundaries.
+            example: "`grep -w cat animals.txt` matches 'cat' but not 'category' or 'concatenate'."
+            bloom: remember
           - type: name
             prompt: What does `tr` do?
             answer: Maps (translates) one string of characters to another. Also deletes with `-d`.
+            explanation: "`tr` is a pure filter — no file argument. It works character-by-character on stdin and writes to stdout. Use `-d` to delete, `-s` to squeeze repeats."
+            example: "`echo HELLO | tr A-Z a-z` → `hello`. `echo 'a  b' | tr -s ' '` → `a b`."
+            bloom: remember
           - type: name
             prompt: What does `tr -d '\r'` convert?
             answer: Deletes carriage returns — converts DOS/Windows text files (CRLF) to Unix (LF).
+            explanation: "DOS files end lines with `\\r\\n`; Unix uses `\\n` alone. Stray `\\r` characters cause mysterious script failures (`#!/bin/bash\\r` on the shebang line breaks execution)."
+            example: "`tr -d '\\r' < windows.txt > unix.txt`. Verify with `file unix.txt` → 'ASCII text' (not 'with CRLF')."
+            bloom: remember
           - type: name
             prompt: Which command displays the last part of a file?
             answer: '`tail`.'
+            explanation: "`tail` defaults to last 10 lines; `-n N` changes the count, `-f` follows growing files (log tailing). Pairs with `head` for the opposite end."
+            example: "`tail -f /var/log/syslog` watches log entries append in real time."
+            bloom: remember
           - type: name
             prompt: Which command counts lines/words/chars in a file?
             answer: '`wc`. `wc -l` for just line count.'
+            explanation: "wc prints three counts by default. `-l` lines, `-w` words, `-c` bytes, `-m` characters. Commonly piped: `ls | wc -l` counts files."
+            bloom: remember
           - type: name
             prompt: What does `less` do?
             answer: Displays a text file one screen at a time — interactive pager.
+            explanation: "`less` is `more` with backward scrolling, search, and tail-follow. `q` quits, `/pattern` searches forward, `?pattern` backward, `G` jumps to end."
+            bloom: remember
           - type: name
             prompt: 'Which is NOT a regex metacharacter: $, ^, =, .?'
             answer: '`=` is not a regex metacharacter.'
+            explanation: "`^` anchors line start, `$` anchors line end, `.` matches any single char. `=` is a literal equal sign in regex — no special meaning."
+            bloom: remember
       - id: 4915-find
         name: Find
         tags:
           - text-processing
           - fundamentals
         prose: 'Instructor: grep with * — quote the pattern: grep "pattern" *. Unquoted, shell glob expands * to filenames, first becomes pattern.'
+        source: "Mod02 Ch7; materials/past-exams/midterm.md Q19"
         cards:
           - type: name
             prompt: Locate a file named foo with no idea of location — command?
             answer: '`find / -name foo`. Must specify start path; search entire tree.'
+            explanation: "`find` walks the directory tree from the given root and applies tests per file. `-name` matches the basename (shell glob syntax, not regex). Unlike `locate`, find is always live — no database staleness."
+            example: "`find / -name 'config.yaml' 2>/dev/null` — the redirect swallows permission-denied errors from restricted dirs."
+            bloom: remember
+          - type: predict
+            prompt: "`find /var/log -type f -mtime -7 -name '*.log'` — what does this return?"
+            answer: "All regular files named `*.log` under /var/log modified in the last 7 days."
+            explanation: "`-type f` restricts to plain files (not dirs or sockets). `-mtime -7` means mtime within last 7 × 24h. `-name '*.log'` needs quotes so the shell doesn't glob-expand before find sees it."
+            example: "Swap `-mtime -7` for `-mtime +30` to find files OLDER than 30 days — useful for cleanup: `find /tmp -type f -mtime +30 -delete`."
+            source: "Mod02 Ch7; materials/past-exams/midterm.md Q19"
+            bloom: apply
           - type: name
             prompt: Find .tmp files and delete them with find?
             answer: '`find /path -name ''*.tmp'' -type f -delete` or `-exec rm {} \;`.'
+            explanation: "`-delete` is find's built-in unlink (fast, no fork); `-exec rm {} \\;` forks `rm` once per match (slow). Use `-exec rm {} +` to batch filenames per rm invocation."
+            example: "`find . -name '*.bak' -type f -delete` cleans backup files in the current tree."
+            bloom: remember
       - id: 4915-redirection
         name: Redirection
         tags:
           - redirection
           - shell
         prose: 'Order trap: cmd &gt; f 2&gt;&amp;1 works (redirect stdout, then merge stderr into it). cmd 2&gt;&amp;1 &gt; f does NOT — stderr goes to terminal, only stdout goes to f.'
+        source: "Mod01 Ch5; materials/past-exams/midterm.md Q10, Q43, Q44, Q50"
         cards:
           - type: name
             prompt: Command to send output to a file AND stdout?
             answer: '`tee`. `cmd | tee file`.'
+            explanation: "`tee` reads stdin and writes to both stdout and each named file. Named after a T-shaped pipe fitting. `-a` appends instead of overwriting."
+            example: "`make 2>&1 | tee build.log` — see the output live AND capture it."
+            bloom: apply
           - type: name
             prompt: Command directing stdout to outfile and stderr to errfile?
             answer: '`make FreeCiv >outfile 2>errfile`. (1> is same as >; 0 is stdin.)'
+            explanation: Each fd has its own redirection slot. `>file` opens file for writing on fd 1; `2>file2` opens file2 on fd 2. The two streams go to separate destinations with no order dependency.
+            example: "`gcc main.c >compile.log 2>errors.log` — warnings/errors in one file, regular output in another."
+            bloom: remember
           - type: name
             prompt: 'T/F: Redirecting output to a file can destroy an existing file without error.'
             answer: '**TRUE**. No warning unless noclobber set.'
+            explanation: "`>` opens the target file with O_TRUNC — it's wiped to zero length atomically before the command even runs. No prompt, no backup. Protect with `set -o noclobber` (then use `>|` to force-overwrite)."
+            example: "`echo new > important.txt` silently replaces important.txt. `>>` appends instead."
+            bloom: apply
           - type: name
             prompt: 'T/F: If you accidentally overwrite a file using redirection, you get a warning.'
             answer: '**FALSE**. Silent destruction by default.'
+            explanation: "The shell's redirection operator is `O_WRONLY | O_CREAT | O_TRUNC` — file is truncated the instant the shell parses the redirection, before the command runs. Noclobber must be explicitly enabled."
+            bloom: remember
           - type: name
             prompt: Output of `cat x y 1>hold 2>&1; cat hold` if x missing, y='This is y'?
             answer: '```bash cat: x: No such file or directory This is y ``` stderr merged into stdout before both redirect into hold.'
+            explanation: "`1>hold` binds fd 1 to hold; `2>&1` duplicates *the current binding of fd 1* onto fd 2, so stderr also goes to hold. Order matters: `2>&1 1>hold` would send stderr to the terminal (fd 1's old binding)."
+            example: "`cmd >out 2>&1` is the canonical 'both streams into out'. `cmd 2>&1 >out` is a classic bug — stdout goes to out, stderr stays on the terminal."
+            bloom: apply
           - type: name
             prompt: 'T/F: Process stores exit status of last command in `$?`?'
             answer: TRUE.
+            explanation: "`$?` reads the most recent foreground command's exit status. 0 = success; non-zero = various errors (convention: 1 = general, 2 = misuse, 126 = not executable, 127 = not found, 128+N = killed by signal N)."
+            bloom: remember
           - type: name
             prompt: Three main shell redirection operators?
             answer: '`>` stdout to file (overwrite); `>>` stdout to file (append); `<` stdin from file.'
+            explanation: "These map to open(2) with different flags: `>` is O_WRONLY|O_CREAT|O_TRUNC, `>>` is O_WRONLY|O_CREAT|O_APPEND, `<` is O_RDONLY. The shell performs the open before exec'ing the command."
+            example: "`sort < input.txt > output.txt` — read input, write sorted output."
+            bloom: remember
       - id: 4915-quoting
         name: Quoting
         tags:
           - shell
         prose: Backslash at end of line escapes the newline — continue long command on next line.
+        source: "Mod04 Ch9; materials/past-exams/midterm.md Q17, Q47"
         cards:
           - type: name
             prompt: person=jenny. Output of `echo '$person'`?
             answer: '`$person` — literal. Single quotes suppress parameter expansion.'
+            explanation: Single quotes are absolutely literal — no expansions of any kind inside. Double quotes allow `$var`, `` `cmd` ``, `$(cmd)`, and `\` escapes but suppress word splitting and glob.
+            example: "`echo '$person'` → `$person`. `echo \"$person\"` → `jenny`. `echo $person` → `jenny` (and word-split)."
+            bloom: apply
+          - type: predict
+            prompt: "`name='Dr. $USER'; echo \"$name\"` given USER=alice — what prints?"
+            answer: "`Dr. $USER`. Assignment was single-quoted, so `$USER` was stored literally; the double-quoted echo doesn't re-expand stored content."
+            explanation: "Expansion happens at *assignment parse time* when single-quoted, not at use time. The string stored in `name` is the literal 8 characters `Dr. $USER`. `echo` receives that string and prints it — no second-pass expansion."
+            example: "Compare `name=\"Dr. $USER\"` → stores `Dr. alice` at assignment, then echo prints `Dr. alice`."
+            source: "Mod04 Ch9; materials/past-exams/midterm.md Q17, Q47"
+            bloom: apply
       - id: 4915-globbing
         name: Globbing
         tags:
           - shell
         prose: Flashcards covering Globbing.
+        source: "Mod04 Ch9; materials/past-exams/midterm.md Q15"
         cards:
           - type: name
             prompt: 'Files: libby1-12.jpg + libby1.txt. What matches `libby1*.jpg`?'
             answer: '`libby1.jpg, libby10.jpg, libby11.jpg, libby12.jpg`. Matches libby1 + any chars + .jpg.'
+            explanation: Shell glob `*` matches zero or more chars within a filename (not across `/`). So `libby1*.jpg` matches anything starting with `libby1` and ending with `.jpg` — including `libby1.jpg` (zero chars between).
+            bloom: remember
           - type: name
             prompt: What matches `libby[6-8].jpg`?
             answer: '`libby6.jpg, libby7.jpg, libby8.jpg` — char class single char.'
+            explanation: "`[...]` is a bracket expression matching *exactly one* character from the set. `[6-8]` is a range = `[678]`. Fixed-width; won't match `libby10.jpg`."
+            bloom: remember
           - type: name
             prompt: Why is `grep *` dangerous without quotes?
             answer: 'Shell globs `*` to filenames first; first filename becomes grep''s pattern. Always quote: `grep "pattern" *`.'
+            explanation: Globbing (step 7 of 7 expansions) happens before grep runs. Unquoted `*` expands to the file list, then grep interprets arg[1] as its pattern — giving you something like `grep a.txt b.txt c.txt` which greps for `a.txt` in `b.txt` and `c.txt`.
+            example: "`grep *` in a dir with a.txt, b.txt → actually runs `grep a.txt b.txt` → searches for 'a.txt' in b.txt. Fix: `grep 'pattern' *`."
+            bloom: understand
       - id: 4915-bit-bucket
         name: Bit bucket
         tags:
           - fundamentals
         prose: Flashcards covering Bit bucket.
+        source: "Mod01 Ch5"
         cards:
           - type: name
             prompt: Name of the Linux bit-bucket?
             answer: '`/dev/null`.'
+            explanation: "`/dev/null` is a character special device — writes are silently discarded, reads return EOF instantly. Used to suppress noise: `cmd 2>/dev/null` hides stderr."
+            bloom: remember
       - id: 4915-grep
         name: grep
         tags:
           - text-processing
           - fundamentals
         prose: 'Instructor: grep with * — quote the pattern: grep "pattern" *. Unquoted, shell glob expands * to filenames, first becomes pattern.'
+        source: "Mod02 Ch7; materials/past-exams/midterm.md Q34"
         cards:
           - type: name
             prompt: Command to display lines in current dir files that do NOT contain bb/bB/Bb/BB?
             answer: '`grep -vi bb *`. -v invert, -i ignore case.'
+            explanation: "`-v` inverts the match (show non-matching lines). `-i` ignores case. Combined flags compose — `grep -vi` means case-insensitive invert."
+            example: "`grep -vi error application.log` shows all lines that don't mention 'error' in any case."
+            bloom: remember
           - type: name
             prompt: Command to case-insensitive count of lines matching 'error' in log?
             answer: '`grep -ic error log`. -i ignore case, -c count.'
+            explanation: "`-c` suppresses normal output and prints just the count of matching lines. `-i` makes `Error`, `ERROR`, `error` all match. Note: `-c` counts lines, not matches — multiple matches on one line count as 1."
+            example: "`grep -ic timeout app.log` → `42` (42 lines contain 'timeout' case-insensitively)."
+            bloom: remember
+          - type: predict
+            prompt: "File `heroes` has lines `superman`, `Super-Man`, `SUPERCAR`. What does `grep -iw super heroes` print?"
+            answer: "Nothing. `-w` requires word boundaries around `super`; none of those lines have `super` as a whole word."
+            explanation: "`-w` treats the pattern as a whole word — non-word chars must border the match on both sides. `superman` has letters after `super`, so it fails. `-i` would match `Super-Man` if `-w` were absent, because `-` is a non-word char."
+            example: "`grep -iw 'super' heroes` still matches nothing. `grep -i 'super' heroes` matches all three."
+            source: "Mod02 Ch7; materials/past-exams/midterm.md Q34"
+            bloom: apply
       - id: 4915-filter
         name: Filter
         tags:
           - text-processing
           - shell
         prose: Kernel firewall. Packet walks through tables → chains → rules.
+        source: "Mod02 Ch7"
         cards:
           - type: name
             prompt: In `who | sort | lpr`, what is sort an example of?
             answer: A **filter** — reads from stdin, transforms, writes to stdout.
+            explanation: A filter is any program that consumes stdin and produces stdout without needing file arguments. Pipes are built to chain filters; each filter stays generic because it only talks to fd 0 and fd 1.
+            bloom: remember
       - id: 4915-history
         name: History
         tags:
           - shell
           - fundamentals
         prose: 'Instructor said: "only vague idea needed. No deep dates."'
+        source: "Mod04 Ch9"
         cards:
           - type: name
             prompt: Who developed the Linux kernel?
             answer: Linus Torvalds.
+            explanation: Torvalds started Linux in 1991 as a hobby OS for his 386. The kernel is just the core scheduler/memory/driver layer; the rest of a "Linux" system is GNU userland plus distro choices.
+            bloom: remember
           - type: name
             prompt: Two key names associated with Linux and GNU?
             answer: '**Linus Torvalds** (Linux kernel, 1991) and **Richard Stallman** (GNU project, Free Software Foundation).'
+            explanation: Stallman's GNU project (1983) built the userland (gcc, bash, coreutils) that Linux later integrated to become a complete OS. Their licenses (GPL) shaped free software distribution.
+            bloom: remember
       - id: 4915-editor
         name: Editor
         tags:
           - editor
           - fundamentals
         prose: Flashcards covering Editor.
+        source: "Mod04 Ch9"
         cards:
           - type: name
             prompt: 'T/F: Linux can run some programs developed for other OS like Windows/DOS?'
             answer: TRUE — with emulation layers (Wine, DOSBox, etc.).
+            explanation: Wine translates Win32 syscalls to Linux equivalents; DOSBox emulates x86 real-mode + DOS. Neither is a VM — they're syscall-level compatibility layers.
+            bloom: remember
       - id: 4915-stderr
         name: stderr
         tags:
           - redirection
           - shell
         prose: Flashcards covering stderr.
+        source: "Mod01 Ch5; materials/past-exams/midterm.md Q10"
         cards:
           - type: name
             prompt: How do you redirect stderr to a file?
             answer: '`2>` — example `cmd 2> err.log`. Merge with stdout: `2>&1`.'
+            explanation: stderr is fd 2 and is explicitly separate from stdout so error messages don't contaminate pipes. `2>&1` duplicates fd 1's current binding onto fd 2 — order matters.
+            example: "`cmd 2>/dev/null` silences errors but keeps normal output. `cmd >out 2>&1` sends both to out."
+            bloom: understand
       - id: 4915-grep-recursive
         name: grep recursive
         tags:
           - text-processing
           - fundamentals
         prose: 'Instructor: grep with * — quote the pattern: grep "pattern" *. Unquoted, shell glob expands * to filenames, first becomes pattern.'
+        source: "Mod02 Ch7"
         cards:
           - type: name
             prompt: Flag to make grep search recursively through directories?
             answer: '`-r` (or `-R`). Also available as separate command `rgrep` on some systems.'
+            explanation: Unlike chown/chgrp, grep uses lowercase `-r` for recursive. `-R` additionally follows symlinks. Common combo `-rn` numbers lines for jump-to-line editor integration.
+            example: "`grep -rn 'TODO' src/` — find every TODO under src/ with file:line prefix."
+            bloom: remember
       - id: 4915-dev-null
         name: /dev/null
         tags:
           - redirection
           - fundamentals
         prose: 'An inode holds: owner, group, modes, timestamps (atime/mtime/ctime), size, link count, type, data-block pointers. NOT filename.'
+        source: "Mod01 Ch5; Review Apr 17"
         cards:
           - type: name
             prompt: What is `/dev/null`?
             answer: Bit bucket — character special file. Discards all writes; reads return EOF immediately.
+            explanation: The kernel's null device driver responds to writes with success (bytes dropped) and to reads with zero bytes (EOF). Used everywhere to silence command output without disk I/O.
+            bloom: remember
       - id: 4915-dev-zero
         name: /dev/zero
         tags:
           - fundamentals
         prose: 'An inode holds: owner, group, modes, timestamps (atime/mtime/ctime), size, link count, type, data-block pointers. NOT filename.'
+        source: "Mod01 Ch5; Review Apr 17"
         cards:
           - type: name
             prompt: What does `/dev/zero` return when read?
             answer: 'An infinite stream of null bytes (0x00). Used to create zero-filled files: `dd if=/dev/zero of=file bs=1M count=10`.'
+            explanation: Paired opposite of /dev/null — infinite source of zero bytes vs infinite sink. Used to allocate swapfiles, initialize disks, and benchmark read throughput.
+            bloom: remember
   - id: processes-scheduling
     name: Processes & scheduling
     topics:
@@ -422,20 +658,27 @@ modules:
           - redirection
           - shell
         prose: 'Order trap: cmd &gt; f 2&gt;&amp;1 works (redirect stdout, then merge stderr into it). cmd 2&gt;&amp;1 &gt; f does NOT — stderr goes to terminal, only stdout goes to f.'
+        source: "Mod01 Ch5; materials/past-exams/midterm.md Q30"
         cards:
           - type: name
             prompt: What does `cat file | more` do?
             answer: Pipes stdout of cat into stdin of more — displays file one screen at a time via the pager.
+            explanation: "Both commands run concurrently in separate processes connected by a kernel pipe. `cat file | more` is a slightly wasteful version of `more file` — cat is the classic \"useless use of cat\" example."
+            bloom: remember
       - id: 4915-background
         name: Background
         tags:
           - processes
           - shell
         prose: Flashcards covering Background.
+        source: "Mod04 Ch9; materials/past-exams/midterm.md Q26"
         cards:
           - type: name
             prompt: How do you put a process in the background when starting it?
             answer: Append `&`. Example `long_task &` — returns control immediately.
+            explanation: "`&` forks the process and detaches it from the shell's foreground-process group. Output still goes to the terminal unless redirected; the shell prints a job number for `fg`/`kill` reference."
+            example: "`./backup.sh > backup.log 2>&1 &` — run in background, all output to file, free the prompt."
+            bloom: understand
   - id: networking
     name: Networking
     topics:
@@ -445,149 +688,256 @@ modules:
           - networking
           - network
         prose: Flashcards covering Networking.
+        source: "Mod03 Ch8, Mod06 Ch18-19"
         cards:
           - type: name
             prompt: Secure technology for serving files over internet?
             answer: '`sftp` (SSH-based). ftp, http, rsh all less secure.'
+            explanation: sftp tunnels file transfer over an SSH channel — credentials and data both encrypted. Plain ftp sends passwords in cleartext; rsh does too and trusts .rhosts for authorization.
+            bloom: remember
           - type: name
             prompt: Which command connects to remote Linux and securely runs programs?
             answer: '`ssh`. rlogin, telnet, rsh are insecure.'
+            explanation: ssh encrypts the channel and authenticates both endpoints. telnet and rlogin predate crypto and send passwords as cleartext — they're historical and shouldn't exist in production.
+            bloom: remember
           - type: name
             prompt: What forwards a port through an encrypted connection?
             answer: '`ssh` (with `-L` local or `-R` remote forwarding).'
+            explanation: ssh can tunnel arbitrary TCP streams over its encrypted channel. Useful for reaching services behind a firewall without exposing them, or giving a remote service a secure back-channel to your local machine.
+            bloom: remember
           - type: name
             prompt: 'T/F: rsh, rlogin, rcp all have security risks.'
             answer: '**TRUE**. Cleartext, .rhosts spoofable.'
+            explanation: The r-commands (rsh, rlogin, rcp) authenticate via .rhosts files listing trusted hosts/users — easily spoofed with DNS or IP tricks. Data travels unencrypted. Replaced by ssh, scp, sftp.
+            bloom: remember
           - type: name
             prompt: File listing hosts denied network service access?
             answer: '`/etc/hosts.deny`.'
+            explanation: tcpwrappers (libwrap) consults `/etc/hosts.allow` first, then `/etc/hosts.deny`. First match wins. Only applies to services built with libwrap — many modern daemons use their own ACLs instead.
+            bloom: remember
           - type: name
             prompt: Daemon managing a machine's DNS?
             answer: '`named` (part of BIND).'
+            explanation: BIND (Berkeley Internet Name Domain) ships `named` as its server. Config lives in `/etc/named.conf`; zone data in `/var/named/*.zone`. Restart with `systemctl restart named` or reload with `rndc reload`.
+            bloom: remember
           - type: name
             prompt: What describes `odyssey.infosys.bcit.ca`?
             answer: Fully Qualified hostname (FQDN).
+            explanation: An FQDN walks the full DNS tree from host up to TLD. Left-to-right goes more specific; right-to-left walks toward the root (trailing dot implicit). Unqualified names get resolved against the search list in `/etc/resolv.conf`.
+            bloom: remember
           - type: name
             prompt: Service to offer remote mounting of Linux partitions on a Linux-only network?
             answer: '**NFS**. (SMB for Windows, NIS for user/group info, DNS for names.)'
+            explanation: NFS is POSIX-semantic file sharing between Unix hosts — supports hard links, symlinks, owner/group/mode. Windows speaks SMB; Samba bridges the two worlds.
+            bloom: remember
       - id: 4915-nfs
         name: NFS
         tags:
           - networking
           - network
         prose: Linux-to-Linux file sharing. NOT for Windows (use Samba).
+        source: "Mod07 Ch22; materials/labs/Lab7.pdf"
         cards:
           - type: name
             prompt: Config file defining NFS exports?
             answer: '`/etc/exports`.'
+            explanation: "`/etc/exports` is space-delimited: `path client(options)`. After editing, run `exportfs -ra` to refresh the in-kernel export table without a full restart."
+            example: "`/srv/data 10.0.0.0/8(rw,sync,no_subtree_check)` exports /srv/data read-write to the 10.0.0.0/8 subnet."
+            bloom: remember
           - type: name
             prompt: Ports needed for NFS?
             answer: 111 (portmap/rpcbind), 2049 (NFS).
+            explanation: NFSv3 uses RPC and needs portmap (rpcbind) on 111 to announce the NFS daemon's ephemeral port. NFSv4 simplified to a single well-known port 2049 (tcp) — no rpcbind needed.
+            bloom: remember
           - type: name
             prompt: Command to list exports from a remote NFS server?
             answer: '`showmount -e server`.'
+            explanation: "`showmount` queries the server's mountd via RPC to list exported paths. Useful pre-mount sanity check; failure often means portmap/firewall blocking."
+            bloom: remember
       - id: 4915-samba
         name: Samba
         tags:
           - networking
           - network
         prose: Linux ↔ Windows file/print sharing via SMB/CIFS.
+        source: "Mod07 Ch23; materials/labs/Lab7.pdf"
         cards:
           - type: name
             prompt: Samba main config file?
             answer: '`/etc/samba/smb.conf`.'
+            explanation: smb.conf has a `[global]` section plus one section per share. Changes take effect on next client connection; force-reload with `smbcontrol all reload-config`.
+            bloom: remember
           - type: name
             prompt: Command to set a Samba password for a user?
             answer: '`smbpasswd -a username`.'
+            explanation: Samba maintains its own password database (tdb) separate from Unix `/etc/shadow` — Windows uses NTLM hashes that aren't compatible with Unix crypt. `-a` adds a user; plain `smbpasswd` changes an existing password.
+            bloom: remember
           - type: name
             prompt: Command to validate smb.conf syntax?
             answer: '`testparm`.'
+            explanation: testparm parses smb.conf and flags syntax errors, reports resolved values (after defaults and includes), and suggests fixes. Always run it before restarting Samba.
+            bloom: remember
       - id: 4915-nis
         name: NIS
         tags:
           - networking
           - network
         prose: Centralized maps for passwd/group/hosts/services. NIS domain is SEPARATE from DNS domain.
+        source: "Mod07 Ch21; materials/labs/Lab7.pdf"
         cards:
           - type: name
             prompt: Is the NIS domain the same as the DNS domain?
             answer: No. NIS domain is independent — set separately in /etc/sysconfig/network (NISDOMAIN) or via domainname.
+            explanation: NIS predates DNS-style domains and uses its own flat namespace. The NIS domain is a shared secret/label that groups a master + slaves + clients — unrelated to the DNS tree.
+            bloom: remember
           - type: name
             prompt: Command to initialize an NIS master?
             answer: '`ypinit -m`.'
+            explanation: "`ypinit -m` builds the initial NIS maps from `/etc` source files (passwd, group, hosts, etc.) and registers the server as master for the domain. `-s master` initializes a slave."
+            bloom: remember
       - id: 4915-ldap
         name: LDAP
         tags:
           - networking
           - network
         prose: Centralized maps for passwd/group/hosts/services. NIS domain is SEPARATE from DNS domain.
+        source: "Mod07 Ch21"
         cards:
           - type: name
             prompt: LDAP server daemon name?
             answer: '`slapd`.'
+            explanation: slapd (Standalone LDAP Daemon) is the OpenLDAP server. Config either in slapd.conf (legacy) or a cn=config DIT (modern). Data lives in a backend like mdb.
+            bloom: remember
           - type: name
             prompt: LDAP ports?
             answer: 389 (LDAP), 636 (LDAPS / TLS).
+            explanation: 389 is cleartext LDAP (often upgraded to TLS via StartTLS). 636 is LDAPS — TLS from the start of the connection. Prefer 636 or StartTLS; plain 389 leaks bind passwords.
+            bloom: remember
       - id: 4915-sendmail
         name: Sendmail
         tags:
           - networking
           - network
         prose: Sendmail is an MTA (Mail Transfer Agent). It listens on port 25 (SMTP), queues mail, and hands off to an MDA for final delivery.
+        source: "Mod07 Ch20; materials/labs/Lab7.pdf"
         cards:
           - type: name
             prompt: Sendmail is classified as which type of mail agent — MUA, MTA, or MDA?
             answer: '**MTA** (Mail Transfer Agent). Accepts SMTP on port 25, routes, queues.'
+            explanation: Mail-agent chain is MUA (user client like mutt) → MTA (relay like sendmail/postfix) → MDA (local delivery, procmail/dovecot) → mailbox. Sendmail is the classic MTA — accepts, queues, routes.
+            bloom: remember
           - type: name
             prompt: Which port does sendmail listen on?
             answer: '**25** (SMTP).'
+            explanation: TCP 25 is SMTP for server-to-server mail transfer (MTA to MTA). Modern submission from MUAs uses 587 with auth; 465 is SMTPS (TLS-wrapped).
+            bloom: remember
           - type: name
             prompt: Which file do you edit to configure sendmail — `sendmail.cf` or `sendmail.mc`?
             answer: '`sendmail.mc`. The `.cf` is generated from it by `m4` via `cd /etc/mail && make`.'
+            explanation: sendmail.cf is machine-generated rule-address dragon syntax — human-hostile. sendmail.mc is the m4 macro source you actually edit; `make` runs m4 to regenerate the .cf.
+            bloom: remember
           - type: name
             prompt: After editing `/etc/aliases`, what command must you run before changes take effect?
             answer: '`newaliases`. Rebuilds the hashed `/etc/aliases.db` that sendmail actually reads.'
+            explanation: sendmail reads the compiled hash db, not the plain text file, for O(1) alias lookup. `newaliases` is equivalent to `sendmail -bi` — rebuilds the db after edits.
+            bloom: remember
           - type: name
             prompt: Command to list messages currently queued by sendmail?
             answer: '`mailq` (equivalent to `sendmail -bp`). Queue lives in `/var/spool/mqueue/`.'
+            explanation: Messages sit in the queue while sendmail retries delivery (network down, remote MTA unreachable). `mailq` shows each message's ID, size, age, recipient, and the error that blocked delivery.
+            bloom: remember
           - type: name
             prompt: Sendmail is running but rejects external mail. Which line in `sendmail.mc` is the cause?
             answer: '`DAEMON_OPTIONS(\`Port=smtp,Addr=127.0.0.1, Name=MTA'')dnl` — `Addr=127.0.0.1` binds loopback only. Remove it, `make`, restart.'
+            explanation: "`Addr=127.0.0.1` tells sendmail to bind only on the loopback interface — external connections hit a closed port. Drop the Addr clause (or change to `0.0.0.0`) so it binds all interfaces."
+            bloom: remember
       - id: 4915-dns
         name: DNS
         tags:
           - networking
           - network
         prose: Daemon named. Package bind, tools in bind-utils (dig, host, nslookup).
+        source: "Mod08 Ch24; materials/labs/Lab3.pdf"
         cards:
+          - type: diagram
+            prompt: "Draw the DNS query resolution chain for `www.example.com` from a client that has an empty cache."
+            answer: |-
+              ```mermaid
+              graph LR
+                C["Client / stub resolver"] -->|"query www.example.com"| R["Recursive resolver (ISP)"]
+                R -->|"no cache: query '.'"| ROOT["Root server"]
+                ROOT -->|"refer to .com NS"| R
+                R -->|"query .com"| GTLD["gTLD .com server"]
+                GTLD -->|"refer to example.com NS"| R
+                R -->|"query example.com"| AUTH["Authoritative NS for example.com"]
+                AUTH -->|"A 93.184.216.34"| R
+                R -->|"cached answer"| C
+              ```
+              Resolver caches each step per its TTL so the next query skips re-walking the tree.
+            explanation: DNS resolution is iterative from the recursive resolver's perspective — it walks root → TLD → authoritative. The client just sends one recursive query and gets the final answer back. TTLs on each level determine how long the resolver caches that step.
+            source: "Mod08 Ch24; materials/labs/Lab3.pdf; research-mod07-08.md §DNS"
+            bloom: apply
           - type: name
             prompt: What does an A record map?
             answer: Hostname → IPv4 address.
+            explanation: A (Address) is the base record type — name to 32-bit IPv4 address. Exam scope is IPv4 only; AAAA (IPv6) is out of scope.
+            bloom: remember
           - type: name
             prompt: What's a CNAME record?
             answer: 'Alias: one hostname → another (canonical) hostname.'
+            explanation: "CNAME is an alias from one name to another — lookups follow the alias to find A records. Restriction: CNAME can't coexist with other records at the same name (no CNAME at zone apex)."
+            bloom: remember
           - type: name
             prompt: What's a PTR record?
             answer: 'Reverse DNS: IP → hostname.'
+            explanation: PTR records live in the `in-addr.arpa` zone — `1.2.3.4` reverses to `4.3.2.1.in-addr.arpa`. Used by mail servers for anti-spam (forward-confirmed reverse DNS) and by logs that want names not numbers.
+            bloom: remember
           - type: name
             prompt: What's an MX record?
             answer: Mail exchanger for the domain.
+            explanation: MX records have a priority (lower = preferred) and name of a mail server accepting mail for the domain. The sender's MTA looks up MX, tries the lowest priority first, falls back on failure.
+            bloom: remember
           - type: name
             prompt: Command to validate DNS zone files?
             answer: '`named-checkconf` (global config) and `named-checkzone zonename file` (per-zone).'
+            explanation: BIND ships syntax checkers so you don't restart named into a broken state. `named-checkconf` validates `/etc/named.conf`; `named-checkzone` validates a zone file's SOA and record syntax.
+            bloom: remember
       - id: 4915-iptables
         name: iptables
         tags:
           - networking
           - network
         prose: Kernel firewall. Packet walks through tables → chains → rules.
+        source: "Mod08 Ch25; materials/labs/Lab8.pdf"
         cards:
+          - type: diagram
+            prompt: "Draw the INPUT-chain traversal tree for a default-deny firewall with rules for loopback, ESTABLISHED, SSH from 10.0.0.0/8, and HTTP."
+            answer: |-
+              ```mermaid
+              graph TD
+                P["Incoming packet on INPUT chain"] --> R1{"Rule 1: -i lo -j ACCEPT"}
+                R1 -->|"match (loopback)"| A["ACCEPT"]
+                R1 -->|"no match"| R2{"Rule 2: --state RELATED,ESTABLISHED -j ACCEPT"}
+                R2 -->|"match (return traffic)"| A
+                R2 -->|"no match"| R3{"Rule 3: -p tcp --dport 22 -s 10.0.0.0/8 -j ACCEPT"}
+                R3 -->|"match (SSH from 10/8)"| A
+                R3 -->|"no match"| R4{"Rule 4: -p tcp --dport 80 -j ACCEPT"}
+                R4 -->|"match (HTTP)"| A
+                R4 -->|"no match"| POL["Default policy: DROP"]
+                POL --> D["DROP (silent discard)"]
+              ```
+              First match wins. If no rule matches, the chain's default policy fires.
+            explanation: iptables walks rules top-to-bottom. The first terminal target (ACCEPT, DROP, REJECT) ends the traversal. The default policy is only consulted when no rule matches — that's what makes default-deny work.
+            source: "Mod08 Ch25; materials/labs/Lab8.pdf; research-mod07-08.md §iptables"
+            bloom: apply
           - type: name
             prompt: Three iptables tables?
             answer: |-
               1. filter
               2. nat
               3. mangle
+            explanation: Each table has different chains and purposes. `filter` decides accept/drop; `nat` rewrites addresses for NAT; `mangle` modifies TOS/TTL/marks. Most firewalls only use `filter`.
+            bloom: remember
           - type: name
             prompt: Five chains (filter + nat)?
             answer: |-
@@ -596,78 +946,114 @@ modules:
               3. FORWARD (filter)
               4. PREROUTING (nat)
               5. POSTROUTING (nat)
+            explanation: INPUT hits packets destined to this host; OUTPUT hits packets originating here; FORWARD hits packets being routed through. NAT's PREROUTING rewrites dest addr on entry; POSTROUTING rewrites source addr on exit.
+            bloom: remember
           - type: name
             prompt: Write a rule to allow incoming TCP port 22 from 10.0.0.0/8.
             answer: '`iptables -A INPUT -p tcp --dport 22 -s 10.0.0.0/8 -j ACCEPT`.'
+            explanation: "`-A INPUT` appends to INPUT chain; `-p tcp` matches protocol; `--dport 22` matches destination port; `-s 10.0.0.0/8` matches source subnet; `-j ACCEPT` is the terminal target. Order matters — append before any DROP catchall."
+            example: "Paired with `iptables -P INPUT DROP` for default-deny. To make persistent: `iptables-save > /etc/iptables/rules.v4`."
+            bloom: apply
           - type: name
             prompt: Difference between DROP and REJECT targets?
             answer: DROP silently discards. REJECT sends ICMP error back to sender.
+            explanation: "DROP leaves the sender hanging until timeout — good for scan resistance. REJECT is immediate \"connection refused\" — better UX for legitimate clients but reveals the firewall's presence. Common: REJECT on LAN, DROP on WAN."
+            bloom: remember
       - id: 4915-apache
         name: Apache
         tags:
           - networking
           - network
         prose: Daemon httpd. Config /etc/httpd/conf/httpd.conf.
+        source: "Mod08 Ch26; materials/labs/Lab8.pdf"
         cards:
           - type: name
             prompt: Apache default DocumentRoot on RHEL/Fedora?
             answer: '`/var/www/html`.'
+            explanation: "DocumentRoot is the filesystem path Apache maps URL paths against. `/var/www/html/index.html` serves at `http://server/index.html` by default. Per-vhost DocumentRoot overrides the global."
+            bloom: remember
           - type: name
             prompt: Command to create a new Apache password file?
             answer: '`htpasswd -c /etc/httpd/passwd user`. Omit -c to add to existing.'
+            explanation: htpasswd hashes passwords into a flat file for HTTP Basic Auth. `-c` creates (overwrites!) the file; omit `-c` to add more users. Referenced by `AuthUserFile` directive in a <Location> block.
+            bloom: remember
           - type: name
             prompt: Command to list Apache VirtualHosts?
             answer: '`httpd -S`.'
+            explanation: "`httpd -S` (capital) dumps the resolved vhost config — which vhost handles which name/port. Useful to debug name-based vhost conflicts and default-server surprises."
+            bloom: remember
       - id: 4915-ssh
         name: SSH
         tags:
           - networking
           - sysadmin
         prose: 'ssh-keygen -t rsa -b 4096 # creates ~/.ssh/id_rsa (600) and id_rsa.pub ssh-copy-id user@remote # appends pubkey to remote ~/.ssh/authorized_keys (600) Perm rules (ssh refuses if too loose): ~/.ssh=700, private key=600, authorized_keys=600.'
+        source: "Mod06 Ch18; materials/labs/Lab6.pdf; materials/past-exams/midterm.md Q34"
         cards:
           - type: name
             prompt: Generate an RSA SSH key pair?
             answer: '`ssh-keygen -t rsa -b 4096`. Creates ~/.ssh/id\_rsa (600) and id\_rsa.pub.'
+            explanation: "`-t` selects algorithm (rsa, ed25519, ecdsa); `-b` is bit length (only meaningful for rsa). ed25519 is the modern default — fixed-size, faster, smaller. `-f path` picks a non-default filename."
+            example: "`ssh-keygen -t ed25519 -C 'work laptop'` — modern, commented key."
+            bloom: remember
           - type: name
             prompt: Deploy your public key to remote server?
             answer: '`ssh-copy-id user@remote`.'
+            explanation: "ssh-copy-id appends your pubkey to the remote's `~/.ssh/authorized_keys` with the right permissions (700 on ~/.ssh, 600 on authorized_keys). Manual equivalent is `cat ~/.ssh/id_rsa.pub | ssh user@remote 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'`."
+            bloom: remember
           - type: name
             prompt: Required permissions for ~/.ssh and authorized\_keys?
             answer: ~/.ssh=700, authorized\_keys=600. Private keys=600.
+            explanation: sshd refuses to authenticate if any of these files are group/world writable — it assumes someone may have tampered. Fix with `chmod 700 ~/.ssh && chmod 600 ~/.ssh/*`.
+            example: "Symptoms of bad perms: `Permission denied (publickey)` despite correct key. Check `/var/log/auth.log` on server."
+            bloom: remember
           - type: name
             prompt: Forward local port 8080 through bastion to internal:80?
             answer: '`ssh -L 8080:internal:80 user@bastion`.'
+            explanation: "`-L local_port:target_host:target_port user@gateway` opens a listener on your machine's 8080. Traffic is tunnel-encrypted to bastion, then bastion dials internal:80 in cleartext from its own network. `internal` is resolved on bastion, not your laptop."
+            example: "Visit `http://localhost:8080` in your browser to hit internal:80 through the tunnel."
+            bloom: remember
           - type: name
             prompt: 'Difference: -L vs -R in ssh?'
             answer: |-
               1. `-L` local forward (access remote service through local port)
               2. `-R` remote forward (expose local service on remote port)
+            explanation: "`-L` listens on *your* side, forwards to the remote network. `-R` listens on the *remote* side, forwards back to your network. Mnemonic: L = 'listen Local'; R = 'listen Remote'."
+            example: "`-L 8080:db:5432 bastion` → you connect to localhost:8080 → bastion → db:5432. `-R 9000:localhost:3000 bastion` → remote users on bastion connect to localhost:9000 → your laptop:3000."
+            bloom: remember
       - id: 4915-ftp
         name: FTP
         tags:
           - networking
           - sysadmin
         prose: Flashcards covering FTP.
+        source: "Mod06 Ch19; materials/labs/Lab6.pdf; materials/past-exams/midterm.md Q1"
         cards:
           - type: name
             prompt: Active vs passive FTP — who initiates data connection?
             answer: 'Active: server connects to client. Passive: client connects to server (firewall-friendly).'
+            explanation: "FTP uses two connections — control (port 21) and data. Active has the server dial back to the client's random port — breaks client-side firewalls/NAT. Passive flips this: client dials the server's random port. Passive is the modern default."
+            bloom: remember
       - id: 4915-hostname
         name: hostname
         tags:
           - networking
           - fundamentals
         prose: Flashcards covering hostname.
+        source: "Mod03 Ch8"
         cards:
           - type: name
             prompt: What does the `hostname` command do?
             answer: Displays the name of the machine you're currently logged into.
+            explanation: With no args, `hostname` prints the kernel's stored name. `hostname new-name` sets it (temporary — reset on reboot). Persistent name lives in `/etc/hostname` (modern) or via `hostnamectl set-hostname`.
+            bloom: remember
       - id: 4915-dhcp
         name: DHCP
         tags:
           - networking
           - network
         prose: Flashcards covering DHCP.
+        source: "Mod08 Ch24; Review Apr 17"
         cards:
           - type: name
             prompt: How does DHCP work, conceptually?
@@ -679,26 +1065,34 @@ modules:
               4. **Ack** — server acks
 
               Lease expires and renews.
+            explanation: DHCP uses UDP 67/68 with broadcast before the client has an IP. DORA is the 4-packet handshake. After the ACK, the client renews at 50% of lease lifetime to keep its address.
+            bloom: understand
       - id: 4915-dns-scope
         name: DNS scope
         tags:
           - networking
           - network
         prose: Daemon named. Package bind, tools in bind-utils (dig, host, nslookup).
+        source: "Review Apr 17 (IPv4 only — IPv6 out of scope)"
         cards:
           - type: name
             prompt: For DNS records on the exam, do you need IPv6?
             answer: '**No**. IPv4 only per instructor. Know A records, not AAAA.'
+            explanation: A records map hostnames to 32-bit IPv4 addresses; AAAA maps to 128-bit IPv6. The exam explicitly scopes to A, CNAME, PTR, MX — no AAAA.
+            bloom: remember
       - id: 4915-nfs-use
         name: NFS use
         tags:
           - networking
           - network
         prose: Linux-to-Linux file sharing. NOT for Windows (use Samba).
+        source: "Review Apr 17; Mod07 Ch22"
         cards:
           - type: name
             prompt: When is NFS safe to use?
             answer: Only **behind firewalls**. NFS has minimal authentication by default — exposing it on the internet is dangerous.
+            explanation: Classic NFS trusts the client's UID — anyone who can forge UIDs on your network can read/write as any user. Kerberos-backed NFSv4 fixes this but requires setup; default NFS assumes a trusted LAN.
+            bloom: remember
   - id: package-mgmt
     name: Package management & boot
     topics:
@@ -708,45 +1102,71 @@ modules:
           - boot
           - sysadmin
         prose: Flashcards covering Runlevels.
+        source: "Mod05 Ch10; materials/past-exams/midterm.md Q35"
         cards:
           - type: name
             prompt: Linux System V run level 3 — what does it do?
             answer: Enters multi-user text mode (full services, no GUI).
+            explanation: Runlevel 3 = default for servers. All network services start, users can log in on terminals and via SSH, but no display manager is launched. systemd's equivalent is `multi-user.target`.
+            bloom: remember
           - type: name
             prompt: Linux configured for graphics boot — which run level?
             answer: 5 (multi-user graphical).
+            explanation: "Runlevel 5 adds the display manager (gdm, lightdm, kdm) on top of runlevel 3 — full GUI login. systemd equivalent: `graphical.target`. Default for desktop distros."
+            bloom: remember
+          - type: predict
+            prompt: "System currently at runlevel 5. You run `systemctl isolate multi-user.target`. What happens immediately and what happens on next reboot?"
+            answer: "Immediate: GUI tears down, you land at text console (runlevel 3 equivalent). Reboot: boots back to runlevel 5 — `isolate` doesn't change the default."
+            explanation: "`isolate` switches the current runlevel live without touching the default. To persist, use `systemctl set-default multi-user.target` — that edits the `default.target` symlink read at boot."
+            example: "To make the text-mode switch permanent: `systemctl set-default multi-user.target && systemctl isolate multi-user.target`."
+            source: "Mod05 Ch10; materials/past-exams/midterm.md Q35"
+            bloom: apply
           - type: name
             prompt: Run level 0?
             answer: Halt / power off.
+            explanation: Runlevel 0 triggers shutdown — stops services in reverse order, unmounts filesystems, powers off. `shutdown -h now` or `poweroff` both end at runlevel 0.
+            bloom: remember
           - type: name
             prompt: Run level 6?
             answer: Reboot.
+            explanation: Runlevel 6 = shutdown + restart. `reboot` and `shutdown -r now` both trigger it. `systemctl reboot` is the systemd equivalent.
+            bloom: remember
       - id: 4915-boot
         name: Boot
         tags:
           - boot
           - sysadmin
         prose: BIOS POST → MBR/GRUB → kernel → init/systemd (PID 1) → /etc/rc.d/rc.sysinit (mount /proc, swap on, fsck+mount fstab) → rc N (execute /etc/rc.d/rcN.d/Kxx* stop scripts, then Sxx* start) → login.
+        source: "Mod05 Ch10-11"
         cards:
           - type: name
             prompt: First program run when Linux is booting (PID 1)?
             answer: '`init` (or `systemd` on modern distros).'
+            explanation: The kernel hands off to PID 1 after hardware init. PID 1 is the ancestor of every other process — if it dies, the kernel panics. Traditionally SysV init; modern distros use systemd.
+            bloom: remember
           - type: name
             prompt: First place to look for a Linux daemon executable?
             answer: '`/usr` (specifically /usr/sbin for system daemons; /sbin for rescue-essential).'
+            explanation: "/sbin = essential binaries needed for boot and rescue; /usr/sbin = post-/usr-mount system binaries (most daemons). /bin and /usr/bin are for user commands. Modern distros increasingly merge these via symlinks."
+            bloom: remember
           - type: name
             prompt: What is `init`?
             answer: 'First user-space process (PID 1), started by kernel at boot. Modern systems: systemd.'
+            explanation: PID 1's job is to start all other services per the runlevel/target config, reap orphaned processes, and handle shutdown. systemd extends this with parallel startup, cgroup tracking, and socket activation.
+            bloom: remember
       - id: 4915-pam
         name: PAM
         tags:
           - auth
           - sysadmin
         prose: Flashcards covering PAM.
+        source: "Mod05 Ch11"
         cards:
           - type: name
             prompt: What is Linux-PAM?
             answer: Pluggable Authentication Modules — modular authentication system configurable per-service in /etc/pam.d/ without recompiling apps.
+            explanation: PAM lets you change auth policy (passwords, 2FA, LDAP, Kerberos) without touching each app. Each service (login, sshd, sudo) gets a config file listing modules to stack for auth, account, password, session management.
+            bloom: remember
   - id: kubernetes
     name: Kubernetes & containers
     topics:
@@ -755,28 +1175,44 @@ modules:
         tags:
           - kubernetes
         prose: Flashcards covering K8s.
+        source: "Mod10A; materials/past-exams/comp4915_quiz4.md"
         cards:
           - type: name
             prompt: Agent on K8s nodes that implements control-plane commands?
             answer: '`kubelet`.'
+            explanation: kubelet is the node agent — it watches the API server for pod specs assigned to its node, invokes the container runtime via CRI to start containers, and reports status back. Every node runs one kubelet. (research-mod10ce-review.md §Kubelet)
+            example: "`systemctl status kubelet` on a node — if kubelet is down, the node shows `NotReady` in `kubectl get nodes`."
+            bloom: remember
           - type: name
             prompt: Executable image format used in Kubernetes?
             answer: '`OCI` (Open Container Initiative).'
+            explanation: OCI standardized the image format and runtime spec across Docker, containerd, CRI-O. K8s doesn't build images — it pulls OCI-compliant images from registries and hands them to the CRI runtime on each node.
+            bloom: remember
           - type: name
             prompt: Most common way to run a K8s app?
             answer: '`Deployment`.'
+            explanation: Deployment wraps ReplicaSet and adds rolling update + rollback semantics. You declare desired pod count and template; the controller reconciles to match. Quiz 4 Q4 keyed answer.
+            bloom: remember
           - type: name
             prompt: What does Kubernetes use to *maintain* its state? (Quiz 4 Q5 wording — etcd is NOT in the options)
             answer: '`kube-controller-manager` — the keyed Quiz 4 answer. The manager runs reconcile loops that drive actual state toward desired state.'
+            explanation: controller-manager runs the reconcile loops (Deployment controller, ReplicaSet controller, Node controller, Job controller, etc.). Each loop watches API server for spec changes and drives the cluster to match.
+            bloom: remember
           - type: name
             prompt: Raw state *data* for a K8s cluster is persisted where?
             answer: '`etcd` — distributed key-value store. Distinct from Quiz 4 Q5, which asks what *maintains* state (controller-manager).'
+            explanation: etcd stores every K8s object (pods, deployments, services, secrets) as key-value pairs. apiserver is the only component that reads/writes etcd directly — all other components go through apiserver. (research-mod10ce-review.md §Control Plane)
+            bloom: remember
           - type: name
             prompt: YAML section specifying container image?
             answer: '`spec`.'
+            explanation: "K8s YAML has four top-level keys: apiVersion, kind, metadata, spec. `spec` holds the desired state (container image, ports, env, volumes, replicas, etc.). `status` is read-only, written by controllers."
+            bloom: remember
           - type: name
             prompt: K8s object running one pod on every node?
             answer: '`DaemonSet`.'
+            explanation: DaemonSet ensures exactly one pod per (selected) node — used for node-level agents (log collectors, CNI pods, monitoring). When a node joins, its pod is auto-created; when a node leaves, its pod is removed.
+            bloom: remember
           - type: name
             prompt: What happens when a K8s node fails?
             answer: |-
@@ -785,23 +1221,35 @@ modules:
               2. New pods not scheduled there
               3. Existing pods scheduled for deletion
               4. Pods rescheduled to other nodes
+            explanation: Node controller watches kubelet heartbeats. After `node-monitor-grace-period` (default 40s), node is marked NotReady. After `pod-eviction-timeout` (default 5m), pods on that node are evicted; Deployments/ReplicaSets recreate them elsewhere.
+            bloom: apply
           - type: name
             prompt: Reason for the pause container?
             answer: Helps set up Linux namespaces and cgroups for a pod — holds namespaces open so other containers can join them.
+            explanation: The pause container is a 1-process "infrastructure" container that sleeps forever, owning the pod's shared namespaces (NET, IPC, UTS). Other containers in the pod join those namespaces. Killing pause tears down the pod's network identity.
+            example: "`docker ps` on a K8s node shows one k8s.gcr.io/pause container per running pod — these are the namespace holders."
+            bloom: remember
           - type: name
             prompt: K8s component that *stores* raw cluster state data?
             answer: '`etcd`. (Contrast: `kube-controller-manager` *maintains* state via reconcile loops — Quiz 4 Q5.)'
+            explanation: etcd is the source of truth — a Raft-replicated key-value store. Lose etcd, you lose the cluster. controller-manager is the thing that *acts on* changes in etcd; etcd just persists them.
+            bloom: remember
           - type: name
             prompt: K8s object that runs a task to completion?
             answer: '`Job` (CronJob for scheduled).'
+            explanation: Job tracks batch workloads — pod runs until exit 0, marked complete. Unlike Deployment which keeps pods alive indefinitely. CronJob is a Job that spawns on a schedule.
+            bloom: remember
           - type: name
             prompt: What is a Deployment vs ReplicaSet?
             answer: Deployment manages ReplicaSets + adds rolling-update/rollback. You generally create Deployments, not ReplicaSets directly.
+            explanation: A Deployment creates a new ReplicaSet per image/spec change, ramps up new pods and down old pods for a rolling update, and keeps old ReplicaSets around for rollback. ReplicaSet alone just keeps N pods alive.
+            bloom: remember
       - id: 4915-namespaces
         name: Namespaces
         tags:
           - kubernetes
         prose: Kernel mechanism to hide resources from processes outside the namespace. K8s pods and containers are built on these.
+        source: "Mod10C; materials/labs/Lab10.pdf"
         cards:
           - type: name
             prompt: Name the 8 Linux namespace types.
@@ -814,78 +1262,117 @@ modules:
               6. USER
               7. CGROUP
               8. TIME
+            explanation: Each namespace virtualizes a specific kernel resource — PID (process IDs), NET (network stack), MNT (mount tree), UTS (hostname/domain), IPC (SysV IPC + POSIX msg queues), USER (UID/GID maps), CGROUP (cgroup root), TIME (monotonic/boottime clocks). Containers combine several.
+            bloom: remember
           - type: name
             prompt: What does the NET namespace isolate?
             answer: 'Network stack: interfaces, routing tables, iptables rules, sockets.'
+            explanation: Each NET namespace has its own loopback, its own interface list, its own routes, its own firewall. Pods in K8s share one NET namespace across all containers via the pause container — that's why multi-container pods can talk on localhost.
+            bloom: remember
           - type: name
             prompt: What does the UTS namespace isolate?
             answer: Hostname and NIS domain.
+            explanation: UTS = Unix Time-sharing System (historical). The namespace isolates `hostname` and `domainname` so each container can set its own without affecting the host.
+            bloom: remember
           - type: name
             prompt: Command to create new namespaces?
             answer: '`unshare`. Example: `unshare --pid --net bash`.'
+            explanation: "`unshare` forks a process into fresh namespaces of the requested types. Useful for ad-hoc container-like isolation from the CLI. Requires privileges for most namespace types (USER namespace is usually unprivileged)."
+            example: "`sudo unshare --uts bash; hostname container1; exit` — changes only the shell's hostname, host hostname unchanged."
+            bloom: remember
           - type: name
             prompt: Command to enter existing namespaces of a PID?
             answer: '`nsenter -t PID -p -n -m`.'
+            explanation: "nsenter joins an existing process's namespaces — `-t PID` target, then flag per type (`-p` pid, `-n` net, `-m` mount, `-u` uts, `-i` ipc). Classic use: debug inside a container from the host."
+            bloom: remember
       - id: 4915-cgroups
         name: cgroups
         tags:
           - kubernetes
         prose: cgroups (Control Groups) = kernel feature to LIMIT and ACCOUNT resource usage (CPU, memory, I/O, pids). Namespaces isolate; cgroups meter.
+        source: "Mod10D; materials/labs/Lab10.pdf"
         cards:
           - type: name
             prompt: What do cgroups do?
             answer: Limit, account, and isolate resource usage (CPU, memory, I/O, pids).
+            explanation: cgroups is the kernel's accounting and throttling layer. Namespaces make things look isolated; cgroups enforce how much CPU/RAM/IO/pids a group of processes can use. K8s uses cgroups to enforce pod resource limits. (research-mod10ce-review.md §cgroups)
+            example: "kubelet sets pod cgroup `memory.limit_in_bytes` from the pod spec's `resources.limits.memory`. Exceed it → OOMKilled."
+            bloom: remember
           - type: name
             prompt: cgroups v1 vs v2 structure?
             answer: 'v1: separate hierarchy per subsystem (cpu, memory, etc.). v2: unified hierarchy — single tree.'
+            explanation: v1 mounted each controller (cpu, memory, blkio) at its own hierarchy in `/sys/fs/cgroup/<controller>/`. v2 unifies everything under one tree, simpler semantics. Most modern distros are v2; RHEL 7/8 still use v1.
+            bloom: remember
       - id: 4915-qos
         name: QoS
         tags:
           - kubernetes
         prose: cgroups (Control Groups) = kernel feature to LIMIT and ACCOUNT resource usage (CPU, memory, I/O, pids). Namespaces isolate; cgroups meter.
+        source: "Mod10D; materials/past-exams/comp4915_quiz4.md"
         cards:
           - type: name
             prompt: Pod with requests=limits for CPU and memory — QoS class?
             answer: '`Guaranteed`. Last evicted under pressure.'
+            explanation: Guaranteed requires every container in the pod to set BOTH requests and limits for BOTH cpu and memory, AND requests == limits for each. Any slip → Burstable. kubelet derives the class from the spec; you can't set it directly.
+            example: "```yaml\nresources:\n  requests: { cpu: 500m, memory: 256Mi }\n  limits:   { cpu: 500m, memory: 256Mi }\n```"
+            bloom: remember
           - type: name
             prompt: Pod with no requests and no limits — QoS class?
             answer: '`BestEffort`. First evicted under memory pressure.'
+            explanation: BestEffort pods are unlimited and unreserved — they can use any slack, but they're first on the chopping block when the node runs low. Use only for truly expendable workloads.
+            bloom: remember
           - type: name
             prompt: Pod with some requests/limits but not matching — QoS class?
             answer: '`Burstable`. Evicted after BestEffort but before Guaranteed.'
+            explanation: "Burstable is the fallback — any resource spec that doesn't qualify as Guaranteed or BestEffort lands here. Common case: set requests low to pack nodes densely, limits high to allow bursting."
+            example: "```yaml\nresources:\n  requests: { cpu: 100m, memory: 128Mi }\n  limits:   { cpu: 500m, memory: 256Mi }\n```"
+            bloom: remember
       - id: 4915-cni
         name: CNI
         tags:
           - kubernetes
         prose: CNI = Container Network Interface. Plugin spec for configuring pod network.
+        source: "Mod10E; materials/labs/Lab10.pdf"
         cards:
           - type: name
             prompt: What does CNI stand for?
             answer: Container Network Interface. Plugin spec for wiring pods to networks.
+            explanation: CNI is the pluggable layer K8s (and others) use to set up pod networking. kubelet invokes the CNI plugin at pod start — plugin creates veth pair, assigns pod IP, sets up routes. Different plugins (Calico, Cilium, Flannel) implement different models.
+            bloom: remember
           - type: name
             prompt: Which CNI uses BGP L3 routing by default?
             answer: '`Calico` (can also run IPIP/VXLAN overlay when BGP isn''t viable).'
+            explanation: Calico treats each node as a BGP router and advertises pod CIDRs — no encapsulation overhead when the network supports BGP peering. Falls back to IPIP/VXLAN overlay on networks that can't route pod IPs natively.
+            bloom: remember
           - type: name
             prompt: Which CNI uses eBPF?
             answer: '`Cilium`.'
+            explanation: Cilium pushes networking and security policy into the kernel via eBPF programs — bypasses iptables for L3/L4 forwarding and supports rich L7 policy. Faster and more observable at scale.
+            bloom: remember
       - id: 4915-k8s-services
         name: K8s Services
         tags:
           - kubernetes
           - editor
         prose: Flashcards covering K8s Services.
+        source: "Mod10A"
         cards:
           - type: name
             prompt: Default K8s Service type?
             answer: '`ClusterIP` — internal only.'
+            explanation: "ClusterIP allocates a virtual IP reachable only inside the cluster. kube-proxy on each node installs iptables/IPVS rules that DNAT ClusterIP:port to one of the healthy backend pod IPs."
+            bloom: remember
           - type: name
             prompt: Service type exposing on every node's IP:port?
             answer: '`NodePort` (30000-32767).'
+            explanation: NodePort opens a port on every node (default range 30000-32767) that forwards to the Service's ClusterIP. Useful for exposing without a cloud LB; LoadBalancer builds on NodePort by provisioning an external LB.
+            bloom: remember
       - id: 4915-k8s-yaml
         name: K8s YAML
         tags:
           - kubernetes
         prose: Flashcards covering K8s YAML.
+        source: "Mod10C; materials/labs/Lab9.pdf"
         cards:
           - type: name
             prompt: Four top-level keys in a Pod YAML?
@@ -894,34 +1381,61 @@ modules:
               2. `kind`
               3. `metadata`
               4. `spec`
+            explanation: apiVersion pins the API schema (e.g., `v1`, `apps/v1`); kind names the object type (Pod, Deployment); metadata holds name/namespace/labels; spec holds desired state. Every K8s object follows this shape.
+            bloom: remember
       - id: 4915-k8s-probes
         name: K8s probes
         tags:
           - kubernetes
         prose: Flashcards covering K8s probes.
+        source: "Mod10A"
         cards:
           - type: name
             prompt: Difference between readiness and liveness probe?
             answer: 'Readiness: is pod ready for traffic? Failure removes from Service endpoints. Liveness: is pod still alive? Failure restarts container.'
+            explanation: Readiness gates traffic flow — a warming pod stays in the Service but fails readiness until it's ready. Liveness catches deadlocks — a stuck process is restarted even if the TCP port is open. Different failure modes need different probes.
+            bloom: remember
       - id: 4915-k8s-dns
         name: K8s DNS
         tags:
           - networking
           - kubernetes
         prose: Flashcards covering K8s DNS.
+        source: "Mod10A, Mod08 Ch24"
         cards:
           - type: name
             prompt: Cluster DNS addon name?
             answer: '`CoreDNS`.'
+            explanation: CoreDNS is the default cluster DNS since K8s 1.13 (replaced kube-dns). Pods get `/etc/resolv.conf` pointing at CoreDNS ClusterIP; names like `svc-name.namespace.svc.cluster.local` resolve to service ClusterIPs.
+            bloom: remember
       - id: 4915-container
         name: Container
         tags:
           - kubernetes
         prose: Pod = smallest deployable K8s unit. 1+ containers sharing NET, IPC, UTS namespaces + storage volumes.
+        source: "Mod10A-B; Review Apr 17"
         cards:
+          - type: diagram
+            prompt: "Draw how the pause container shares namespaces with app containers in a pod."
+            answer: |-
+              ```mermaid
+              graph TD
+                POD["Pod (sandbox)"] --> PAUSE["pause container (PID 1 in pod)<br/>owns NET, IPC, UTS namespaces"]
+                PAUSE -.->|"namespaces joined by"| APP1["app container 1<br/>joins pause's NET/IPC/UTS"]
+                PAUSE -.->|"namespaces joined by"| APP2["app container 2<br/>joins pause's NET/IPC/UTS"]
+                APP1 -->|"localhost:port"| APP2
+                APP1 -->|"shared volume"| VOL["Volume (mounted in both)"]
+                APP2 -->|"shared volume"| VOL
+              ```
+              pause holds NET/IPC/UTS open; kill pause and the pod loses its identity.
+            explanation: The pause container is the pod's namespace owner. Every app container joins pause's network, IPC, and UTS namespaces — that's why containers in the same pod reach each other on localhost and share a hostname. MNT and PID are per-container by default; volumes add shared storage on top. (research-mod10ce-review.md §Pod)
+            source: "research-mod10ce-review.md §Pod; Mod10A-B"
+            bloom: apply
           - type: name
             prompt: What is a container image?
             answer: 'Layered read-only template for a container: filesystem snapshot + metadata (entrypoint, env, labels). OCI-standard. Pulled from registry, run as container with a writable layer on top.'
+            explanation: An image is a stack of read-only layers + a JSON manifest describing how to run it. At runtime, the container runtime (containerd, CRI-O) adds a writable top layer (copy-on-write) so the running container can modify its filesystem without mutating the image.
+            bloom: remember
   - id: scripting
     name: Bash scripting & regex
     topics:
@@ -930,30 +1444,50 @@ modules:
         tags:
           - shell
         prose: Process substitution &lt;(cmd), &gt;(cmd) is a bash feature beyond basic 7.
+        source: "Mod04 Ch9; materials/past-exams/midterm.md Q31, Q59, Q60"
         cards:
           - type: name
             prompt: Which var refers to the entire argument list?
             answer: '`$@` (also `$*`, but they differ when quoted).'
+            explanation: "`$@` and `$*` both hold all positional args. Quoted behavior differs: `\"$@\"` gives N separate words; `\"$*\"` joins into one string (IFS-separated). In functions, always prefer `\"$@\"`."
+            example: "`set -- 'a b' c; for x in \"$@\"; do echo [$x]; done` → `[a b]` and `[c]`."
+            bloom: remember
           - type: name
             prompt: What is `$?`?
             answer: Exit status of last command. 0=success, non-zero=error.
+            explanation: "`$?` is set after every foreground command. Use it for conditional flow: `cmd; if [ $? -ne 0 ]; then ...`. Or let `&&`/`||` short-circuit on it directly."
+            example: "`grep foo file; echo $?` → `0` if found, `1` if not, `2` on error."
+            bloom: remember
           - type: name
             prompt: What is `$$`?
             answer: PID of the current shell.
+            explanation: "Useful for making unique temp filenames: `/tmp/myscript.$$`. Note that `$$` in a subshell still yields the *parent* shell's PID (only explicit subshell via `$BASHPID` differs)."
+            example: "`tmp=/tmp/work.$$ && trap 'rm -f $tmp' EXIT` — unique file per script invocation, auto-cleaned."
+            bloom: remember
           - type: name
             prompt: What is `$!`?
             answer: PID of the most recent background command.
+            explanation: "Captured right after `&` so you can wait on or signal that job later. Useful for launching parallel work in shell: `task1 & PID1=$!; task2 & PID2=$!; wait $PID1 $PID2`."
+            example: "`long_task & echo 'Started as PID' $!` — prints the PID so you can monitor."
+            bloom: remember
           - type: name
             prompt: Difference between `"$@"` and `"$*"`?
             answer: '`"$@"` expands to separate words per arg. `"$*"` joins all args into one string (separated by first IFS char).'
+            explanation: "`\"$@\"` = `\"$1\" \"$2\" \"$3\"` — N tokens. `\"$*\"` = `\"$1c$2c$3\"` where c is first char of IFS — one token. The distinction matters when passing args into another command without losing whitespace inside any single arg."
+            example: "`set -- 'hi there' bye; printf '[%s]\\n' \"$@\"` → `[hi there]\\n[bye]`. `printf '[%s]\\n' \"$*\"` → `[hi there bye]`."
+            bloom: remember
           - type: name
             prompt: Which var holds count of positional arguments?
             answer: '`$#`.'
+            explanation: "Handy for argument checking: `[ $# -lt 2 ] && { echo usage; exit 1; }`. `$0` is the script name (not counted in `$#`); `$1..$N` are the args themselves."
+            example: "`myscript a b c` → inside, `$#` = 3."
+            bloom: remember
       - id: 4915-expansions
         name: Expansions
         tags:
           - shell
         prose: Process substitution &lt;(cmd), &gt;(cmd) is a bash feature beyond basic 7.
+        source: "Mod04 Ch9; Review Apr 17"
         cards:
           - type: name
             prompt: In order, name the 7 shell expansions.
@@ -965,15 +1499,21 @@ modules:
               5. Command
               6. Word splitting
               7. Pathname (glob)
+            explanation: Order matters — brace happens BEFORE parameter, so `{$HOME,$USER}` produces two unexpanded strings, then parameter expands each. Word splitting and pathname fire last, on already-expanded text. Quotes suppress everything from step 6 onward.
+            bloom: remember
           - type: name
             prompt: Output of `echo {$HOME,$USER}` given HOME=/home/u, USER=u?
             answer: '`/home/u u`. Brace happens BEFORE variable expansion, so braces generate literal `$HOME $USER` first, then those expand.'
+            explanation: "Brace expansion (step 1) produces the two strings `$HOME` and `$USER` from the literal braces. Parameter expansion (step 3) then replaces each `$X` with its value. Order: brace → tilde → parameter."
+            example: "Try `echo {1..3}-v` → `1-v 2-v 3-v`. Brace expansion happens before anything else and doesn't see variables."
+            bloom: apply
       - id: 4915-function-precedence
         name: Function precedence
         tags:
           - scripting
           - shell
-        prose: 'Instructor said this explicitly: exam WILL have you write a C function.'
+        prose: Bash resolves a name in a fixed order (alias → keyword → function → builtin → $PATH); knowing the order lets you predict which definition wins when multiple exist.
+        source: "Mod04 Ch9"
         cards:
           - type: name
             prompt: Order of bash name resolution?
@@ -983,104 +1523,144 @@ modules:
               3. Function
               4. Builtin
               5. $PATH
+            explanation: Bash checks aliases first (pre-parse), then shell keywords (if, for, while), then functions, then builtins (echo, cd, type), then scans $PATH for external binaries. `type name` tells you which one wins.
+            bloom: remember
           - type: name
             prompt: How to bypass alias/function and use builtin?
             answer: '`builtin name`. Or use full path for external.'
+            explanation: "`builtin cd /tmp` skips any alias/function named `cd` and calls the shell builtin directly. `command` is similar but allows external; `\\cmd` bypasses aliases only."
+            example: "Override with a function, then `builtin cd` still works: `cd() { echo pre; builtin cd \"$@\"; }`."
+            bloom: remember
       - id: 4915-bash-scripting
         name: Bash scripting
         tags:
           - scripting
           - shell
-        prose: 'Instructor said this explicitly: exam WILL have you write a C function.'
+        prose: Bash scripts assemble a shebang, comments, file-test operators, and exit status into runnable programs — this is the form the exam's short/essay questions expect you to produce.
+        source: "Mod09 Ch28; materials/labs/Lab9.pdf"
         cards:
           - type: name
             prompt: Which bash file test returns true if file exists?
             answer: '`-e`.'
+            explanation: "`[ -e path ]` is true for any existing filesystem entry (file, dir, socket, symlink target). Use `-f` specifically for regular files, `-d` for directories. Inside `[[ ]]` works the same."
+            example: "`if [ -e /etc/hosts ]; then echo yes; fi`."
+            bloom: remember
           - type: name
             prompt: Which bash file test returns true if it's a directory?
             answer: '`-d`.'
+            explanation: "`[ -d path ]` matches type 'directory' specifically — false for regular files, symlinks to non-dir targets, etc. Pair with `-L` to detect symlinks: `-L ... -d` for symlink-to-dir."
+            bloom: remember
           - type: name
             prompt: Comment character in bash?
             answer: '`#`. Rest of line ignored.'
+            explanation: "`#` starts a comment until end-of-line (except inside strings). The shebang `#!/bin/bash` uses it too — the kernel's magic-number check sees `#!` and interprets the rest as the interpreter path."
+            bloom: remember
+          - type: predict
+            prompt: "Bash function `psgrep() { ps aux | grep -v grep | grep \"$@\"; }`. You call `psgrep 'ng inx'`. Will it work? What if you wrote `grep $@` without quotes?"
+            answer: "Works. `\"$@\"` passes `ng inx` as one argument to grep. Without quotes, `$@` word-splits → grep sees two args (`ng` and `inx`), treating `ng` as pattern and `inx` as filename → `inx: No such file or directory`."
+            explanation: "Quoted `\"$@\"` preserves each argument verbatim — a single arg stays single even with whitespace. Unquoted `$@` undergoes word splitting via IFS, destroying whitespace boundaries. This is the #1 bash-function bug on the exam."
+            example: "`f() { echo \"$@\"; echo $@; }; f 'a  b' c` → first line `a  b c`, second line `a b c` (double space collapsed)."
+            source: "Mod09 Ch28; materials/labs/Lab9.pdf; materials/past-exams/midterm.md Q60"
+            bloom: apply
           - type: name
             prompt: Which exit status indicates success in bash?
             answer: '`0`.'
+            explanation: "0 = success by convention; 1-255 = error codes. `&&` runs the next command only on 0; `||` runs on non-zero. Outside 0-255 is not representable — shells truncate to 8 bits."
+            bloom: remember
           - type: name
             prompt: Which builtin reads and executes another script in current shell?
             answer: '`source` (or `.`). (Not exec — exec replaces the shell process.)'
+            explanation: "`source file` executes file's lines in the *current* shell — variables and functions persist. Running `./file` forks a subshell; changes there don't leak back. Use source for config files (bashrc, .env style)."
+            example: "`source ~/.bashrc` reloads aliases into your current shell after edits."
+            bloom: remember
           - type: name
             prompt: 'Which is NOT a valid Linux/Unix shell: sh, tcsh, ksh, bash, jsh?'
             answer: '`jsh` (not a standard shell).'
+            explanation: "sh = Bourne shell; bash = Bourne-Again SHell; ksh = Korn shell; tcsh = TENEX csh. `jsh` isn't a real Unix shell — distractor."
+            bloom: remember
           - type: name
             prompt: What must be done before a shell script runs by name alone?
             answer: Change permissions to include executable — `chmod +x script`.
-      - id: 4915-bash-vs-c
-        name: Bash vs C
-        tags:
-          - scripting
-          - shell
-        prose: 'Instructor said this explicitly: exam WILL have you write a C function.'
-        cards:
-          - type: name
-            prompt: Key difference between bash and C function definitions?
-            answer: '**C has formal parameters in the signature** (`int add(int a, int b)`). **Bash does NOT** — args accessed via `$1, $2, "$@"`.'
+            explanation: "Files are created without execute bit by default (666 & umask). Without `+x`, the kernel refuses to exec; `./script` fails with `Permission denied`. Alternative: invoke interpreter directly: `bash script`."
+            example: "`chmod +x deploy.sh && ./deploy.sh`."
+            bloom: remember
       - id: 4915-startup-files
         name: Startup files
         tags:
           - archives
           - shell
         prose: Flashcards covering Startup files.
+        source: "Mod04 Ch9, Mod05 Ch11"
         cards:
           - type: name
             prompt: Login shell startup file order?
             answer: '`/etc/profile` → then first existing of `~/.bash_profile`, `~/.bash_login`, `~/.profile`.'
+            explanation: "Bash reads `/etc/profile` first for system-wide login settings, then the first existing of the three user files (stops after first hit). Common pattern: `~/.bash_profile` sources `~/.bashrc` so interactive settings apply to login shells too."
+            bloom: remember
           - type: name
             prompt: Non-login interactive shell startup file?
             answer: '`~/.bashrc`.'
+            explanation: Opened for every interactive subshell (new terminal tab, `bash` inside a script). This is where aliases, prompt, and most user-facing config go — not `~/.bash_profile`, which only runs on login.
+            bloom: remember
       - id: 4915-export
         name: Export
         tags:
           - shell
         prose: Flashcards covering Export.
+        source: "Mod04 Ch9"
         cards:
           - type: name
             prompt: Purpose of `export VAR=value`?
             answer: Make VAR available to child processes (environment variable). Plain `VAR=x` is local to current shell.
+            explanation: Exported variables go into the environment passed to child processes via execve(2). Non-exported variables stay in the shell's own variable table — child processes can't see them.
+            example: "`X=hi bash -c 'echo $X'` → blank (X not exported). `export X=hi; bash -c 'echo $X'` → `hi`."
+            bloom: understand
       - id: 4915-shell-startup
         name: Shell startup
         tags:
           - shell
           - archives
         prose: Process substitution &lt;(cmd), &gt;(cmd) is a bash feature beyond basic 7.
+        source: "Mod04 Ch9"
         cards:
           - type: name
             prompt: Which file is sourced for login shells system-wide?
             answer: '`/etc/profile`.'
+            explanation: "`/etc/profile` is the system's global login-shell config — typically sets PATH, `umask`, and sources fragments from `/etc/profile.d/*.sh`. Applies to every user on login."
+            bloom: remember
       - id: 4915-vs
         name: $* vs $@
         tags:
           - shell
         prose: Flashcards covering $* vs $@.
+        source: "Mod04 Ch9; materials/past-exams/midterm.md Q59, Q60"
         cards:
           - type: name
             prompt: Quoted `"$*"` vs `"$@"` — difference with example?
             answer: 'Given `set -- ''one two'' ''three''`: `"$@"` expands to 2 separate words `one two` and `three`. `"$*"` joins into one string `one two three`. Use `"$@"` in functions.'
+            explanation: "`\"$@\"` preserves argument boundaries — each arg stays a separate token. `\"$*\"` flattens them into a single string joined by IFS[0] (default space). Inside a function forwarding args to another command, always `\"$@\"`."
+            example: "`f() { printf '[%s]\\n' \"$@\"; }; f 'a b' c` → `[a b]` then `[c]`."
+            bloom: remember
       - id: 4915-bash-recognize
         name: Bash recognize
         tags:
           - scripting
           - shell
-        prose: 'Instructor said this explicitly: exam WILL have you write a C function.'
+        prose: Bash (Bourne-Again Shell) extends POSIX sh with arrays, [[ ]] test, brace expansion, and process substitution — these features are what let you recognize a bash-specific script on the exam.
+        source: "Mod04 Ch9"
         cards:
           - type: name
             prompt: Features identifying bash specifically (vs sh)?
             answer: Bourne Again Shell. Supports arrays, `[[ ]]`, brace expansion, process substitution `<(...)`, `${var:-default}` param expansion beyond POSIX sh.
+            explanation: "`[[ ]]` is bash-specific (POSIX has only `[ ]`); arrays `arr=(a b c)` and `${arr[i]}` are bash; process substitution `<(cmd)` and `>(cmd)` is bash. Seeing any of these → script requires bash, not plain sh."
+            bloom: remember
       - id: 4915-flow-control
         name: Flow control
         tags:
           - scripting
           - shell
         prose: Flashcards covering Flow control.
+        source: "Mod09 Ch28; Review Apr 17"
         cards:
           - type: name
             prompt: Bash flow control constructs?
@@ -1090,16 +1670,21 @@ modules:
               3. `while cond; do ... done`
               4. `until cond; do ... done`
               5. `case word in pattern) ... ;; esac`
+            explanation: Every bash control construct closes with its reversed keyword (if/fi, case/esac, do/done). `case` patterns use glob syntax, not regex. `[[ -cond ]]` is the modern test operator.
+            bloom: remember
       - id: 4915-perl
         name: Perl
         tags:
           - scripting
           - shell
         prose: Flashcards covering Perl.
+        source: "Review Apr 17 (explicitly out of scope)"
         cards:
           - type: name
             prompt: Is Perl on the exam?
             answer: No. Instructor explicitly said perl is not tested.
+            explanation: The course teaches bash scripting for the exam. Perl appears historically as the "swiss army chainsaw" of Unix scripting but isn't in the assessed skill set.
+            bloom: remember
   - id: misc
     name: Misc / editors / misc topics
     topics:
@@ -1108,24 +1693,34 @@ modules:
         tags:
           - fundamentals
         prose: Kernel mechanism to hide resources from processes outside the namespace. K8s pods and containers are built on these.
+        source: "Mod01 Ch1"
         cards:
           - type: name
             prompt: Who started Linux and when?
             answer: Linus Torvalds, 1991. Kernel 1.0 released 1994.
+            explanation: Torvalds posted his "just a hobby, won't be big and professional like gnu" Usenet note in August 1991. The kernel grew into production-ready by 1.0 (1994). Distributions bundle kernel + GNU userland + package manager.
+            bloom: remember
           - type: name
             prompt: Why was UNIX rewritten in C in 1973?
             answer: Portability. Assembly ties code to one CPU; C compiles on any architecture.
+            explanation: Before 1973, UNIX was PDP-11 assembly only. Rewriting in C meant a working C compiler on a new CPU ports the entire OS — the single biggest reason UNIX spread across vendors and architectures.
+            bloom: understand
           - type: name
             prompt: What Linux command displays the system manual?
             answer: '`man`. (Not disp, info, sysman.)'
+            explanation: "`man` opens the manpage for a command in a pager. Sections: 1 user cmds, 2 syscalls, 3 library funcs, 5 file formats, 8 admin cmds. Search with `man -k keyword` (apropos)."
+            bloom: remember
           - type: name
             prompt: Which Unix command lists directory contents?
             answer: '`ls`. (Not dir, cat, joe, rm.)'
+            explanation: "`ls` reads the directory entries and prints filenames. Common flags: `-l` long form, `-a` include dotfiles, `-h` human-readable sizes, `-t` sort by mtime, `-S` sort by size."
+            bloom: remember
       - id: 4915-users
         name: Users
         tags:
           - sysadmin
         prose: Flashcards covering Users.
+        source: "Mod05 Ch11"
         cards:
           - type: name
             prompt: How many fields in /etc/passwd and what are they?
@@ -1138,36 +1733,53 @@ modules:
               5. GECOS
               6. Home
               7. Shell
+            explanation: Seven colon-separated fields per user. The `x` in field 2 is a placeholder — the real password hash lives in `/etc/shadow` (readable only by root). GECOS is a free-text comment field (full name, phone, etc.).
+            bloom: remember
           - type: name
             prompt: Which file contains actual password hashes?
             answer: '`/etc/shadow` (root-only, 600).'
+            explanation: "/etc/passwd stays world-readable for UID→name lookups; /etc/shadow isolates the sensitive hashes with 600 perms. Separating them was a security fix after /etc/passwd's world-readable design enabled offline cracking."
+            bloom: remember
           - type: name
             prompt: Add a user with home directory created?
             answer: '`useradd -m username`.'
+            explanation: "`useradd` without `-m` creates the account but no home directory. `-m` also copies skeleton files from `/etc/skel/*` into the new home (default bashrc, bash_profile, etc.). Set password after: `passwd username`."
+            example: "`useradd -m -s /bin/bash alice && passwd alice` — complete account creation."
+            bloom: remember
       - id: 4915-control-plane
         name: Control plane
         tags:
           - kubernetes
         prose: Deployment (most common app, Quiz 4 Q4) wraps ReplicaSet → manages pods with rolling updates. DaemonSet runs one pod per node (Quiz 4 Q8).
+        source: "Mod10A; materials/past-exams/comp4915_quiz4.md"
         cards:
           - type: name
             prompt: What does kube-scheduler do?
             answer: Watches unscheduled pods, filters+scores nodes, binds pod to a node.
+            explanation: "The scheduler is stateless — it watches apiserver for pods with no nodeName, runs the Filter phase (predicates: resource fit, taints) then Score phase (priorities: spread, affinity), and writes the binding back to apiserver. kubelet on the chosen node then pulls the pod."
+            bloom: remember
           - type: name
             prompt: What does kube-controller-manager do?
             answer: Runs controllers (Deployment, ReplicaSet, Node, Job, etc.) that reconcile actual state to desired state.
+            explanation: Controller-manager bundles many reconcile loops into one binary. Each loop watches its resource type in apiserver and takes action to converge. Node controller marks unresponsive nodes unhealthy; Deployment controller creates ReplicaSets from Deployment specs.
+            bloom: remember
           - type: name
             prompt: Purpose of kube-proxy?
             answer: Implements Kubernetes Service routing on each node via iptables or IPVS rules.
+            explanation: kube-proxy runs on every node and watches Service + Endpoints from apiserver. It programs the local kernel's iptables or IPVS tables so packets to a ClusterIP get DNAT'd to a healthy backend pod IP. Traffic never goes through kube-proxy itself — it just installs rules.
+            bloom: understand
           - type: name
             prompt: What is CRI?
             answer: Container Runtime Interface — API between kubelet and container runtime (containerd, CRI-O).
+            explanation: CRI is a gRPC API kubelet uses to start/stop containers and images. It abstracts the runtime so Kubernetes isn't tied to Docker — containerd, CRI-O, and others implement CRI. kubelet is the client; runtime is the server.
+            bloom: remember
       - id: 4915-tar-simple
         name: tar simple
         tags:
           - archives
           - fundamentals
         prose: Flashcards covering tar simple.
+        source: "Mod02 Ch7; Review Apr 17"
         cards:
           - type: name
             prompt: 'Three core tar commands: create, list, extract?'
@@ -1175,3 +1787,7 @@ modules:
               1. **Create**: `tar -cf archive.tar files`
               2. **List**: `tar -tf archive.tar`
               3. **Extract**: `tar -xf archive.tar`
+
+            explanation: "`-c` create, `-t` list (table of contents), `-x` extract. `-f` names the archive file. Add `-z` (gzip) or `-j` (bzip2) to compress; `-v` to make it verbose."
+            example: "`tar -czvf backup.tar.gz /etc/` — create compressed verbose archive of /etc/."
+            bloom: remember

@@ -1,0 +1,129 @@
+id: json-localstorage
+cards:
+
+  - id: json-localstorage-card-01
+    type: name
+    prompt: "What method retrieves a value from localStorage by key?"
+    answer: "`localStorage.getItem(key)`"
+    explanation: "`getItem` takes a string key and returns the stored string, or `null` if the key does not exist. There is no `.get()` method."
+    example: "`window.localStorage.getItem('token')` returns the string stored under `'token'`."
+    source: "Quiz 5 Q1"
+    bloom: remember
+
+  - id: json-localstorage-card-02
+    type: cloze
+    prompt: "localStorage stores data with ___, while sessionStorage stores data only until ___."
+    answer: "no expiration date; the browser tab is closed"
+    explanation: "localStorage persists indefinitely until explicitly removed. sessionStorage is cleared automatically when the tab closes."
+    example: "A shopping-cart preference saved in localStorage survives browser restarts. A multi-step form's current page saved in sessionStorage is lost when the tab closes."
+    source: "Slide 2"
+    bloom: remember
+
+  - id: json-localstorage-card-03
+    type: cloze
+    prompt: "Web storage is scoped to the ___ (the combination of ___, ___, and ___)."
+    answer: "origin; protocol; domain; port"
+    explanation: "Two pages share localStorage only when all three components match exactly. The path component is irrelevant."
+    example: "`http://myDomain.com/a.html` and `http://myDomain.com/b.html` share the same origin. `https://myDomain.com/a.html` does not — different protocol."
+    source: "Slide 2, Quiz 5 Q2, Q6, Exam-strategy pitfall 3"
+    bloom: understand
+
+  - id: json-localstorage-card-04
+    type: name
+    prompt: "What does `JSON.stringify()` do?"
+    answer: "Converts a JavaScript object into a JSON string."
+    explanation: "The resulting string is flat text that can be stored in localStorage, sent over a network, or written to a file. `JSON.parse()` reverses the operation."
+    example: "`JSON.stringify({ name: 'Alice' })` → `'{\"name\":\"Alice\"}'`"
+    source: "Slide 2, Slide 3"
+    bloom: remember
+
+  - id: json-localstorage-card-05
+    type: name
+    prompt: "What does `JSON.parse()` do?"
+    answer: "Converts a JSON string back into a JavaScript object."
+    explanation: "It reconstructs the full object, including nested properties and arrays. The inverse of `JSON.stringify()`."
+    example: "`JSON.parse('{\"name\":\"Alice\"}')` → `{ name: 'Alice' }`"
+    source: "Slide 2, Slide 3"
+    bloom: remember
+
+  - id: json-localstorage-card-06
+    type: name
+    prompt: "What method removes all items from localStorage for the current origin?"
+    answer: "`localStorage.clear()`"
+    explanation: "`clear()` deletes every key-value pair in the storage bucket for that origin. `removeItem(key)` deletes only one key. There is no `clearAll()` or `removeAll()` method."
+    example: "`window.localStorage.clear()` empties all stored data."
+    source: "Slide 2, Quiz 5 Q7"
+    bloom: remember
+
+  - id: json-localstorage-card-07
+    type: predict
+    prompt: |
+      ```js
+      localStorage.setItem('color', 'blue');
+      const value = localStorage.getItem('color');
+      localStorage.removeItem('color');
+      localStorage.setItem('color', 'red');
+      console.log(value);
+      ```
+      What does `console.log(value)` print?
+    answer: "`'blue'`"
+    explanation: "`getItem` returned the string `'blue'` at the moment it was called and assigned it to `value`. Subsequent changes to localStorage do not retroactively update `value`."
+    example: "Variables hold values, not references to storage slots. Reassigning localStorage does not reach back into existing variables."
+    source: "Quiz 5 Q3"
+    bloom: apply
+
+  - id: json-localstorage-card-08
+    type: predict
+    prompt: |
+      Can `https://lab.aaa.com/1/index.html` read localStorage written by `https://aaa.com/labs/1/index.html`?
+    answer: "No."
+    explanation: "`lab.aaa.com` is a different subdomain from `aaa.com`. Subdomains are distinct origins — they do not share localStorage even if the top-level domain is the same."
+    example: "Quiz 5 Q6: the correct accessor is `https://aaa.com/labs/5/hello.html` (same origin) — not `https://lab.aaa.com/1/index.html`."
+    source: "Quiz 5 Q6, Exam-strategy pitfall 3"
+    bloom: apply
+
+  - id: json-localstorage-card-09
+    type: name
+    prompt: "Where in Chrome DevTools can you inspect localStorage entries?"
+    answer: "Application tab → Storage → Local Storage"
+    explanation: "The Application tab centralizes all client-side storage types: localStorage, sessionStorage, cookies, IndexedDB, and more."
+    example: "Open DevTools (F12), click the Application tab, expand Local Storage, select the origin."
+    source: "Quiz 5 Q9"
+    bloom: remember
+
+  - id: json-localstorage-card-10
+    type: cloze
+    prompt: "Is nesting objects inside JSON valid? `{\"user\": {\"profile\": {\"name\": \"Alice\"}}}` is ___ JSON."
+    answer: "valid"
+    explanation: "JSON supports arbitrary nesting of objects and arrays. A common misconception is that JSON must be flat — this is false."
+    example: "`JSON.stringify({ user: { profile: { name: 'Alice' } } })` produces valid JSON and `JSON.parse` reconstructs it correctly."
+    source: "Quiz 5 Q10"
+    bloom: understand
+
+  - id: json-localstorage-card-11
+    type: name
+    prompt: "Which JSON method does NOT exist as a built-in?"
+    answer: "`JSON.convert()` — it does not exist."
+    explanation: "The only two built-in JSON methods are `JSON.stringify()` and `JSON.parse()`. Calling `JSON.convert()` throws `TypeError: JSON.convert is not a function`."
+    example: "Quiz 5 Q8: `JSON.parse()` and `JSON.stringify()` are real; `JSON.convert()` is not."
+    source: "Quiz 5 Q8"
+    bloom: remember
+
+  - id: json-localstorage-card-12
+    type: predict
+    prompt: |
+      Is localStorage data stored in Chrome accessible from Firefox on the same computer?
+    answer: "No."
+    explanation: "localStorage is browser-specific. Chrome and Firefox each maintain separate storage buckets. Data is not shared across browsers even on the same machine."
+    example: "Quiz 5 Q5: `'Data stored in local storage is persistent between different browsers'` → False."
+    source: "Quiz 5 Q5"
+    bloom: understand
+
+  - id: json-localstorage-card-13
+    type: cloze
+    prompt: "To store a JS object `obj` in localStorage under key `'data'`, write: `localStorage.setItem('data', ___)`."
+    answer: "`JSON.stringify(obj)`"
+    explanation: "localStorage only stores strings. Passing an object directly coerces it to `'[object Object]'`. `JSON.stringify` produces a proper string representation."
+    example: "`localStorage.setItem('user', JSON.stringify({ name: 'Alice', role: 'admin' }))`"
+    source: "Slide 2"
+    bloom: apply

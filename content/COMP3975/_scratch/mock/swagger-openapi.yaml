@@ -1,0 +1,49 @@
+# concept-pair: spec vs toolset distinction — appears also on swagger-openapi-q-02
+- id: swagger-openapi-q-01
+  type: MCQ
+  topic: "Swagger and OpenAPI"
+  marks: 1
+  question: "A developer says 'I documented my API in Swagger.' What is the precise technical correction?"
+  choices:
+    - "The documentation format is called REST — Swagger is only the editor"
+    - "The specification language is OpenAPI; Swagger is the toolset (UI, Editor, Codegen) that reads it"
+    - "Swagger and OpenAPI are identical terms and the statement is correct"
+    - "OpenAPI is a product sold by SmartBear; Swagger is the open standard"
+  correct: 1
+  rationale: "OpenAPI is the specification language — a YAML or JSON contract describing an API's paths, parameters, and schemas. Swagger is the toolset built around that spec: Swagger UI renders interactive docs, Swagger Editor lets you write and validate specs, and Swagger Codegen generates client libraries. This distinction is directly tested in past-exam Q8. Option A is incorrect — REST describes an architectural style, not a documentation format, and is unrelated to the spec-vs-toolset distinction. Option C is explicitly wrong — OpenAPI and Swagger are distinct concepts. Option D reverses the reality: OpenAPI is the open standard (maintained by the Linux Foundation), and Swagger refers to SmartBear's toolset."
+  bloom: understand
+  source: "swagger-with-laravel.pptx; final-practice.docx Q8"
+  tags: [pretest]
+
+# concept-pair: annotation syntax — appears also on swagger-openapi-q-03
+# concept-pair: spec vs toolset distinction — appears also on swagger-openapi-q-01
+- id: swagger-openapi-q-02
+  type: MCQ
+  topic: "Swagger and OpenAPI"
+  marks: 1
+  question: "After adding a new `@OA\\Post` annotation to a controller, a developer refreshes `/api/documentation` but sees no change. What is the missing step?"
+  choices:
+    - "Restart the Laravel dev server to reload PHP classes"
+    - "Run `php artisan l5-swagger:generate` to recompile the OpenAPI document"
+    - "Clear the route cache with `php artisan route:clear`"
+    - "Publish the l5-swagger config again with `vendor:publish`"
+  correct: 1
+  rationale: "`php artisan l5-swagger:generate` is the compile step that reads all `@OA\\` annotations in the project and writes a fresh OpenAPI JSON document. Swagger UI at `/api/documentation` serves that compiled JSON — it does not read annotations directly. Without regenerating, the UI shows the previous state. Option A (restarting the server) reloads PHP but does not trigger annotation compilation; the stale JSON document is still served. Option C (route cache) is unrelated to documentation generation. Option D (`vendor:publish`) copies config files from the package — a one-time setup step, not a documentation regeneration step."
+  bloom: apply
+  source: "swagger-with-laravel.pptx; Laravel_L5Swagger_SCRIPT_2026.docx"
+
+# concept-pair: annotation syntax — appears also on swagger-openapi-q-02
+- id: swagger-openapi-q-03
+  type: MCQ
+  topic: "Swagger and OpenAPI"
+  marks: 1
+  question: "The `@OA\\Info` annotation must appear exactly once in a Laravel project. Where is the correct location for it?"
+  choices:
+    - "Directly above the `routes/api.php` file's first Route declaration"
+    - "In a dedicated `swagger.php` config file under `config/`"
+    - "On the abstract base `Controller` class in `app/Http/Controllers/Controller.php`"
+    - "On each individual controller method that the API exposes"
+  correct: 2
+  rationale: "`@OA\\Info` provides the top-level API metadata (title, version, description) required by the OpenAPI specification. It belongs on the abstract base `Controller` class because l5-swagger scans PHP files for annotations and the base controller is the single, shared ancestor of all controllers — placing it there ensures it appears exactly once. Option A (above a route definition) is incorrect; `routes/api.php` contains route declarations, not PHP classes, and l5-swagger does not scan route files for annotations. Option B (`config/swagger.php`) is also wrong — annotation-based docs are written in PHP files, not config files. Option D (on each controller method) would duplicate `@OA\\Info`, which is invalid — the OpenAPI spec allows only one Info object."
+  bloom: understand
+  source: "swagger-with-laravel.pptx; Laravel_L5Swagger_SCRIPT_2026.docx"

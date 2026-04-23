@@ -1,0 +1,14 @@
+- id: laravel-mcp-implementation-q-01
+  type: MCQ
+  topic: "Laravel MCP Implementation"
+  marks: 1
+  question: "After installing `laravel/mcp`, which Artisan command scaffolds a new MCP server class?"
+  choices:
+    - "php artisan make:controller McpController --mcp"
+    - "php artisan make:mcp-server TodoServer"
+    - "php artisan mcp:create server TodoServer"
+    - "php artisan vendor:publish --tag=mcp-server"
+  correct: 1
+  rationale: "`php artisan make:mcp-server TodoServer` is the generator provided by the `laravel/mcp` package. It creates a server class that registers tools, handles `tools/list` requests, and routes `tools/call` invocations. Option A (`make:controller --mcp`) is invented — the `--mcp` flag does not exist on `make:controller`; MCP servers are not plain HTTP controllers. Option C reverses the colon-separated namespace incorrectly; the command is `make:mcp-server`, not `mcp:create server`. Option D (`vendor:publish --tag=mcp-server`) publishes config/stubs, not generates runtime classes; it is a one-time setup step, not a code generator."
+  bloom: remember
+  source: "laravel_mcp.pptx slides 1–12"

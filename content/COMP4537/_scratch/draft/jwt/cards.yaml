@@ -1,0 +1,113 @@
+id: jwt
+name: "JWT — structure, signing, and storage"
+tags: [JWT, json-web-token, signing, secret-key, HS256, XSS]
+prose: >
+  A JSON Web Token (JWT) is a compact, self-contained token the server signs with a secret
+  key using HS256. The token has three dot-separated parts — header, payload, and signature —
+  all Base64url-encoded. The server signs the token at login and verifies the signature on
+  every subsequent request, enabling stateless authentication. The token must be stored in
+  an HttpOnly cookie to prevent XSS-based theft; localStorage exposes it to any injected
+  script. The secret key must be stored in an environment variable, never in source code.
+  Short expiration times limit the damage a stolen token can cause.
+cards:
+  - id: jwt-card-01
+    type: name
+    prompt: "JWT stands for ___."
+    answer: "JSON Web Token"
+    explanation: >
+      JWT is the abbreviation for JSON Web Token. Common distractors on ISAQuiz11 include
+      JavaScript Web Token and JSON Web Transfer — both are wrong. The J stands for JSON
+      (a data format), not JavaScript.
+    example: "import jwt from 'jsonwebtoken'; // JSON Web Token library"
+    source: "Slide 10, ISAQuiz11"
+    bloom: remember
+
+  - id: jwt-card-02
+    type: cloze
+    prompt: "A JWT consists of three dot-separated parts: header.{{blank}}.signature"
+    answer: "payload"
+    explanation: >
+      The three parts of a JWT are header, payload, and signature — all Base64url-encoded
+      and joined by dots. The payload contains claims (e.g., username, expiry). The signature
+      is the HMAC of the header and payload using the server's secret key.
+    example: "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiYWRtaW4ifQ.<signature>"
+    source: "Slide 10, ISAQuiz11"
+    bloom: remember
+
+  - id: jwt-card-03
+    type: name
+    prompt: >
+      ISAQuiz11 Q5 asks which option correctly lists JWT components. Which answer is correct,
+      and why are the distractors wrong?
+    answer: "Header, Payload, and Signature. Distractors use 'Certificate' (not a JWT part) and 'Body' or 'Footer' (not JWT terms)."
+    explanation: >
+      The JWT spec defines exactly three parts: header, payload, signature. Certificate is a
+      PKI concept unrelated to JWT structure. Body and Footer are HTML or email terms.
+      Selecting any distractor on the exam scores zero.
+    example: "base64url(header).base64url(payload).base64url(signature)"
+    source: "Slide 10, ISAQuiz11"
+    bloom: understand
+
+  - id: jwt-card-04
+    type: cloze
+    prompt: >
+      The server signs a JWT using the {{blank}} algorithm and its secret key. On the next
+      request, it recomputes the signature and compares — no session store required.
+    answer: "HS256"
+    explanation: >
+      HS256 is HMAC with SHA-256. The server signs header+payload with the secret key.
+      Any modification to the token invalidates the signature. The server verifies by
+      recomputing the signature — stateless, no database lookup needed.
+    example: "jwt.sign({ username }, TOKEN_SECRET, { algorithm: 'HS256', expiresIn: '120s' })"
+    source: "Slide 10, ISAQuiz11"
+    bloom: understand
+
+  - id: jwt-card-05
+    type: cloze
+    prompt: >
+      Storing a JWT in {{blank}} exposes it to XSS attacks because JavaScript can read it.
+      Storing it in an {{blank}} cookie blocks that attack because the browser never exposes
+      the value to scripts.
+    answer: "localStorage; HttpOnly"
+    explanation: >
+      localStorage is accessible to any script on the page, including injected XSS payloads.
+      An HttpOnly cookie is transmitted by the browser automatically but is invisible to
+      JavaScript — eliminating the main XSS token-theft vector. Add Secure and SameSite
+      attributes to also block CSRF.
+    example: "res.setHeader('Set-Cookie', `token=${token}; HttpOnly; Secure; SameSite=None`);"
+    source: "Slide 10, ISAQuiz11"
+    bloom: understand
+
+  - id: jwt-card-06
+    type: predict
+    prompt: >
+      A developer writes: jwt.sign({ foo: 'bar' }, 'shhhhh!');
+      Predict the two security problems this causes.
+    answer: >
+      1. No expiration — the token never becomes invalid, so a stolen token grants permanent access.
+      2. Weak secret ('shhhhh!') — short, guessable secrets can be brute-forced; HS256 security
+      depends entirely on secret length and randomness.
+    explanation: >
+      jwt.sign() requires both a strong secret key and an expiresIn option for production use.
+      A missing expiration means revocation is impossible without a blocklist. A short secret
+      breaks the cryptographic guarantee of HS256.
+    example: >
+      // Correct version:
+      jwt.sign({ foo: 'bar' }, process.env.TOKEN_SECRET, { algorithm: 'HS256', expiresIn: '120s' });
+    source: "Slide 10, ISAQuiz11"
+    bloom: apply
+
+  - id: jwt-card-07
+    type: name
+    prompt: >
+      ISAQuiz11 Q8: A JWT cookie is set without HttpOnly and without Secure.
+      Which attack vectors are exposed?
+    answer: "All three: XSS (script can read the cookie), CSRF (cookie sent on cross-site requests), and unauthorized access (cookie visible over plain HTTP)."
+    explanation: >
+      HttpOnly blocks JavaScript access (XSS vector). Secure restricts transmission to HTTPS
+      (interception vector). SameSite blocks cross-site cookie submission (CSRF vector).
+      Removing both HttpOnly and Secure simultaneously opens all three. The correct exam
+      answer is 'All of the above' — selecting only XSS scores zero.
+    example: "// Missing: HttpOnly blocks XSS; Secure blocks plaintext; SameSite blocks CSRF"
+    source: "Slide 10, ISAQuiz11"
+    bloom: analyze

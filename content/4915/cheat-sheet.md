@@ -2,6 +2,8 @@
 title: "COMP 4915 — exam-eve cheat sheet"
 ---
 
+<!-- Formulas block intentionally omitted: 4915 is non-quantitative. Octal chmod + CIDR covered in topical blocks. -->
+
 ## Run levels
 
 | # | Meaning |

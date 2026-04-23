@@ -1,0 +1,56 @@
+id: "nodejs-db-connect"
+name: "Node.js MySQL connection, mysql module, executing queries, XAMPP/phpMyAdmin, cPanel hosting"
+tags: [mysql, nodejs, npm, XAMPP, phpMyAdmin, cPanel, hosting]
+prose: "The mysql package is an external Node.js module. Install it with npm install mysql, then use createConnection, connect, and query to talk to a MySQL database. Keep all connection code server-side. Use XAMPP locally (MySQL + phpMyAdmin), cPanel for production."
+cards:
+  - id: "nodejs-db-connect-card-01"
+    type: cloze
+    source: "Slide 5, Quiz 7 Q1"
+    bloom: remember
+    front: "The mysql module is {{not a built-in}} Node.js module — install it with `npm install mysql`."
+    explanation: "Built-in modules (url, http, fs, path, os) require no installation. The mysql package lives in npm and must be explicitly installed before require('mysql') will work."
+    example: "Running `node app.js` without installing mysql throws: Error: Cannot find module 'mysql'."
+
+  - id: "nodejs-db-connect-card-02"
+    type: name
+    source: "Slide 5"
+    bloom: remember
+    front: "What four properties does `mysql.createConnection()` accept to identify the target database?"
+    back: "host (server address), user (DB username), password (DB password), and database (schema name)."
+    explanation: "These four properties tell the mysql driver where the database server is, how to authenticate, and which schema to use. All four are needed for a working connection."
+    example: "mysql.createConnection({ host: 'localhost', user: 'root', password: '', database: 'mydb' })"
+
+  - id: "nodejs-db-connect-card-03"
+    type: predict
+    source: "Slide 5, Quiz 7"
+    bloom: apply
+    front: "You log `result` on the line immediately after `con.query(sql, callback)` — outside the callback. What does the log show, and why?"
+    back: "The log shows `undefined`. `con.query` is asynchronous — the database has not responded yet when that line executes. `result` is only defined inside the callback."
+    explanation: "Node.js dispatches the query and continues running synchronous code. The callback fires later, when MySQL sends its response. Any code outside the callback runs before that response arrives."
+    example: "con.query('SELECT...', cb); console.log(result); // undefined — callback has not fired yet"
+
+  - id: "nodejs-db-connect-card-04"
+    type: cloze
+    source: "Quiz 7 Q9"
+    bloom: understand
+    front: "Placing MySQL connection credentials in client-side code exposes your {{username and password}} to anyone who views page source."
+    explanation: "Browser JavaScript is visible to every user via DevTools or View Source. Database credentials placed there give attackers direct access to your database. Connection code must run server-side only."
+    example: "A visitor opens DevTools → Sources and reads: password: 'db_secret_123' — full DB access gained."
+
+  - id: "nodejs-db-connect-card-05"
+    type: name
+    source: "Slide 5, Slide 7"
+    bloom: remember
+    front: "What tool does XAMPP install alongside the MySQL engine for visual database management?"
+    back: "phpMyAdmin — a browser-based admin interface accessible at http://localhost/phpmyadmin/ that lets you create databases, create tables, and run SQL queries visually."
+    explanation: "XAMPP bundles MySQL (the database engine) and phpMyAdmin (the PHP-based web UI). Starting MySQL in the XAMPP control panel and clicking Admin opens phpMyAdmin in the browser."
+    example: "In phpMyAdmin: click New → name the database → create a table → paste SQL in the SQL tab → press GO."
+
+  - id: "nodejs-db-connect-card-06"
+    type: predict
+    source: "Slide 7"
+    bloom: understand
+    front: "A `patient` table declares `patientid INT NOT NULL AUTO_INCREMENT PRIMARY KEY`. An INSERT omits the `patientid` column entirely. What happens?"
+    back: "MySQL assigns the next unique integer to `patientid` automatically. The insert succeeds without error, and `result.insertId` holds the generated value."
+    explanation: "AUTO_INCREMENT removes the need to track or supply primary key values manually. The database engine increments and assigns the key on every insert."
+    example: "INSERT INTO patient (name) VALUES ('Ada Lovelace') — patientid is assigned by MySQL, not specified."

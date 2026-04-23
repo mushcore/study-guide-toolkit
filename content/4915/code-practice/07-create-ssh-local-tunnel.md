@@ -6,6 +6,7 @@ lang: bash
 variant: starter-solution
 tags:
   - networking
+source: "Mod06 Ch18; materials/labs/Lab6.pdf"
 ---
 
 ## Prompt
@@ -26,4 +27,4 @@ ssh -L 5432:db.internal:5432 user@bastion.example.com
 
 ## Why
 
-`-L local_port:remote_host:remote_port`. psql then connects to `localhost:5432` which traverses the SSH tunnel to db.internal:5432 via bastion. Add `-N -f` to background without shell.
+**Source**: Mod06 Ch18 + Lab 6. `-L local_port:remote_host:remote_port`. psql then connects to `localhost:5432` which traverses the SSH tunnel to db.internal:5432 via bastion. Add `-N -f` to background without shell. Common wrong: swapping `-L` for `-R` — `-R` makes the *bastion* listen and forwards back to your laptop, which is the opposite direction and exposes your host instead of reaching the DB.

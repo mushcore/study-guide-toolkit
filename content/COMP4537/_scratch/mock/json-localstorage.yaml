@@ -1,0 +1,23 @@
+- id: json-localstorage-q-01
+  type: MCQ
+  topic: "JSON and Web Storage"
+  marks: 2
+  question: |
+    A developer runs the following code and then closes and reopens the browser tab.
+    What does `localStorage.getItem("user")` return after the tab is reopened?
+
+    ```js
+    const profile = { name: "Alice", role: "admin" };
+    localStorage.setItem("user", JSON.stringify(profile));
+    ```
+  choices:
+    - "`null` — localStorage is cleared when the tab closes."
+    - "The string `'[object Object]'` — localStorage coerces objects automatically."
+    - "The JSON string `'{\"name\":\"Alice\",\"role\":\"admin\"}'`."
+    - "`undefined` — localStorage does not persist across page reloads."
+  correct: 2
+  rationale: |
+    localStorage persists until explicitly cleared — it survives tab closes, page reloads, and browser restarts. `JSON.stringify` serializes the object to a JSON string before `setItem` stores it, so `getItem` returns that exact string. Option A describes sessionStorage behaviour, not localStorage; the quiz explicitly tested this distinction (Quiz 5 Q5). Option B targets the misconception that `localStorage.setItem` coerces objects the way console.log does; coercion to `[object Object]` only happens if you pass the raw object without `JSON.stringify`. Option D reverses the persistence rule — `undefined` is returned for a key that was never set, not for a key set in a previous session.
+  bloom: understand
+  source: "Slide 2, Quiz 5 Q5, ISAQuiz5.pdf Q5"
+  tags: [pretest]

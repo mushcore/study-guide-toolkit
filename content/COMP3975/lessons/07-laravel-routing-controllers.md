@@ -123,4 +123,6 @@ During local development, skip caching — it prevents newly defined routes from
 > **Q:** You add a new resource route in `routes/api.php` and start the server, but hitting `/api/items` returns a 404. What is the most likely cause?
 > **A:** A stale route cache. Run `php artisan route:clear` to discard it, then retry.
 
+> **Pitfall:** After adding or editing a route, a stale `route:cache` from a previous `php artisan route:cache` call will shadow your changes — your new route returns 404 even though the code is correct. Always run `php artisan route:clear` after any routing change in development.
+
 > **Takeaway:** `Route::apiResource()` replaces five manual route declarations with one. It binds HTTP verbs to controller methods by convention, so your `routes/api.php` stays short and readable. Always clear the route cache after structural routing changes — a stale cache is the single most common source of "my route doesn't exist" bugs in Laravel.

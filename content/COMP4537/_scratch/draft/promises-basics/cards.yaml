@@ -1,0 +1,116 @@
+id: promises-basics
+name: "Promise object: constructor, executor, resolve/reject, pending/fulfilled/rejected states"
+tags: [promises, resolve, reject, pending, fulfilled, rejected, executor]
+prose: "A Promise is a JavaScript object representing an eventual value. The executor function runs eagerly on construction, synchronously calling resolve or reject to settle the Promise. Settlement is final and exclusive — the first of resolve or reject that fires wins; subsequent calls are ignored. .then() handlers are microtasks: they enqueue when the Promise is settled and run only after the current synchronous call stack empties."
+cards:
+  - id: promises-basics-card-01
+    type: cloze
+    prompt: "A Promise executor runs {{eagerly}}: it executes synchronously at the moment `new Promise(executor)` is called, before any following statement."
+    answer: "eagerly"
+    explanation: "The executor is not deferred. It runs on the current call stack, immediately on construction. Any console.log inside the executor prints before subsequent synchronous lines outside the Promise."
+    example: |
+      new Promise((resolve) => {
+        console.log('A'); // prints first — eager executor
+        resolve('B');
+      });
+      console.log('C'); // prints second — sync, after executor
+      // Output: A, C  (then 'B' via .then if attached)
+    source: "Slide 6 (Slide 19)"
+    bloom: remember
+
+  - id: promises-basics-card-02
+    type: name
+    prompt: "What is the initial state of every Promise when it is first constructed?"
+    answer: "pending"
+    explanation: "Every Promise starts in the pending state. It stays pending until resolve() transitions it to fulfilled, or reject() transitions it to rejected. If neither is ever called, it remains pending forever."
+    example: |
+      let p = new Promise((resolve, reject) => {
+        console.log('executor ran'); // resolve/reject never called
+      });
+      // p.[[PromiseState]] === 'pending' — forever
+    source: "Slide 6 (Slides 13–14)"
+    bloom: remember
+
+  - id: promises-basics-card-03
+    type: cloze
+    prompt: "Once a Promise is settled, calling `resolve()` or `reject()` again {{has no effect}}; the state never changes a second time."
+    answer: "has no effect"
+    explanation: "Settlement is final. The state machine has no reverse transition. Only the first call to resolve or reject that exits the pending state counts; all subsequent calls are silently ignored."
+    example: |
+      let p = new Promise((resolve, reject) => {
+        reject('3');   // settles: rejected
+        resolve('4'); // ignored — already settled
+      });
+      p.then(null, (r) => console.log(r)); // logs '3', never '4'
+    source: "Slide 6 (Slide 17), ISAQuiz8 Q3"
+    bloom: understand
+
+  - id: promises-basics-card-04
+    type: predict
+    prompt: |
+      What is the exact console output of this code? Explain why each line prints when it does.
+      ```js
+      let promise = new Promise(function(resolve, reject) {
+        console.log('2');
+        reject('3');
+        resolve('4');
+        console.log('5');
+      });
+      promise.then(
+        (v) => console.log(v),
+        (r) => console.log(r)
+      );
+      console.log('1');
+      ```
+    answer: "2, 5, 1, 3"
+    explanation: "'2' and '5' print synchronously inside the eager executor. reject('3') settles the Promise and enqueues the rejection handler as a microtask; resolve('4') is ignored. '1' prints synchronously after the executor. When the call stack empties, the microtask queue drains: the rejection handler logs '3'. '4' never appears."
+    example: |
+      // Execution order:
+      // 1. Executor runs (sync): logs 2, enqueues reject handler, ignores resolve, logs 5
+      // 2. promise.then() registers handlers (rejection handler already queued)
+      // 3. console.log('1') runs sync
+      // 4. Stack empties → microtask: rejection handler logs 3
+      // '4' is never logged
+    source: "ISAQuiz8 Q3, Slide 6 (Slide 17)"
+    bloom: apply
+
+  - id: promises-basics-card-05
+    type: predict
+    prompt: |
+      What is the output? Explain why `1` does not print first.
+      ```js
+      Promise.resolve().then(() => console.log(1));
+      console.log(2);
+      ```
+    answer: "2, 1"
+    explanation: "Promise.resolve() returns an already-fulfilled Promise, but .then() still enqueues the callback as a microtask — it does not run synchronously. console.log(2) is synchronous and runs before the microtask queue drains."
+    example: |
+      // Even an already-fulfilled Promise sends .then() to the microtask queue.
+      // Sync always runs before microtasks.
+    source: "Slide 6 (Slide 25), ISAQuiz8"
+    bloom: apply
+
+  - id: promises-basics-card-06
+    type: cloze
+    prompt: "Calling `resolve(value)` changes the Promise state to {{fulfilled}} and stores `value`; the `.then()` handler receives that value when the {{microtask queue}} drains."
+    answer: "fulfilled; microtask queue"
+    explanation: "resolve() performs a synchronous state transition but defers the handler. The handler is placed in the microtask queue and runs only after the current call stack empties — not inline with resolve()."
+    example: |
+      new Promise((resolve) => {
+        resolve(42);          // state → fulfilled (sync)
+        console.log('after'); // still runs — handler not fired yet
+      }).then((v) => console.log(v)); // microtask: logs 42 after stack empties
+    source: "Slide 6 (Slide 18)"
+    bloom: understand
+
+  - id: promises-basics-card-07
+    type: name
+    prompt: "What is the collective term for a Promise that has exited the pending state, whether fulfilled or rejected?"
+    answer: "settled"
+    explanation: "A Promise is settled when it is either fulfilled or rejected. 'Settled' is not a third state — it is a label for any non-pending Promise. Do not use 'resolved' as a synonym for settled."
+    example: |
+      // fulfilled → settled
+      // rejected  → settled
+      // pending   → NOT settled
+    source: "Slide 6 (Slide 35)"
+    bloom: remember

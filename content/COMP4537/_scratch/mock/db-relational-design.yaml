@@ -1,0 +1,57 @@
+- id: db-relational-design-q-01
+  type: MCQ
+  topic: "Relational DB design: keys, relationships, and normalization"
+  marks: 2
+  question: |
+    A `Student` table has columns `studentID (PK)`, `name`, `enrollmentDate`. A separate `Enrollment` table has columns `enrollmentID (PK)`, `studentID`, `courseCode`, `grade`.
+
+    Which column in `Enrollment` is the **foreign key**, and what does its presence enforce?
+  choices:
+    - "`enrollmentID` — it uniquely identifies each enrollment row"
+    - "`studentID` in `Enrollment` — it references `Student.studentID` and enforces referential integrity"
+    - "`studentID` in `Student` — it links the parent table back to the child table"
+    - "`courseCode` — it references the course catalog and acts as the join column"
+  correct: 1
+  rationale: |
+    `Enrollment.studentID` is the foreign key because it references the primary key of the `Student` table. A foreign key enforces referential integrity — every value stored in `Enrollment.studentID` must already exist as a `studentID` in `Student`, preventing orphan rows. Choice A targets the misconception that the primary key of the child table is the foreign key; `enrollmentID` uniquely identifies enrollment rows but does not reference another table. Choice C reverses the direction — the parent table's primary key is not a foreign key pointing to its own child. Choice D targets the misconception that any join column is a foreign key; `courseCode` has no declared FK constraint in this schema.
+  bloom: understand
+  source: "Slide 7, Quiz 10"
+
+# concept-variant-of: db-relational-design-q-01
+- id: db-relational-design-q-02
+  type: MCQ
+  topic: "Relational DB design: keys, relationships, and normalization"
+  marks: 2
+  question: |
+    A clinic database has a `patient` table (`patientid PK`, `name`) and a `visit` table (`visitid PK`, `patientid FK`, `visitDate`). A developer tries to delete the row for `patientid = 5` from `patient`, but the DELETE fails.
+
+    What is the most likely reason?
+  choices:
+    - "Primary keys cannot be deleted once inserted"
+    - "The `visit` table has no primary key, so the constraint cannot be evaluated"
+    - "One or more rows in `visit` still reference `patientid = 5`, and the active foreign key constraint blocks deletion"
+    - "The `patientid` column in `visit` must be set to NULL before the parent row can be deleted"
+  correct: 2
+  rationale: |
+    MySQL enforces referential integrity by blocking DELETE on a parent row that has matching child rows. If `visit` contains rows where `patientid = 5`, removing the parent row in `patient` would create orphan records — visit rows pointing to a nonexistent patient. The constraint stops this by default. Choice A is false — primary key values are deletable when no child rows reference them. Choice B is false — the foreign key constraint is on `visit.patientid`; whether `visit` has its own primary key does not affect enforcement of that FK. Choice D reflects a partial truth (NULLing child FKs before deleting the parent is one resolution strategy) but is not the reason the DELETE fails — it describes a workaround, not the cause.
+  bloom: apply
+  source: "Slide 7, Quiz 10"
+
+- id: db-relational-design-q-03
+  type: MCQ
+  topic: "Relational DB design: keys, relationships, and normalization"
+  marks: 2
+  question: |
+    A table stores employee data with columns: `employeeID (PK)`, `name`, `officeCity`, `officeCountry`. Every cell holds exactly one value and every row is unique.
+
+    Which normal form statement is correct?
+  choices:
+    - "The table violates both 1NF and 2NF"
+    - "The table violates 1NF but complies with 2NF"
+    - "The table complies with 2NF and therefore also complies with 1NF"
+    - "The table complies with 1NF but violates 2NF"
+  correct: 3
+  rationale: |
+    1NF requires every column to hold one atomic value per row with no repeating groups — this table satisfies that because each cell holds a single value. 2NF requires every non-key column to depend on the entire primary key. Here `officeCountry` is determined by `officeCity`, not by `employeeID` — that partial transitive dependency violates 2NF. Choice A targets the misconception from ISAQuiz10 Q5 where students incorrectly marked the table as violating both forms; since all values are atomic, 1NF holds. Choice B is logically impossible: 2NF requires 1NF as a prerequisite, so a table cannot violate 1NF while complying with 2NF. Choice C targets the misconception that satisfying 2NF automatically means the table is fully normalized beyond scrutiny; the statement is structurally plausible but wrong here because 2NF is violated.
+  bloom: analyze
+  source: "Slide 7, Slide 10, Quiz 10 Q5"

@@ -1,0 +1,28 @@
+- id: api-documentation-q-01
+  type: MCQ
+  topic: "OpenAPI / Swagger — swagger.json structure and purpose"
+  marks: 2
+  question: |
+    A developer generates a `swagger.json` file for a RESTful API.
+    Which of the following does this file document?
+  choices:
+    - "The server's deployment configuration including environment variables and port bindings"
+    - "The API's endpoint paths, HTTP methods, request parameters, response schemas, and authentication requirements"
+    - "The source code of each route handler so consumers can read the implementation"
+    - "The database schema including table names and column types used by the API"
+  correct: 1
+  rationale: |
+    A `swagger.json` file is an OpenAPI / Swagger Interface Description Language document that
+    records the external contract of a REST API: the endpoint paths (e.g., `/patients`), their
+    supported HTTP methods (GET, POST, PUT, DELETE), request parameters (path params, query
+    params, headers), request body schemas (shape of JSON payloads), response schemas and status
+    codes for each outcome, and authentication requirements per endpoint. It does not describe
+    deployment internals or implementation details. Option A describes server configuration
+    (environment variables, ports) — that belongs in deployment manifests or `.env` files, not
+    in an API specification. Option C describes source code documentation (e.g., inline comments
+    or JSDoc), not an interface contract; swagger.json describes what the API accepts and returns,
+    not how it is implemented. Option D describes database schema documentation (e.g., an ERD or
+    migration file) — the storage layer is not part of the API surface that Swagger documents.
+  bloom: remember
+  source: "Slide 11"
+  tags: []

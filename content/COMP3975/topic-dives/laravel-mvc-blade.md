@@ -22,6 +22,16 @@ Laravel is opinionated — code must live in the correct directory or the framew
 
 The view layer never queries the database. The controller never outputs raw HTML. That separation is the contract.
 
+```mermaid
+graph TD
+    Req[HTTP Request] --> Router[routes/web.php or api.php]
+    Router --> C[Controller\napp/Http/Controllers/]
+    C -->|"query / update"| M[Model\napp/Models/]
+    M -->|"Eloquent result"| C
+    C -->|"view('name', data)"| V[Blade View\nresources/views/]
+    V -->|"compiled HTML"| Resp[HTTP Response]
+```
+
 ---
 
 ## Blade file convention

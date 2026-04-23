@@ -18,7 +18,7 @@ const { marked } = require('marked');
 const ROOT = path.resolve(__dirname, '..');
 const CONTENT_DIR = path.join(ROOT, 'content');
 const DIST_DIR = path.join(CONTENT_DIR, '_dist');
-const COURSES = ['4736', '4870', '4911', '4915', '3522'];
+const COURSES = ['4736', '4870', '4911', '4915', '3522', 'COMP3975', 'COMP4537'];
 
 const RECOGNISED_CALLOUTS = {
   analogy: 'analogy',
@@ -32,7 +32,8 @@ const RECOGNISED_CALLOUTS = {
 const LANG_OK = new Set([
   'c', 'cpp', 'cs', 'java', 'js', 'ts', 'python', 'bash', 'powershell',
   'sql', 'proto', 'xml', 'yaml', 'json', 'html', 'css', 'text', 'mermaid',
-  'console', 'dockerfile', 'makefile', 'ini', 'toml', 'diff', 'regex', 'apache', 'nginx'
+  'console', 'dockerfile', 'makefile', 'ini', 'toml', 'diff', 'regex', 'apache', 'nginx',
+  'php', 'blade'
 ]);
 
 const warnings = [];
@@ -365,7 +366,7 @@ function classifyBlockquote(tok) {
   }
 
   // Inline `**Label**.` at start of first line — still a callout.
-  const inlineLabel = firstLine.match(/^\*\*([A-Za-z]+)\*\*\.?\s+(.*)$/);
+  const inlineLabel = firstLine.match(/^\*\*([A-Za-z]+)\*\*[.:]?\s+(.*)$/);
   if (inlineLabel && RECOGNISED_CALLOUTS[inlineLabel[1].toLowerCase()]) {
     const key = inlineLabel[1].toLowerCase();
     const rest = (inlineLabel[2] + '\n' + raw.split('\n').slice(1).join('\n')).trim();

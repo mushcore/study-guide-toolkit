@@ -6,7 +6,7 @@
 //   #/t/<topic-id>             → { name: 'topic', topicId, courseId (derived) }
 //   #/replay                   → { name: 'replay' }
 
-const SUBVIEWS = new Set(['priorities', 'lessons', 'dives', 'mock', 'code', 'cheat']);
+const SUBVIEWS = new Set(['priorities', 'lessons', 'dives', 'mock', 'code', 'cheat', 'flash']);
 
 export function parseHash(hash) {
   const h = (hash || '').replace(/^#/, '').replace(/^\/+/, '');

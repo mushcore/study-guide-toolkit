@@ -1,0 +1,94 @@
+cards:
+  - id: mcp-card-01
+    type: cloze
+    prompt: "{{Model Context Protocol}} is Anthropic's open standard for connecting AI models to external tools, resources, and data sources."
+    answer: "Model Context Protocol"
+    explanation: "The full name — not 'MCP protocol' or 'Anthropic protocol' — is the canonical term. It is an open standard, meaning any vendor can implement a compliant client or server."
+    example: "Claude acting as an MCP client sends a JSON-RPC request to a Laravel MCP server to invoke a tool."
+    source: "laravel_mcp.pptx slide 2"
+    bloom: remember
+
+  - id: mcp-card-02
+    type: name
+    prompt: "Name the three primitives that an MCP server can expose, in the order specified by the course."
+    answer: "Tools (MCP), Resources (MCP), Prompts (MCP)"
+    explanation: "Tools are callable actions (side effects); Resources are read-only data sources; Prompts are reusable LLM templates. The course-canonical order is Tools → Resources → Prompts."
+    example: "A to-do MCP server exposes: Tool = AddTodo, Resource = ListTodos (read), Prompt = SummarizeTodos."
+    source: "laravel_mcp.pptx slide 4"
+    bloom: remember
+
+  - id: mcp-card-03
+    type: name
+    prompt: "What is the definition of Tools (MCP)?"
+    answer: "Callable actions the AI can invoke — such as API calls, running scripts, or multi-step workflows."
+    explanation: "Tools have side effects. They are executable functions, not data endpoints or UI components. This distinction is the most-tested wrong answer in past exams (Q3)."
+    example: "A tool named AddTodo accepts a 'title' parameter and inserts a row in the database."
+    source: "laravel_mcp.pptx slide 4; final-practice.docx Q3"
+    bloom: understand
+
+  - id: mcp-card-04
+    type: name
+    prompt: "What is the definition of Resources (MCP)?"
+    answer: "Data sources exposed to the AI — such as local files, database queries, or cloud documents."
+    explanation: "Resources are read-only. The AI loads resource content into its context window. Unlike Tools, Resources do not trigger side effects."
+    example: "A resource named TodoList returns all current to-do items as JSON for the AI to read."
+    source: "laravel_mcp.pptx slide 4"
+    bloom: understand
+
+  - id: mcp-card-05
+    type: cloze
+    prompt: "Model Context Protocol uses {{JSON-RPC 2.0}} as its message format. Every request includes a method name, an id, and optional params."
+    answer: "JSON-RPC 2.0"
+    explanation: "JSON-RPC 2.0 defines a lightweight remote procedure call format over JSON. It is the wire protocol for all MCP client-server communication, regardless of transport."
+    example: "A tools/list request: { \"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"tools/list\" }"
+    source: "laravel_mcp.pptx slides 2–5"
+    bloom: remember
+
+  - id: mcp-card-06
+    type: name
+    prompt: "Name the two transport options Model Context Protocol supports and describe when each is used."
+    answer: "STDIO (local, same-machine processes) and SSE — Server-Sent Events (remote servers over HTTP streaming)."
+    explanation: "STDIO connects processes on the same machine via stdin/stdout — ideal for local development tools. SSE uses HTTP and works for network-accessible MCP servers."
+    example: "The laravel_mcp.pptx demo server uses type: 'http' in mcp.json, which means SSE transport."
+    source: "laravel_mcp.pptx slides 2, 12"
+    bloom: understand
+
+  - id: mcp-card-07
+    type: name
+    prompt: "What is MCP composability?"
+    answer: "The MCP property where a client can also act as a server, enabling nested or chained agent architectures."
+    explanation: "Because the protocol is symmetric, any node can simultaneously receive requests (server role) and send requests (client role). This collapses multi-agent orchestration into the same JSON-RPC protocol without custom bridges."
+    example: "Agent A calls Agent B's tools; Agent B calls Agent C's tools. Each hop is a standard JSON-RPC 2.0 message."
+    source: "laravel_mcp.pptx slide 10"
+    bloom: understand
+
+  - id: mcp-card-08
+    type: predict
+    lang: php
+    prompt: "What is the HTTP method and JSON-RPC method name used to discover available tools on an MCP server?"
+    code: |
+      // MCP client wants to list all tools the server exposes.
+      // Fill in the JSON-RPC method field:
+      $body = json_encode([
+          'jsonrpc' => '2.0',
+          'id'      => 1,
+          'method'  => /* ??? */,
+      ]);
+    answer: "POST request; method is \"tools/list\". The server responds with a JSON array of tool descriptors."
+    explanation: "tools/list is the standard MCP discovery method. Clients call it before invoking individual tools to learn what capabilities the server exposes."
+    source: "laravel_mcp.pptx slides 4–5"
+    bloom: apply
+
+  - id: mcp-card-09
+    type: predict
+    lang: text
+    prompt: "A server exposes a route that returns all rows from the 'tasks' table as JSON. An AI reads this data before answering a question. Which MCP primitive applies — Tools, Resources, or Prompts?"
+    code: |
+      Scenario:
+      - Route: GET /mcp/tasks
+      - Behaviour: returns JSON array of task records (read-only, no side effects)
+      - AI purpose: load task data into context to answer "what tasks are overdue?"
+    answer: "Resources (MCP) — it is a read-only data source loaded into the AI's context, not a side-effecting action."
+    explanation: "The distinguishing factor is side effects. Tools create, update, or trigger things. Resources only expose data for reading. A plain data-fetch endpoint maps to Resources."
+    source: "laravel_mcp.pptx slide 4"
+    bloom: apply

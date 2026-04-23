@@ -1,0 +1,41 @@
+- id: js-async-event-loop-q-01
+  type: MCQ
+  topic: "The Event Loop: How JavaScript Stays Non-Blocking"
+  marks: 2
+  question: |
+    What does the following code print to the console, in order?
+
+    ```js
+    setTimeout(function() {
+      console.log(1);
+    }, 1);
+
+    new Promise(function(resolve) {
+      console.log(2);
+      resolve();
+    }).then(function() {
+      console.log(4);
+    });
+
+    console.log(3);
+    ```
+  choices:
+    - "`2`, `3`, `4`, `1`"
+    - "`1`, `2`, `3`, `4`"
+    - "`2`, `3`, `1`, `4`"
+    - "`2`, `4`, `3`, `1`"
+  correct: 0
+  rationale: |
+    The Promise executor runs eagerly and synchronously the moment `new Promise(executor)` is
+    evaluated, so `console.log(2)` fires first. `resolve()` enqueues the `.then` callback to the
+    microtask queue — it does not run immediately. `console.log(3)` runs next as synchronous code.
+    When the call stack empties, the event loop drains the entire microtask queue before touching any
+    macrotask, so `console.log(4)` runs. Only then does the `setTimeout` macrotask fire, printing `1`.
+    Distractor B (`1, 2, 3, 4`) targets students who assume `setTimeout` callbacks execute at their
+    registration point rather than in the macrotask queue. Distractor C (`2, 3, 1, 4`) targets
+    students who know microtasks beat macrotasks but incorrectly place the `setTimeout` callback
+    before the `.then` callback. Distractor D (`2, 4, 3, 1`) targets students who correctly identify
+    `2` first but assume the `.then` callback fires immediately after `resolve()` rather than after
+    all synchronous code.
+  bloom: analyze
+  source: "Slide 4, ISAQuiz6 Q1, ISAQuiz6 Q14"

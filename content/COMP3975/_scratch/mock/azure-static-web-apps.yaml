@@ -1,0 +1,44 @@
+- id: azure-static-web-apps-q-01
+  type: MCQ
+  topic: "Azure Static Web Apps"
+  marks: 1
+  question: "An Azure Function should write a record to Azure Blob Storage every time it processes an HTTP request. Adding this output capability requires:"
+  choices:
+    - "A second HTTP trigger pointed at the Blob Storage endpoint"
+    - "An output binding declared in function.json"
+    - "A new Azure Function app with a Blob trigger"
+    - "A timer trigger set to run after each HTTP trigger fires"
+  correct: 1
+  rationale: "Bindings connect a function to input or output data sources without SDK code in the function body. An output binding for Blob Storage is declared in `function.json` and Azure injects the write capability. The function still starts from its single HTTP trigger — you never add a second trigger. Option A is incorrect: a function has exactly one trigger; adding a second trigger would create a separate function, not add an output capability. Option C would create an entirely separate Function App with a Blob trigger, which fires when a blob is *created* — not when an HTTP request comes in. Option D uses a timer trigger, which fires on a schedule, not in response to another function's execution."
+  bloom: understand
+  source: "ts-function-apps.pptx; static-web-apps-SCRIPT.docx"
+
+- id: azure-static-web-apps-q-02
+  type: MCQ
+  topic: "Azure Static Web Apps"
+  marks: 1
+  question: "In an Azure Static Web App, what happens when a browser request arrives at `/api/students`?"
+  choices:
+    - "Azure serves the static SPA index.html and the SPA's router handles the path"
+    - "Azure routes the request to the matching Azure Function in the backend folder"
+    - "Azure returns a 404 because API routes must be defined in the SPA's router"
+    - "Azure redirects the request to a separate App Service running the API"
+  correct: 1
+  rationale: "Azure Static Web Apps routes all requests starting with `/api/` to the Azure Functions backend automatically. Requests to all other paths serve the static SPA files. This split routing is built into the service. Option A describes how SPAs handle client-side routing — that applies to paths *not* under `/api/`. Option C is incorrect — `/api/` paths are always routed to functions, not 404'd. Option D is incorrect — Azure Static Web Apps does not redirect to a separate App Service; the Functions backend is co-deployed in the same service."
+  bloom: understand
+  source: "ts-function-apps.pptx; static-web-apps-SCRIPT.docx"
+
+- id: azure-static-web-apps-q-03
+  type: MCQ
+  topic: "Azure Static Web Apps"
+  marks: 1
+  question: "Deployment to Azure Static Web Apps is configured by linking a GitHub repository. After the link is made, what triggers a new deployment automatically?"
+  choices:
+    - "Running `php artisan deploy` from the project root"
+    - "Every push to the linked branch, via a GitHub Actions workflow Azure generates"
+    - "Manually clicking 'Deploy' in the Azure portal on each change"
+    - "A scheduled cron job defined in `function.json`"
+  correct: 1
+  rationale: "When you link a GitHub repository to Azure Static Web Apps, Azure automatically generates a GitHub Actions workflow file in `.github/workflows/`. Every push to the linked branch triggers this workflow, which builds and deploys the app. Option A (`php artisan deploy`) is not a real Artisan command and has nothing to do with Azure Static Web Apps. Option C (manual portal click) describes non-automated deployment; Azure Static Web Apps is designed for continuous deployment. Option D (cron in function.json) would define a timer trigger for a Function, not a deployment pipeline."
+  bloom: remember
+  source: "static-web-apps-SCRIPT.docx"

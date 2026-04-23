@@ -1,0 +1,85 @@
+cards:
+  - id: azure-deploy-card-01
+    type: cloze
+    prompt: >
+      The shell script placed in the Laravel project root and run at Azure App Service container startup
+      is called {{startup.sh}}. Azure is told to execute it by entering
+      {{bash /home/site/wwwroot/startup.sh}} in Settings → Configuration → Stack settings →
+      Startup Command.
+    answer: "startup.sh; bash /home/site/wwwroot/startup.sh"
+    explanation: >
+      Azure App Service has no persistent state between container restarts. The startup script is the
+      single hook that creates the SQLite file, sets permissions, runs migrations, and caches Laravel
+      config so the app is ready to serve requests. Without it, the container starts with a broken Laravel install.
+    example: >
+      Startup Command field value: `bash /home/site/wwwroot/startup.sh`
+    source: "resources/Steps to Azure Deployment.html, step 6"
+    bloom: remember
+
+  - id: azure-deploy-card-02
+    type: name
+    prompt: >
+      Where do you set Laravel environment variables (APP_KEY, DB_CONNECTION, etc.) when deploying
+      to Azure App Service — instead of using a .env file?
+    answer: "Azure portal → Settings → Configuration → Application settings"
+    explanation: >
+      Azure containers do not persist files between restarts, and committing .env to git exposes
+      secrets. Application settings in the portal are injected as environment variables at runtime.
+      After `php artisan config:cache` runs in the startup script, Laravel reads from the compiled
+      cache — which was built from these portal values — and never touches .env again.
+    example: >
+      Keys to add: APP_KEY, APP_DEBUG, APP_STORAGE, DB_CONNECTION, DB_DATABASE
+    source: "resources/Steps to Azure Deployment.html, step 5"
+    bloom: remember
+
+  - id: azure-deploy-card-03
+    type: cloze
+    prompt: >
+      In the startup script, after clearing the config cache with `php artisan config:clear`,
+      you run {{php artisan config:cache}} to compile environment variables into a PHP file
+      so Laravel never reads .env. Similarly, {{php artisan view:cache}} pre-compiles all
+      Blade templates to reduce first-request latency.
+    answer: "php artisan config:cache; php artisan view:cache"
+    explanation: >
+      `config:cache` is critical on Azure because there is no .env file. It bakes the current
+      Application settings values into `bootstrap/cache/config.php`. If you skip it, config reads
+      fall through to .env, which is absent, and the app throws null-config errors.
+    example: >
+      Startup script caching block order: cache:clear → config:clear → config:cache →
+      route:clear → view:clear → view:cache
+    source: "resources/Fixes 2026.html, startup.sh listing"
+    bloom: understand
+
+  - id: azure-deploy-card-04
+    type: cloze
+    prompt: >
+      `php artisan migrate {{--force}}` is used in the startup script (rather than the plain
+      `migrate` command) because Azure's PHP container is treated as a {{production}} environment,
+      which causes the normal migrate command to require interactive confirmation.
+    answer: "--force; production"
+    explanation: >
+      Laravel detects a non-local APP_ENV and shows a "are you sure?" prompt for destructive
+      operations in production. `--force` bypasses that prompt so the startup script can run
+      non-interactively. Without it the script stalls waiting for input that never comes and
+      migrations never run.
+    example: >
+      `php /home/site/wwwroot/artisan migrate --force`
+    source: "resources/Fixes 2026.html, startup.sh listing"
+    bloom: understand
+
+  - id: azure-deploy-card-05
+    type: name
+    prompt: >
+      What is the absolute path where the startup script must be placed in the Azure App Service
+      container so that the Startup Command `bash /home/site/wwwroot/startup.sh` resolves correctly?
+    answer: "/home/site/wwwroot/startup.sh"
+    explanation: >
+      Azure maps the deployed application root to `/home/site/wwwroot/`. The startup script is
+      committed to the root of the Laravel project (alongside `artisan`), so after deployment
+      it lands at that absolute path. Placing it in a subdirectory (e.g., `public/`) means the
+      Startup Command path would not match and Azure would fail silently.
+    example: >
+      Project root on disk: `startup.sh` (same level as `artisan`, `composer.json`)
+      On Azure: `/home/site/wwwroot/startup.sh`
+    source: "resources/Steps to Azure Deployment.html, step 2 and step 6"
+    bloom: apply

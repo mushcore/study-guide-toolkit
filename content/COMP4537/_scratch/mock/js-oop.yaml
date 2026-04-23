@@ -1,0 +1,55 @@
+- id: js-oop-q-01
+  type: MCQ
+  topic: "OOP in JavaScript: Classes, Inheritance, and Composition"
+  marks: 2
+  question: |
+    What does `typeof []` return in JavaScript?
+  choices:
+    - '`"array"`'
+    - '`"object"`'
+    - '`"undefined"`'
+    - '`"number"`'
+  correct: 1
+  rationale: |
+    Arrays are objects in JavaScript. The `typeof` operator reports the internal type tag, which for
+    all non-function objects — including arrays and even `null` — is `"object"`. `typeof` cannot
+    distinguish a plain object from an array; use `Array.isArray(value)` for that. Distractor A
+    (`"array"`) is the most common wrong answer on ISAQuiz4: students expect `typeof` to reflect
+    the array's literal construction. Distractor C (`"undefined"`) targets students who confuse
+    an empty array with an uninitialized variable. Distractor D (`"number"`) targets students who
+    think the bracket notation `[]` implies something numeric.
+  bloom: remember
+  source: "Slide 1, ISAQuiz4 Q5"
+
+- id: js-oop-q-02
+  type: MCQ
+  topic: "OOP in JavaScript: Classes, Inheritance, and Composition"
+  marks: 2
+  question: |
+    A subclass constructor calls `super(first, last)` before assigning `this.gpa = gpa`.
+    What happens if you remove the `super(first, last)` call and access `this` immediately?
+
+    ```js
+    class Student extends Person {
+      constructor(first, last, gpa) {
+        // super(first, last) removed
+        this.gpa = gpa;
+      }
+    }
+    ```
+  choices:
+    - "`this.gpa` is set to `undefined` because the parent constructor never ran"
+    - "`ReferenceError: Must call super constructor in derived class before accessing 'this'`"
+    - "The code runs normally; `extends` handles the parent initialization automatically"
+    - "`TypeError: gpa is not a constructor`"
+  correct: 1
+  rationale: |
+    JavaScript enforces that `super()` must be called before any access to `this` in a derived class
+    constructor. `extends` sets up the prototype chain but does not automatically invoke the parent
+    constructor — `super()` does that. Omitting it and then touching `this` throws a `ReferenceError`
+    at runtime. Distractor A targets students who think the missing parent call merely leaves fields
+    unset rather than throwing. Distractor C targets the misconception that `extends` implicitly calls
+    the parent constructor. Distractor D targets students who confuse `gpa` (a plain value) with a
+    constructor function, misreading the `TypeError` message.
+  bloom: analyze
+  source: "Slide 1, ISAQuiz4"

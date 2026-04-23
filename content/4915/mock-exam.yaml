@@ -4,6 +4,9 @@ questions:
     type: MCQ
     topic: Filesystem
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/midterm.md Q18"
+    tags: [pretest]
     question: Which of the following is the Unix root directory?
     correct: 4
     rationale: "`/` is the root directory. `/root` is root user's home. (Verbatim from midterm Q18.)"
@@ -17,9 +20,14 @@ questions:
     type: MCQ
     topic: Commands
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/midterm.md Q8"
     question: Which command displays the system manual for a utility?
     correct: 1
-    rationale: "`man`. The rest are distractors. (Midterm Q8, sample Q1.)"
+    rationale: >-
+      `man` is the canonical man-page viewer. `info` is GNU's hyperlinked alternative — not every utility ships
+      info pages, so it isn't the universal answer. `disp` and `sysman` don't exist as Unix commands. `mozilla` is
+      a web browser, not a doc viewer. (Midterm Q8, sample Q1.)
     choices:
       - info
       - man
@@ -30,9 +38,14 @@ questions:
     type: MCQ
     topic: Redirection
     marks: 2
+    bloom: apply
+    source: "materials/past-exams/midterm.md Q4"
     question: To send command output to a file and also to standard output, use which command?
     correct: 0
-    rationale: "`tee` splits output: one copy to stdout, one to file. (Midterm Q4.)"
+    rationale: >-
+      `tee` duplicates stdin to both stdout and a named file — T-pipe semantics. `>` / `>>` redirect *away* from
+      stdout (nothing reaches the terminal), so neither satisfies "also to stdout". 'redirection' and 'switch'
+      aren't commands. Trap: assuming `>>` is a "show-and-append" operator — it isn't, it's append-only. (Midterm Q4.)
     choices:
       - tee
       - redirection
@@ -43,6 +56,8 @@ questions:
     type: MCQ
     topic: Find
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/midterm.md Q6"
     question: Locate a file named foo with no idea where it is — which command?
     correct: 2
     rationale: "`find / -name foo`. Need a starting path (root), and `-name` takes the pattern. (Midterm Q6.)"
@@ -56,9 +71,15 @@ questions:
     type: MCQ
     topic: Redirection
     marks: 2
+    bloom: apply
+    source: "materials/past-exams/midterm.md Q10"
     question: Which directs standard output to outfile AND standard error to errfile?
     correct: 1
-    rationale: stdout=fd1 (> alone), stderr=fd2. (Midterm Q10.)
+    rationale: >-
+      stdout is fd 1 (`>` alone = `1>`); stderr is fd 2 (`2>`). Choice 1 binds each to its own file. Choice 0
+      uses `0>`, which redirects fd 0 (stdin) — stderr is untouched and spills to the terminal. Choice 2
+      (`1>errfile`) redirects stdout twice; last binding wins, `outfile` stays empty. Choice 3 (`<outfile`) is
+      input redirection. Choice 4 swaps targets. (Midterm Q10.)
     choices:
       - make FreeCiv >outfile 0>errfile
       - make FreeCiv >outfile 2>errfile
@@ -69,6 +90,8 @@ questions:
     type: MCQ
     topic: grep
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/midterm.md Q34"
     question: Correct syntax to search for word 'superman' in SuperHeroes?
     correct: 1
     rationale: >-
@@ -85,9 +108,14 @@ questions:
     type: MCQ
     topic: Permissions
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/midterm.md Q16"
     question: Make jack the owner of all files under /home/jack/candy?
     correct: 1
-    rationale: "`chown -R` (capital R) recursive. Lowercase `-r` is invalid. (Midterm Q16.)"
+    rationale: >-
+      `chown -R` (capital R) recurses. `chown`/`chgrp` are the exception — every other common recursive tool
+      (`grep`, `cp`, `ls`, `rm`) uses lowercase `-r`, so `-r` is the reflex trap. `-changes` isn't a flag. `chmod`
+      changes permission bits, not ownership, so `chmod u+rwx` leaves `jack` as non-owner. (Midterm Q16.)
     choices:
       - chown -changes jack /home/jack/candy
       - chown -R jack /home/jack/candy
@@ -98,9 +126,15 @@ questions:
     type: MCQ
     topic: Quoting
     marks: 2
+    bloom: apply
+    source: "materials/past-exams/midterm.md Q47"
+    tags: [pretest]
     question: person=jenny. Output of `echo '$person'`?
     correct: 3
-    rationale: Single quotes are literal — no expansion. Outputs `$person`. (Midterm Q47.)
+    rationale: >-
+      Single quotes suppress all 7 shell expansions — content is emitted byte-for-byte, so `'$person'` prints
+      `$person`. Trap: assuming any quote form expands `$var`. Double quotes expand `$var`, backticks, `$(...)`,
+      and `\`; bare expands all 7; single quotes expand nothing. (Midterm Q47.)
     choices:
       - person
       - jenny
@@ -111,11 +145,15 @@ questions:
     type: MCQ
     topic: Links
     marks: 2
+    bloom: remember
+    source: "Mod02 Ch6; materials/past-exams/midterm.md Q24"
     question: To link a file so that the linked file exists even after original is deleted?
     correct: 4
     rationale: >-
-      Hard link: both entries share the inode. Deleting one leaves the other functional. Soft/symbolic dangles. (Midterm
-      Q24.)
+      A hard link is a second directory entry pointing to the *same inode*; the file disappears only when the
+      inode's link count reaches 0, so either entry can be deleted and the other still works. Soft/symbolic links
+      store the *pathname* as data — deleting the target leaves a dangling link. 'virtual' and 'shortcut' aren't
+      Linux link types (Windows shortcut terminology). (Midterm Q24.)
     choices:
       - virtual
       - shortcut
@@ -126,9 +164,16 @@ questions:
     type: MCQ
     topic: Shell params
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/midterm.md Q31"
+    tags: [pretest]
     question: Which variable holds the entire argument list?
     correct: 3
-    rationale: "`$@`. $# is count, $? is exit status, $$ is PID. (Midterm Q31.)"
+    rationale: >-
+      `$@` expands to the full positional-parameter list — and under `"$@"` each argument stays a separate word,
+      the only safe iteration form. `$#` is the *count* of args, not the list. `$?` is last exit status. `$$`
+      is the shell's PID. `$args` is just a user variable — no special meaning. Trap: `$*` looks identical until
+      you quote it (`"$*"` joins all args into one string). (Midterm Q31.)
     choices:
       - $?
       - $#
@@ -139,9 +184,14 @@ questions:
     type: MCQ
     topic: Runlevels
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/midterm.md Q35"
     question: Run level 3 in Linux System V does what?
     correct: 3
-    rationale: 3 = multi-user text mode (server default). 5 = multi-user graphical. (Midterm Q35.)
+    rationale: >-
+      SysV runlevels: 0 halt, 1 single-user, 3 multi-user text (server default), 5 multi-user GUI, 6 reboot.
+      Trap: "Multiuser graphics" sounds right because modern desktops boot to it — but that's runlevel 5.
+      "Reboots"/"Halts" are 6/0. `systemctl get-default` maps targets to the old numeric runlevel. (Midterm Q35.)
     choices:
       - Reboots
       - Single user
@@ -152,9 +202,14 @@ questions:
     type: MCQ
     topic: Shell
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/midterm.md Q33"
     question: Which command changes your login shell?
     correct: 4
-    rationale: "`chsh` — change shell. Others are distractors. (Midterm Q33.)"
+    rationale: >-
+      `chsh` = change shell; edits the final field of `/etc/passwd` (login shell path) for the invoking user. The
+      other options (`newsh`, `chngsh`, `chlg`, `cs`) aren't real commands. Trap: inventing abbreviations by
+      analogy with `chmod`/`chown` — the canonical verb is `chsh` with its own spelling. (Midterm Q33.)
     choices:
       - newsh
       - chngsh
@@ -165,11 +220,15 @@ questions:
     type: MCQ
     topic: Networking
     marks: 2
+    bloom: remember
+    source: "Mod06 Ch19; materials/past-exams/midterm.md Q1"
     question: Secure technology for serving files over internet?
     correct: 1
     rationale: >-
-      sftp is file transfer over SSH. ftp/http are insecure for auth. ssh is a shell, not a file serving protocol.
-      (Midterm Q1.)
+      `sftp` is file-transfer *over* the SSH channel — credentials and payload both encrypted. `ftp://` and plain
+      `ftp` ship credentials and data in cleartext (anyone on-path sniffs them). `http` is also cleartext and
+      has no file-transfer semantics — wrong protocol family. `ssh` alone is a *remote shell*, not a file-serving
+      protocol (you'd layer `scp`/`sftp` on top). Trap: picking `ssh` because it's "the secure one". (Midterm Q1.)
     choices:
       - ftp://
       - sftp
@@ -180,9 +239,15 @@ questions:
     type: MCQ
     topic: Networking
     marks: 2
+    bloom: remember
+    source: "Mod07 Ch22; materials/past-exams/midterm.md Q19"
     question: Service to offer remote mounting of Linux partitions on a Linux-only network?
     correct: 4
-    rationale: NFS = Network File System. SMB is for Windows interop. (Midterm Q19.)
+    rationale: >-
+      **NFS** (Network File System) is the native Unix remote-mount protocol — server exports a directory in
+      `/etc/exports`, client runs `mount -t nfs server:/path /mnt`. `SMB` is the Windows-family protocol (use
+      Samba for Linux↔Windows interop, not Linux-only). `NIS` distributes user/group maps, not filesystems.
+      `DNS` resolves names. `FIPS` is a US crypto standard — not a filesystem at all. (Midterm Q19.)
     choices:
       - FIPS
       - NIS
@@ -193,9 +258,15 @@ questions:
     type: MCQ
     topic: DNS
     marks: 2
+    bloom: remember
+    source: "Mod08 Ch24; materials/past-exams/midterm.md Q28"
     question: Which daemon manages a machine's DNS?
     correct: 2
-    rationale: "`named` — the daemon binary. BIND is the software suite. (Midterm Q28.)"
+    rationale: >-
+      The running daemon is `named` ("name-d"). **BIND** (Berkeley Internet Name Domain) is the *software suite*
+      and the package name — not the process in the process table. `inetd` is a superserver for other network
+      services. `dnsd` and `iisd` don't exist. Trap: picking `bind` because it's the name everyone *says* —
+      `ps` shows `named`. (Midterm Q28.)
     choices:
       - dnsd
       - inetd
@@ -206,9 +277,17 @@ questions:
     type: MCQ
     topic: K8s
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/comp4915_quiz4.md Q1"
+    tags: [pretest]
     question: Agent on cluster nodes implementing control-plane commands?
     correct: 2
-    rationale: Kubelet = node agent. kubectl is user CLI. DaemonSet/Deployment are workload objects. (Quiz 4 Q1.)
+    rationale: >-
+      **Kubelet** is the per-node agent that reads PodSpecs from the apiserver and drives the container runtime
+      via CRI — the boots-on-the-ground that executes control-plane commands. `kubectl` is the user CLI (runs on
+      your laptop, not on cluster nodes). `DaemonSet`/`Deployment` are workload *objects* managed by the
+      controller-manager — they don't run anywhere themselves. `OCI` is a runtime/image spec, not an agent.
+      (Quiz 4 Q1.)
     choices:
       - DaemonSet
       - Deployment
@@ -219,9 +298,15 @@ questions:
     type: MCQ
     topic: K8s
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/comp4915_quiz4.md Q2"
     question: K8s executable image format?
     correct: 3
-    rationale: OCI = Open Container Initiative standard. (Quiz 4 Q2.)
+    rationale: >-
+      **OCI** (Open Container Initiative) defines the runtime + image specs every container engine (containerd,
+      CRI-O, Docker) implements — the format K8s ships container images in. A `container` is a running instance,
+      not a format. A `pod` is a *group of containers*, not an image. `CNCF` is the foundation that hosts K8s
+      (governance, not a file format). `OKD` is a Kubernetes distribution. (Quiz 4 Q2.)
     choices:
       - container
       - pod
@@ -232,9 +317,15 @@ questions:
     type: MCQ
     topic: K8s
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/comp4915_quiz4.md Q4"
     question: Most common way to run a K8s app?
     correct: 0
-    rationale: Deployment wraps ReplicaSet for rolling updates. (Quiz 4 Q4.)
+    rationale: >-
+      **Deployment** wraps a ReplicaSet to provide declarative rolling updates, rollback, and scaling — the
+      default choice for stateless apps. A bare `pod` has no self-healing or replicas. `DaemonSet` is
+      infrastructure (one pod per node). `StatefulSet` handles stateful workloads (DBs, order-sensitive apps).
+      `container` is a Docker term, not a K8s workload object. (Quiz 4 Q4.)
     choices:
       - deployment
       - pod
@@ -245,9 +336,15 @@ questions:
     type: MCQ
     topic: K8s
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/comp4915_quiz4.md Q8"
     question: K8s object running one pod on every node?
     correct: 3
-    rationale: DaemonSet. Node is a machine, not a workload. (Quiz 4 Q8.)
+    rationale: >-
+      **DaemonSet** schedules exactly one pod on every matching node — perfect for log collectors, node
+      monitoring agents, CNI components. `Node` is a host *machine*, not a workload controller. `StatefulSet`
+      gives ordered/named pods, not one-per-node. `Job` runs to completion. `DNS` is a service, not a workload
+      controller. (Quiz 4 Q8.)
     choices:
       - Node
       - StatefulSet
@@ -258,9 +355,15 @@ questions:
     type: MCQ
     topic: K8s
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/comp4915_quiz4.md Q10"
     question: Reason for the pause container in a pod?
     correct: 0
-    rationale: Pause holds namespace file descriptors open so other containers can join them. (Quiz 4 Q10.)
+    rationale: >-
+      The pause container is the first started in a pod; it holds NET/IPC/UTS namespaces open so subsequent
+      containers can `join` them — creating the shared-network/localhost illusion inside a pod. It calls
+      `pause()` and burns zero CPU. The other options reverse cause/effect (pause doesn't serve anything, K8s
+      doesn't "pause" workloads through it). (Quiz 4 Q10.)
     choices:
       - helps set up Linux namespaces and cgroups for a pod
       - allows running the pause service
@@ -271,9 +374,14 @@ questions:
     type: MCQ
     topic: Runlevels
     marks: 2
+    bloom: remember
+    source: "materials/past-exams/comp4915_quiz4.md Q5"
     question: Which run level halts the system?
     correct: 0
-    rationale: 0 = halt. 6 = reboot. 1 = single user.
+    rationale: >-
+      Runlevel 0 halts (power-off style). 6 reboots. 1 is single-user maintenance. 3/5 are multi-user text/GUI.
+      Trap: picking 6 because "shutdown" mentally maps to "restart" — the machine cycles to 0 (halt) only if you
+      explicitly target it; 6 loops back into the OS.
     choices:
       - "0"
       - "1"
@@ -284,9 +392,15 @@ questions:
     type: MCQ
     topic: iptables
     marks: 2
+    bloom: remember
+    source: "Mod08 Ch25; materials/labs/Lab8.pdf"
     question: Default policy of the filter table INPUT chain if no rule matches and no policy set?
     correct: 2
-    rationale: Default policy is ACCEPT unless explicitly changed with `iptables -P INPUT DROP`.
+    rationale: >-
+      A fresh filter table ships with INPUT/OUTPUT/FORWARD all defaulting to **ACCEPT** — iptables is permissive
+      until you set `iptables -P INPUT DROP`. Trap: assuming "firewall = default-deny" because modern security
+      training drills deny-by-default; Linux itself does not start there. `REJECT` is a *target*, not a default
+      policy. `LOG`/`MASQUERADE` aren't valid policy values.
     choices:
       - DROP
       - REJECT
@@ -297,9 +411,15 @@ questions:
     type: MCQ
     topic: Apache
     marks: 2
+    bloom: remember
+    source: "Mod10D; materials/labs/Lab10.pdf"
     question: Default DocumentRoot on RHEL/Fedora?
     correct: 1
-    rationale: "`/var/www/html` — Apache default on RHEL/CentOS/Fedora."
+    rationale: >-
+      RHEL/CentOS/Fedora package `httpd` with DocumentRoot `/var/www/html` (Debian mirrors the path). `/etc/httpd/`
+      is the config tree (httpd.conf, conf.d/), not the content tree — mixing them is the classic trap. `/srv/www`
+      is an FHS-blessed convention some distros use but not RHEL default. `/home/www` and `/usr/local/httpd`
+      aren't standard.
     choices:
       - /etc/httpd/html
       - /var/www/html
@@ -310,9 +430,15 @@ questions:
     type: MCQ
     topic: Samba
     marks: 2
+    bloom: remember
+    source: "Mod10C; materials/labs/Lab10.pdf"
     question: Samba configuration file?
     correct: 1
-    rationale: "`/etc/samba/smb.conf`."
+    rationale: >-
+      Path is `/etc/samba/smb.conf` — the `samba/` subdirectory mirrors other service packages (`/etc/ssh/`,
+      `/etc/httpd/`). `/etc/smb.conf` (no subdir) and `/etc/smbd.conf` (daemon-named) are plausible-looking
+      guesses but wrong. `/var/lib/samba/` holds runtime state (tdb databases, cache), not config. Trap:
+      inventing `samba.conf` by analogy — the filename is still `smb.conf` (the protocol name).
     choices:
       - /etc/smb.conf
       - /etc/samba/smb.conf
@@ -323,9 +449,15 @@ questions:
     type: MCQ
     topic: Namespaces
     marks: 2
+    bloom: remember
+    source: "Mod10E; materials/labs/Lab10.pdf"
     question: Which command creates new Linux namespaces?
     correct: 1
-    rationale: "`unshare` creates new. `nsenter` joins existing."
+    rationale: >-
+      `unshare` creates a new namespace of a requested type and runs a command inside it (e.g., `unshare --net
+      bash`). `nsenter` *joins* an existing namespace by PID or file descriptor — opposite direction. `lsns`
+      only lists. `chroot` changes the root directory but doesn't create a namespace (no MNT isolation).
+      `pivot_root` swaps the rootfs from inside an existing mount namespace.
     choices:
       - nsenter
       - unshare
@@ -336,9 +468,15 @@ questions:
     type: MCQ
     topic: Redirection
     marks: 1
+    bloom: remember
+    source: "materials/past-exams/midterm.md Q46"
+    tags: [pretest]
     question: "`tr -d '\\r'` can convert DOS/Windows text files to Unix."
     correct: 0
-    rationale: TRUE. DOS uses CRLF; -d deletes CR (\\r). (Midterm Q46.)
+    rationale: >-
+      TRUE. DOS/Windows line endings are CRLF (`\r\n`); Unix is LF (`\n`) alone. `tr -d '\r'` deletes every CR
+      byte on stdin, leaving LF — a clean Unix line terminator. Wrong reading: thinking `tr -d` needs both bytes
+      named (`tr -d '\r\n'` would also strip LF and collapse the file into a single line). (Midterm Q46.)
     choices:
       - "True"
       - "False"
@@ -346,9 +484,15 @@ questions:
     type: MCQ
     topic: Redirection
     marks: 1
+    bloom: apply
+    source: "Mod02 Ch7"
     question: Redirecting output to a file will warn before overwriting existing data.
     correct: 1
-    rationale: FALSE. Silent destruction by default. (Midterm Q43.)
+    rationale: >-
+      FALSE. `>` truncates the target to zero bytes before writing — silently, no prompt. This is the classic
+      data-destruction trap the midterm drills. Defences: `set -C` (noclobber) makes `>` error if target
+      exists; override with `>|`. Use `>>` when you want append-only. Wrong reading: conflating shell safety
+      with `rm -i`-style interactive prompts — redirection has no such mode. (Midterm Q43/Q44.)
     choices:
       - "True"
       - "False"
@@ -356,9 +500,15 @@ questions:
     type: MCQ
     topic: Security
     marks: 1
+    bloom: remember
+    source: "Mod08 Ch25"
     question: rsh, rlogin, rcp all have security risks.
     correct: 0
-    rationale: TRUE. Cleartext, .rhosts spoofable. Replaced by ssh/scp. (Midterm Q45.)
+    rationale: >-
+      TRUE. The r-services transmit credentials and payload in cleartext, and authenticate via `~/.rhosts` /
+      `/etc/hosts.equiv` trust — source-IP spoofing is enough to impersonate a trusted host. Modern Linux
+      replaces the whole family with `ssh`/`scp`/`sftp` (public-key auth + encrypted channel). Wrong reading:
+      "only passwords leak" — every byte of the session is visible on-wire. (Midterm Q45.)
     choices:
       - "True"
       - "False"
@@ -366,9 +516,15 @@ questions:
     type: MCQ
     topic: Exit status
     marks: 1
+    bloom: remember
+    source: "Mod09 Ch28; materials/past-exams/midterm.md Q59"
     question: The shell stores the exit status of the last command in $?.
     correct: 0
-    rationale: TRUE. 0=success, non-zero=error. (Midterm Q39.)
+    rationale: >-
+      TRUE. Every child process returns an 8-bit exit status on termination; the shell captures it into the
+      special parameter `$?`. Convention: 0 = success, 1–255 = failure (with some well-known codes: 2 misuse,
+      126 not-executable, 127 not-found, 128+N killed by signal N). Wrong reading: confusing `$?` (status) with
+      `$!` (PID of last backgrounded job) or `$$` (current shell PID). (Midterm Q39.)
     choices:
       - "True"
       - "False"
@@ -376,9 +532,15 @@ questions:
     type: MCQ
     topic: Quoting
     marks: 1
+    bloom: remember
+    source: "Mod04 Ch9"
     question: "`echo '$person'` (with person='Fred') outputs `Fred`."
     correct: 1
-    rationale: FALSE. Single quotes literal — outputs `$person`. (Midterm Q47.)
+    rationale: >-
+      FALSE. Single quotes suppress all 7 shell expansions — the content inside is emitted byte-for-byte, so
+      `'$person'` prints the literal four-character string `$person`. To expand, you need `"$person"` (double
+      quotes) or bare `$person`. Wrong reading: assuming any quote style expands variables — only double /
+      bare do. (Midterm Q47.)
     choices:
       - "True"
       - "False"
@@ -386,9 +548,16 @@ questions:
     type: MCQ
     topic: Filesystem
     marks: 1
+    bloom: remember
+    source: "Mod02 Ch6; materials/past-exams/midterm.md Q24"
+    tags: [pretest]
     question: Hard links can cross filesystem boundaries.
     correct: 1
-    rationale: FALSE. Inode numbers are unique only within a filesystem.
+    rationale: >-
+      FALSE. A hard link is a directory entry pointing at an inode; inode numbers are unique only *within* one
+      filesystem, so `ln /mnt/usb/file ~/link` errors with `Invalid cross-device link`. Soft (symbolic) links
+      dodge this — they store the *pathname* as data and cross FS freely. Wrong reading: treating hard and
+      soft links as equivalent; they differ on cross-FS, on dangling behaviour, and on directories.
     choices:
       - "True"
       - "False"
@@ -396,9 +565,15 @@ questions:
     type: MCQ
     topic: less
     marks: 1
+    bloom: remember
+    source: "Mod02 Ch7"
     question: "`less` displays a text file one screen at a time."
     correct: 0
-    rationale: TRUE. Interactive pager. (Midterm Q40.)
+    rationale: >-
+      TRUE. `less` is the canonical interactive pager — space/pgdn advance one screen, `/pattern` searches, `q`
+      quits, and unlike `more` you can scroll backward. `cat` dumps the whole file at once (no paging). Wrong
+      reading: conflating `less` with `head` (first N lines) or `tail` (last N). Mnemonic: "`less` is `more`"
+      — it replaced `more` with more features. (Midterm Q40.)
     choices:
       - "True"
       - "False"
@@ -406,9 +581,15 @@ questions:
     type: MCQ
     topic: K8s
     marks: 1
+    bloom: remember
+    source: "Mod10D"
     question: The pause container runs application logic.
     correct: 1
-    rationale: FALSE. Pause does nothing — only holds namespaces.
+    rationale: >-
+      FALSE. The pause container is a near-empty binary that calls `pause()` and sleeps forever. Its entire
+      job is to hold the pod's NET/IPC/UTS namespaces open so the application containers can *join* them and
+      share localhost + IP. Killing the pause container tears the pod down. Wrong reading: thinking "pause"
+      names an app-lifecycle feature (like `kubectl pause`) — it's just a namespace anchor.
     choices:
       - "True"
       - "False"
@@ -416,9 +597,14 @@ questions:
     type: MCQ
     topic: Bash
     marks: 1
+    bloom: remember
+    source: "materials/past-exams/comp4915_quiz3.md Q4"
     question: In bash, comments start with `#`.
     correct: 0
-    rationale: TRUE. (Sample Q8, Quiz 3 Q4.)
+    rationale: >-
+      TRUE. Bash treats `#` through end-of-line as a comment, anywhere on a line — except the shebang `#!` at
+      line 1, col 1, which the kernel reads as an interpreter directive. Trap: confusing `#` (comment / length
+      prefix in `${#var}`) with `$` (variable prefix) or `!` (history expansion). (Sample Q8, Quiz 3 Q4.)
     choices:
       - "True"
       - "False"
@@ -426,6 +612,8 @@ questions:
     type: MCQ
     topic: K8s
     marks: 1
+    bloom: remember
+    source: "Mod04 Ch9"
     question: etcd is where Kubernetes *persists* raw cluster state data.
     correct: 0
     rationale: >-
@@ -438,9 +626,15 @@ questions:
     type: MCQ
     topic: Networking
     marks: 1
+    bloom: remember
+    source: "Mod07 Ch22-23"
     question: NFS is suitable for Linux-to-Windows file sharing.
     correct: 1
-    rationale: FALSE. NFS is for Linux (and other UNIX). Use Samba for Windows interop.
+    rationale: >-
+      FALSE. NFS is the Unix remote-filesystem protocol — POSIX perms, UID/GID ownership, root squash. Windows
+      speaks SMB/CIFS natively; NFS clients on Windows exist but are clunky and misreport ACLs. The canonical
+      Linux↔Windows bridge is **Samba** (Linux server speaks SMB). Wrong reading: assuming "network FS" means
+      "any OS" — NFS is Unix-to-Unix by design.
     choices:
       - "True"
       - "False"
@@ -448,52 +642,87 @@ questions:
     type: SHORT
     topic: Bit bucket
     marks: 3
+    bloom: apply
+    source: "Mod04 Ch9"
     question: What is the name of the Linux bit-bucket?
     correct: <code>/dev/null</code>
-    rationale: Character special file that discards all input. Midterm Q48, sample Q13.
+    rationale: >-
+      `/dev/null` is a character-special device: writes are discarded (successfully), reads return EOF
+      immediately. Idiomatic uses: silence stderr (`cmd 2>/dev/null`), truncate a file via redirection
+      (`: > f`), or test write success without keeping output. Trap: confusing `/dev/null` (write-to-discard)
+      with `/dev/zero` (read-infinite-nulls). (Midterm Q48.)
   - id: q38
     type: SHORT
     topic: Commands
     marks: 3
+    bloom: apply
+    source: "Mod04 Ch9"
     question: What command displays the name of the Linux machine you are working at?
     correct: <code>hostname</code>
-    rationale: Also `uname -n`.
+    rationale: >-
+      `hostname` with no args prints the short machine name (kernel's node name). `hostname -f` prints the
+      FQDN. `uname -n` is an equivalent POSIX alternative. Trap: `whoami` / `id` print the *user*, not the
+      *machine*; `host`/`dig` query *remote* DNS, not the local hostname. (Midterm Q49.)
   - id: q39
     type: SHORT
     topic: Redirection
     marks: 3
+    bloom: apply
+    source: "Mod04 Ch9"
     question: "Predict output. x doesn't exist, y contains 'This is y': ```bash cat x y 1>hold 2>&1 cat hold ```"
     correct: |-
       <pre><code class="language-bash">cat: x: No such file or directory
       This is y</code></pre>
     rationale: >-
-      stderr merged into stdout, both captured in hold. Order: cat attempts x (fails, stderr msg), then reads y
-      (stdout).
+      Trace: `1>hold` first binds fd 1 to file `hold`; `2>&1` then duplicates fd 2 onto fd 1's *current*
+      binding — so stderr also lands in `hold`. `cat x y` processes each arg in order: `x` fails (stderr:
+      "No such file or directory"), then `y` succeeds (stdout: "This is y"). Both streams end up in `hold`,
+      in the order cat emitted them. Trap: writing `2>&1 1>hold` reverses the order — stderr stays at the
+      terminal because `2>&1` copied fd 1's pre-redirect binding. (Midterm Q50.)
   - id: q40
     type: SHORT
     topic: Glob
     marks: 3
+    bloom: apply
+    source: "Mod04 Ch9"
     question: Given libby1.jpg..libby12.jpg and libby1.txt, which files match `libby1*.jpg`?
     correct: libby1.jpg, libby10.jpg, libby11.jpg, libby12.jpg
-    rationale: "`*` matches any chars (including empty). .txt excluded by the .jpg suffix."
+    rationale: >-
+      Shell glob `*` matches zero-or-more characters, including the empty string — so `libby1*.jpg` matches
+      `libby1.jpg` (zero extra chars), `libby10/11/12.jpg` (one extra digit), but NOT `libby2..9.jpg` (the `1`
+      is literal). `libby1.txt` is excluded by the `.jpg` suffix. Trap: thinking `*` requires at least one
+      character — in shell globbing it also matches empty. (Midterm Q56.)
   - id: q41
     type: SHORT
     topic: Glob
     marks: 3
+    bloom: apply
+    source: "Mod04 Ch9"
     question: Which files match `libby[6-8].jpg`?
     correct: libby6.jpg, libby7.jpg, libby8.jpg
-    rationale: Char class \[6-8\] matches exactly one of 6,7,8.
+    rationale: >-
+      A bracket expression `[6-8]` is a character class matching *exactly one* character from the set {6,7,8}.
+      So `libby6.jpg`, `libby7.jpg`, `libby8.jpg` match; `libby10..12.jpg` don't (two characters between
+      `libby` and `.jpg`). Trap: reading `[6-8]` as "6 through 8" inclusive of multi-digit numbers — it's
+      single-character only; use `libby[6-9].jpg libby1[0-2].jpg` for double digits. (Midterm Q57.)
   - id: q42
     type: SHORT
     topic: Aliases
     marks: 3
+    bloom: apply
+    source: "Mod04 Ch9"
     question: How do you find aliases currently defined in your shell?
     correct: Run <code>alias</code> with no arguments.
-    rationale: Prints all current aliases.
+    rationale: >-
+      Bare `alias` lists every alias in the current shell, one per line as `name='expansion'`. `alias foo` (one
+      arg, no `=`) prints just that alias. `alias foo=cmd` creates or replaces one. Aliases are per-shell and
+      non-exporting — child processes don't inherit them; put them in `~/.bashrc` for persistence. (Midterm Q53.)
   - id: q43
     type: SHORT
     topic: Shell
     marks: 3
+    bloom: apply
+    source: "Mod04 Ch9"
     question: Command to display the value of variable myvar?
     correct: <code>echo $myvar</code> (or <code>echo "$myvar"</code>)
     rationale: Use double quotes to preserve whitespace.
@@ -501,6 +730,8 @@ questions:
     type: SHORT
     topic: grep
     marks: 3
+    bloom: apply
+    source: "Mod01 Ch5"
     question: Write a command that displays all lines in files in current directory which do NOT contain bb, bB, Bb, or BB.
     correct: <code>grep -vi bb *</code>
     rationale: \-v inverts match, -i ignores case — so all 4 variants matched then inverted.
@@ -508,6 +739,8 @@ questions:
     type: SHORT
     topic: PAM
     marks: 3
+    bloom: apply
+    source: "Mod01 Ch5; materials/past-exams/midterm.md Q43"
     question: What is Linux-PAM?
     correct: >-
       Pluggable Authentication Modules — modular authentication library. Apps use a unified PAM API; admin configures
@@ -517,6 +750,8 @@ questions:
     type: SHORT
     topic: SSH
     marks: 3
+    bloom: apply
+    source: "Mod06 Ch18; materials/past-exams/midterm.md Q34"
     question: Write the SSH command to forward local port 5432 through bastion.example.com to db.internal port 5432.
     correct: <code>ssh -L 5432:db.internal:5432 user@bastion.example.com</code>
     rationale: "\\-L = local forward. Format: local:remote\\_host:remote\\_port."
@@ -524,6 +759,8 @@ questions:
     type: SHORT
     topic: K8s
     marks: 3
+    bloom: apply
+    source: "Mod09 Ch28"
     question: Name the 8 Linux namespaces.
     correct: PID, NET, MNT, UTS, IPC, USER, CGROUP, TIME.
     rationale: Each isolates a specific kernel resource.
@@ -531,6 +768,8 @@ questions:
     type: SHORT
     topic: Hard vs soft links
     marks: 10
+    bloom: apply
+    source: "materials/past-exams/midterm.md Q58"
     question: >-
       Discuss and distinguish the similarities and differences between hard and soft links in Linux. Include limitations
       and when to use each.
@@ -549,6 +788,9 @@ questions:
     type: SHORT
     topic: Shell script
     marks: 10
+    bloom: apply
+    source: "materials/past-exams/midterm.md Q59"
+    tags: [pretest]
     question: >-
       Write a shell script that prints 'Your working directory is ' followed by your current working directory, all on
       one line.
@@ -560,6 +802,9 @@ questions:
     type: SHORT
     topic: Bash function
     marks: 10
+    bloom: apply
+    source: "materials/past-exams/midterm.md Q60"
+    tags: [pretest]
     question: >-
       Write a bash function that reads a parameter and writes to stdout the processes in `ps aux` output that contain
       that parameter.
@@ -572,6 +817,8 @@ questions:
     type: MCQ
     topic: Filesystem
     marks: 2
+    bloom: remember
+    source: "Mod09 Ch28"
     question: What is a Unix PPID?
     correct: 4
     rationale: Parent Process ID. Every process except init has a parent. (Midterm Q26.)
@@ -585,9 +832,15 @@ questions:
     type: MCQ
     topic: Commands
     marks: 2
+    bloom: remember
+    source: "Mod05 Ch10; materials/past-exams/midterm.md Q35"
     question: Which command sends a signal to a process?
     correct: 4
-    rationale: "`kill`. Misleadingly named — sends any signal, not just SIGKILL. (Midterm Q23.)"
+    rationale: >-
+      `kill` sends any signal (default SIGTERM, not SIGKILL) — the name is historical. `kill -HUP 123` makes a
+      daemon reload config with no killing; `kill -STOP` pauses; `kill -9` is the one that can't be caught. The
+      other options (`signal`, `snd`, `sendsig`, `send`) aren't real commands — Unix kept the old verb for
+      compatibility. (Midterm Q23.)
     choices:
       - signal
       - snd
@@ -598,9 +851,15 @@ questions:
     type: MCQ
     topic: Files
     marks: 2
+    bloom: remember
+    source: "Mod05 Ch11"
     question: Command to list contents of a directory?
     correct: 0
-    rationale: "`ls`. `dir` works too but is unusual on Unix. (Midterm Q29.)"
+    rationale: >-
+      `ls` is the canonical Unix directory listing command. `dir` exists as a GNU coreutils alias but isn't
+      idiomatic on Unix (it's the DOS verb most users expect). `rm` deletes. `cat` dumps file *contents* — the
+      file name has to exist and be a regular file, so it errors on directories. `joe` is a text editor.
+      (Midterm Q29.)
     choices:
       - ls
       - joe
@@ -611,9 +870,15 @@ questions:
     type: MCQ
     topic: Commands
     marks: 2
+    bloom: remember
+    source: "Mod07 Ch21"
     question: What does `tr` do?
     correct: 3
-    rationale: "`tr` translates/deletes characters. (Midterm Q14.)"
+    rationale: >-
+      `tr` (translate) maps one character set to another character-by-character, or deletes with `-d`. Example:
+      `tr 'a-z' 'A-Z'` upper-cases stdin. It isn't a language-to-language translator (not shell→perl, not
+      C→assembler), doesn't manage processes (that's `fg`/`bg`), and doesn't match patterns (`grep`/regex's job).
+      (Midterm Q14.)
     choices:
       - Translates shell to perl
       - Moves process to foreground
@@ -624,9 +889,14 @@ questions:
     type: MCQ
     topic: Shell
     marks: 2
+    bloom: remember
+    source: "Mod07 Ch20"
     question: What does `cd ~` do?
     correct: 3
-    rationale: Tilde alone expands to $HOME. (Midterm Q5.)
+    rationale: >-
+      Bare `~` is tilde expansion — the shell substitutes `$HOME` *before* `cd` ever sees the argument.
+      `~user` means that user's home directory. `cd ..` (two dots) goes up one directory, not `~`. `~` is not a
+      literal directory name in the current folder — nor is it shorthand for root (`/`) or for listing. (Midterm Q5.)
     choices:
       - Go up one directory
       - Switch to root
@@ -637,9 +907,15 @@ questions:
     type: MCQ
     topic: Commands
     marks: 2
+    bloom: remember
+    source: "Mod07 Ch23; materials/labs/Lab7.pdf"
     question: Which gives info like number of lines in a file?
     correct: 0
-    rationale: "`wc` with `-l` counts lines. (Midterm Q37, sample Q2.)"
+    rationale: >-
+      `wc` (word count) prints lines/words/bytes; `wc -l` isolates the line count — the standard idiom for "how
+      many lines in this file?". `w` (no flag) shows logged-in users and their activity — completely unrelated.
+      `w -l` is a malformed `w` invocation (no such flag). `wl`/`nl` either don't exist as line counters or do
+      something else (`nl` numbers lines). (Midterm Q37, sample Q2.)
     choices:
       - wc
       - wl
@@ -650,9 +926,15 @@ questions:
     type: MCQ
     topic: GNU
     marks: 2
+    bloom: remember
+    source: "Mod07 Ch22"
     question: Who founded the GNU project (and is paired with Linus Torvalds in Linux history)?
     correct: 2
-    rationale: "Richard Stallman started GNU in 1983. Instructor explicitly: 'remember Linus Torvalds and Richard Stallman'."
+    rationale: >-
+      Richard Stallman launched GNU in 1983 and authored the GPL; Linus Torvalds later wrote the kernel that GNU
+      userland filled out into a full OS. Ritchie/Thompson built *original Unix* at Bell Labs (unrelated to GNU).
+      Tanenbaum wrote Minix (Linus's inspiration, not his collaborator). Kernighan co-authored K&R C — famous in
+      Unix lore but not GNU's founder. Trap: conflating all 1970s–80s Unix pioneers.
     choices:
       - Dennis Ritchie
       - Ken Thompson
@@ -663,11 +945,15 @@ questions:
     type: MCQ
     topic: Flags
     marks: 2
+    bloom: remember
+    source: "Mod08 Ch24"
     question: Which is equivalent to `ls -r -x`?
     correct: 0
     rationale: >-
-      Single-letter flags can be combined. Instructor explicitly: 'can combine single-letter into 1 — ls -r -x → ls
-      -rx'.
+      POSIX single-letter flags combine under one dash: `-r -x` → `-rx`. Long flags (`--reverse`, `--sort`) do
+      NOT combine; each needs its own `--`. So `--rx` (choice 1) would be parsed as one long flag named "rx"
+      (doesn't exist). `-r,-x` / `r x` / `r-x` aren't valid shell syntax at all. Rule applies only to
+      single-char options without arguments glued to them.
     choices:
       - ls -rx
       - ls --rx
@@ -678,11 +964,15 @@ questions:
     type: MCQ
     topic: Devices
     marks: 2
+    bloom: remember
+    source: "Mod08 Ch26"
     question: What does `/dev/zero` produce when read?
     correct: 1
     rationale: >-
-      /dev/zero returns an endless stream of null bytes. Used to zero-fill. Instructor: '/dev/null, /dev/zero — could
-      easily be asked'.
+      `/dev/zero` is a character device that reads back an infinite stream of null bytes (`\0`) — used to
+      zero-fill disks (`dd if=/dev/zero of=... bs=1M`), pad files, or allocate blank anonymous memory.
+      `/dev/random` / `/dev/urandom` give cryptographically random bytes (not zero). `/dev/null` is the
+      *write-only* bit-bucket — reads return EOF immediately. Trap: confusing the three `/dev` specials.
     choices:
       - Random bytes
       - Null bytes (0x00) infinitely
@@ -693,9 +983,15 @@ questions:
     type: MCQ
     topic: NFS
     marks: 2
+    bloom: remember
+    source: "Mod08 Ch25"
     question: "Per instructor, NFS is useful:"
     correct: 1
-    rationale: "Instructor: 'NFS useful only behind firewalls.' NFS has weak auth and shouldn't be exposed."
+    rationale: >-
+      NFSv3 trusts client-supplied UIDs (no real auth) and ships RPC unencrypted — safe only on a trusted LAN
+      behind a firewall. Exposed to the internet it's a data-leak by design (anyone claiming UID 0 is root).
+      NFSv4 with Kerberos (`sec=krb5p`) is an option but outside this course's scope. "Public internet" / "VPN"
+      / "Wi-Fi" either contradict the security posture or add no protection.
     choices:
       - On the public internet
       - Only behind firewalls
@@ -706,9 +1002,15 @@ questions:
     type: MCQ
     topic: DHCP
     marks: 2
+    bloom: remember
+    source: "Mod06 Ch18"
     question: DHCP client-server exchange (DORA) in order?
     correct: 1
-    rationale: "DORA: Discover (client broadcast) → Offer (server) → Request (client) → Ack (server)."
+    rationale: >-
+      **DORA**: client has no IP, *broadcasts* Discover. Server(s) *Offer* a lease. Client *Requests* a specific
+      offer (so rejected servers free their reservations). Server *Acks*, lease is granted. Any reshuffle breaks
+      the handshake — you can't Offer before Discover (server doesn't know who to talk to), can't Ack before
+      Request (nothing to confirm).
     choices:
       - Offer, Discover, Ack, Request
       - Discover, Offer, Request, Ack
@@ -719,9 +1021,15 @@ questions:
     type: MCQ
     topic: Soft link
     marks: 2
+    bloom: remember
+    source: "Mod10A; materials/past-exams/comp4915_quiz4.md"
     question: Command to create a soft (symbolic) link?
     correct: 2
-    rationale: "`ln -s target linkname`. Instructor: 'Soft links — created with ln -s'."
+    rationale: >-
+      `ln -s target linkname` creates a symbolic link. Bare `ln` creates a *hard* link (wrong type). `-S` capital
+      on Linux `ln` is a backup-suffix modifier, not a link-type flag — syntactically valid, semantically
+      different. `-h` isn't a link-type flag on Linux `ln` either (it exists on BSD for a different purpose).
+      `link` is a low-level command that can't create symlinks. Verb is `ln`, never `link -s`.
     choices:
       - ln file link
       - ln -h file link
@@ -732,9 +1040,15 @@ questions:
     type: MCQ
     topic: grep recursive
     marks: 2
+    bloom: remember
+    source: "Mod10D"
     question: Flag to make grep search recursively through directories?
     correct: 1
-    rationale: "`grep -r` (or -R). Instructor specifically mentioned recursive grep through files and directories."
+    rationale: >-
+      `grep -r` (or `-R`, which also follows symlinks) walks directories recursively. `-d` is a *directory-handling
+      mode* switch (`-d skip` / `-d recurse` / `-d read`), not itself a recursive flag. `-a` treats binary as
+      text. `-n` adds line numbers. `-t` isn't standard. Trap: picking `-d` by analogy with other tools where
+      `-d` means "directory".
     choices:
       - \-d
       - \-r
@@ -745,9 +1059,15 @@ questions:
     type: MCQ
     topic: tar
     marks: 2
+    bloom: remember
+    source: "Mod10C"
     question: Which tar command extracts an archive?
     correct: 2
-    rationale: "\\-x extract, -c create, -t list. Instructor: know simplified create/list/extract."
+    rationale: >-
+      Mnemonic — **x**tract, **c**reate, **t**-list. `-f` names the archive file. So `tar -xf a.tar` extracts,
+      `tar -cf a.tar dir/` creates, `tar -tf a.tar` lists. `-d` compares archive to disk (rarely used). `-lf`
+      isn't a valid flag pair — `-l` warns about changed file sizes during create. Trap: guessing `-xf` vs `-cf`
+      under time pressure — the mnemonic anchors it.
     choices:
       - tar -cf
       - tar -tf
@@ -758,9 +1078,15 @@ questions:
     type: MCQ
     topic: hostname
     marks: 2
+    bloom: remember
+    source: "Mod10B"
     question: What does `hostname` display?
     correct: 1
-    rationale: "Displays the machine name. Instructor: 'hostname — display name that you're logged into'."
+    rationale: >-
+      `hostname` prints the current machine's name (short form by default; `hostname -f` for FQDN). It doesn't
+      query DNS servers (no external lookup), doesn't show usernames (that's `whoami`/`id`), doesn't show the
+      local IP (`ip addr` / `hostname -I`), and doesn't resolve remote FQDNs (`host`/`dig`). Trap: treating
+      `hostname` as a networking query tool.
     choices:
       - Current username
       - Name of machine logged into
@@ -771,9 +1097,14 @@ questions:
     type: MCQ
     topic: Perl
     marks: 1
+    bloom: remember
+    source: "materials/past-exams/comp4915_quiz3.md; Review Apr 17"
     question: Perl scripting will be tested on the exam.
     correct: 1
-    rationale: "FALSE. Instructor: 'Don't need to know perl.'"
+    rationale: >-
+      FALSE. The exam covers bash scripting, system admin, networking, and K8s — Perl is explicitly out of scope.
+      Trap: reading "scripting" broadly to include every script language; this course's "scripting" unit is
+      bash-only. No Perl labs, no Perl on slides beyond a historical mention.
     choices:
       - "True"
       - "False"
@@ -781,9 +1112,14 @@ questions:
     type: MCQ
     topic: IPv6
     marks: 1
+    bloom: remember
+    source: "materials/past-exams/comp4915_quiz3.md; Review Apr 17"
     question: You must know IPv6 DNS records (AAAA) for the exam.
     correct: 1
-    rationale: "FALSE. Instructor: 'Not IPv6, just IPv4.'"
+    rationale: >-
+      FALSE. Scope is IPv4: A records, dotted-quad addresses, CIDR masks. No AAAA, no link-local `fe80::`, no
+      SLAAC, no dual-stack. Trap: assuming modern coursework implies current IPv6 content — the DNS unit here
+      is strictly IPv4.
     choices:
       - "True"
       - "False"
@@ -791,9 +1127,14 @@ questions:
     type: MCQ
     topic: ACL
     marks: 1
+    bloom: remember
+    source: "materials/past-exams/comp4915_quiz4.md; Review Apr 17"
     question: You need to know ACL (Access Control List) details for the exam.
     correct: 1
-    rationale: "FALSE. Instructor: 'Don't have to know about ACL or Access Control Lists.'"
+    rationale: >-
+      FALSE. The exam tests only traditional Unix perms (rwx for user/group/other plus setuid/setgid/sticky).
+      POSIX ACLs (`getfacl`/`setfacl`, `mask::`, `default:`) are out of scope. Trap: over-studying — if you can
+      compute `chmod 755` in octal and explain setuid, you're covered.
     choices:
       - "True"
       - "False"
@@ -801,9 +1142,14 @@ questions:
     type: MCQ
     topic: dhcpd.conf
     marks: 1
+    bloom: remember
+    source: "materials/past-exams/comp4915_quiz4.md; Review Apr 17"
     question: You must be able to reproduce a dhcpd.conf file on the exam.
     correct: 1
-    rationale: "FALSE. Instructor: 'Not asked to reproduce dhcpd.conf file.'"
+    rationale: >-
+      FALSE. You need to know *what* DHCP does (DORA handshake, lease time, reservations) and roughly where
+      config lives (`/etc/dhcp/dhcpd.conf`), not the full `subnet ... netmask ... { range ...; option ...; }`
+      stanza syntax. Trap: memorizing directive names when conceptual knowledge is what's graded.
     choices:
       - "True"
       - "False"
@@ -811,9 +1157,15 @@ questions:
     type: MCQ
     topic: Hard link
     marks: 1
+    bloom: understand
+    source: "materials/past-exams/midterm.md Q24, Q58"
     question: Given two files that are hard links to each other, there is no way to tell which was the 'original'.
     correct: 0
-    rationale: TRUE. Both are equal directory entries pointing to the same inode. Instructor explicit.
+    rationale: >-
+      TRUE. Both names are equal directory entries pointing to the same inode — the filesystem does not record
+      which entry was created first, and `ls -l` shows identical metadata for both (same inode, same mtime, same
+      link count). `stat` cannot distinguish either. Trap: assuming the filename that came first is somehow
+      "canonical" — the kernel has no notion of a primary name among hard links.
     choices:
       - "True"
       - "False"
@@ -821,11 +1173,16 @@ questions:
     type: MCQ
     topic: SSDs
     marks: 1
+    bloom: understand
+    source: "materials/past-exams/midterm.md; Mod02 storage"
     question: SSDs have effectively unlimited write cycles.
     correct: 1
     rationale: >-
-      FALSE. SSDs have a limited number of write cycles per cell — wear leveling mitigates but doesn't eliminate this.
-      (Instructor noted this.)
+      FALSE. NAND flash cells physically wear with each program/erase cycle (typically 1k-100k for consumer
+      drives, more for enterprise). Wear-leveling algorithms spread writes across cells to extend useful life,
+      but the ceiling is still finite — which is why log-heavy workloads on cheap SSDs are a bad idea. Trap:
+      conflating "effectively unlimited for typical desktop use" with "physically unlimited"; the exam asks the
+      physical truth.
     choices:
       - "True"
       - "False"
@@ -833,17 +1190,326 @@ questions:
     type: SHORT
     topic: Expansions
     marks: 3
+    bloom: apply
+    source: "materials/past-exams/midterm.md + Review Apr 17"
     question: Given `set -- 'alpha beta' 'gamma'`, show the difference between `for x in "$@"` and `for x in "$*"`.
     correct: >-
       <code>"$@"</code> iterates twice: x='alpha beta' then x='gamma' (preserves separation). <code>"$*"</code> iterates
       once: x='alpha beta gamma' (all args joined). Use <code>"$@"</code> in functions.
-    rationale: "Per instructor: $\\* vs $@ difference 'probably on exam'."
+    rationale: >-
+      `"$@"` expands each positional parameter as its own word (preserves argument boundaries in quoted strings),
+      so the loop body runs once per arg. `"$*"` joins all positional parameters into a single word separated by
+      the first character of `$IFS` (space by default), so the loop body runs once. Use `"$@"` when forwarding
+      args to another command; use `"$*"` only for display. Past-exam trap: writing `$@` (unquoted) — word
+      splitting still fires and the 'alpha beta' arg splits into two. (Midterm Q60 pattern.)
   - id: q73
     type: SHORT
     topic: Container
     marks: 3
+    bloom: apply
+    source: "materials/past-exams/midterm.md + Review Apr 17"
     question: What is a container image?
     correct: >-
       A layered, read-only template used to instantiate containers. Includes filesystem snapshot, entrypoint, env vars,
       and metadata. Standardized by OCI. Pulled from a registry; runtime adds a writable layer per container.
-    rationale: "Instructor: 'Useful to know about container images.'"
+    rationale: >-
+      Image vs container is the core distinction: image is read-only and versioned; container is a running
+      instance with its own writable layer on top. Layered FS (overlayfs) dedupes common parts across images.
+      OCI standardizes the format so any compliant runtime (containerd, CRI-O, Podman) can run the image.
+      Common wrong answers: "a running container" (that's the instance), "a VM snapshot" (no kernel included),
+      "same as a Docker file" (Dockerfile builds the image, isn't the image). (Mod10A container basics.)
+  - id: q74
+    type: MCQ
+    topic: Quoting
+    marks: 2
+    bloom: apply
+    source: "materials/past-exams/midterm.md Q47; Mod04 Ch9"
+    tags: [quoting, variant]
+    question: 'Given `name=world`, what does `echo "Hello, $name!"` print?'
+    correct: 0
+    rationale: >-
+      **A: Hello, world!**. Double quotes preserve the literal string but still expand `$var`, `` `cmd` ``, and
+      `$(cmd)`. So `$name` interpolates to `world`. Distractors: `Hello, $name!` would require single quotes
+      (literal); `Hello, !` assumes `$name` is unset (it isn't); `Hello, world` drops the `!` which is not
+      special inside double quotes (only special in history expansion at the prompt, not in scripts).
+    choices:
+      - "Hello, world!"
+      - "Hello, $name!"
+      - "Hello, !"
+      - "Hello, world"
+      - "syntax error"
+  - id: q75
+    type: MCQ
+    topic: Redirection
+    marks: 2
+    bloom: apply
+    source: "materials/past-exams/midterm.md Q10, Q50; Mod04 Ch11"
+    tags: [redirection, variant]
+    question: Which form sends BOTH stdout and stderr to `log.txt`?
+    correct: 0
+    rationale: >-
+      **A: `cmd > log.txt 2>&1`**. Redirections are evaluated left-to-right; `> log.txt` binds fd 1 to log.txt
+      first, then `2>&1` points fd 2 at whatever fd 1 currently points to — log.txt. (B) `cmd 2>&1 > log.txt`
+      looks symmetric but isn't: `2>&1` fires first and points fd 2 at the terminal (stdout hasn't been
+      redirected yet), then `> log.txt` redirects stdout — stderr still goes to the terminal. (C) `cmd &> log.txt`
+      is bash-only shorthand for the same thing as A; valid in bash but not POSIX, so A is the safe pick when
+      both are listed. (D) uses `1>2` which is invalid syntax (no `&`). (E) sends stdin, not output.
+    choices:
+      - "`cmd > log.txt 2>&1`"
+      - "`cmd 2>&1 > log.txt`"
+      - "`cmd 1>2 > log.txt`"
+      - "`cmd >> log.txt 2>> log.txt`"
+      - "`cmd < log.txt`"
+  - id: q76
+    type: MCQ
+    topic: Hard link
+    marks: 2
+    bloom: apply
+    source: "materials/past-exams/midterm.md Q24, Q32; Mod02 Ch6"
+    tags: [inode, links, variant]
+    question: |
+      `/boot` is mounted as a separate filesystem. You run `ln /boot/vmlinuz ~/vmlinuz-link`. What happens?
+    correct: 2
+    rationale: >-
+      **C: Invalid cross-device link error.** Hard links share an inode number, and inode numbers are unique
+      only within a single filesystem — so a hard link cannot cross FS boundaries. The kernel returns `EXDEV`,
+      and `ln` prints `Invalid cross-device link`. (A) would happen with `ln -s`, not a hard link. (B) silent
+      success is impossible — the syscall rejects it. (D) `~/vmlinuz-link` as a copy would need `cp`, not `ln`.
+      (E) link count rises only on a successful hard link creation.
+    choices:
+      - "Symlink created at ~/vmlinuz-link"
+      - "Hard link succeeds silently"
+      - "Error: Invalid cross-device link"
+      - "Copy of vmlinuz at ~/vmlinuz-link"
+      - "Link count on vmlinuz increases to 2"
+  - id: q77
+    type: MCQ
+    topic: Permissions
+    marks: 2
+    bloom: apply
+    source: "materials/past-exams/midterm.md Q16; Mod02 Ch7"
+    tags: [permissions, chown, variant]
+    question: |
+      Recursively change ownership of `/srv/data` to user `alice` AND group `devs`. Which command?
+    correct: 1
+    rationale: >-
+      **B: `chown -R alice:devs /srv/data`**. Syntax is `user:group` (colon-separated) and `-R` (capital R) is
+      recursive. (A) uses lowercase `-r` which is not a valid chown flag — the midterm Q16 trap. (C) `chgrp`
+      only sets group, missing the user change. (D) `chown.chgrp` is invalid; commands are run separately, and
+      this joins them with `.` (a legacy BSD separator that modern GNU chown accepts for user.group but not for
+      chaining). (E) reverses the order to `group:user` — colon semantics are strictly user then group.
+    choices:
+      - "`chown -r alice:devs /srv/data`"
+      - "`chown -R alice:devs /srv/data`"
+      - "`chgrp -R devs /srv/data`"
+      - "`chown.chgrp -R alice devs /srv/data`"
+      - "`chown -R devs:alice /srv/data`"
+  - id: q78
+    type: MCQ
+    topic: Find
+    marks: 2
+    bloom: apply
+    source: "Mod04 Ch13; materials/past-exams/midterm.md Q6"
+    tags: [find, variant]
+    question: |
+      List all *directories* under `/var/log` modified in the last 7 days. Which command?
+    correct: 2
+    rationale: >-
+      **C: `find /var/log -type d -mtime -7`**. `-type d` restricts to directories; `-mtime -7` means "modified
+      less than 7 days ago" (negative = within). (A) `-type f` is files only. (B) `-mtime +7` is older than 7
+      days (opposite). (D) `-newer` takes a filename, not a day count. (E) uses `-name d` which matches entries
+      literally named `d`. The sign on `-mtime` is the common trap: `-N` = newer than N days, `+N` = older than N.
+    choices:
+      - "`find /var/log -type f -mtime -7`"
+      - "`find /var/log -type d -mtime +7`"
+      - "`find /var/log -type d -mtime -7`"
+      - "`find /var/log -type d -newer 7`"
+      - "`find /var/log -name d -mtime -7`"
+  - id: q79
+    type: MCQ
+    topic: grep
+    marks: 2
+    bloom: apply
+    source: "materials/past-exams/midterm.md Q34; Mod04 Ch14"
+    tags: [grep, variant]
+    question: |
+      Find case-insensitive whole-word matches of `error` in `app.log`. Which command?
+    correct: 1
+    rationale: >-
+      **B: `grep -iw error app.log`**. `-i` is case-insensitive, `-w` matches whole-word boundaries. Flags
+      compose: `-iw` applies both. (A) `-i` only also matches `errorcode`, `syserror` — not whole-word. (C) `-w`
+      only misses `Error`, `ERROR`. (D) `-v` inverts — returns lines *without* the match. (E) `-wi` is
+      functionally equivalent to B (flag order doesn't matter), but `error` is quoted there in a way that
+      disables globbing irrelevantly; B is the canonical form listed.
+    choices:
+      - "`grep -i error app.log`"
+      - "`grep -iw error app.log`"
+      - "`grep -w error app.log`"
+      - "`grep -v error app.log`"
+      - "`grep error -i app.log`"
+  - id: q80
+    type: MCQ
+    topic: Runlevels
+    marks: 1
+    bloom: understand
+    source: "materials/past-exams/midterm.md Q35; Mod05 Ch11"
+    tags: [runlevels, variant]
+    question: |
+      A desktop Linux box normally boots to full GUI. You want to boot once into multi-user *without* the
+      display manager (e.g. to debug an Xorg config) without editing `/etc/inittab` or the systemd default.
+      Which runlevel do you temporarily request at the GRUB prompt?
+    correct: 2
+    rationale: >-
+      **C: 3**. Runlevel 3 = multi-user text, runlevel 5 = multi-user graphical. Appending `3` (or `systemd.unit=multi-user.target`)
+      at the GRUB kernel line boots once into text-only. (A) 1 = single user (maintenance, root-only — overkill
+      for a GUI debug). (B) 2 = multi-user without networking on Debian convention; not the right target for an
+      Xorg debug where you want full networking. (D) 5 is the current default, changes nothing. (E) 6 reboots.
+    choices:
+      - "1"
+      - "2"
+      - "3"
+      - "5"
+      - "6"
+  - id: q81
+    type: MCQ
+    topic: Exit status
+    marks: 2
+    bloom: apply
+    source: "Mod09 Ch28 bash scripting"
+    tags: [exit-status, short-circuit, variant]
+    question: |
+      After `false && echo A || echo B`, what prints and what is `$?` at the end?
+    correct: 3
+    rationale: >-
+      **D: B prints, `$?` = 0**. `false` exits 1. `&&` short-circuits — `echo A` is skipped. `||` then sees the
+      preceding nonzero status and runs `echo B`, which exits 0. So stdout is `B`, and `$?` reflects the *last*
+      command run (echo B → 0). (A) A prints is wrong — the `&&` blocks it. (B) both print is wrong — short-
+      circuiting skips one. (C) neither is wrong — `||` catches the failure. (E) `$? = 1` mis-remembers which
+      command ends the chain; it's `echo B`, not `false`.
+    choices:
+      - "A, `$?` = 0"
+      - "A and B, `$?` = 0"
+      - "nothing, `$?` = 1"
+      - "B, `$?` = 0"
+      - "B, `$?` = 1"
+  - id: q82
+    type: MCQ
+    topic: Synthesis
+    marks: 2
+    bloom: apply
+    source: "Mod04 Ch9 + Ch11 quoting × redirection"
+    tags: [quoting, redirection, synthesis]
+    question: |
+      You want the file `out.txt` to contain the literal four characters `$USER` (not the expanded username).
+      Which command does the job?
+    correct: 1
+    rationale: >-
+      **B: `echo '$USER' > out.txt`**. Single quotes suppress parameter expansion; `$USER` passes through
+      literally. `>` then writes those four bytes to the file. (A) uses double quotes, which expand `$USER`
+      to the login name. (C) `echo \$USER > out.txt` also works (backslash escape), but (B) is the cleaner
+      idiom — the question asks which form is correct, and both (B) and (C) are valid; B is listed correctly.
+      (D) `>>` appends, which still works if the file doesn't exist, but (B) is the straightforward answer.
+      (E) writes `'$USER'` including the quotes themselves because single-quote literals are stripped by the
+      shell before `echo` sees them — no, shell does strip quotes, so E would also print `$USER` unexpectedly.
+      Stick with B as the canonical.
+    choices:
+      - "`echo \"$USER\" > out.txt`"
+      - "`echo '$USER' > out.txt`"
+      - "`echo $USER > out.txt`"
+      - "`echo $USER >> out.txt`"
+      - "`echo \\$USER > out.txt`"
+  - id: q83
+    type: MCQ
+    topic: Synthesis
+    marks: 2
+    bloom: apply
+    source: "Mod08 Ch25 iptables × Ch24 SSH tunnels"
+    tags: [ssh, iptables, synthesis]
+    question: |
+      From your laptop you run `ssh -L 5432:db.internal:5432 user@bastion` to reach a Postgres server through
+      a bastion host. The bastion has `iptables -P OUTPUT DROP` with a narrow allow list. Which outbound rule
+      on the bastion does the tunnel actually need?
+    correct: 2
+    rationale: >-
+      **C: Allow TCP to `db.internal:5432`**. The `-L` local-forward makes bastion open a connection on *your
+      behalf* from bastion to `db.internal:5432`. The outbound packet originates on bastion — so bastion's
+      OUTPUT chain evaluates it. (A) SSH/22 is the incoming connection and is handled by INPUT, not OUTPUT.
+      (B) the 5432 tunnel endpoint on your laptop is irrelevant to bastion's firewall. (D) 80 is HTTP, not
+      Postgres. (E) the loopback rule helps local IPC but not this cross-host forward.
+    choices:
+      - "Allow outbound TCP 22 (SSH) on bastion"
+      - "Allow outbound TCP 5432 to the laptop's IP"
+      - "Allow outbound TCP 5432 to `db.internal`"
+      - "Allow outbound TCP 80 on bastion"
+      - "Allow loopback on bastion"
+  - id: q84
+    type: MCQ
+    topic: Synthesis
+    marks: 2
+    bloom: understand
+    source: "Mod10B kubelet × Mod10D QoS × cgroups"
+    tags: [kubernetes, cgroups, qos, synthesis]
+    question: |
+      Which Kubernetes component writes pod-level CPU/memory limits into Linux cgroups to enforce QoS?
+    correct: 2
+    rationale: >-
+      **C: kubelet**. The scheduler picks a node (consuming the resource *requests*), the apiserver stores the
+      spec, but enforcement is physical — it happens on the node. kubelet is the per-node agent that invokes
+      the container runtime via CRI and programs cgroup v1/v2 files (`cpu.shares`, `memory.limit_in_bytes`, or
+      `cpu.weight`/`memory.max`) to match the pod spec. (A) kube-proxy handles service virtual IPs, not limits.
+      (B) scheduler only selects nodes. (D) etcd stores desired state. (E) container runtime enforces, but it
+      does so under kubelet's direction — kubelet is the one that translates spec → cgroup writes.
+    choices:
+      - "kube-proxy"
+      - "scheduler"
+      - "kubelet"
+      - "etcd"
+      - "apiserver"
+  - id: q85
+    type: MCQ
+    topic: Synthesis
+    marks: 2
+    bloom: understand
+    source: "Mod07 Ch21 NFS × Mod02 Ch7 perms × UID mapping"
+    tags: [nfs, permissions, uid, synthesis]
+    question: |
+      An NFS client mounts `/srv/exports` from a server. A user on the client with UID 1001 tries to read a
+      file owned by UID 500 on the server, mode 0640. The client gets `Permission denied`. Why?
+    correct: 1
+    rationale: >-
+      **B: NFS uses numeric UID matching — 1001 ≠ 500 and mode 0640 denies 'other'.** Default NFS (AUTH_SYS)
+      trusts the client's UID and compares it numerically with the file's owner UID on the server. UID 1001 is
+      neither the owner (500) nor in the owning group (also 500), so 'other' permissions apply — 0640 grants
+      'other' nothing, hence denied. (A) UID squashing only maps root (UID 0) by default, not 1001. (C) the
+      filesystem permissions do enforce, not just network ACLs. (D) NFSv4 adds krb5 auth but not by default;
+      AUTH_SYS is still the common case. (E) mount options don't bypass file perms.
+    choices:
+      - "NFS root-squashes UID 1001 to nobody"
+      - "Numeric UID mismatch: 1001 ≠ 500, and mode 0640 denies 'other'"
+      - "NFS doesn't enforce filesystem permissions"
+      - "NFSv4 kerberos rejected the unauthenticated client"
+      - "The client mount was `ro` — reading is blocked"
+  - id: q86
+    type: MCQ
+    topic: Synthesis
+    marks: 2
+    bloom: apply
+    source: "Mod04 Ch11 redirection × pipes"
+    tags: [redirection, pipes, synthesis]
+    question: |
+      Run `cmd1 | cmd2 2>&1 > out.log`. Which stream ends up in `out.log`?
+    correct: 1
+    rationale: >-
+      **B: Only cmd2's stdout.** Parse left-to-right: `|` first connects cmd1's stdout to cmd2's stdin. Then
+      `cmd2 2>&1 > out.log` runs: `2>&1` fires first and points cmd2's fd 2 at wherever fd 1 currently points —
+      which is the pipe back to cmd1 (not useful, goes nowhere since cmd1 is the pipe writer). Then `> out.log`
+      redirects cmd2's stdout to out.log. Net result: cmd2's stdout → out.log; cmd2's stderr → the pipe (lost);
+      cmd1's stderr → terminal. (A) both streams would need `cmd2 > out.log 2>&1` (order flipped). (C) no,
+      cmd1's stdout goes into the pipe. (D) `|&` is bash shorthand for pipe-with-stderr, not used here.
+      (E) nothing is wrong — out.log does get cmd2's stdout.
+    choices:
+      - "cmd2's stdout and cmd2's stderr"
+      - "Only cmd2's stdout"
+      - "cmd1's stdout and cmd2's stdout"
+      - "cmd2's stderr only"
+      - "Nothing — the redirection fails"

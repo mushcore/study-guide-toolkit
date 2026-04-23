@@ -4,8 +4,10 @@ title: cgroups + QoS classes
 pillar: tech
 priority: high
 chapter: Mod10D
+source: "Mod10D; materials/labs/Lab10.pdf; materials/past-exams/comp4915_quiz4.md"
 tags:
   - kubernetes
+related: [4915-topic-linux-namespaces-8-types, 4915-topic-pod-architecture-pause-container, 4915-topic-control-plane-node-components]
 ---
 
 cgroups (Control Groups) = kernel feature to LIMIT and ACCOUNT resource usage (CPU, memory, I/O, pids). Namespaces isolate; cgroups meter.
@@ -44,3 +46,17 @@ Eviction: LAST"\] START --> Q1 Q1 -->|NO| BE Q1 -->|YES| Q2 Q2 -->|NO| BU Q2 -->
 
 Lower QoS = lower priority under pressure. kubelet evicts BestEffort FIRST to protect Guaranteed pods.  
 Sources: Mod10D · K8s docs · Quiz 4 context
+
+> **Pitfall**
+>
+> QoS class is derived from the pod spec, not declared. Guaranteed requires `limits == requests` on **every** container and **every** resource (cpu + memory). Omit one limit on one container and the whole pod falls to Burstable. Omit all requests/limits → BestEffort (first evicted).
+
+> **Example** — classify three pod specs
+>
+> 1. **Spec A**: single container, `requests: {cpu: 500m, memory: 256Mi}` AND `limits: {cpu: 500m, memory: 256Mi}`. Every resource has requests == limits → **Guaranteed** (evicted last).
+> 2. **Spec B**: container1 has `requests: {cpu: 100m}, limits: {cpu: 500m}` (requests ≠ limits); container2 has no resources block. Some values set but not all equal → **Burstable** (evicted middle).
+> 3. **Spec C**: `resources: {}` (or absent) on every container. Nothing set anywhere → **BestEffort** (evicted FIRST under memory pressure).
+> 4. Verify with `kubectl describe pod <name> | grep QoS` — kubelet prints the computed class.
+> 5. Gotcha: a pod with *only memory* requests=limits (no CPU fields) is still Burstable, not Guaranteed — Guaranteed needs both resources pinned.
+
+> **Takeaway**: cgroups are the kernel's resource-limit primitive; Kubernetes QoS classes are just how pod specs map to cgroup settings. Guaranteed requires limits == requests on every resource; miss one and you fall to Burstable; specify nothing and you're BestEffort and first to be evicted.

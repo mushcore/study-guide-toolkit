@@ -1,0 +1,29 @@
+- id: query-builder-and-raw-sql-q-01
+  type: MCQ
+  topic: "Query Builder and Raw SQL"
+  marks: 1
+  question: "Which Query Builder chain correctly selects `name` and `email` from the `users` table where `active` is not null, ordered by `name`?"
+  choices:
+    - "DB::table('users')->select(['name', 'email'])->whereNotNull('active')->orderBy('name')->get()"
+    - "DB::select('users')->where('active', '!=', null)->orderBy('name')->get()"
+    - "DB::table('users')->select(['name', 'email'])->whereNotNull('active')->orderBy('name')"
+    - "User::table('users')->select(['name', 'email'])->whereNotNull('active')->get()"
+  correct: 0
+  rationale: "The correct Query Builder chain starts with `DB::table('table_name')`, chains fluent methods, and terminates with `->get()` to execute and return results. Option B misuses `DB::select()` — that method takes a raw SQL string, not a table name, and does not support fluent chaining. Option C is identical to the correct answer except it omits `->get()` at the end; without it, the chain returns a Builder object, not a result set. Option D calls `User::table('users')` — `table()` is a `DB` facade method, not a model static method; calling it on a model class is a runtime error."
+  bloom: apply
+  source: "TIDBITS-components_config_db_SCRIPT.docx"
+
+- id: query-builder-and-raw-sql-q-02
+  type: MCQ
+  topic: "Query Builder and Raw SQL"
+  marks: 1
+  question: "What does `DB::select('SELECT * FROM students WHERE School = ?', ['Mining'])` return?"
+  choices:
+    - "An Eloquent Collection of Student model instances"
+    - "A single Student model instance"
+    - "An array of stdClass objects"
+    - "A Builder object that requires ->get() to execute"
+  correct: 2
+  rationale: "`DB::select()` executes a raw SQL query and returns a plain PHP array of `stdClass` objects — one per row. Unlike Eloquent, there is no model wrapping; properties are accessed as `$row->School`, not as model methods. Option A (Eloquent Collection) is what Eloquent model queries return; raw SQL bypasses the ORM entirely. Option B (single model instance) is what `findOrFail()` returns for a single record, not raw SQL. Option D (Builder object) describes what you get from an un-terminated Query Builder chain (missing `->get()`); `DB::select()` is not a Query Builder call and executes immediately."
+  bloom: understand
+  source: "TIDBITS-components_config_db_SCRIPT.docx"

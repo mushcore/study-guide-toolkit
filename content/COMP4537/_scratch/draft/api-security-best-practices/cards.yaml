@@ -1,0 +1,176 @@
+id: api-security-best-practices
+name: "API security vulnerabilities (OWASP top 8 for APIs)"
+tags: [security, SQL-injection, rate-limiting, OWASP, mass-assignment, XSS]
+prose: "Eight recurring API vulnerabilities — broken authentication, excessive data exposure, missing rate limiting, broken function-level authorization, broken object-level authorization (BOLA), mass assignment, security misconfiguration, and injection — each follow a predictable mechanism. Knowing the mechanism determines the fix: parameterized queries stop injection, object-level ACLs stop BOLA, field whitelisting stops mass assignment, and server-side filtering stops data exposure."
+
+cards:
+  - id: api-security-best-practices-card-01
+    type: predict
+    prompt: |
+      The following Express.js route builds a SQL query using a template literal:
+
+      ```js
+      const query = `UPDATE users SET email='${newEmail}' WHERE id=${userId}`;
+      const result = database.query(query);
+      ```
+
+      An attacker sets `newEmail` to `' WHERE 1=1; DROP TABLE users; --`. What attack does this enable, and what happens to the database?
+    answer: "SQL injection. The attacker's input becomes literal SQL syntax inside the query string. The database executes `DROP TABLE users`, deleting all user records."
+    explanation: "Template-literal interpolation embeds user-controlled values directly into the SQL string. The database cannot distinguish the injected SQL from the intended query structure. The fix is parameterized queries: `const query = 'UPDATE users SET email=? WHERE id=?'; database.query(query, [newEmail, userId]);` — the driver passes the values as bound data, so SQL syntax in the values never executes."
+    example: |
+      // Attacker payload for newEmail:
+      ' WHERE 1=1; DROP TABLE users; --
+
+      // Resulting query string:
+      UPDATE users SET email='' WHERE 1=1; DROP TABLE users; --' WHERE id=42
+      // Database executes the DROP TABLE statement
+    source: "Slide 12, ISAQuiz12"
+    bloom: analyze
+
+  - id: api-security-best-practices-card-02
+    type: cloze
+    prompt: "To prevent SQL injection, use {{parameterized queries}} with `?` placeholders instead of string interpolation. The database driver passes substituted values as {{data}}, so injected SQL syntax never executes."
+    answer: "parameterized queries; data"
+    explanation: "String interpolation (template literals or concatenation) builds the SQL command as a single string — user input becomes part of the SQL structure. Parameterized queries send the SQL template and the data values separately to the database driver. The driver handles escaping and binding, ensuring values are always treated as data literals regardless of their content."
+    example: |
+      // Vulnerable:
+      const query = `UPDATE users SET email='${newEmail}' WHERE id=${userId}`;
+
+      // Safe:
+      const query = 'UPDATE users SET email=? WHERE id=?';
+      const result = database.query(query, [newEmail, userId]);
+    source: "Slide 12, ISAQuiz12"
+    bloom: remember
+
+  - id: api-security-best-practices-card-03
+    type: name
+    prompt: "ISAQuiz12 Q2 offered `.replace()` (removing quotes from user input) as an option for preventing SQL injection. Is `.replace()` an effective fix? Why or why not?"
+    answer: "No. `.replace()` is bypassable. Attackers use hex encodings, multi-byte characters, and other bypass vectors that do not rely on single quotes. Only parameterized queries prevent SQL injection reliably."
+    explanation: "String sanitization with `.replace()` tries to remove dangerous characters after the fact. Attackers have many encoding techniques to reintroduce dangerous characters without using the exact characters that `.replace()` strips. Parameterized queries prevent injection at the protocol level — the database driver never tries to parse the values as SQL at all. ISAQuiz12 Q2 and exam-strategy Pitfall 5 both mark `.replace()` as incorrect."
+    example: |
+      // .replace() approach — bypassed:
+      const safeEmail = newEmail.replace(/'/g, '');
+      // Attacker uses: ` OR 1=1 --  (no single quote needed)
+      // Still injects valid SQL
+
+      // Parameterized — not bypassable:
+      const query = 'UPDATE users SET email=? WHERE id=?';
+      database.query(query, [newEmail, userId]);
+    source: "Slide 12, ISAQuiz12"
+    bloom: analyze
+
+  - id: api-security-best-practices-card-04
+    type: name
+    prompt: "ISAQuiz12 Q3: Which of these options is NOT an example of Excessive Data Exposure? (a) API returns full user record including SSN when only name and email were requested. (b) API returns detailed error message containing the database schema. (c) API endpoint returns all student grades and relies on client-side filtering. (d) Filtering out and removing unnecessary details from error messages before displaying them to users."
+    answer: "(d) Filtering out unnecessary details from error messages. That is the PREVENTION of Excessive Data Exposure, not an example of it."
+    explanation: "Options (a), (b), and (c) are all examples of the vulnerability: the server sends more data than needed, exposes sensitive internal information, or delegates filtering to the client. Option (d) describes the correct defense — stripping sensitive details from error messages before they reach the client. Confusing the prevention with an instance of the vulnerability is the exact trap ISAQuiz12 Q3 tests."
+    example: |
+      // Example of the vulnerability — detailed error sent to client:
+      res.status(500).json({ error: error.message, stack: error.stack, schema: 'users(id, email, ssn)' });
+
+      // Correct prevention:
+      res.status(500).json({ error: 'Internal Server Error' });
+    source: "Slide 12, ISAQuiz12"
+    bloom: analyze
+
+  - id: api-security-best-practices-card-05
+    type: name
+    prompt: "What is Broken Object-Level Authorization (BOLA), and what does the ISAQuiz12 Q7 `getResourceOwner` code demonstrate about it?"
+    answer: "BOLA occurs when the server authenticates a user but does not verify whether that user owns the specific object they are accessing or modifying. The Q7 code returns a hardcoded owner ID ('user123') instead of looking up the real owner, so any user with that cookie value passes the ownership check for every resource ID."
+    explanation: "Authentication confirms who the user is. Object-level authorization confirms whether that user is allowed to act on a specific resource. BOLA skips the second check. In Q7, `getResourceOwner(resourceId)` always returns `'user123'` — any user matching that cookie can modify any profile by changing the URL parameter. The fix requires looking up the actual owner for the requested resource and comparing it to the authenticated user."
+    example: |
+      // Vulnerable — hardcoded owner:
+      function getResourceOwner(resourceId) {
+        return 'user123'; // never queries the real owner
+      }
+
+      // Fixed — look up the actual owner:
+      async function getResourceOwner(resourceId) {
+        const resource = await Resource.findById(resourceId);
+        return resource.ownerId;
+      }
+    source: "Slide 12, ISAQuiz12"
+    bloom: analyze
+
+  - id: api-security-best-practices-card-06
+    type: name
+    prompt: "What is mass assignment, and how does an attacker exploit it?"
+    answer: "Mass assignment occurs when an API passes the raw request body directly to a model, letting the client set any property — including privileged ones like `isAdmin`. An attacker adds `'isAdmin': true` to the request JSON and elevates their own account."
+    explanation: "Frameworks that map request body keys to model properties automatically make it easy to write `User.update(req.body)`. If the model has an `isAdmin` field, the attacker sets it. Prevention requires whitelisting the specific properties to accept: `const { name, email } = req.body; User.update({ name, email });` — any extra properties the attacker sends are simply ignored."
+    example: |
+      // Attacker sends:
+      { "name": "Alice", "email": "alice@example.com", "isAdmin": true }
+
+      // Vulnerable server:
+      const user = await User.update(req.body); // isAdmin is set
+
+      // Safe server:
+      const { name, email } = req.body;
+      const user = await User.update({ name, email }); // isAdmin ignored
+    source: "Slide 12, ISAQuiz12"
+    bloom: apply
+
+  - id: api-security-best-practices-card-07
+    type: name
+    prompt: "What is the purpose of rate limiting on a login endpoint, and at which levels should rate limiting be applied?"
+    answer: "Rate limiting on login endpoints mitigates brute force attacks by capping how many requests a client can make in a time window. Apply rate limiting at three levels: IP address, user account, and application."
+    explanation: "Without rate limiting, an attacker can try thousands of password guesses per second. Limiting by IP slows single-source attacks. Limiting by user account catches attacks spread across IPs targeting the same account. Application-level limiting protects against distributed attacks that exceed per-IP thresholds. ISAQuiz12 Q4 confirmed the purpose is brute force mitigation; Q8 confirmed account lockout as an effective measure."
+    example: |
+      // IP-level rate limit with express-rate-limit:
+      const limiter = rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 100,
+        message: 'Too many requests from this IP, please try again later.'
+      });
+      app.use('/api/login', limiter);
+
+      // Account lockout after 3 attempts:
+      if (loginAttempts[ip] >= 3) {
+        return res.status(429).json({ message: 'Too many login attempts. Try again later.' });
+      }
+    source: "Slide 12, ISAQuiz12"
+    bloom: apply
+
+  - id: api-security-best-practices-card-08
+    type: cloze
+    prompt: "{{Security Misconfiguration}} occurs when an API is left in an insecure state — for example, leaving default credentials unchanged or storing a JWT secret as a hardcoded string in source code instead of an {{environment variable}}."
+    answer: "Security Misconfiguration; environment variable"
+    explanation: "Default passwords on database systems are documented and widely known — an attacker simply tries them. Hardcoded secrets in source code are exposed to anyone with repository access, including CI/CD pipelines. ISAQuiz12 Q5 confirmed 'leaving default credentials unchanged in a production environment' as an example of Security Misconfiguration. The fix: rotate all defaults before deployment and load secrets from environment variables."
+    example: |
+      // Misconfiguration — secret hardcoded:
+      jwt.verify(token, 'secretkey', (err, decoded) => { ... });
+
+      // Correct — secret from environment:
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => { ... });
+    source: "Slide 12, ISAQuiz12"
+    bloom: remember
+
+  - id: api-security-best-practices-card-09
+    type: name
+    prompt: "ISAQuiz12 Q9: Which response prevents Excessive Data Exposure when an error occurs on the server? (a) `res.status(500).json({ error: 'Internal Server Error' })` (b) `console.log('Error occurred: ' + error.message)` (c) `alert('Error: ' + error)`"
+    answer: "(a) `res.status(500).json({ error: 'Internal Server Error' })`. It returns a generic message to the client. Options (b) and (c) leak error details."
+    explanation: "Option (b) logs error details server-side — not necessarily a client exposure, but it does not respond to the client at all. Option (c) exposes `error.toString()` directly to the user, which includes internal details. Option (a) returns a fixed generic string with no internal information. ISAQuiz12 Q9 confirmed (a) as the correct answer."
+    example: |
+      // Leaks internal details to the client:
+      res.status(500).json({ error: error.message, stack: error.stack });
+
+      // Correct — generic message only:
+      res.status(500).json({ error: 'Internal Server Error' });
+      // Log details server-side separately:
+      console.error(error);
+    source: "Slide 12, ISAQuiz12"
+    bloom: apply
+
+  - id: api-security-best-practices-card-10
+    type: name
+    prompt: "What is Multi-Factor Authentication (MFA), and which ISAQuiz12 question confirmed its definition?"
+    answer: "MFA requires multiple independent forms of identification before granting access — for example, a password plus a one-time code sent to a phone. ISAQuiz12 Q11 defined MFA as 'multiple forms of identification.'"
+    explanation: "A single factor (password) fails if the credential is guessed, phished, or leaked. MFA adds a second factor (something you have, such as a phone, or something you are, such as biometrics) so that compromising one factor is not sufficient. MFA is the primary prevention for Broken User Authentication alongside session management and rate limiting."
+    example: |
+      // MFA flow:
+      // Step 1: user submits username + password
+      // Step 2: server validates credentials, sends OTP to user's phone
+      // Step 3: user submits OTP
+      // Step 4: server validates OTP, creates session
+    source: "Slide 12, ISAQuiz12"
+    bloom: remember

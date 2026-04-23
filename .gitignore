@@ -7,3 +7,4 @@ courses/*
 dist/
 .env
 *.local
+/graphify-out

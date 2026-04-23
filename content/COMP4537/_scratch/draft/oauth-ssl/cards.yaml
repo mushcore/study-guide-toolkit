@@ -1,0 +1,131 @@
+id: oauth-ssl
+name: "OAuth 2.0 and SSL/TLS"
+tags: [OAuth, bearer-token, SSL, TLS, HTTPS, client-id, client-secret]
+prose: >
+  OAuth 2.0 is an access-delegation standard. It lets a ClientApp access a user's data on
+  Google (or another provider) without ever handling the user's password. The app owner
+  registers once and receives a client ID (public) and client secret (private). When a user
+  logs in, Google authenticates them, shows a consent screen, and issues a bearer token to
+  ClientApp. Anyone who holds this token is implicitly granted authorization, so the token
+  must be protected and is time-limited. SSL/TLS (TLS is current; SSL is deprecated) encrypts
+  the HTTP channel automatically via a TLS handshake — HTTPS is HTTP over TLS. The server's
+  SSL/TLS certificate carries its public key, enabling key exchange without prior shared secrets.
+
+cards:
+
+  - id: oauth-ssl-card-01
+    type: cloze
+    prompt: >
+      In OAuth 2.0, the bearer token grants authorization because
+      {{anyone who holds this token is implicitly granted authorization}}.
+    answer: "anyone who holds this token is implicitly granted authorization"
+    explanation: >
+      The bearer model means possession equals authorization. No additional proof of identity
+      is required beyond holding the token. This is why bearer tokens must be kept private and
+      are time-limited — if leaked, any holder gains the same access as the legitimate app.
+    example: >
+      ClientApp stores the bearer token server-side and never logs it. If an attacker obtains
+      the token from a log file, they can call Google APIs as if they were ClientApp acting on
+      behalf of that user — until the token expires.
+    source: "Slide 11"
+    bloom: remember
+
+  - id: oauth-ssl-card-02
+    type: name
+    prompt: >
+      What two credentials does Google create for a ClientApp during OAuth 2.0 onboarding?
+    answer: "Client ID and client secret"
+    explanation: >
+      The client ID is a public identifier included in redirect URLs — it is visible to anyone
+      inspecting network traffic. The client secret is private and stored server-side only; it
+      is never sent to the browser. These credentials identify the app, not the user. The bearer
+      token issued later identifies the user's authorization grant.
+    example: >
+      App owner submits the onboarding form at Google Developer Console listing required scopes
+      (profile, email). Google responds with CLIENT_ID = "abc123" (public) and
+      CLIENT_SECRET = "xyz789" (private, never expose).
+    source: "Slide 11"
+    bloom: remember
+
+  - id: oauth-ssl-card-03
+    type: name
+    prompt: >
+      In the OAuth 2.0 login flow, at what step does the user see a consent screen, and what
+      triggers it?
+    answer: >
+      After ClientApp redirects the user to Google's OAuth 2.0 endpoint with the client ID and
+      requested scopes — Google looks up the client ID and displays the consent screen listing
+      what data the app wants to access.
+    explanation: >
+      The consent screen is Google's mechanism for informed user approval. It shows the user
+      exactly which data the app has requested (e.g., "ClientApp wants to read your name and
+      email"). Only after the user clicks Allow does Google generate the bearer token and
+      redirect back to ClientApp.
+    example: >
+      ClientApp redirects to:
+      https://accounts.google.com/o/oauth2/auth?client_id=abc123&scope=profile+email
+      Google shows: "ClientApp wants access to: your name, your email address." User clicks Allow.
+    source: "Slide 11"
+    bloom: understand
+
+  - id: oauth-ssl-card-04
+    type: name
+    prompt: >
+      What does the TLS handshake establish, and what role does the server's SSL/TLS certificate
+      play in it?
+    answer: >
+      The TLS handshake establishes an encrypted channel between browser and server. The server's
+      SSL/TLS certificate carries the server's public key, which the browser uses to securely
+      exchange a session key — proving the server's identity and enabling encrypted communication.
+    explanation: >
+      TLS (Transport Layer Security) is the current protocol; SSL is deprecated. The certificate
+      is signed by a trusted Certificate Authority, so the browser can verify the server is who
+      it claims to be. After the handshake, all data is encrypted and decrypted automatically —
+      application code does not implement this. HTTPS = HTTP over TLS.
+    example: >
+      Browser opens https://myapp.com → server sends certificate containing public key →
+      browser verifies certificate → they negotiate a session key → all subsequent HTTP
+      requests and responses are encrypted transparently.
+    source: "Slide 11"
+    bloom: understand
+
+  - id: oauth-ssl-card-05
+    type: name
+    prompt: >
+      Why is the OAuth 2.0 bearer token time-limited, and what is a typical expiry window?
+    answer: >
+      The bearer token is time-limited (e.g., 6 months) because possession equals authorization —
+      anyone who holds the token gains access. Expiry limits the damage window if the token
+      is leaked or stolen.
+    explanation: >
+      Because the bearer model does not require identity proof beyond possession, a leaked token
+      grants the attacker full access to the approved scopes until it expires. A time limit
+      (combined with HTTPS transport and server-side storage) reduces exposure. After expiry,
+      the user must re-authorize to issue a new token.
+    example: >
+      A bearer token issued on January 1 with a 6-month expiry becomes invalid July 1. If an
+      attacker obtained the token in March, they lose access July 1 without any action by the
+      app or user — expiry is automatic.
+    source: "Slide 11"
+    bloom: apply
+
+  - id: oauth-ssl-card-06
+    type: name
+    prompt: >
+      What does OAuth 2.0 delegation mean for ClientApp's authentication responsibilities?
+    answer: >
+      ClientApp delegates the responsibility of authenticating users to Google. ClientApp does
+      not store or verify Google passwords. It accepts Google's bearer token as proof that the
+      user authenticated successfully, and gains scoped access to user data depending on what
+      the user approved.
+    explanation: >
+      Delegation shifts the security burden of password storage and verification to Google.
+      ClientApp only needs to protect the bearer token it receives. This also means ClientApp
+      gains real user data (name, email, etc.) without a separate user-database step, because
+      Google supplies it via the API calls made with the bearer token.
+    example: >
+      Without OAuth 2.0: ClientApp stores hashed Google passwords, runs its own login page,
+      handles password resets — a large attack surface. With OAuth 2.0: ClientApp redirects to
+      Google, receives a bearer token, calls /userinfo — no passwords stored anywhere.
+    source: "Slide 11"
+    bloom: apply

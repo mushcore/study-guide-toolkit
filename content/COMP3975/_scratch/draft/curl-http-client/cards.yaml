@@ -1,0 +1,64 @@
+cards:
+  - id: curl-card-01
+    type: name
+    prompt: "What does `curl_init()` return?"
+    answer: "A cURL handle"
+    explanation: "The cURL handle is a PHP resource that identifies the session. Every subsequent curl_setopt(), curl_exec(), and curl_close() call requires it as the first argument."
+    example: "`$ch = curl_init();` — $ch is now the cURL handle for this session."
+    source: "cURL.pptx slide 4"
+    bloom: remember
+
+  - id: curl-card-02
+    type: cloze
+    prompt: "Setting `curl_setopt($ch, CURLOPT_RETURNTRANSFER, true)` causes `curl_exec()` to {{return the response as a string}} instead of {{printing it to the screen}}."
+    answer: "return the response as a string; printing it to the screen"
+    explanation: "Without CURLOPT_RETURNTRANSFER set to true, curl_exec() outputs the response body directly to the browser and returns true. The variable you assign gets true, not the data — json_decode() then returns null."
+    source: "cURL.pptx slide 5"
+    bloom: understand
+
+  - id: curl-card-03
+    type: cloze
+    prompt: "The five-step cURL sequence is: {{curl_init()}} → {{curl_setopt()}} → {{curl_exec()}} → {{curl_close()}} → {{json_decode()}}."
+    answer: "curl_init(); curl_setopt(); curl_exec(); curl_close(); json_decode()"
+    explanation: "Each step is mandatory for a complete REST API call. Skipping curl_close() leaks memory; skipping json_decode() leaves you with a raw JSON string rather than a usable PHP array."
+    source: "cURL.pptx slide 4"
+    bloom: remember
+
+  - id: curl-card-04
+    type: predict
+    lang: php
+    prompt: "What is the value of `$response` after this code runs, and why?"
+    code: |
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, 'https://api.example.com/students');
+      // CURLOPT_RETURNTRANSFER is NOT set
+      $response = curl_exec($ch);
+      curl_close($ch);
+    answer: "`$response` is `true` (boolean), not the response body. Without CURLOPT_RETURNTRANSFER, curl_exec() prints directly to screen and returns true on success."
+    explanation: "This is the most common cURL bug. The response appears on screen unintentionally, and json_decode(true, true) returns null — no error is thrown."
+    source: "cURL.pptx slide 5"
+    bloom: apply
+
+  - id: curl-card-05
+    type: name
+    prompt: "Which cURL option stores the HTTP response in a variable rather than printing it?"
+    answer: "CURLOPT_RETURNTRANSFER"
+    explanation: "Set it to true before calling curl_exec(). It is required for any API call where you need to process the response in PHP rather than display it directly."
+    source: "cURL.pptx slide 5"
+    bloom: remember
+
+  - id: curl-card-06
+    type: cloze
+    prompt: "To make a POST request with cURL, set `CURLOPT_POST` to `{{true}}` and provide the request body via `{{CURLOPT_POSTFIELDS}}`."
+    answer: "true; CURLOPT_POSTFIELDS"
+    explanation: "CURLOPT_POST switches the HTTP method. CURLOPT_POSTFIELDS accepts the body — pass a JSON-encoded string for REST APIs and pair it with a Content-Type: application/json header via CURLOPT_HTTPHEADER."
+    source: "cURL.pptx slide 5"
+    bloom: understand
+
+  - id: curl-card-07
+    type: cloze
+    prompt: "`json_decode($response, true)` converts a JSON string into a PHP {{associative array}}. Omitting the second argument returns a {{stdClass object}} instead."
+    answer: "associative array; stdClass object"
+    explanation: "The boolean true flag is the toggle for array vs object output. Most Laravel code expects associative arrays, so always pass true for REST API responses."
+    source: "cURL.pptx slide 5"
+    bloom: understand

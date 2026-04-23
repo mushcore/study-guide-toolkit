@@ -1,0 +1,64 @@
+# concept-pair: directory structure — appears also on laravel-localization-q-02
+- id: laravel-localization-q-01
+  type: MCQ
+  topic: "Laravel Localization"
+  marks: 1
+  question: "You are adding French translations to a Laravel app. Where do you place the JSON translation file for French?"
+  choices:
+    - "resources/views/lang/fr.json"
+    - "storage/lang/fr.json"
+    - "resources/lang/fr.json"
+    - "app/lang/fr.json"
+  correct: 2
+  rationale: "JSON translation files live directly under `resources/lang/` named after the locale code — so `resources/lang/fr.json`. This is tested verbatim in past-exam Q1. Option A (`resources/views/lang/`) confuses the `resources/views/` view directory with the `resources/lang/` translation directory — a common distractor. Option B (`storage/lang/`) is where Laravel writes framework-generated files, not developer-authored translation files. Option D (`app/lang/`) has no standard meaning in Laravel's directory layout; translation files are never stored under `app/`."
+  bloom: remember
+  source: "localization.pptx slides 1–11; final-practice.docx Q1"
+  tags: [pretest]
+
+# concept-pair: __() helper usage — appears also on laravel-localization-q-03
+# concept-pair: directory structure — appears also on laravel-localization-q-01
+- id: laravel-localization-q-02
+  type: MCQ
+  topic: "Laravel Localization"
+  marks: 1
+  question: "A Blade template needs to display a localized greeting stored under the key `messages.greeting` in a PHP translation file. Which expression is correct?"
+  choices:
+    - "{{ translate('messages.greeting') }}"
+    - "{{ lang('messages.greeting') }}"
+    - "{{ i18n('messages.greeting') }}"
+    - "{{ __('messages.greeting') }}"
+  correct: 3
+  rationale: "`__()` (double underscore) is Laravel's canonical translation helper. For a PHP translation file, dot notation means: look in `resources/lang/{locale}/messages.php` for the key `greeting`. This is tested in past-exam Q2. Option A (`translate()`) is not a Laravel function — it is a common guess from developers with other framework backgrounds. Option B (`lang()`) is not the correct helper in Laravel; `lang()` is sometimes confused with the `Lang` facade's static method but is not a standalone helper function. Option C (`i18n()`) does not exist in Laravel — it is borrowed from JavaScript i18n conventions, not PHP."
+  bloom: remember
+  source: "localization.pptx slides 1–11; final-practice.docx Q2"
+
+# concept-pair: __() helper usage — appears also on laravel-localization-q-02
+- id: laravel-localization-q-03
+  type: MCQ
+  topic: "Laravel Localization"
+  marks: 1
+  question: "Which Laravel helper handles pluralization rules such as `'{0} No items|{1} One item|[2,*] :count items'`?"
+  choices:
+    - "__() with a count argument"
+    - "trans_choice()"
+    - "App::pluralize()"
+    - "Str::plural()"
+  correct: 1
+  rationale: "`trans_choice()` is the dedicated pluralization helper. It accepts a translation key and a count; it selects the correct pipe-delimited variant and replaces `:count` with the number. Option A (`__()` with a count argument) is incorrect — `__()` does not accept a count argument for pluralization; its second argument is for parameter replacement, not plural selection. Option C (`App::pluralize()`) does not exist in Laravel. Option D (`Str::plural()`) is a string utility that derives the English plural form of a word (e.g., `'apple'` → `'apples'`) — it does not handle translation files or locale-aware plural rules."
+  bloom: understand
+  source: "localization.pptx slides 1–11; laravel-localization.docx"
+
+- id: laravel-localization-q-04
+  type: MCQ
+  topic: "Laravel Localization"
+  marks: 1
+  question: "A language-switcher route stores `'fr'` in the session. Which call inside a middleware applies that locale to the current request?"
+  choices:
+    - "App::locale('fr')"
+    - "session()->setLocale('fr')"
+    - "App::setLocale('fr')"
+    - "config('app.locale', 'fr')"
+  correct: 2
+  rationale: "`App::setLocale('fr')` is the correct facade call for changing the active locale at runtime. The middleware reads the stored value from the session and calls this method so every subsequent `__()` lookup uses the French translation files. Option A (`App::locale('fr')`) uses the wrong method name — `getLocale()` reads the locale, `setLocale()` sets it. Option B (`session()->setLocale('fr')`) is invented — the session facade has no `setLocale` method; locale state lives in the App facade, not the session. Option D (`config('app.locale', 'fr')`) reads a config value with a fallback; it does not override the runtime locale."
+  bloom: apply
+  source: "localization.pptx slides 1–11; laravel-localization.docx"

@@ -1,0 +1,14 @@
+- id: curl-http-client-q-01
+  type: MCQ
+  topic: "cURL HTTP Client"
+  marks: 1
+  question: "A developer writes the following cURL code:\n\n```php\n$ch = curl_init();\ncurl_setopt($ch, CURLOPT_URL, 'https://api.example.com/data');\n$response = curl_exec($ch);\ncurl_close($ch);\n$data = json_decode($response, true);\n```\n\nThe `json_decode()` call fails. What is the most likely reason?"
+  choices:
+    - "The URL is set before the handle is initialized"
+    - "CURLOPT_RETURNTRANSFER was not set to true, so curl_exec() printed to screen and returned true, not the response string"
+    - "json_decode() requires the response to be decoded with base64_decode() first"
+    - "curl_close() must be called after json_decode(), not before"
+  correct: 1
+  rationale: "Without `CURLOPT_RETURNTRANSFER => true`, `curl_exec()` outputs the response body directly to the browser and returns the boolean `true`. The variable `$response` holds `true`, not the JSON string, so `json_decode(true, true)` returns `null`. This is the single most common cURL mistake. Option A is incorrect — `curl_setopt()` can be called at any point after `curl_init()`, and `CURLOPT_URL` can even be passed directly to `curl_init()`. Option C is fabricated — REST API responses are not base64-encoded; they are plain JSON strings. Option D is also incorrect — `curl_close()` frees the handle, and once freed the response string is already in `$response`; calling `json_decode()` after `curl_close()` is the normal sequence."
+  bloom: apply
+  source: "cURL.pptx slides 4–5"

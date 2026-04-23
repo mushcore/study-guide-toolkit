@@ -1,0 +1,20 @@
+- id: nodejs-basics-q-01
+  type: MCQ
+  topic: "Node.js Runtime"
+  marks: 2
+  question: |
+    Which statement best describes how Node.js handles 100 simultaneous file-read requests?
+  choices:
+    - "It creates one thread per request, so 100 requests require 100 threads waiting on the file system."
+    - "It delegates each file-read to the OS asynchronously, then processes callbacks as results arrive — all on one thread."
+    - "It blocks the single thread on each file-read in turn, processing requests one at a time."
+    - "It uses the Chrome V8 engine to spawn worker processes for each I/O operation."
+  correct: 1
+  rationale: |
+    Node.js runs single-threaded non-blocking: the single thread delegates file-read operations to the OS via libuv, registers a callback, and immediately picks up the next request — the thread never idles waiting for disk (Slide 4).
+    Creating one thread per request is the traditional synchronous multi-threaded model (e.g., naive PHP/ASP.NET); it is what Node.js replaces, not what it does.
+    Blocking the single thread sequentially would serialize all 100 requests — this is the single-threaded blocking model shown in the restaurant analogy as the waiter who stands at the kitchen window.
+    V8 is the JavaScript engine that compiles JS to native machine code; it does not spawn worker processes for I/O. Worker threads are a separate opt-in feature, not the default model.
+  bloom: understand
+  source: "Slide 4, ISAQuiz7.pdf"
+  tags: [pretest]

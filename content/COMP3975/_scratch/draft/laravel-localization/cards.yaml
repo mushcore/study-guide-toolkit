@@ -1,0 +1,88 @@
+cards:
+  - id: locale-card-01
+    type: cloze
+    prompt: "The Laravel helper for retrieving a translated string is {{__()}} — not trans(), t(), i18n(), or translate()."
+    answer: "__() (double underscore)"
+    explanation: "`__()` is the canonical form. The exam (past-exam Q2) uses all four wrong variants as distractors. No other helper name is acceptable in an exam answer."
+    example: "`{{ __('messages.welcome') }}` in Blade; `__('Submit')` in a PHP file."
+    source: "localization.pptx slide 6; final-practice.docx Q2"
+    bloom: remember
+
+  - id: locale-card-02
+    type: cloze
+    prompt: "A locale is a string like {{`'en'`}}, `'fr'`, or `'de'` that identifies the language (and optionally region) for the active request."
+    answer: "'en' (or any valid locale string)"
+    explanation: "The locale string is the lookup key Laravel uses to find the correct translation directory or JSON file. Setting it incorrectly — or leaving it at default when users expect a different language — causes all translations to fall back silently."
+    example: "`App::setLocale('fr')` sets the locale to French for the current request."
+    source: "localization.pptx slide 3"
+    bloom: remember
+
+  - id: locale-card-03
+    type: name
+    prompt: "A PHP file at `resources/lang/en/messages.php` that returns an associative array of translated strings is called what?"
+    answer: "PHP translation file"
+    explanation: "PHP translation files group named keys under a file namespace. `__('messages.welcome')` uses dot notation to look up `welcome` inside `messages.php` for the active locale."
+    example: "`return ['welcome' => 'Welcome to our application'];`"
+    source: "localization.pptx slide 4"
+    bloom: remember
+
+  - id: locale-card-04
+    type: cloze
+    prompt: "JSON translation files live at `resources/lang/{{locale}}.json` and use the {{English phrase}} as the lookup key."
+    answer: "locale (e.g. 'fr'); English phrase"
+    explanation: "Because the English phrase is the key, no dot notation is needed: `__('Submit')` resolves directly. This works for simple UI strings; PHP files are better for structured domain text."
+    example: "`resources/lang/fr.json`: `{ \"Submit\": \"Envoyer\" }` — retrieved with `__('Submit')` when locale is `'fr'`."
+    source: "localization.pptx slide 5"
+    bloom: understand
+
+  - id: locale-card-05
+    type: name
+    prompt: "Which Laravel helper handles pluralized translations using pipe-delimited rules?"
+    answer: "trans_choice()"
+    explanation: "`trans_choice()` evaluates rules like `'{0} No apples|{1} One apple|[2,*] :count apples'` against the count argument and substitutes `:count`. `__()` cannot select between plural forms."
+    example: "`trans_choice('messages.apples', 3)` returns `'3 apples'` given the rule `'{0} No apples|{1} One apple|[2,*] :count apples'`."
+    source: "localization.pptx slide 7"
+    bloom: understand
+
+  - id: locale-card-06
+    type: cloze
+    prompt: "The default locale is set in `{{config/app.php}}` under the key `'locale'`."
+    answer: "config/app.php"
+    explanation: "This file is the single source for application-wide locale defaults. Runtime switching via `App::setLocale()` overrides it for the current request only — the config value is unchanged."
+    example: "`'locale' => env('APP_LOCALE', 'en')` in config/app.php sets English as the default."
+    source: "localization.pptx slide 8"
+    bloom: remember
+
+  - id: locale-card-07
+    type: name
+    prompt: "Which two `App` facade methods read and write the active locale at runtime?"
+    answer: "App::setLocale() and App::getLocale()"
+    explanation: "`App::setLocale('fr')` switches the locale for the current request. `App::getLocale()` returns the current value. Middleware typically calls `setLocale()` once per request based on session data."
+    example: "In middleware: `App::setLocale(Session::get('locale'))` — then every `__()` call in that request uses the French files."
+    source: "localization.pptx slide 8"
+    bloom: remember
+
+  - id: locale-card-08
+    type: predict
+    lang: php
+    prompt: "What does this code print for each call?"
+    code: |
+      // resources/lang/en/messages.php contains:
+      // 'items' => '{0} No items|{1} One item|[2,*] :count items'
+
+      echo trans_choice('messages.items', 0) . "\n";
+      echo trans_choice('messages.items', 1) . "\n";
+      echo trans_choice('messages.items', 7) . "\n";
+    answer: "No items\nOne item\n7 items"
+    explanation: "Each call matches the first pipe-delimited rule that covers its count. `{0}` matches 0, `{1}` matches 1, and `[2,*]` matches 7. `:count` is replaced with the numeric argument (7)."
+    source: "localization.pptx slide 7"
+    bloom: apply
+
+  - id: locale-card-09
+    type: cloze
+    prompt: "The correct `resources/lang/` path for a JSON translation file serving French is `resources/lang/{{fr.json}}`, not `resources/lang/fr/messages.json`."
+    answer: "fr.json"
+    explanation: "JSON translation files sit directly inside `resources/lang/` as `{locale}.json`. PHP translation files go inside a locale subdirectory (`resources/lang/{locale}/filename.php`). Confusing the two structures causes lookups to fail silently."
+    example: "`resources/lang/fr.json` for JSON; `resources/lang/fr/messages.php` for PHP array."
+    source: "localization.pptx slides 3–5; final-practice.docx Q1"
+    bloom: understand

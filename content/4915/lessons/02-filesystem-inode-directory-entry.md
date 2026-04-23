@@ -6,9 +6,11 @@ hook: Every 'why can't I hard-link across drives?' answer lives in this lesson.
 tags:
   - filesystem
 module: Filesystem & permissions
+source: "Mod02 Ch6; materials/past-exams/midterm.md Q21, Q24, Q32"
+related: [4915-topic-inode-hard-vs-soft-links, 4915-topic-permissions-chmod-umask, 4915-topic-etc-passwd-etc-shadow-user-mgmt]
 ---
 
-**Motivation.** The midterm had TWO link questions (Q24, Q58). The final will have at least one. Everything hangs on one idea: *the filename is not part of the file*.
+The midterm had TWO link questions (Q24, Q58). The final will have at least one. Everything hangs on one idea: *the filename is not part of the file*.
 
 The one idea that unlocks all link questions
 
@@ -90,3 +92,11 @@ Soft link has its **own** inode (262145, not 131073). First char is `l`. Permiss
 Check: I run `ln /boot/vmlinuz ~/link` and get "Invalid cross-device link". Why?`/boot` is a separate partition with its own inode table. Hard links share inode numbers, which are only unique within one filesystem. Use `ln -s` for a symlink — it stores the path as text and crosses filesystems fine. Check: I delete the target of a symlink. What does `ls -l` show?Symlink still listed with `l` type and the old arrow. Reading it (`cat`) errors with "No such file or directory". Hard link siblings would be unaffected because they share the inode, not a pathname. Check: `ls -l` shows `lrwxrwxrwx`. Can anyone write through the link?Not necessarily. Symlink perms are cosmetic — only the target's permissions matter. If target is `-r--r--r--`, nobody can write through the symlink either.
 
 Sources: Mod02 Ch6 · Lab 2 · midterm Q24 + Q58 · Review Apr 17
+
+> **Q:** Does an inode contain the filename?
+>
+> **A:** **No.** The inode stores owner, group, permissions, timestamps, size, link count, type, and block pointers — but not the name. The filename lives in the directory entry, which maps a name to an inode number. That separation is why hard links work: two entries, one inode.
+
+> **Pitfall**: Hard links cannot cross filesystems — inode numbers are unique only per-FS, so `ln /boot/vmlinuz ~/link` errors with `Invalid cross-device link`. Use `ln -s` (symlink) for cross-FS references. Midterm Q24 bait on "original deleted" scenarios — hard link still works (shared inode), soft link dangles.
+
+> **Takeaway**: The inode stores metadata + block pointers; the directory entry stores the name → inode mapping. That separation makes hard links possible (many entries → one inode) and confines them to a single filesystem (inode numbers are per-FS).

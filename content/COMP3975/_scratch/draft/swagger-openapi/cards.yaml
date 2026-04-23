@@ -1,0 +1,128 @@
+cards:
+  - id: swagger-card-01
+    type: name
+    prompt: "What is the difference between OpenAPI and Swagger?"
+    answer: "OpenAPI is the specification language (YAML/JSON contract). Swagger is the toolset (UI, Editor, Codegen) that reads that spec."
+    explanation: "This distinction is consistently tested. Using 'Swagger' to mean the spec is incorrect. The spec language is OpenAPI; the interactive browser docs are Swagger UI."
+    example: "`php artisan l5-swagger:generate` produces an OpenAPI JSON file. Swagger UI reads that file and renders the /api/documentation page."
+    source: "swagger-with-laravel.pptx slide 2"
+    bloom: remember
+
+  - id: swagger-card-02
+    type: cloze
+    prompt: "The Composer package that integrates Swagger tools into Laravel is {{darkaonline/l5-swagger}}."
+    answer: "darkaonline/l5-swagger"
+    explanation: "This is the canonical package name used in this course. It is also referred to as l5-swagger. The install command is `composer require darkaonline/l5-swagger -W`."
+    example: "composer require darkaonline/l5-swagger -W"
+    source: "swagger-with-laravel.pptx slide 4; Laravel_L5Swagger_SCRIPT_2026.docx Step 1"
+    bloom: remember
+
+  - id: swagger-card-03
+    type: cloze
+    prompt: "The two required fields in an `@OA\\Info` annotation are {{title}} and {{version}}."
+    answer: "title, version"
+    explanation: "Without both fields, l5-swagger generates an invalid OpenAPI document. The `description` and `contact` fields are optional. `@OA\\Info` belongs on the abstract base Controller class."
+    example: "#[OA\\Info(title: \"My API\", version: \"1.0.0\")]"
+    source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 3"
+    bloom: remember
+
+  - id: swagger-card-04
+    type: cloze
+    prompt: "After adding or changing `@OA\\ annotations`, regenerate the documentation with `{{php artisan l5-swagger:generate}}`."
+    answer: "php artisan l5-swagger:generate"
+    explanation: "This command compiles all annotations in the project into a single OpenAPI JSON document. Swagger UI reads that document. Without regenerating, the UI shows stale docs."
+    example: "Add #[OA\\Get(...)] above index(), then run `php artisan l5-swagger:generate`, then refresh /api/documentation."
+    source: "swagger-with-laravel.pptx slide 7; Laravel_L5Swagger_SCRIPT_2026.docx Step 6"
+    bloom: remember
+
+  - id: swagger-card-05
+    type: name
+    prompt: "What URL does Swagger UI serve by default after installing l5-swagger?"
+    answer: "/api/documentation"
+    explanation: "The l5-swagger package auto-registers this route when installed. Visiting it after generating docs shows the interactive Swagger UI page."
+    source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 7"
+    bloom: remember
+
+  - id: swagger-card-06
+    type: name
+    prompt: "What does `@OA\\Response` specify inside an endpoint annotation?"
+    answer: "A single HTTP response — its status code, description, and optionally the shape of the returned JSON."
+    explanation: "`@OA\\Response` is nested inside `@OA\\Get`, `@OA\\Post`, etc. You declare one per expected status code (200, 201, 404, 422). The `content` field links to a schema for the body shape."
+    example: "new OA\\Response(response: 200, description: \"List of all students\", content: new OA\\JsonContent(...))"
+    source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 5"
+    bloom: understand
+
+  - id: swagger-card-07
+    type: predict
+    lang: php
+    prompt: "This annotated method is added and `php artisan l5-swagger:generate` is run. What does Swagger UI show at /api/documentation for this endpoint?"
+    code: |
+      #[OA\Get(
+          path: "/api/students/{id}",
+          tags: ["Students"],
+          summary: "Get a student by ID",
+          parameters: [
+              new OA\Parameter(
+                  name: "id", in: "path", required: true,
+                  schema: new OA\Schema(type: "integer")
+              )
+          ],
+          responses: [
+              new OA\Response(response: 200, description: "Student details"),
+              new OA\Response(response: 404, description: "Student not found")
+          ]
+      )]
+      public function show(int $id): JsonResponse { ... }
+    answer: "Swagger UI shows a GET /api/students/{id} entry under the Students tag. It includes an integer input field for the `id` path parameter and documents two responses: 200 (Student details) and 404 (Student not found). The Try it out button lets you call the live endpoint."
+    explanation: "Each `@OA\\Parameter` with `in: \"path\"` becomes an input field in Swagger UI. Each `@OA\\Response` becomes a row in the responses table. The tag groups the endpoint under a collapsible section."
+    source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 5 (show method)"
+    bloom: apply
+
+  - id: swagger-card-08
+    type: cloze
+    prompt: "To publish the l5-swagger config file into your project, run `php artisan vendor:publish --provider={{\"L5Swagger\\\\L5SwaggerServiceProvider\"}}`."
+    answer: "\"L5Swagger\\L5SwaggerServiceProvider\""
+    explanation: "This step copies config/l5-swagger.php into your project. Without it, Swagger UI serves a blank or broken page because there is no config to read."
+    example: "php artisan vendor:publish --provider=\"L5Swagger\\L5SwaggerServiceProvider\""
+    source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 2"
+    bloom: remember
+
+  - id: swagger-card-09
+    type: name
+    prompt: "Where in a Laravel project does the `@OA\\Info` annotation belong, and why?"
+    answer: "On the abstract base Controller class in app/Http/Controllers/Controller.php. It must appear exactly once and provides global API metadata (title, version) for the entire OpenAPI document."
+    explanation: "Placing it on the base class ensures one canonical location. l5-swagger scans the whole project for annotations; `@OA\\Info` appearing more than once or not at all causes generation errors."
+    source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 3"
+    bloom: understand
+
+  - id: swagger-card-10
+    type: cloze
+    prompt: "To auto-regenerate Swagger docs on every request during development, set {{L5_SWAGGER_GENERATE_ALWAYS}}=true in your .env file."
+    answer: "L5_SWAGGER_GENERATE_ALWAYS"
+    explanation: "This is convenient during development but should not be left on in production — regenerating on every request is expensive. Restart the dev server after changing this variable."
+    source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 8"
+    bloom: understand
+
+  - id: swagger-card-11
+    type: name
+    prompt: "What annotation defines a reusable data model that can be referenced across multiple endpoint responses?"
+    answer: "@OA\\Schema"
+    explanation: "Defining a schema once and referencing it via `ref: \"#/components/schemas/Name\"` avoids repeating property lists in every `@OA\\Response`. Swagger UI renders schemas as expandable model panels."
+    example: "#[OA\\Schema(schema: \"Student\", properties: [new OA\\Property(property: \"id\", type: \"integer\")])]"
+    source: "swagger-with-laravel.pptx slide 9; Laravel_L5Swagger_SCRIPT_2026.docx Step 4"
+    bloom: understand
+
+  - id: swagger-card-12
+    type: predict
+    lang: php
+    prompt: "A developer adds a new `@OA\\Post` annotation to store() but does NOT run `php artisan l5-swagger:generate`. What does /api/documentation show?"
+    code: |
+      // New annotation added above store()
+      #[OA\Post(path: "/api/students", summary: "Create student", ...)]
+      public function store(Request $request) { ... }
+
+      // Developer refreshes /api/documentation without regenerating
+    answer: "The old documentation. The POST /api/students endpoint does not appear. Swagger UI serves the previously generated OpenAPI JSON, which does not include the new annotation."
+    explanation: "l5-swagger does not watch for annotation changes automatically. The generate step is a required manual compile. Setting L5_SWAGGER_GENERATE_ALWAYS=true in .env is the only way to avoid this."
+    source: "Laravel_L5Swagger_SCRIPT_2026.docx Step 6; swagger-with-laravel.pptx slide 7 Notes"
+    bloom: apply

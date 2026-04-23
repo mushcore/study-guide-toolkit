@@ -1,0 +1,56 @@
+cards:
+  - id: azure-swa-card-01
+    type: cloze
+    prompt: "Azure Functions is an {{event-driven}}, serverless compute service that runs TypeScript/JavaScript without managing servers."
+    answer: "event-driven"
+    explanation: "Event-driven means the function only runs when a trigger fires — HTTP request, timer tick, queue message, etc. Azure handles all server management; you pay per execution."
+    source: "ts-function-apps.pptx slide 2"
+    bloom: remember
+
+  - id: azure-swa-card-02
+    type: name
+    prompt: "What is the term for the event that starts an Azure Function — for example, an incoming HTTP request or a timer tick?"
+    answer: "trigger (Azure)"
+    explanation: "Every Azure Function has exactly one trigger. The trigger is declared in function.json and determines what wakes the function up. Common triggers: HTTP, Timer, Queue, Blob, Event Hub."
+    source: "ts-function-apps.pptx slide 4"
+    bloom: remember
+
+  - id: azure-swa-card-03
+    type: cloze
+    prompt: "A {{binding (Azure)}} connects an Azure Function to an input or output data source declaratively in function.json — no SDK boilerplate needed in the function body."
+    answer: "binding (Azure)"
+    explanation: "Bindings differ from triggers: a trigger starts the function; bindings are optional and handle data connections. Azure injects input-binding data and flushes output-binding writes automatically."
+    source: "ts-function-apps.pptx slide 8"
+    bloom: understand
+
+  - id: azure-swa-card-04
+    type: name
+    prompt: "One trigger + zero or many ___: what is the Azure Functions term for the optional declarative connections that read from queues, write to blobs, etc.?"
+    answer: "bindings (Azure)"
+    explanation: "A trigger fires the function (one required). Bindings wire it to other services (zero or many). Both are declared in function.json. Conflating the two is the most common exam error on this topic."
+    source: "ts-function-apps.pptx slides 4, 8"
+    bloom: understand
+
+  - id: azure-swa-card-05
+    type: cloze
+    prompt: "The configuration file that declares triggers and bindings for an Azure Function is called {{function.json}}."
+    answer: "function.json"
+    explanation: "function.json lives in the function's folder. It lists every binding (including the trigger) with type, direction (in/out), and name. The 'name' maps to the TypeScript parameter or context.bindings key."
+    source: "ts-function-apps.pptx slide 5"
+    bloom: remember
+
+  - id: azure-swa-card-06
+    type: cloze
+    prompt: "An HTTP-triggered Azure Function written in TypeScript receives two parameters: a {{Context}} and an {{HttpRequest}}."
+    answer: "Context, HttpRequest"
+    explanation: "Context carries context.res (the HTTP response), context.bindings (binding data), and context.log. HttpRequest exposes .query, .body, .headers, and .method — all typed."
+    source: "ts-function-apps.pptx slide 7"
+    bloom: remember
+
+  - id: azure-swa-card-07
+    type: name
+    prompt: "Azure Static Web Apps hosts both a SPA front end and a serverless backend under one URL. What technology powers the backend API?"
+    answer: "Azure Functions"
+    explanation: "Requests to /api/* route to Azure Functions; all other paths serve the static SPA. Both live in the same GitHub repo and deploy together via GitHub Actions — no separate server needed."
+    source: "static-web-apps-SCRIPT.docx"
+    bloom: understand

@@ -1,0 +1,49 @@
+cards:
+  - id: mcp-impl-card-01
+    type: cloze
+    prompt: "An MCP tool definition has three required fields: {{name}}, {{description}}, and {{inputSchema}}."
+    answer: "name, description, inputSchema"
+    explanation: "The LLM reads 'description' to decide when to invoke the tool. 'inputSchema' is a JSON Schema object that declares the argument types and required fields. Without all three, the tool cannot be discovered or called correctly."
+    source: "laravel_mcp.pptx slide 4"
+    bloom: remember
+
+  - id: mcp-impl-card-02
+    type: cloze
+    prompt: "The {{description}} field of an MCP tool definition is read by the LLM — not just developers — to decide when and how to invoke the tool."
+    answer: "description"
+    explanation: "A vague description causes missed or incorrect invocations. The description must state what the tool does, what system it affects, and what it returns — giving the LLM enough signal to choose correctly."
+    source: "laravel_mcp.pptx slide 4"
+    bloom: understand
+
+  - id: mcp-impl-card-03
+    type: name
+    prompt: "Which MCP transport uses a persistent HTTP connection with Server-Sent Events — SSE or STDIO?"
+    answer: "SSE"
+    explanation: "SSE keeps an HTTP connection open so the server can stream messages back to the client. It is the correct transport for any Laravel app accessible over HTTP. STDIO uses stdin/stdout pipes for locally-spawned processes only."
+    source: "laravel_mcp.pptx slide 12"
+    bloom: remember
+
+  - id: mcp-impl-card-04
+    type: name
+    prompt: "A Laravel app is deployed to a public URL. A developer wants Claude Desktop to call its MCP tools. Which transport should the mcp.json config specify?"
+    answer: "SSE (type: http)"
+    explanation: "SSE is for remote HTTP-accessible servers. STDIO requires the client to spawn the server as a local subprocess, which is incompatible with a deployed web app."
+    example: "`\"type\": \"http\"` in mcp.json points to the server's URL and uses the SSE transport."
+    source: "laravel_mcp.pptx slide 12"
+    bloom: apply
+
+  - id: mcp-impl-card-05
+    type: name
+    prompt: "What is the term for an MCP architecture where a single app simultaneously acts as both an MCP client and an MCP server?"
+    answer: "Composability (or chaining)"
+    explanation: "Composability means the client and server roles are independent — the same Laravel app can call external MCP tools in one controller while exposing its own tools to Claude via a separate MCP server class. This enables nested agent architectures."
+    source: "laravel_mcp.pptx slide 10"
+    bloom: understand
+
+  - id: mcp-impl-card-06
+    type: cloze
+    prompt: "An MCP server exposes two required JSON-RPC 2.0 endpoints: {{tools/list}} (returns available tool definitions) and {{tools/call}} (executes a named tool with arguments)."
+    answer: "tools/list, tools/call"
+    explanation: "tools/list lets any MCP client discover what the server can do. tools/call triggers execution and returns a result. Both use the JSON-RPC 2.0 envelope — not plain REST."
+    source: "laravel_mcp.pptx slides 11–12"
+    bloom: remember

@@ -1,0 +1,44 @@
+- id: rest-api-design-q-01
+  type: MCQ
+  topic: "REST API Design"
+  marks: 1
+  question: "A `store()` controller method successfully creates a new resource. Which HTTP status code and `response()->json()` call correctly signals creation to the client?"
+  choices:
+    - "return response()->json($resource);"
+    - "return response()->json($resource, 200);"
+    - "return response()->json($resource, 201);"
+    - "return response()->json($resource, 204);"
+  correct: 2
+  rationale: "HTTP 201 Created is the correct status code when a new resource has been persisted. It is passed as the second argument to `response()->json()`. Option A omits the status code — the default is 200 OK, which means 'the request succeeded and here is a representation,' not 'a new resource was created.' Option B explicitly sends 200, same issue. Option D sends 204 No Content — that is correct for successful deletes or updates where no body is returned, not for a newly created resource that the client needs to reference."
+  bloom: apply
+  source: "laravel_with_sqlite_API_SCRIPT.docx"
+
+- id: rest-api-design-q-02
+  type: MCQ
+  topic: "REST API Design"
+  marks: 1
+  question: "Which file should contain `Route::apiResource('products', ProductController::class)` for a JSON API?"
+  choices:
+    - "routes/web.php"
+    - "routes/api.php"
+    - "app/Http/Controllers/ProductController.php"
+    - "config/routes.php"
+  correct: 1
+  rationale: "`routes/api.php` is for stateless API routes — it applies no session middleware, returns JSON by default, and prefixes all URLs with `/api/`. `Route::apiResource()` belongs here. Option A (`routes/web.php`) is for browser-facing routes that carry sessions, CSRF protection, and cookie-based authentication — appropriate for Blade apps, not JSON APIs. Option C is a controller file, not a route file; you never define routes inside controller classes. Option D (`config/routes.php`) does not exist in Laravel — route configuration is not part of the `config/` directory."
+  bloom: understand
+  source: "laravel_with_sqlite_API_SCRIPT.docx"
+
+- id: rest-api-design-q-03
+  type: MCQ
+  topic: "REST API Design"
+  marks: 1
+  question: "A `store()` method calls `$request->validate(['name' => 'required'])` and the `name` field is missing. What does Laravel return automatically?"
+  choices:
+    - "A 500 Internal Server Error with a stack trace"
+    - "A 404 Not Found response"
+    - "A 422 Unprocessable Entity response with a JSON error body"
+    - "A 200 OK response with a null body"
+  correct: 2
+  rationale: "When `$request->validate()` finds a failed rule in an API context, Laravel automatically returns a 422 Unprocessable Entity response with a JSON body listing each field's validation errors. Execution stops before reaching `Student::create()`. Option A (500) is a server error indicating a crash — validation failure is not a crash, it is an expected control flow. Option B (404) means 'resource not found' — it has nothing to do with request body validation. Option D (200 with null) would mean the request succeeded, which is incorrect when validation fails."
+  bloom: understand
+  source: "laravel_with_sqlite_API_SCRIPT.docx"

@@ -160,4 +160,6 @@ class Student extends Model
 
 ---
 
+> **Pitfall:** `php artisan migrate:refresh --seed` drops all tables and wipes all data. Use it freely in development; never run it against a production database. `migrate:fresh` has the same destructive behavior.
+
 > **Takeaway:** Migrations give you version control for your database schema — every change is a tracked, reversible PHP class. Seeders pair with `migrate:refresh --seed` to rebuild a clean, populated database in one command. The `-m` flag creates both the model and its migration together, which is the fastest way to start a new table.

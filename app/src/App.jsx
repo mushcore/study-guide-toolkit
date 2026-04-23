@@ -14,6 +14,7 @@ import MockExam from './components/MockExam.jsx';
 import QuizReplay from './components/QuizReplay.jsx';
 import CodeApplied from './components/CodeApplied.jsx';
 import CodeAnnotation from './components/CodeAnnotation.jsx';
+import FlashCards from './components/FlashCards.jsx';
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "density": "comfortable",
@@ -167,9 +168,8 @@ const App = () => {
           {topic && <><span>/</span><span className="cur">{topic.name}</span></>}
           {route.name === 'cheat' && <><span>/</span><span className="cur">cheat sheet</span></>}
         </span>
-        <button className="palette-btn" onClick={() => setPaletteOpen(true)}>
-          jump… <span className="kbd">⌘K</span>
-        </button>
+        <img src="https://hitscounter.dev/api/hit?url=https%3A%2F%2Fmushcore.github.io%2Fstudy-guides%2F%23%2F&label=&icon=github&color=%23121212&message=&style=for-the-badge&tz=UTC">
+        </img>
       </div>
 
       <RouteErrorBoundary routeKey={`${route.name}|${route.courseId||''}|${route.topicId||''}`}>
@@ -216,9 +216,17 @@ const App = () => {
           </div>
         )}
         {route.name === 'cheat' && <CheatSheet courseId={route.courseId}/>}
+        {route.name === 'flash' && (
+          <FlashCards
+            courseId={route.courseId}
+            onRate={rate}
+            onJumpTopic={jumpTopic}
+            onBack={() => setRoute({ name: 'course', courseId: route.courseId })}
+            active={!paletteOpen && !shortcutOpen && !tweaksOpen}
+          />
+        )}
       </RouteErrorBoundary>
 
-      <Palette open={paletteOpen} onClose={() => setPaletteOpen(false)} onJump={handleJump}/>
       <ShortcutOverlay open={shortcutOpen} onClose={() => setShortcutOpen(false)}/>
       <Tweaks open={tweaksOpen} settings={settings} onChange={updateTweaks} onClose={() => setTweaksOpen(false)}/>
     </>

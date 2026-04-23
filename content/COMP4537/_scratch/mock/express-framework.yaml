@@ -1,0 +1,34 @@
+- id: express-framework-q-01
+  type: MCQ
+  topic: "Express Framework"
+  marks: 2
+  question: |
+    An Express server has this middleware registered before all route handlers:
+
+    ```js
+    app.use((req, res, next) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        // next() is intentionally omitted here
+    });
+
+    app.get('/api/v1/patients', (req, res) => {
+        res.json(patients);
+    });
+    ```
+
+    A client sends `GET /api/v1/patients`. What happens?
+  choices:
+    - "The request stalls permanently — the middleware never calls `next()`, so control never reaches the route handler."
+    - "Express skips the middleware because the route handler is registered first in source order."
+    - "The route handler executes normally — `next()` is only required in error-handling middleware."
+    - "The server throws a TypeError because `next` is not called within the timeout window."
+  correct: 0
+  rationale: |
+    Middleware in Express must call `next()` to pass control to the next middleware or route handler. A middleware that neither calls `next()` nor sends a response leaves the request permanently pending — the client waits indefinitely and the route handler never runs (Slide 8).
+    Express executes middleware in registration order, not source-order of the route handler; the `app.use()` call precedes `app.get()`, so the middleware always runs first.
+    `next()` is required in all middleware that does not terminate the request — not only in error handlers. Omitting it in any pipeline function stalls the request.
+    Express does not impose a call timeout on `next()`; no TypeError is thrown. The request simply hangs with no response.
+  bloom: apply
+  source: "Slide 8"

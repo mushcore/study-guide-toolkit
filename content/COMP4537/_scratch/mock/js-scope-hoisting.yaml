@@ -1,0 +1,90 @@
+- id: js-scope-hoisting-q-01
+  type: MCQ
+  topic: "var/let/const Scope and Hoisting"
+  marks: 2
+  question: |
+    What does the following code print to the console?
+
+    ```js
+    console.log(x);
+    var x = 42;
+    ```
+  choices:
+    - "`42`"
+    - "`ReferenceError: x is not defined`"
+    - "`undefined`"
+    - "`null`"
+  correct: 2
+  rationale: |
+    The `var x` declaration is hoisted to the top of its enclosing scope before any line executes.
+    Only the declaration moves — the initialization `= 42` stays at its original line — so `x` exists
+    in scope but holds `undefined` when `console.log` runs. Distractor B (`ReferenceError`) targets
+    the misconception that reading a variable before its written line always throws an error; that rule
+    applies to `let`/`const` in the Temporal Dead Zone, not to `var`. Distractor A (`42`) targets
+    students who assume the entire declaration-with-assignment is hoisted together. Distractor D
+    (`null`) targets students who conflate the "not yet assigned" state with an explicit `null` value.
+  bloom: understand
+  source: "Slide 1, ISAQuiz6 Q3"
+
+# concept-variant-of: js-scope-hoisting-q-01
+- id: js-scope-hoisting-q-02
+  type: MCQ
+  topic: "var/let/const Scope and Hoisting"
+  marks: 2
+  question: |
+    What does the following code print to the console?
+
+    ```js
+    function show() {
+      console.log(msg);
+      var msg = "hello";
+      console.log(msg);
+    }
+    show();
+    ```
+  choices:
+    - "`ReferenceError: msg is not defined`, then `hello`"
+    - "`undefined`, then `hello`"
+    - "`hello`, then `hello`"
+    - "`undefined`, then `undefined`"
+  correct: 1
+  rationale: |
+    Inside `show`, the `var msg` declaration is hoisted to the top of the function body, giving `msg`
+    the initial value `undefined` before any statement runs. The first `console.log(msg)` therefore
+    prints `undefined`. Then the assignment `msg = "hello"` executes and the second `console.log`
+    prints `"hello"`. Distractor A (`ReferenceError`) repeats the same TDZ-confusion targeted in
+    q-01 — students incorrectly apply `let`/`const` semantics to `var`. Distractor C (`hello, hello`)
+    targets the misconception that the entire `var msg = "hello"` statement is moved, including the
+    assignment. Distractor D (`undefined, undefined`) targets students who believe the assignment
+    never executes because the declaration was hoisted.
+  bloom: apply
+  source: "Slide 1, ISAQuiz6 Q3"
+
+- id: js-scope-hoisting-q-03
+  type: MCQ
+  topic: "var/let/const Scope and Hoisting"
+  marks: 2
+  question: |
+    What does the following code print to the console?
+
+    ```js
+    if (true) {
+      let score = 99;
+    }
+    console.log(score);
+    ```
+  choices:
+    - "`99`"
+    - "`undefined`"
+    - "`ReferenceError: score is not defined`"
+    - "`null`"
+  correct: 2
+  rationale: |
+    `let` is block-scoped: `score` lives only inside the `if` block's `{}`. Once that block closes,
+    `score` is gone from the enclosing scope. Accessing it outside throws `ReferenceError: score is
+    not defined`. Distractor A (`99`) targets students who apply `var`-style function-scope thinking
+    to `let`. Distractor B (`undefined`) targets the same `var`-hoisting analogy — students expect
+    `let` to hoist as `undefined` the way `var` does; it does not; `let` throws instead. Distractor D
+    (`null`) targets students who conflate "out of scope" with an explicit `null` value.
+  bloom: understand
+  source: "Slide 1, ISAQuiz6 Q5"

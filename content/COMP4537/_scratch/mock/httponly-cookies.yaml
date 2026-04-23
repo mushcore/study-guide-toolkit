@@ -1,0 +1,79 @@
+- id: httponly-cookies-q-01
+  type: MCQ
+  topic: "HttpOnly cookies — flags and XSS protection"
+  marks: 2
+  question: |
+    A login endpoint issues a session token. The token is stored in an HttpOnly cookie.
+    An attacker injects a script that calls `document.cookie`. What does the script retrieve?
+  choices:
+    - "The full token value, because document.cookie returns all cookies"
+    - "An empty string, because HttpOnly blocks JavaScript from reading that cookie"
+    - "An encrypted form of the token, which the attacker must decrypt"
+    - "A browser error, because document.cookie is disabled when HttpOnly cookies are present"
+  correct: 1
+  rationale: |
+    The HttpOnly flag blocks JavaScript from reading the cookie value. Any call to `document.cookie`
+    returns an empty string for cookies marked HttpOnly — the browser manages them exclusively and
+    never exposes their value to page scripts. This removes the read surface that XSS exploits rely on.
+    Option A targets the misconception that HttpOnly merely hides the cookie from some APIs but not
+    `document.cookie` itself. Option C confuses HttpOnly (an access restriction) with encryption (a
+    transformation of the stored value). Option D wrongly implies HttpOnly disables the `document.cookie`
+    API globally rather than simply withholding the HttpOnly cookie value from its output.
+  bloom: understand
+  source: "Slide 9, Slide 10, ISAQuiz11 Q1"
+  tags: []
+
+# concept-variant-of: httponly-cookies-q-01
+- id: httponly-cookies-q-02
+  type: MCQ
+  topic: "HttpOnly cookies — risks of omission"
+  marks: 2
+  question: |
+    A developer sets a JWT cookie without the `HttpOnly` attribute. Which risks does this create?
+  choices:
+    - "Cross-site scripting (XSS) attacks only"
+    - "Cross-site request forgery (CSRF) attacks only"
+    - "Session hijacking attacks only"
+    - "All of: XSS attacks, CSRF attacks, and session hijacking"
+  correct: 3
+  rationale: |
+    Omitting HttpOnly opens all three attack vectors simultaneously, not just one. Without HttpOnly,
+    injected scripts can read the token via `document.cookie` (XSS theft). Without SameSite and Secure
+    protections working as a system, forged cross-site requests can carry the cookie (CSRF). And with
+    the token exposed, an attacker can impersonate the session (session hijacking). The cookie flags work
+    as a system — each one closes a distinct attack surface. Option A is the most common wrong answer on
+    ISAQuiz11 Q3: selecting only XSS scores zero because the other two vectors are equally real. Option B
+    wrongly targets CSRF in isolation; CSRF is mitigated primarily by SameSite, but omitting HttpOnly still
+    worsens the overall security posture. Option C wrongly isolates session hijacking as the sole risk.
+  bloom: analyze
+  source: "Slide 9, Slide 10, ISAQuiz11 Q3, ISAQuiz11 Q8"
+  tags: []
+
+- id: httponly-cookies-q-03
+  type: MCQ
+  topic: "HttpOnly cookies — cross-origin credential flow"
+  marks: 2
+  question: |
+    A React app at `http://localhost:3000` makes an XHR request to an Express server at
+    `http://localhost:5000`. The server sets an HttpOnly cookie on login. Every subsequent
+    GET request to `/profile` returns 401. `withCredentials` is not set on the XHR.
+    What is the cause?
+  choices:
+    - "The HttpOnly flag prevents the browser from sending the cookie on any request"
+    - "The browser strips cookies from cross-origin requests when withCredentials is false"
+    - "The Secure flag is required before the browser will send an HttpOnly cookie"
+    - "The server must echo `Set-Cookie` on every response for the cookie to persist"
+  correct: 1
+  rationale: |
+    For cross-origin requests, the browser strips all cookies when `withCredentials` is `false`
+    (the default). The server receives no authentication cookie and cannot identify the user, so it
+    returns 401. Setting `withCredentials: true` on the XHR, combined with the server returning
+    `Access-Control-Allow-Credentials: true`, causes the browser to include the HttpOnly cookie.
+    Option A is wrong: HttpOnly restricts JavaScript read access, not the browser's own sending
+    mechanism — the browser continues to attach HttpOnly cookies to same-origin requests automatically.
+    Option C confuses the Secure flag's role (HTTPS-only transmission) with the withCredentials
+    mechanism that governs cross-origin cookie sending. Option D is wrong: a cookie set via Set-Cookie
+    persists without being re-issued on every response, until it expires or is explicitly deleted.
+  bloom: apply
+  source: "Slide 9, Slide 10, ISAQuiz11"
+  tags: []

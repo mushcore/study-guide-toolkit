@@ -1,0 +1,56 @@
+- id: rest-anatomy-q-01
+  type: MCQ
+  topic: "Anatomy of Web APIs"
+  marks: 2
+  question: |
+    A developer sends `POST /v1/patients/` three times with identical request bodies.
+    How many patient records does the server create?
+  choices:
+    - "One — POST is idempotent, so duplicate calls are ignored."
+    - "Three — POST is not idempotent, so each call creates a new record."
+    - "Zero — POST requires a unique ID in the URL before the server stores anything."
+    - "It depends on the status code returned by the first call."
+  correct: 1
+  rationale: |
+    POST is not idempotent. An operation is idempotent if applying it multiple times produces the same result as applying it once; POST does not satisfy that property — each call creates a new resource, so three identical POST requests produce three patient records. Option A targets the misconception that POST behaves like PUT (which is idempotent) because both can carry a request body. Option C conflates POST with PUT/PATCH, which do require an ID in the path for single-resource targeting. Option D is a distractor targeting students who confuse response-code inspection with idempotency rules; the status code returned describes what happened, not whether the operation was safe to repeat.
+  bloom: remember
+  source: "Slide 8, ISAQuiz7.pdf Q8"
+  tags: [pretest]
+
+- id: rest-anatomy-q-02
+  type: MCQ
+  topic: "Anatomy of Web APIs"
+  marks: 2
+  question: |
+    A client sends `PUT /v1/patients/1` with a body containing only `{"phone": "604-555-0101"}`.
+    The patient record currently stores `name`, `age`, and `phone`.
+    What is the state of the record after the request succeeds?
+  choices:
+    - "Only `phone` is updated; `name` and `age` are unchanged."
+    - "The record contains only `phone`; `name` and `age` are overwritten with null or empty values."
+    - "The request is rejected — PUT requires all fields to be present in the body."
+    - "The server merges the body with the existing record, leaving no fields missing."
+  correct: 1
+  rationale: |
+    PUT replaces the entire resource. Sending a partial body overwrites the stored document — fields absent from the payload become null or are removed, depending on the schema. Option A describes PATCH behaviour; the misconception is confusing PUT (replace-whole) with PATCH (update-one-field). Option C is a common student guess — past-exam wrong answers show students believe the server enforces schema completeness as a precondition of PUT; it does not (schema validation is separate from HTTP semantics). Option D describes a merge-patch strategy that is closer to PATCH; students frequently imagine PUT as an intelligent merge because merging feels safer.
+  bloom: apply
+  source: "Slide 8, ISAQuiz7.pdf Q7"
+
+# concept-variant-of: rest-anatomy-q-01
+- id: rest-anatomy-q-03
+  type: MCQ
+  topic: "Anatomy of Web APIs"
+  marks: 2
+  question: |
+    Which statement correctly describes the difference between a `4xx` status code
+    and a `5xx` status code?
+  choices:
+    - "4xx indicates a server error; 5xx indicates a client error."
+    - "4xx indicates a client error; 5xx indicates a server error."
+    - "Both 4xx and 5xx indicate server errors — the difference is only in severity."
+    - "4xx means the request was redirected; 5xx means the request succeeded partially."
+  correct: 1
+  rationale: |
+    Status codes group by their leading digit: 2xx is success, 3xx is redirect, 4xx is client error, and 5xx is server error. A 4xx response means the client sent a request the server understood but could not fulfil because of something the client did (bad URL, missing auth, malformed body). A 5xx response means the server itself failed while processing a valid request. Option A reverses the two categories — a common exam mistake where students memorise the digit range without the direction of blame. Option C reflects a misconception that 4xx and 5xx are on a single severity scale rather than representing distinct fault owners. Option D conflates 3xx (redirect) with 4xx, a distractor drawn from students mixing up the first-digit category table.
+  bloom: understand
+  source: "Slide 3, Slide 8, ISAQuiz7.pdf Q8"

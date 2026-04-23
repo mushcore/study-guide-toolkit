@@ -1,0 +1,116 @@
+id: sql-promises
+name: "Async DB queries with promises: chaining successive SQL calls"
+tags: [promises, async-db, mysql, chaining, successive-queries]
+prose: >
+  The mysql module's .promise() method wraps a connection and returns a promise-based
+  query interface. Successive SQL statements that depend on each other's results must
+  be chained with .then() or await to guarantee ordering. Firing queries without
+  awaiting previous results produces a race condition.
+cards:
+  - id: sql-promises-card-01
+    type: cloze
+    source: "Slide 11"
+    bloom: remember
+    front: "The mysql module method that returns a promise-based query interface is `con.{{promise}}()`."
+    answer: "promise"
+    explanation: >
+      con.promise() wraps the existing connection object and returns a new object
+      whose query() method returns a Promise instead of taking a callback.
+    example: |
+      const promiseCon = con.promise();
+      promiseCon.query('SELECT ...', [id]); // returns a Promise
+
+  - id: sql-promises-card-02
+    type: cloze
+    source: "Slide 11"
+    bloom: understand
+    front: "When `mysql.promise().query()` resolves, it yields an array `{{[rows, fields]}}` — destructure the first element to get result rows."
+    answer: "[rows, fields]"
+    explanation: >
+      mysql resolves promise queries with a two-element array: rows (the query results)
+      and fields (column metadata). Destructuring with const [rows] = await ... discards fields
+      and gives direct access to the result objects.
+    example: |
+      const [rows] = await promiseCon.query('SELECT * FROM patient WHERE patientid = ?', [id]);
+      // rows is the array of matching records
+
+  - id: sql-promises-card-03
+    type: cloze
+    source: "Slide 11"
+    bloom: analyze
+    front: "Running an UPDATE without first awaiting the SELECT result produces a {{race condition}} — the check and write are not sequenced."
+    answer: "race condition"
+    explanation: >
+      Without await or .then() chaining, both queries enter the MySQL queue simultaneously.
+      The UPDATE can execute before the SELECT result arrives, bypassing the existence check entirely.
+    example: |
+      // Wrong — no ordering guarantee:
+      promiseCon.query('SELECT ...', [id]);
+      promiseCon.query('UPDATE ...', [data, id]); // runs without waiting for SELECT
+
+      // Correct:
+      const [rows] = await promiseCon.query('SELECT ...', [id]);
+      if (rows.length === 0) throw new Error('Not found');
+      await promiseCon.query('UPDATE ...', [data, id]);
+
+  - id: sql-promises-card-04
+    type: name
+    source: "Slide 11"
+    bloom: remember
+    front: "What Node.js command installs the mysql module?"
+    answer: "npm install mysql"
+    explanation: >
+      mysql is not a built-in Node.js module. It must be installed as a dependency.
+      After installation it appears under "dependencies" in package.json.
+    example: |
+      // Terminal:
+      npm install mysql
+
+      // Then in code:
+      const mysql = require('mysql');
+
+  - id: sql-promises-card-05
+    type: predict
+    source: "Slide 11"
+    bloom: apply
+    front: |
+      Trace this promise chain. What value does `rows` hold inside the first `.then()` handler
+      if the SELECT matches one patient record with patientid = 7?
+
+      ```js
+      promiseCon
+        .query('SELECT * FROM patient WHERE patientid = ?', [7])
+        .then(([rows]) => {
+          // What is rows here?
+          return promiseCon.query('UPDATE patient SET name = ? WHERE patientid = ?', ['Alice', 7]);
+        })
+        .then(([result]) => console.log(result.affectedRows));
+      ```
+    answer: "rows is an array containing one object: [{ patientid: 7, name: '...', ... }]"
+    explanation: >
+      mysql resolves with [rows, fields]. The destructuring [rows] in the .then() parameter
+      extracts the first element — the array of result row objects. One matching record means
+      rows has length 1 and rows[0] is the patient object.
+    example: |
+      // rows = [{ patientid: 7, name: 'Bob', ... }]
+      // rows.length === 1
+      // rows[0].patientid === 7
+
+  - id: sql-promises-card-06
+    type: cloze
+    source: "Slide 11"
+    bloom: understand
+    front: "To sequence a SELECT then UPDATE, return the second `promiseCon.query()` call {{inside the .then() handler}} of the first — this chains the two Promises."
+    answer: "inside the .then() handler"
+    explanation: >
+      Returning a Promise from inside a .then() handler causes the next .then() to wait
+      for that returned Promise to settle. This is the mechanism that enforces sequential
+      execution of two async operations.
+    example: |
+      promiseCon.query('SELECT ...', [id])
+        .then(([rows]) => {
+          if (rows.length === 0) throw new Error('Not found');
+          return promiseCon.query('UPDATE ...', [data, id]); // chained
+        })
+        .then(([result]) => { /* UPDATE done */ })
+        .catch(err => { /* one handler for both */ });

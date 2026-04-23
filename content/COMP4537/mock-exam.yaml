@@ -1,0 +1,1593 @@
+duration_seconds: 7200
+pass_mark: 0.6
+questions:
+- id: js-scope-hoisting-q-01
+  type: MCQ
+  topic: var/let/const Scope and Hoisting
+  marks: 2
+  question: 'What does the following code print to the console?
+
+
+    ```js
+
+    console.log(x);
+
+    var x = 42;
+
+    ```
+
+    '
+  choices:
+  - '`42`'
+  - '`ReferenceError: x is not defined`'
+  - '`undefined`'
+  - '`null`'
+  correct: 2
+  rationale: 'The `var x` declaration is hoisted to the top of its enclosing scope before any line executes.
+
+    Only the declaration moves — the initialization `= 42` stays at its original line — so `x` exists
+
+    in scope but holds `undefined` when `console.log` runs. Distractor B (`ReferenceError`) targets
+
+    the misconception that reading a variable before its written line always throws an error; that rule
+
+    applies to `let`/`const` in the Temporal Dead Zone, not to `var`. Distractor A (`42`) targets
+
+    students who assume the entire declaration-with-assignment is hoisted together. Distractor D
+
+    (`null`) targets students who conflate the "not yet assigned" state with an explicit `null` value.
+
+    '
+  bloom: understand
+  source: Slide 1, ISAQuiz6 Q3
+- id: js-scope-hoisting-q-02
+  type: MCQ
+  topic: var/let/const Scope and Hoisting
+  marks: 2
+  question: "What does the following code print to the console?\n\n```js\nfunction show() {\n  console.log(msg);\n  var msg\
+    \ = \"hello\";\n  console.log(msg);\n}\nshow();\n```\n"
+  choices:
+  - '`ReferenceError: msg is not defined`, then `hello`'
+  - '`undefined`, then `hello`'
+  - '`hello`, then `hello`'
+  - '`undefined`, then `undefined`'
+  correct: 1
+  rationale: 'Inside `show`, the `var msg` declaration is hoisted to the top of the function body, giving `msg`
+
+    the initial value `undefined` before any statement runs. The first `console.log(msg)` therefore
+
+    prints `undefined`. Then the assignment `msg = "hello"` executes and the second `console.log`
+
+    prints `"hello"`. Distractor A (`ReferenceError`) repeats the same TDZ-confusion targeted in
+
+    q-01 — students incorrectly apply `let`/`const` semantics to `var`. Distractor C (`hello, hello`)
+
+    targets the misconception that the entire `var msg = "hello"` statement is moved, including the
+
+    assignment. Distractor D (`undefined, undefined`) targets students who believe the assignment
+
+    never executes because the declaration was hoisted.
+
+    '
+  bloom: apply
+  source: Slide 1, ISAQuiz6 Q3
+- id: js-scope-hoisting-q-03
+  type: MCQ
+  topic: var/let/const Scope and Hoisting
+  marks: 2
+  question: "What does the following code print to the console?\n\n```js\nif (true) {\n  let score = 99;\n}\nconsole.log(score);\n\
+    ```\n"
+  choices:
+  - '`99`'
+  - '`undefined`'
+  - '`ReferenceError: score is not defined`'
+  - '`null`'
+  correct: 2
+  rationale: '`let` is block-scoped: `score` lives only inside the `if` block''s `{}`. Once that block closes,
+
+    `score` is gone from the enclosing scope. Accessing it outside throws `ReferenceError: score is
+
+    not defined`. Distractor A (`99`) targets students who apply `var`-style function-scope thinking
+
+    to `let`. Distractor B (`undefined`) targets the same `var`-hoisting analogy — students expect
+
+    `let` to hoist as `undefined` the way `var` does; it does not; `let` throws instead. Distractor D
+
+    (`null`) targets students who conflate "out of scope" with an explicit `null` value.
+
+    '
+  bloom: understand
+  source: Slide 1, ISAQuiz6 Q5
+- id: rest-anatomy-q-01
+  type: MCQ
+  topic: Anatomy of Web APIs
+  marks: 2
+  question: 'A developer sends `POST /v1/patients/` three times with identical request bodies.
+
+    How many patient records does the server create?
+
+    '
+  choices:
+  - One — POST is idempotent, so duplicate calls are ignored.
+  - Three — POST is not idempotent, so each call creates a new record.
+  - Zero — POST requires a unique ID in the URL before the server stores anything.
+  - It depends on the status code returned by the first call.
+  correct: 1
+  rationale: 'POST is not idempotent. An operation is idempotent if applying it multiple times produces the same result as
+    applying it once; POST does not satisfy that property — each call creates a new resource, so three identical POST requests
+    produce three patient records. Option A targets the misconception that POST behaves like PUT (which is idempotent) because
+    both can carry a request body. Option C conflates POST with PUT/PATCH, which do require an ID in the path for single-resource
+    targeting. Option D is a distractor targeting students who confuse response-code inspection with idempotency rules; the
+    status code returned describes what happened, not whether the operation was safe to repeat.
+
+    '
+  bloom: remember
+  source: Slide 8, ISAQuiz7.pdf Q8
+  tags:
+  - pretest
+- id: rest-anatomy-q-02
+  type: MCQ
+  topic: Anatomy of Web APIs
+  marks: 2
+  question: 'A client sends `PUT /v1/patients/1` with a body containing only `{"phone": "604-555-0101"}`.
+
+    The patient record currently stores `name`, `age`, and `phone`.
+
+    What is the state of the record after the request succeeds?
+
+    '
+  choices:
+  - Only `phone` is updated; `name` and `age` are unchanged.
+  - The record contains only `phone`; `name` and `age` are overwritten with null or empty values.
+  - The request is rejected — PUT requires all fields to be present in the body.
+  - The server merges the body with the existing record, leaving no fields missing.
+  correct: 1
+  rationale: 'PUT replaces the entire resource. Sending a partial body overwrites the stored document — fields absent from
+    the payload become null or are removed, depending on the schema. Option A describes PATCH behaviour; the misconception
+    is confusing PUT (replace-whole) with PATCH (update-one-field). Option C is a common student guess — past-exam wrong answers
+    show students believe the server enforces schema completeness as a precondition of PUT; it does not (schema validation
+    is separate from HTTP semantics). Option D describes a merge-patch strategy that is closer to PATCH; students frequently
+    imagine PUT as an intelligent merge because merging feels safer.
+
+    '
+  bloom: apply
+  source: Slide 8, ISAQuiz7.pdf Q7
+- id: rest-anatomy-q-03
+  type: MCQ
+  topic: Anatomy of Web APIs
+  marks: 2
+  question: 'Which statement correctly describes the difference between a `4xx` status code
+
+    and a `5xx` status code?
+
+    '
+  choices:
+  - 4xx indicates a server error; 5xx indicates a client error.
+  - 4xx indicates a client error; 5xx indicates a server error.
+  - Both 4xx and 5xx indicate server errors — the difference is only in severity.
+  - 4xx means the request was redirected; 5xx means the request succeeded partially.
+  correct: 1
+  rationale: 'Status codes group by their leading digit: 2xx is success, 3xx is redirect, 4xx is client error, and 5xx is
+    server error. A 4xx response means the client sent a request the server understood but could not fulfil because of something
+    the client did (bad URL, missing auth, malformed body). A 5xx response means the server itself failed while processing
+    a valid request. Option A reverses the two categories — a common exam mistake where students memorise the digit range
+    without the direction of blame. Option C reflects a misconception that 4xx and 5xx are on a single severity scale rather
+    than representing distinct fault owners. Option D conflates 3xx (redirect) with 4xx, a distractor drawn from students
+    mixing up the first-digit category table.
+
+    '
+  bloom: understand
+  source: Slide 3, Slide 8, ISAQuiz7.pdf Q8
+- id: ajax-cors-q-01
+  type: MCQ
+  topic: AJAX, CORS, and Same-Origin Policy
+  marks: 2
+  question: 'An `XMLHttpRequest` object has just been constructed with `new XMLHttpRequest()`, but `open()` has not yet been
+    called.
+
+    What is the value of `readyState` at this point?
+
+    '
+  choices:
+  - 0 (UNSENT)
+  - 1 (OPENED)
+  - 4 (DONE)
+  - 5 (COMPLETE)
+  correct: 0
+  rationale: '`readyState` is set to 0 (UNSENT) immediately on construction, before any method is called on the object.
+
+    The `open()` call advances `readyState` to 1 (OPENED); it does not start at 1.
+
+    `readyState` 4 (DONE) is the terminal state indicating the operation is complete — confusing it with the initial state
+    conflates end state with start state, a documented distractor (Slide 5, Quiz 6).
+
+    `readyState` 5 does not exist; the scale is strictly 0–4. Checking `readyState == 5` never fires (Slide 5, Quiz 6).
+
+    '
+  bloom: remember
+  source: Slide 5, ISAQuiz6.pdf
+- id: ajax-cors-q-02
+  type: MCQ
+  topic: AJAX, CORS, and Same-Origin Policy
+  marks: 2
+  question: "The following handler is attached to an XHR request:\n\n```js\nxhttp.onreadystatechange = function () {\n  if\
+    \ (this.readyState == 4 && this.status == 200) {\n    document.getElementById(\"result\").innerHTML = this.responseText;\n\
+    \  }\n};\n```\n\nThe handler fires but the `if` block never executes.\nThe server returns HTTP 200 and the network tab\
+    \ shows a completed response.\nWhich `readyState` value is `this.readyState` most likely holding when the check fails?\n"
+  choices:
+  - 3 (LOADING) — the response body is still arriving
+  - 5 (COMPLETE) — the browser advances past DONE
+  - 0 (UNSENT) — the object was never opened
+  - 1 (OPENED) — open() was called but send() was not
+  correct: 0
+  rationale: '`onreadystatechange` fires on every state transition, including 1, 2, and 3 (LOADING), where the response body
+    is still streaming in.
+
+    If `readyState` is 3 when the handler fires, the `== 4` check fails even though the server has responded — the transition
+    to 4 (DONE) happens on a subsequent fire.
+
+    `readyState` 5 does not exist; the value never advances past 4 (Slide 5, Quiz 6). Believing the browser increments past
+    DONE is a common distractor.
+
+    States 0 and 1 precede `send()`, so the handler would not have fired from network activity at those points.
+
+    '
+  bloom: apply
+  source: Slide 5, ISAQuiz6.pdf
+- id: ajax-cors-q-03
+  type: MCQ
+  topic: AJAX, CORS, and Same-Origin Policy
+  marks: 2
+  question: 'A browser script on `http://localhost:3000` uses XHR to send the following request:
+
+
+    ```js
+
+    xhttp.open("DELETE", "http://api.example.com/users/42", true);
+
+    xhttp.withCredentials = true;
+
+    xhttp.send();
+
+    ```
+
+
+    The server at `http://api.example.com` responds with:
+
+
+    ```
+
+    Access-Control-Allow-Origin: *
+
+    Access-Control-Allow-Credentials: true
+
+    ```
+
+
+    What does the browser do with the response?
+
+    '
+  choices:
+  - Rejects the response — `withCredentials` requires a specific origin, not `*`
+  - Accepts the response — both CORS headers are present
+  - Rejects the response — DELETE always requires a separate preflight that was not shown
+  - Accepts the response — `withCredentials` is only checked for POST requests
+  correct: 0
+  rationale: 'When `withCredentials` is `true`, the browser requires `Access-Control-Allow-Origin` to name a specific origin
+    (e.g. `http://localhost:3000`), not the wildcard `*`. The wildcard and credentials flag are mutually exclusive; the browser
+    rejects the response even if `Access-Control-Allow-Credentials: true` is present (Slide 5, Slide 9).
+
+    Thinking both CORS headers together are sufficient ignores the spec rule that `*` is never acceptable with credentials
+    — the combination is invalid regardless of other headers.
+
+    The preflight distractor is accurate in isolation (DELETE is non-simple and does trigger a preflight), but the question''s
+    stated failure cause is the `*` + `withCredentials` conflict, not a missing preflight.
+
+    `withCredentials` applies to all HTTP methods, not only POST; limiting it to POST reflects a misconception about how the
+    flag works.
+
+    '
+  bloom: analyze
+  source: Slide 5, Slide 9, Slide 10
+- id: httponly-cookies-q-01
+  type: MCQ
+  topic: HttpOnly cookies — flags and XSS protection
+  marks: 2
+  question: 'A login endpoint issues a session token. The token is stored in an HttpOnly cookie.
+
+    An attacker injects a script that calls `document.cookie`. What does the script retrieve?
+
+    '
+  choices:
+  - The full token value, because document.cookie returns all cookies
+  - An empty string, because HttpOnly blocks JavaScript from reading that cookie
+  - An encrypted form of the token, which the attacker must decrypt
+  - A browser error, because document.cookie is disabled when HttpOnly cookies are present
+  correct: 1
+  rationale: 'The HttpOnly flag blocks JavaScript from reading the cookie value. Any call to `document.cookie`
+
+    returns an empty string for cookies marked HttpOnly — the browser manages them exclusively and
+
+    never exposes their value to page scripts. This removes the read surface that XSS exploits rely on.
+
+    Option A targets the misconception that HttpOnly merely hides the cookie from some APIs but not
+
+    `document.cookie` itself. Option C confuses HttpOnly (an access restriction) with encryption (a
+
+    transformation of the stored value). Option D wrongly implies HttpOnly disables the `document.cookie`
+
+    API globally rather than simply withholding the HttpOnly cookie value from its output.
+
+    '
+  bloom: understand
+  source: Slide 9, Slide 10, ISAQuiz11 Q1
+- id: httponly-cookies-q-02
+  type: MCQ
+  topic: HttpOnly cookies — risks of omission
+  marks: 2
+  question: 'A developer sets a JWT cookie without the `HttpOnly` attribute. Which risks does this create?
+
+    '
+  choices:
+  - Cross-site scripting (XSS) attacks only
+  - Cross-site request forgery (CSRF) attacks only
+  - Session hijacking attacks only
+  - 'All of: XSS attacks, CSRF attacks, and session hijacking'
+  correct: 3
+  rationale: 'Omitting HttpOnly opens all three attack vectors simultaneously, not just one. Without HttpOnly,
+
+    injected scripts can read the token via `document.cookie` (XSS theft). Without SameSite and Secure
+
+    protections working as a system, forged cross-site requests can carry the cookie (CSRF). And with
+
+    the token exposed, an attacker can impersonate the session (session hijacking). The cookie flags work
+
+    as a system — each one closes a distinct attack surface. Option A is the most common wrong answer on
+
+    ISAQuiz11 Q3: selecting only XSS scores zero because the other two vectors are equally real. Option B
+
+    wrongly targets CSRF in isolation; CSRF is mitigated primarily by SameSite, but omitting HttpOnly still
+
+    worsens the overall security posture. Option C wrongly isolates session hijacking as the sole risk.
+
+    '
+  bloom: analyze
+  source: Slide 9, Slide 10, ISAQuiz11 Q3, ISAQuiz11 Q8
+- id: httponly-cookies-q-03
+  type: MCQ
+  topic: HttpOnly cookies — cross-origin credential flow
+  marks: 2
+  question: 'A React app at `http://localhost:3000` makes an XHR request to an Express server at
+
+    `http://localhost:5000`. The server sets an HttpOnly cookie on login. Every subsequent
+
+    GET request to `/profile` returns 401. `withCredentials` is not set on the XHR.
+
+    What is the cause?
+
+    '
+  choices:
+  - The HttpOnly flag prevents the browser from sending the cookie on any request
+  - The browser strips cookies from cross-origin requests when withCredentials is false
+  - The Secure flag is required before the browser will send an HttpOnly cookie
+  - The server must echo `Set-Cookie` on every response for the cookie to persist
+  correct: 1
+  rationale: 'For cross-origin requests, the browser strips all cookies when `withCredentials` is `false`
+
+    (the default). The server receives no authentication cookie and cannot identify the user, so it
+
+    returns 401. Setting `withCredentials: true` on the XHR, combined with the server returning
+
+    `Access-Control-Allow-Credentials: true`, causes the browser to include the HttpOnly cookie.
+
+    Option A is wrong: HttpOnly restricts JavaScript read access, not the browser''s own sending
+
+    mechanism — the browser continues to attach HttpOnly cookies to same-origin requests automatically.
+
+    Option C confuses the Secure flag''s role (HTTPS-only transmission) with the withCredentials
+
+    mechanism that governs cross-origin cookie sending. Option D is wrong: a cookie set via Set-Cookie
+
+    persists without being re-issued on every response, until it expires or is explicitly deleted.
+
+    '
+  bloom: apply
+  source: Slide 9, Slide 10, ISAQuiz11
+- id: promises-basics-q-01
+  type: MCQ
+  topic: 'Promises: Constructor, States, and Eager Execution'
+  marks: 2
+  question: "What is the output of the following code?\n\n```js\nconst fn1 = () => new Promise((resolve, reject) => {\n  console.log(1);\n\
+    \  resolve('success');\n});\n\nfn1().then((res) => {\n  console.log(res);\n});\n\nconsole.log('start');\n```\n"
+  choices:
+  - '`1`, `start`, `success`'
+  - '`start`, `1`, `success`'
+  - '`1`, `success`, `start`'
+  - '`start`, `success`, `1`'
+  correct: 0
+  rationale: 'The executor runs eagerly — immediately on construction, before any `.then()` is attached or any subsequent
+    synchronous statement executes. `console.log(1)` fires first because it sits inside the executor. `resolve(''success'')`
+    changes the Promise state to fulfilled synchronously, but the `.then()` callback is not called at that moment; it is enqueued
+    as a microtask. `console.log(''start'')` is the next synchronous statement and runs before the microtask queue drains,
+    so `start` appears second. Only after the call stack empties does the microtask queue drain, printing `success` last.
+    Distractor B targets the misconception that the executor is deferred until a consumer attaches — students who believe
+    `.then()` triggers the executor would expect `start` first. Distractor C targets students who assume `resolve()` calls
+    the `.then()` handler inline, before returning to the outer synchronous code. Distractor D targets students who believe
+    both the executor and the handler are deferred, placing all async activity after synchronous code.
+
+    '
+  bloom: apply
+  source: Slide 6, ISAQuiz8 Q2
+- id: promises-basics-q-02
+  type: MCQ
+  topic: 'Promises: Constructor, States, and Eager Execution'
+  marks: 2
+  question: "What is the output of the following code?\n\n```js\nlet promise = new Promise(function(resolve, reject) {\n \
+    \ console.log('2');\n  reject('3');\n  resolve('4');\n  console.log('5');\n});\npromise.then(\n  (val)    => console.log(val),\n\
+    \  (reason) => console.log(reason)\n);\nconsole.log('1');\n```\n"
+  choices:
+  - '`2`, `5`, `1`, `3`'
+  - '`2`, `5`, `1`, `4`'
+  - '`2`, `5`, `3`, `1`'
+  - '`1`, `2`, `5`, `3`'
+  correct: 0
+  rationale: 'The executor runs eagerly, so `console.log(''2'')` fires first. `reject(''3'')` immediately transitions the
+    Promise to rejected and enqueues the rejection handler as a microtask with argument `''3''`. `resolve(''4'')` arrives
+    after the Promise is already settled — settlement is permanent, so this call is silently ignored and `''4''` never appears
+    in the output. `console.log(''5'')` still executes synchronously inside the executor. After the executor returns, `promise.then(...)`
+    registers the handlers (the rejection handler is already queued). `console.log(''1'')` runs synchronously. Only after
+    the call stack empties does the microtask queue drain, invoking the rejection handler and printing `''3''`. Distractor
+    B targets the misconception that `resolve()` wins over `reject()` because it follows it, causing `''4''` instead of `''3''`.
+    Distractor C targets students who believe microtasks drain immediately after `reject()` fires, printing `''3''` before
+    the synchronous `console.log(''1'')`. Distractor D targets students who expect the executor to be deferred, placing the
+    synchronous `console.log(''1'')` before the executor body.
+
+    '
+  bloom: analyze
+  source: Slide 6, ISAQuiz8 Q3
+- id: promises-basics-q-03
+  type: MCQ
+  topic: 'Promises: Constructor, States, and Eager Execution'
+  marks: 2
+  question: 'Which statement about Promise states is **incorrect**?
+
+    '
+  choices:
+  - A pending Promise can be fulfilled with a value or rejected with a reason.
+  - Once a Promise is settled, calling `resolve()` or `reject()` again on it has no effect.
+  - A Promise transitions from pending to fulfilled when `resolve()` is called, and from pending to rejected when `reject()`
+    is called.
+  - A pending Promise cannot be fulfilled with a value or rejected with a reason.
+  correct: 3
+  rationale: 'The incorrect statement is D. A Promise in the pending state is precisely the state in which it *can* be fulfilled
+    or rejected — that is the only state from which a transition is possible. `resolve(value)` transitions pending to fulfilled;
+    `reject(reason)` transitions pending to rejected. Once a Promise leaves the pending state it is settled, and all subsequent
+    calls to `resolve()` or `reject()` are silent no-ops (statement B). Statement A and C correctly describe valid one-way
+    transitions. Distractor A looks suspicious to students who conflate "pending" with "not yet usable," but pending is the
+    active, transitionable state. Distractor B mirrors a real pitfall — some students assume multiple `resolve()` calls each
+    trigger a `.then()` handler, which is false. Distractor C is a restatement of the correct state-machine transitions and
+    is therefore a true statement, not the incorrect one.
+
+    '
+  bloom: remember
+  source: Slide 6, ISAQuiz8 Q4
+- id: db-relational-design-q-01
+  type: MCQ
+  topic: 'Relational DB design: keys, relationships, and normalization'
+  marks: 2
+  question: 'A `Student` table has columns `studentID (PK)`, `name`, `enrollmentDate`. A separate `Enrollment` table has columns
+    `enrollmentID (PK)`, `studentID`, `courseCode`, `grade`.
+
+
+    Which column in `Enrollment` is the **foreign key**, and what does its presence enforce?
+
+    '
+  choices:
+  - '`enrollmentID` — it uniquely identifies each enrollment row'
+  - '`studentID` in `Enrollment` — it references `Student.studentID` and enforces referential integrity'
+  - '`studentID` in `Student` — it links the parent table back to the child table'
+  - '`courseCode` — it references the course catalog and acts as the join column'
+  correct: 1
+  rationale: '`Enrollment.studentID` is the foreign key because it references the primary key of the `Student` table. A foreign
+    key enforces referential integrity — every value stored in `Enrollment.studentID` must already exist as a `studentID`
+    in `Student`, preventing orphan rows. Choice A targets the misconception that the primary key of the child table is the
+    foreign key; `enrollmentID` uniquely identifies enrollment rows but does not reference another table. Choice C reverses
+    the direction — the parent table''s primary key is not a foreign key pointing to its own child. Choice D targets the misconception
+    that any join column is a foreign key; `courseCode` has no declared FK constraint in this schema.
+
+    '
+  bloom: understand
+  source: Slide 7, Quiz 10
+- id: db-relational-design-q-02
+  type: MCQ
+  topic: 'Relational DB design: keys, relationships, and normalization'
+  marks: 2
+  question: 'A clinic database has a `patient` table (`patientid PK`, `name`) and a `visit` table (`visitid PK`, `patientid
+    FK`, `visitDate`). A developer tries to delete the row for `patientid = 5` from `patient`, but the DELETE fails.
+
+
+    What is the most likely reason?
+
+    '
+  choices:
+  - Primary keys cannot be deleted once inserted
+  - The `visit` table has no primary key, so the constraint cannot be evaluated
+  - One or more rows in `visit` still reference `patientid = 5`, and the active foreign key constraint blocks deletion
+  - The `patientid` column in `visit` must be set to NULL before the parent row can be deleted
+  correct: 2
+  rationale: 'MySQL enforces referential integrity by blocking DELETE on a parent row that has matching child rows. If `visit`
+    contains rows where `patientid = 5`, removing the parent row in `patient` would create orphan records — visit rows pointing
+    to a nonexistent patient. The constraint stops this by default. Choice A is false — primary key values are deletable when
+    no child rows reference them. Choice B is false — the foreign key constraint is on `visit.patientid`; whether `visit`
+    has its own primary key does not affect enforcement of that FK. Choice D reflects a partial truth (NULLing child FKs before
+    deleting the parent is one resolution strategy) but is not the reason the DELETE fails — it describes a workaround, not
+    the cause.
+
+    '
+  bloom: apply
+  source: Slide 7, Quiz 10
+- id: db-relational-design-q-03
+  type: MCQ
+  topic: 'Relational DB design: keys, relationships, and normalization'
+  marks: 2
+  question: 'A table stores employee data with columns: `employeeID (PK)`, `name`, `officeCity`, `officeCountry`. Every cell
+    holds exactly one value and every row is unique.
+
+
+    Which normal form statement is correct?
+
+    '
+  choices:
+  - The table violates both 1NF and 2NF
+  - The table violates 1NF but complies with 2NF
+  - The table complies with 2NF and therefore also complies with 1NF
+  - The table complies with 1NF but violates 2NF
+  correct: 3
+  rationale: '1NF requires every column to hold one atomic value per row with no repeating groups — this table satisfies that
+    because each cell holds a single value. 2NF requires every non-key column to depend on the entire primary key. Here `officeCountry`
+    is determined by `officeCity`, not by `employeeID` — that partial transitive dependency violates 2NF. Choice A targets
+    the misconception from ISAQuiz10 Q5 where students incorrectly marked the table as violating both forms; since all values
+    are atomic, 1NF holds. Choice B is logically impossible: 2NF requires 1NF as a prerequisite, so a table cannot violate
+    1NF while complying with 2NF. Choice C targets the misconception that satisfying 2NF automatically means the table is
+    fully normalized beyond scrutiny; the statement is structurally plausible but wrong here because 2NF is violated.
+
+    '
+  bloom: analyze
+  source: Slide 7, Slide 10, Quiz 10 Q5
+- id: js-functions-q-01
+  type: MCQ
+  topic: Function declarations, callbacks, first-class functions, closures
+  marks: 2
+  question: "What does the following code print to the console?\n\n```js\nfunction hiGenerator(greeting) {\n  return function(name)\
+    \ {\n    return greeting + ', ' + name;\n  };\n}\nconst sayHi = hiGenerator('Hello');\nconsole.log(sayHi('World'));\n\
+    ```\n"
+  choices:
+  - '`undefined, World`'
+  - '`Hello, World`'
+  - '`ReferenceError: greeting is not defined`'
+  - Nothing is printed — `sayHi('World')` returns a value but `console.log` is never reached
+  correct: 1
+  rationale: '`hiGenerator(''Hello'')` runs and binds `greeting` to `''Hello''`, then returns the inner function.
+
+    That inner function is a closure: it retains a reference to `greeting` in its scope chain even
+
+    after `hiGenerator` has returned. When `sayHi(''World'')` is called, `greeting` is still `''Hello''`
+
+    and `name` is `''World''`, so the return value is `''Hello, World''`, which `console.log` prints.
+
+    Distractor A (`undefined, World`) targets students who assume `greeting` is lost after
+
+    `hiGenerator` returns, expecting the variable to read as `undefined`. Distractor C (`ReferenceError`)
+
+    targets students who believe closures cannot access outer-scope variables after the enclosing
+
+    function exits. Distractor D targets students confused by the `console.log` call being outside
+
+    the function — it is in the outer scope and executes normally.
+
+    '
+  bloom: apply
+  source: Slide 3, ISAQuiz6 Q12
+- id: js-functions-q-02
+  type: MCQ
+  topic: Function declarations, callbacks, first-class functions, closures
+  marks: 2
+  question: "What does the following code print to the console?\n\n```js\nfunction tripleNumber(n) { return n * 3; }\nfor\
+    \ (let i = 0; i < 4; i++) {\n  console.log(tripleNumber(i));\n}\n```\n"
+  choices:
+  - '`0`, `3`, `6`, `9`'
+  - '`undefined`, `undefined`, `undefined`, `undefined`'
+  - '`0`, `3`, `6`, `9` — then `Error: tripleNumber is undefined`'
+  - '`3`, `6`, `9`, `12`'
+  correct: 0
+  rationale: '`tripleNumber` returns `n * 3`. The loop runs for `i = 0, 1, 2, 3` and passes each `i` as the
+
+    argument. The four return values are `0`, `3`, `6`, `9`, each immediately passed to `console.log`.
+
+    Distractor B (`undefined × 4`) targets students who confuse a missing `return` statement with the
+
+    present one — in ISAQuiz3 Q12 this exact distractor appeared for a case where the function
+
+    lacked `return`; here the function does have `return`. Distractor C targets students who believe
+
+    a function cannot be called inside a loop multiple times. Distractor D (`3, 6, 9, 12`) targets
+
+    students who incorrectly start the loop at `i = 1` rather than `i = 0`, or who add 1 to each index.
+
+    '
+  bloom: apply
+  source: Slide 3, ISAQuiz3 Q12
+- id: jwt-q-01
+  type: MCQ
+  topic: JWT — structure and components
+  marks: 2
+  question: 'A JWT produced by `jwt.sign({ username }, TOKEN_SECRET, { algorithm: ''HS256'' })` has
+
+    which three parts, in order?
+
+    '
+  choices:
+  - Header, Payload, and Certificate
+  - Header, Body, and Footer
+  - Header, Payload, and Signature
+  - Header, Body, and Digest
+  correct: 2
+  rationale: 'A JWT is three Base64url-encoded strings joined by dots: header, payload, and signature.
+
+    The header declares the algorithm and token type. The payload carries claims such as username
+
+    and expiry. The signature is the HMAC of the header and payload computed with the secret key —
+
+    it proves the token was not tampered with. Option A is the primary distractor in ISAQuiz11 Q5:
+
+    "Certificate" has no meaning in JWT; a certificate is an X.509 structure used in TLS, not a JWT
+
+    component. Option B replaces both correct terms: "Body" is not a JWT term (the correct term is
+
+    Payload), and "Footer" does not exist in the specification. Option D combines the wrong "Body"
+
+    term with "Digest," which is a raw hash output — not the same as a keyed HMAC signature.
+
+    '
+  bloom: remember
+  source: Slide 10, ISAQuiz11 Q5
+- id: jwt-q-02
+  type: MCQ
+  topic: JWT — signing mechanism and secret key
+  marks: 2
+  question: 'A server signs a JWT using `jwt.sign({ username }, TOKEN_SECRET, { algorithm: ''HS256'' })`.
+
+    The token is later returned by the client. How does the server verify the token has not
+
+    been tampered with?
+
+    '
+  choices:
+  - It decrypts the token with the secret key and checks the payload matches its session store
+  - It recomputes the HS256 signature over the received header and payload using the secret key and compares it to the token's
+    signature
+  - It calls a third-party certificate authority to verify the token's certificate
+  - It hashes the entire token with bcrypt and compares the result to a stored hash
+  correct: 1
+  rationale: 'JWT verification is stateless: the server recomputes the HS256 signature by running HMAC-SHA256
+
+    over the Base64url-encoded header and payload using the same secret key used at signing time.
+
+    If the recomputed signature matches the signature in the token, the token is authentic and
+
+    unmodified. No database lookup or session store is required. Option A conflates JWT with
+
+    session-based authentication: JWT does not use a session store, and the token is not encrypted —
+
+    it is signed. A common trap is to say the server "decrypts" the token; HS256 is HMAC, not
+
+    encryption. Option C is a misconception about asymmetric JWT variants (RS256 uses a
+
+    certificate-authority-backed key pair), but even then the server verifies a signature using its
+
+    own key, not an external certificate authority call. Option D confuses bcrypt (a slow
+
+    password-hashing function) with the keyed HMAC used for JWT signing; bcrypt is used for password
+
+    storage, not token verification.
+
+    '
+  bloom: analyze
+  source: Slide 10, ISAQuiz11 Q7
+- id: jwt-q-03
+  type: MCQ
+  topic: JWT — storage security and XSS exposure
+  marks: 2
+  question: 'A developer stores a JWT in `localStorage` instead of an HttpOnly cookie.
+
+    What attack does this enable that HttpOnly cookie storage prevents?
+
+    '
+  choices:
+  - An attacker can intercept the JWT over the network because localStorage is not encrypted
+  - An injected script can call `localStorage.getItem('token')` and exfiltrate the JWT
+  - The JWT expires immediately because localStorage clears on tab close
+  - Cross-site request forgery (CSRF) attacks, because the browser sends localStorage values automatically
+  correct: 1
+  rationale: 'Storing a JWT in `localStorage` makes it readable by any JavaScript on the page, including
+
+    injected scripts from a Cross-Site Scripting (XSS) attack. An attacker who achieves XSS calls
+
+    `localStorage.getItem(''token'')` and ships the value to their server. An HttpOnly cookie is
+
+    invisible to JavaScript — the browser holds it and sends it on requests, but the page script
+
+    never sees the value, so there is nothing to steal via XSS. Option A is wrong: localStorage
+
+    stores data in the browser''s memory and is not transmitted over the network by itself; the
+
+    Secure flag on cookies (not storage location) addresses interception. Option C is wrong:
+
+    localStorage persists across tabs and sessions until explicitly cleared; sessionStorage clears
+
+    on tab close, but JWT expiry is controlled by the `expiresIn` claim, not storage. Option D
+
+    inverts the CSRF mechanism: the browser automatically sends cookies (which is why SameSite
+
+    matters), not localStorage values; localStorage does not participate in automatic credential
+
+    sending, so CSRF is not its primary risk.
+
+    '
+  bloom: apply
+  source: Slide 10, Slide 11, ISAQuiz11 Q8
+- id: web-arch-patterns-q-01
+  type: MCQ
+  topic: Web Architectural Patterns
+  marks: 2
+  question: 'A startup deploys its entire product — UI, business logic, and database access —
+
+    as a single deployable unit. The team needs to add a coupon feature.
+
+    What must happen before the new code reaches users?
+
+    '
+  choices:
+  - Only the UI component is redeployed; business logic and data access layers continue running.
+  - The entire application must be shut down, recompiled, and redeployed.
+  - The coupon feature is deployed as a separate service without touching the running app.
+  - The database access layer is updated independently while the rest of the app stays live.
+  correct: 1
+  rationale: 'Monolithic architecture packages all components into one deployable unit. Any change — even to a single feature
+    — requires shutting down, rebuilding, and redeploying the entire application. Option A describes layered architecture
+    behaviour where individual layers can theoretically be replaced, not a monolith where no such boundary exists. Option
+    C describes MSA — the ability to deploy a single service without touching others is the defining advantage that motivated
+    the migration away from monolithic design. Option D is a distractor targeting students who confuse layered architecture
+    (where layers are logical boundaries) with truly independent deployability; in a monolith, the layers are logical, not
+    process-level.
+
+    '
+  bloom: understand
+  source: Slide 2, Lesson 15
+- id: web-arch-patterns-q-02
+  type: MCQ
+  topic: Web Architectural Patterns
+  marks: 2
+  question: 'In the API-centric architecture pattern, what is the role of the API gateway?
+
+    '
+  choices:
+  - It stores data for all backend services so they share a common database.
+  - It routes every client HTTP request to the appropriate backend service and returns JSON to the client.
+  - It renders HTML pages on the server and sends them directly to the browser.
+  - It handles only authentication; all other requests bypass it and reach services directly.
+  correct: 1
+  rationale: 'In API-centric MSA, the API gateway is the sole entry point for all client requests. The client never calls
+    individual services directly; the gateway routes each request to the correct service, which returns JSON, and the gateway
+    relays the response. Option A confuses the gateway with a shared database — MSA explicitly avoids shared data stores to
+    preserve service independence. Option C describes server-side rendering (SSR), which is the opposite of the API-first
+    / headless pattern; in API-centric design, the client handles all rendering. Option D describes an authentication proxy,
+    a limited deployment pattern where only auth goes through a gateway; full API-centric design routes all traffic, not just
+    auth.
+
+    '
+  bloom: analyze
+  source: Slide 2, Lesson 15
+- id: sql-crud-q-01
+  type: MCQ
+  topic: 'SQL CRUD: querying and modifying data'
+  marks: 2
+  question: Which SQL statement retrieves all columns and all rows from a table named `orders`?
+  choices:
+  - '`SELECT all FROM orders;`'
+  - '`SELECT * FROM orders;`'
+  - '`GET * FROM orders;`'
+  - '`FETCH orders;`'
+  correct: 1
+  rationale: '`SELECT * FROM orders` is valid SQL: `*` is the wildcard that returns every column, and `FROM orders` identifies
+    the source table. Choice A is the trap directly tested in ISAQuiz10 Q7 — `all` is not a valid SQL keyword in a SELECT
+    column list; the statement produces a syntax error. Choice C uses `GET`, which is not a SQL keyword; SQL uses SELECT for
+    reads. Choice D uses `FETCH`, which is a cursor operation in some SQL dialects, not a standalone table query — it does
+    not retrieve all rows from a named table without a preceding cursor declaration.
+
+    '
+  bloom: remember
+  source: Slide 7, Quiz 10 Q7
+  tags:
+  - pretest
+- id: sql-crud-q-02
+  type: MCQ
+  topic: 'SQL CRUD: querying and modifying data'
+  marks: 2
+  question: 'You want to retrieve all rows from an `employees` table where `department` equals `''HR''`. Which query is correct?
+
+    '
+  choices:
+  - '`SELECT * FROM employees WHERE department IS ''HR'';`'
+  - '`SELECT * FROM employees WHERE department = ''HR'';`'
+  - '`SELECT *.* FROM employees WHERE department = ''HR'';`'
+  - '`SELECT * FROM employees WHERE department != ''HR'';`'
+  correct: 1
+  rationale: '`WHERE department = ''HR''` uses the equality operator `=`, which is the correct SQL operator for matching a
+    column value against a string literal. Choice A uses `IS`, which tests for NULL (`WHERE column IS NULL`) — using `IS`
+    with a non-NULL string literal is not valid standard SQL for equality comparison; this misconception was a live wrong-answer
+    option in ISAQuiz10 Q12. Choice C uses `*.*`, which is not valid SQL syntax — `SELECT *` retrieves all columns from all
+    identified tables, but `*.*` is not a recognized column specifier in this context. Choice D uses `!=`, which returns all
+    employees who are NOT in HR — the opposite of the intended query.
+
+    '
+  bloom: apply
+  source: Slide 7, Quiz 10 Q12
+- id: promise-chaining-q-01
+  type: MCQ
+  topic: .then() Chaining, .catch(), and .finally()
+  marks: 2
+  question: "What is the output of the following code?\n\n```js\nsetTimeout(() => console.log('setTimeout1'), 0);\nPromise.resolve()\n\
+    \  .then(() => console.log('then1'))\n  .then(() => console.log('then2'));\nsetTimeout(() => console.log('setTimeout2'),\
+    \ 0);\n```\n"
+  choices:
+  - '`then1`, `then2`, `setTimeout1`, `setTimeout2`'
+  - '`then1`, `setTimeout1`, `then2`, `setTimeout2`'
+  - '`setTimeout1`, `then1`, `then2`, `setTimeout2`'
+  - '`then1`, `setTimeout2`, `then2`, `setTimeout1`'
+  correct: 0
+  rationale: '`.then()` callbacks are microtasks; `setTimeout` callbacks are macrotasks. The event loop drains the entire
+    microtask queue before pulling any macrotask. `setTimeout1` is queued as a macrotask, then `then1` is queued as a microtask
+    via `Promise.resolve().then(...)`, then `setTimeout2` is queued as a macrotask. The call stack empties. The microtask
+    queue drains first: `then1` fires and immediately queues `then2` (the next `.then()` in the chain); `then2` fires. Only
+    after the microtask queue is fully empty does the event loop pick up the first macrotask, printing `setTimeout1`, then
+    `setTimeout2`. Distractor B targets the misconception that `setTimeout` callbacks can interleave with microtasks after
+    each `.then()` fires — the macrotask queue does not get a turn between microtasks. Distractor C targets students who assume
+    `setTimeout` fires first because it was registered before the `.then()` calls. Distractor D targets students who believe
+    `setTimeout` callbacks are interleaved with `.then()` callbacks based on registration order rather than queue type.
+
+    '
+  bloom: apply
+  source: Slide 6, ISAQuiz9 Q3
+- id: promise-chaining-q-02
+  type: MCQ
+  topic: .then() Chaining, .catch(), and .finally()
+  marks: 2
+  question: "What is the output of the following code?\n\n```js\nPromise.resolve(42)\n  .finally(() => {\n    console.log('cleanup');\n\
+    \    return 99;\n  })\n  .then(val => {\n    console.log(val);\n  });\n```\n"
+  choices:
+  - '`cleanup`, `42`'
+  - '`cleanup`, `99`'
+  - '`cleanup`, `undefined`'
+  - '`42`, `cleanup`'
+  correct: 0
+  rationale: '`.finally()` runs its callback regardless of the settled outcome but passes the original upstream value through
+    to the next link in the chain — it does not receive an argument and its return value is ignored (unless it throws). The
+    upstream Promise is fulfilled with `42`. `.finally()` fires, printing `cleanup`. The `return 99` inside `.finally()` is
+    discarded. The Promise returned by `.finally()` is fulfilled with the original value `42`, so the `.then()` callback receives
+    `42` and prints it. Distractor B targets the misconception that the return value of the `.finally()` callback replaces
+    the upstream value — students who treat `.finally()` like `.then()` would expect `99`. Distractor C targets students who
+    know `.finally()` receives no argument but incorrectly assume that the downstream `.then()` also receives `undefined`
+    rather than the original fulfilled value. Distractor D targets students who assume `.finally()` runs after all downstream
+    `.then()` handlers, reversing the order.
+
+    '
+  bloom: understand
+  source: Slide 6, ISAQuiz9 Q10
+- id: js-oop-q-01
+  type: MCQ
+  topic: 'OOP in JavaScript: Classes, Inheritance, and Composition'
+  marks: 2
+  question: 'What does `typeof []` return in JavaScript?
+
+    '
+  choices:
+  - '`"array"`'
+  - '`"object"`'
+  - '`"undefined"`'
+  - '`"number"`'
+  correct: 1
+  rationale: 'Arrays are objects in JavaScript. The `typeof` operator reports the internal type tag, which for
+
+    all non-function objects — including arrays and even `null` — is `"object"`. `typeof` cannot
+
+    distinguish a plain object from an array; use `Array.isArray(value)` for that. Distractor A
+
+    (`"array"`) is the most common wrong answer on ISAQuiz4: students expect `typeof` to reflect
+
+    the array''s literal construction. Distractor C (`"undefined"`) targets students who confuse
+
+    an empty array with an uninitialized variable. Distractor D (`"number"`) targets students who
+
+    think the bracket notation `[]` implies something numeric.
+
+    '
+  bloom: remember
+  source: Slide 1, ISAQuiz4 Q5
+- id: js-oop-q-02
+  type: MCQ
+  topic: 'OOP in JavaScript: Classes, Inheritance, and Composition'
+  marks: 2
+  question: "A subclass constructor calls `super(first, last)` before assigning `this.gpa = gpa`.\nWhat happens if you remove\
+    \ the `super(first, last)` call and access `this` immediately?\n\n```js\nclass Student extends Person {\n  constructor(first,\
+    \ last, gpa) {\n    // super(first, last) removed\n    this.gpa = gpa;\n  }\n}\n```\n"
+  choices:
+  - '`this.gpa` is set to `undefined` because the parent constructor never ran'
+  - '`ReferenceError: Must call super constructor in derived class before accessing ''this''`'
+  - The code runs normally; `extends` handles the parent initialization automatically
+  - '`TypeError: gpa is not a constructor`'
+  correct: 1
+  rationale: 'JavaScript enforces that `super()` must be called before any access to `this` in a derived class
+
+    constructor. `extends` sets up the prototype chain but does not automatically invoke the parent
+
+    constructor — `super()` does that. Omitting it and then touching `this` throws a `ReferenceError`
+
+    at runtime. Distractor A targets students who think the missing parent call merely leaves fields
+
+    unset rather than throwing. Distractor C targets the misconception that `extends` implicitly calls
+
+    the parent constructor. Distractor D targets students who confuse `gpa` (a plain value) with a
+
+    constructor function, misreading the `TypeError` message.
+
+    '
+  bloom: analyze
+  source: Slide 1, ISAQuiz4
+- id: nodejs-basics-q-01
+  type: MCQ
+  topic: Node.js Runtime
+  marks: 2
+  question: 'Which statement best describes how Node.js handles 100 simultaneous file-read requests?
+
+    '
+  choices:
+  - It creates one thread per request, so 100 requests require 100 threads waiting on the file system.
+  - It delegates each file-read to the OS asynchronously, then processes callbacks as results arrive — all on one thread.
+  - It blocks the single thread on each file-read in turn, processing requests one at a time.
+  - It uses the Chrome V8 engine to spawn worker processes for each I/O operation.
+  correct: 1
+  rationale: 'Node.js runs single-threaded non-blocking: the single thread delegates file-read operations to the OS via libuv,
+    registers a callback, and immediately picks up the next request — the thread never idles waiting for disk (Slide 4).
+
+    Creating one thread per request is the traditional synchronous multi-threaded model (e.g., naive PHP/ASP.NET); it is what
+    Node.js replaces, not what it does.
+
+    Blocking the single thread sequentially would serialize all 100 requests — this is the single-threaded blocking model
+    shown in the restaurant analogy as the waiter who stands at the kitchen window.
+
+    V8 is the JavaScript engine that compiles JS to native machine code; it does not spawn worker processes for I/O. Worker
+    threads are a separate opt-in feature, not the default model.
+
+    '
+  bloom: understand
+  source: Slide 4, ISAQuiz7.pdf
+  tags:
+  - pretest
+- id: api-security-best-practices-q-01
+  type: MCQ
+  topic: API security — SQL injection prevention
+  marks: 2
+  question: 'An Express route builds a query this way:
+
+
+    ```js
+
+    const query = `UPDATE users SET email=''${newEmail}'' WHERE id=${userId}`;
+
+    database.query(query);
+
+    ```
+
+
+    Which change prevents SQL injection in this code?
+
+    '
+  choices:
+  - Replace single quotes in `newEmail` using `.replace(/'/g, '')`
+  - Wrap the template literal in `JSON.stringify()` before passing it to `database.query()`
+  - 'Use a parameterized query: `database.query(''UPDATE users SET email=? WHERE id=?'', [newEmail, userId])`'
+  - Validate that `newEmail` matches an email regex before running the query
+  correct: 2
+  rationale: 'Parameterized queries pass user input as bound data values through the database driver''s
+
+    protocol layer. The driver treats the entire substituted value as a string literal — SQL syntax
+
+    inside the value never executes. This separates SQL structure from data at the protocol level.
+
+    Option A is the explicit wrong-answer pattern confirmed in ISAQuiz12 Q2: `.replace()` strips
+
+    single quotes but is bypassable with hex encodings, multi-byte characters, and other vectors
+
+    that do not rely on the single-quote character. It is not a fix. Option B wraps the already-
+
+    constructed injection-vulnerable string in JSON encoding, which does not prevent the injected
+
+    SQL from executing once the driver receives it. Option D applies input validation (an email
+
+    regex) — useful as a secondary layer but not sufficient alone, because regex-valid email values
+
+    can still carry SQL payloads when interpolated into template literals.
+
+    '
+  bloom: apply
+  source: Slide 12, ISAQuiz12 Q2
+- id: api-security-best-practices-q-02
+  type: MCQ
+  topic: API security — broken object-level authorization (BOLA)
+  marks: 2
+  question: 'A student successfully authenticates and then sends `PUT /api/users/99/edit-profile`
+
+    even though their own user ID is 42. The server updates user 99''s profile without
+
+    returning an error. Which OWASP API vulnerability does this illustrate?
+
+    '
+  choices:
+  - Mass Assignment — the server auto-binds all request body fields to the model
+  - Broken Object-Level Authorization (BOLA) — the server checks authentication but not ownership of object 99
+  - Excessive Data Exposure — the server returns more fields than the client requested
+  - Security Misconfiguration — the server has a hardcoded admin credential
+  correct: 1
+  rationale: 'Broken Object-Level Authorization (BOLA) occurs when a server verifies that a user is
+
+    authenticated but fails to verify that the authenticated user owns the specific object
+
+    being acted on. Here the server confirms the student is logged in, but never checks whether
+
+    user 42 has the right to modify user 99''s profile. The fix is object-level access control
+
+    that verifies ownership at the resource level, not just at the user level. Option A describes
+
+    Mass Assignment, which is about injecting unexpected model properties (e.g., `isAdmin: true`)
+
+    via a raw request body — the vulnerability here is not about body field binding. Option C
+
+    describes Excessive Data Exposure, which is a response-side problem about returning too much
+
+    data — not about who is allowed to trigger an operation. Option D describes Security
+
+    Misconfiguration, which involves hardcoded secrets or default credentials — not about
+
+    authorization logic on object ownership.
+
+    '
+  bloom: understand
+  source: Slide 12, ISAQuiz12 Q7, ISAQuiz12 Q10
+- id: js-arrays-loops-q-01
+  type: MCQ
+  topic: Arrays, Loops, and Iteration Patterns
+  marks: 2
+  question: 'What does the following code print to the console?
+
+
+    ```js
+
+    let arr = [];
+
+    arr[1] = 1234;
+
+    console.log(arr[0]);
+
+    ```
+
+    '
+  choices:
+  - '`1234`'
+  - '`undefined`'
+  - '`Error: cannot assign index 1 to empty array`'
+  - '`null`'
+  correct: 1
+  rationale: 'JavaScript arrays are sparse objects. Writing to index 1 without writing to index 0 leaves slot 0
+
+    uninitialized. Reading an uninitialized slot returns `undefined` — no error is thrown. Distractor A
+
+    (`1234`) targets students who assume a one-element array has only index 0 and expect both reads to
+
+    return the same value. Distractor C (`Error`) directly mirrors a wrong-answer option from ISAQuiz2
+
+    Q8 ("Error - cannot assign index 1 to empty array"), which students chose when they incorrectly
+
+    believed sparse assignment was illegal. Distractor D (`null`) targets students who conflate
+
+    "unassigned" with an explicit `null`.
+
+    '
+  bloom: understand
+  tags:
+  - pretest
+  source: ISAQuiz2 Q8
+- id: json-localstorage-q-01
+  type: MCQ
+  topic: JSON and Web Storage
+  marks: 2
+  question: 'A developer runs the following code and then closes and reopens the browser tab.
+
+    What does `localStorage.getItem("user")` return after the tab is reopened?
+
+
+    ```js
+
+    const profile = { name: "Alice", role: "admin" };
+
+    localStorage.setItem("user", JSON.stringify(profile));
+
+    ```
+
+    '
+  choices:
+  - '`null` — localStorage is cleared when the tab closes.'
+  - The string `'[object Object]'` — localStorage coerces objects automatically.
+  - The JSON string `'{"name":"Alice","role":"admin"}'`.
+  - '`undefined` — localStorage does not persist across page reloads.'
+  correct: 2
+  rationale: 'localStorage persists until explicitly cleared — it survives tab closes, page reloads, and browser restarts.
+    `JSON.stringify` serializes the object to a JSON string before `setItem` stores it, so `getItem` returns that exact string.
+    Option A describes sessionStorage behaviour, not localStorage; the quiz explicitly tested this distinction (Quiz 5 Q5).
+    Option B targets the misconception that `localStorage.setItem` coerces objects the way console.log does; coercion to `[object
+    Object]` only happens if you pass the raw object without `JSON.stringify`. Option D reverses the persistence rule — `undefined`
+    is returned for a key that was never set, not for a key set in a previous session.
+
+    '
+  bloom: understand
+  source: Slide 2, Quiz 5 Q5, ISAQuiz5.pdf Q5
+  tags:
+  - pretest
+- id: async-await-q-01
+  type: MCQ
+  topic: 'async/await: Cleaner Syntax Over Promises'
+  marks: 2
+  question: "What does the following function return when invoked?\n\n```js\nasync function greet() {\n  return \"Hello\"\
+    ;\n}\n\nconst result = greet();\nconsole.log(typeof result);\n```\n"
+  choices:
+  - '`object`'
+  - '`string`'
+  - '`undefined`'
+  - '`function`'
+  correct: 0
+  rationale: 'An `async` function always returns a Promise, regardless of what the function body returns. The runtime wraps
+    the bare return value `"Hello"` in `Promise.resolve("Hello")` automatically. A Promise is an object, so `typeof result`
+    evaluates to `"object"`. The `.then()` handler on the returned Promise would receive the string `"Hello"`, but `result`
+    itself is a Promise object. Distractor B targets students who conflate the fulfilled value (`"Hello"`, a string) with
+    the return type of the async function itself — the string is what the Promise resolves with, not what the function returns
+    to the caller. Distractor C targets the misconception that async functions with no explicit `await` return nothing, or
+    that the return value is lost because the function is asynchronous. Distractor D targets students who believe that because
+    `async` transforms the function, calling it returns another function rather than executing it.
+
+    '
+  bloom: understand
+  source: Slide 9, ISAQuiz8 Q11
+- id: html-css-review-q-01
+  type: MCQ
+  topic: HTML DOM Structure, CSS Box Model, Selectors, and Attributes
+  marks: 2
+  question: 'What is the correct order of the CSS box model layers, from **inside to outside**?
+
+    '
+  choices:
+  - margin → padding → border → content
+  - content → border → padding → margin
+  - content → padding → border → margin
+  - margin → border → padding → content
+  correct: 2
+  rationale: 'The CSS box model places the content layer at the center, surrounded outward by padding (space
+
+    between content and border), then border (the visible edge), then margin (transparent space
+
+    separating the element from its neighbors). Distractor A (`margin → padding → border → content`)
+
+    is the exact wrong order tested in ISAQuiz1 Q1 — it reverses the model entirely, targeting
+
+    students who memorize the layer names without knowing their direction. Distractor B
+
+    (`content → border → padding → margin`) swaps padding and border, targeting students who
+
+    confuse which layer is closer to the content. Distractor D mirrors the ISAQuiz1 wrong option
+
+    that starts from the outside in but mis-orders the middle two layers.
+
+    '
+  bloom: remember
+  tags:
+  - pretest
+  source: Slide 1, ISAQuiz1 Q1
+- id: restful-url-design-q-01
+  type: MCQ
+  topic: RESTful URL Design and API Versioning
+  marks: 2
+  question: 'A team publishes `GET /getPatient/1` on day one.
+
+    Six months later they want to add versioning. Which statement is true?
+
+    '
+  choices:
+  - They can add `/v1/` to the path without breaking existing clients because the resource ID stays the same.
+  - Adding `/v1/` retroactively is itself a breaking change — every existing client must update its endpoint string.
+  - Versioning is only required when the HTTP method changes, not when the path structure changes.
+  - The unversioned path `/getPatient/1` automatically redirects to `/v1/getPatient/1` once versioning is enabled.
+  correct: 1
+  rationale: 'API versioning must be designed in from the first public release. Clients that start calling `/getPatient/1`
+    on day one have hard-coded that path. Renaming it to `/v1/patients/1` breaks every existing integration — that rename
+    is itself a breaking change. Option A presents a common misconception: students assume the ID value is what clients depend
+    on, not the URL structure; but REST clients bind to the full URL, not just the numeric segment. Option C conflates HTTP
+    method changes (which are a separate kind of breaking change) with URL structural changes; both require a version bump
+    for established clients. Option D invents automatic redirect behaviour — no framework creates redirects automatically
+    when versioning is added; redirects must be explicitly configured, and even then existing clients pointing to the old
+    path are broken until the redirect is live.
+
+    '
+  bloom: analyze
+  source: Slide 8, Slide 11, Lesson 17
+- id: public-private-keys-q-01
+  type: MCQ
+  topic: Asymmetric encryption — signing and verification key directions
+  marks: 2
+  question: 'Amir signs a message using asymmetric encryption and sends it to Tom.
+
+    Tom wants to verify that the message came from Amir and was not altered.
+
+    Which key does Tom use?
+
+    '
+  choices:
+  - Tom's private key
+  - Tom's public key
+  - Amir's private key
+  - Amir's public key
+  correct: 3
+  rationale: 'Verification uses the sender''s public key. Amir signed the message with Amir''s private key —
+
+    only Amir holds that key, so only Amir could have produced a valid signature. Tom uses Amir''s
+
+    public key to verify the signature: if the check passes, the message came from Amir and was
+
+    not tampered with in transit. Tom''s own keys play no role in this verification step. Option A
+
+    is the most seductive wrong answer, confirmed by ISAQuiz11 Q9: students confuse "verify" with
+
+    "decrypt" and reach for the receiver''s private key. Decryption of a confidential inner envelope
+
+    uses the receiver''s private key — but verification of a signature is a separate operation with
+
+    the opposite key direction. Option B (Tom''s public key) would be used only if Tom had signed
+
+    something himself and needed external parties to verify it. Option C (Amir''s private key) is
+
+    the key Amir used to sign — it is kept secret and never shared, so Tom cannot hold it.
+
+    '
+  bloom: understand
+  source: Slide 9, Slide 10, ISAQuiz11 Q9
+- id: js-async-event-loop-q-01
+  type: MCQ
+  topic: 'The Event Loop: How JavaScript Stays Non-Blocking'
+  marks: 2
+  question: "What does the following code print to the console, in order?\n\n```js\nsetTimeout(function() {\n  console.log(1);\n\
+    }, 1);\n\nnew Promise(function(resolve) {\n  console.log(2);\n  resolve();\n}).then(function() {\n  console.log(4);\n\
+    });\n\nconsole.log(3);\n```\n"
+  choices:
+  - '`2`, `3`, `4`, `1`'
+  - '`1`, `2`, `3`, `4`'
+  - '`2`, `3`, `1`, `4`'
+  - '`2`, `4`, `3`, `1`'
+  correct: 0
+  rationale: 'The Promise executor runs eagerly and synchronously the moment `new Promise(executor)` is
+
+    evaluated, so `console.log(2)` fires first. `resolve()` enqueues the `.then` callback to the
+
+    microtask queue — it does not run immediately. `console.log(3)` runs next as synchronous code.
+
+    When the call stack empties, the event loop drains the entire microtask queue before touching any
+
+    macrotask, so `console.log(4)` runs. Only then does the `setTimeout` macrotask fire, printing `1`.
+
+    Distractor B (`1, 2, 3, 4`) targets students who assume `setTimeout` callbacks execute at their
+
+    registration point rather than in the macrotask queue. Distractor C (`2, 3, 1, 4`) targets
+
+    students who know microtasks beat macrotasks but incorrectly place the `setTimeout` callback
+
+    before the `.then` callback. Distractor D (`2, 4, 3, 1`) targets students who correctly identify
+
+    `2` first but assume the `.then` callback fires immediately after `resolve()` rather than after
+
+    all synchronous code.
+
+    '
+  bloom: analyze
+  source: Slide 4, ISAQuiz6 Q1, ISAQuiz6 Q14
+- id: modern-web-arch-q-01
+  type: MCQ
+  topic: Modern Web Architecture Trends
+  marks: 2
+  question: 'A news organization runs a website, a mobile app, and a smart-TV interface —
+
+    all displaying the same article content. The backend stores articles once and
+
+    delivers them via API; each frontend renders them independently.
+
+    Which architectural pattern describes this backend design?
+
+    '
+  choices:
+  - Serverless architecture — the backend runs as stateless cloud functions invoked per request.
+  - Headless architecture — the backend is decoupled from the frontend presentation layer.
+  - Monolithic architecture — all three frontends share a single deployable unit.
+  - Edge computing — content is processed close to the user rather than in a central data center.
+  correct: 1
+  rationale: 'Headless architecture decouples the backend (data and logic) from the frontend (presentation). The backend exposes
+    content via API; any number of distinct frontends consume the same API and render content in whatever format suits their
+    interface. This is the exact pattern described — one backend, three independent frontends. Option A (serverless) targets
+    the misconception that headless and serverless are the same thing; serverless is an infrastructure decision about who
+    manages servers, not a decision about frontend coupling. Option C (monolithic) targets students who confuse the fact that
+    all three frontends share one backend with those frontends sharing a single deployable unit — they share an API, not a
+    codebase. Option D (edge computing) is a distractor for students who associate distributed delivery (content reaching
+    multiple devices) with edge processing; edge computing is about geographic proximity of compute nodes, not about frontend
+    decoupling.
+
+    '
+  bloom: apply
+  source: Slide 8, Lesson 18
+- id: nodejs-modules-q-01
+  type: MCQ
+  topic: Node.js Modules
+  marks: 2
+  question: 'Given the following code:
+
+
+    ```js
+
+    const url = require(''url'');
+
+    const address = ''http://localhost:8000/admin.html?user=123'';
+
+    const parsed = url.parse(address, true);
+
+    ```
+
+
+    Which expression prints `/admin.html` — the path without the query string?
+
+    '
+  choices:
+  - '`console.log(parsed.pathname)`'
+  - '`console.log(parsed.path)`'
+  - '`console.log(parsed.search)`'
+  - '`console.log(parsed.host)`'
+  correct: 0
+  rationale: '`parsed.pathname` returns only the path segment of the URL — everything after the origin up to (but not including)
+    the `?` character, giving `/admin.html` (ISAQuiz7 Q3, Slide 4).
+
+    `parsed.path` includes the query string, returning `/admin.html?user=123`; using it as a filename means the server looks
+    for a file whose name contains `?user=123`, which does not exist even when `admin.html` does — this is the documented
+    exam trap (ISAQuiz7 Q3).
+
+    `parsed.search` returns the raw query string portion including the `?`, giving `?user=123`.
+
+    `parsed.host` returns the host and port (`localhost:8000`), not the path at all.
+
+    '
+  bloom: understand
+  source: Slide 4, ISAQuiz7.pdf Q3
+- id: password-hashing-q-01
+  type: MCQ
+  topic: bcrypt — cost factor and hashing semantics
+  marks: 2
+  question: 'A registration handler calls `bcrypt.hash(''123'', 10)`. What does the `10` control,
+
+    and why is a higher value more secure?
+
+    '
+  choices:
+  - The length of the produced hash string — a longer hash is harder to crack
+  - The number of salt characters prepended to the password before hashing
+  - The cost factor, which sets the number of hashing iterations to 2^10; a higher value makes each hash computation slower,
+    increasing the cost of brute-force attacks
+  - The encryption key size in bits — 10 means 10-bit AES encryption
+  correct: 2
+  rationale: 'The second argument to `bcrypt.hash()` is the cost factor (also called salt rounds). Setting
+
+    it to 10 causes bcrypt to perform 2^10 = 1,024 internal hashing iterations before producing
+
+    the final hash. Raising the cost factor makes each individual hash computation slower. An
+
+    attacker attempting millions of brute-force guesses per second pays the full computational
+
+    cost for every attempt — higher cost factor = fewer guesses per second = slower attack.
+
+    Option A is wrong: bcrypt always produces a fixed-length 60-character hash string regardless
+
+    of the cost factor; length is not controlled by this argument. Option B conflates the cost
+
+    factor with salt management. bcrypt generates a random salt automatically and embeds it in the
+
+    hash string; the second argument controls iteration count, not salt character length. Option D
+
+    is wrong: bcrypt is a hashing function, not an encryption algorithm. There is no encryption
+
+    key and no bits-of-AES involved. The cost factor governs computational work, not key size.
+
+    '
+  bloom: understand
+  source: Slide 9, Slide 11
+- id: express-framework-q-01
+  type: MCQ
+  topic: Express Framework
+  marks: 2
+  question: "An Express server has this middleware registered before all route handlers:\n\n```js\napp.use((req, res, next)\
+    \ => {\n    res.setHeader('Access-Control-Allow-Origin', '*');\n    res.setHeader('Access-Control-Allow-Methods', 'GET,\
+    \ POST, PUT, DELETE, OPTIONS');\n    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');\n    // next() is\
+    \ intentionally omitted here\n});\n\napp.get('/api/v1/patients', (req, res) => {\n    res.json(patients);\n});\n```\n\n\
+    A client sends `GET /api/v1/patients`. What happens?\n"
+  choices:
+  - The request stalls permanently — the middleware never calls `next()`, so control never reaches the route handler.
+  - Express skips the middleware because the route handler is registered first in source order.
+  - The route handler executes normally — `next()` is only required in error-handling middleware.
+  - The server throws a TypeError because `next` is not called within the timeout window.
+  correct: 0
+  rationale: 'Middleware in Express must call `next()` to pass control to the next middleware or route handler. A middleware
+    that neither calls `next()` nor sends a response leaves the request permanently pending — the client waits indefinitely
+    and the route handler never runs (Slide 8).
+
+    Express executes middleware in registration order, not source-order of the route handler; the `app.use()` call precedes
+    `app.get()`, so the middleware always runs first.
+
+    `next()` is required in all middleware that does not terminate the request — not only in error handlers. Omitting it in
+    any pipeline function stalls the request.
+
+    Express does not impose a call timeout on `next()`; no TypeError is thrown. The request simply hangs with no response.
+
+    '
+  bloom: apply
+  source: Slide 8
+- id: oauth-ssl-q-01
+  type: MCQ
+  topic: OAuth 2.0 — bearer token and authorization model
+  marks: 2
+  question: 'After a user clicks "Login with Google" and approves the consent screen,
+
+    Google issues a bearer token to ClientApp. An attacker intercepts the token.
+
+    What access does the attacker gain?
+
+    '
+  choices:
+  - No access — the bearer token is bound to the original user's IP address
+  - Read-only access — bearer tokens cannot be used to modify data
+  - Full authorization for the scopes the token covers, because anyone who holds this token is implicitly granted authorization
+  - Temporary read access for 60 seconds, because bearer tokens always expire in under a minute
+  correct: 2
+  rationale: 'A bearer token grants authorization by possession alone: anyone who holds this token is
+
+    implicitly granted authorization. The server does not verify the holder''s identity beyond
+
+    checking that the token is valid and unexpired. An attacker who intercepts the token has
+
+    the same access as ClientApp for every scope the token covers. This is why bearer tokens
+
+    must be transmitted exclusively over HTTPS and kept out of logs, URLs, and browser-accessible
+
+    storage. Option A is wrong: bearer tokens are not IP-bound; the bearer model specifically
+
+    omits any proof-of-identity requirement beyond possession. Option B is wrong: the token''s
+
+    scope is set at the consent screen and can include write permissions; bearer does not imply
+
+    read-only. Option D is wrong: bearer tokens issued by OAuth 2.0 providers such as Google
+
+    typically last much longer than 60 seconds (often hours or months); expiry duration is
+
+    provider-configured and scope-dependent.
+
+    '
+  bloom: apply
+  source: Slide 11
+- id: sql-promises-q-01
+  type: MCQ
+  topic: 'Async DB queries with promises: chaining successive SQL calls'
+  marks: 2
+  question: "A Node.js route handler runs this code:\n\n```js\nconst promiseCon = con.promise();\n\npromiseCon\n  .query('SELECT\
+    \ * FROM patient WHERE patientid = ?', [id])\n  .then(([rows]) => {\n    if (rows.length === 0) throw new Error('Not found');\n\
+    \    return promiseCon.query(\n      'UPDATE patient SET name = ? WHERE patientid = ?',\n      [newName, id]\n    );\n\
+    \  })\n  .then(([result]) => res.json({ updated: result.affectedRows }))\n  .catch(err => res.status(500).json({ error:\
+    \ err.message }));\n```\n\nWhat does `con.promise()` return, and why is the UPDATE placed inside the first `.then()` rather\
+    \ than after the chain?\n"
+  choices:
+  - '`con.promise()` returns a resolved Promise containing the connection; the UPDATE is placed inside `.then()` only for
+    readability'
+  - '`con.promise()` returns a promise-based wrapper around the connection whose `query()` calls return Promises; placing
+    the UPDATE inside `.then()` guarantees it only runs after the SELECT result is available'
+  - '`con.promise()` converts the connection to async/await syntax; the UPDATE must be inside `.then()` because `await` cannot
+    be used with `query()`'
+  - '`con.promise()` re-opens the database connection as a new socket; the UPDATE must follow the SELECT because two simultaneous
+    connections would conflict'
+  correct: 1
+  rationale: '`con.promise()` wraps the existing connection and returns an object whose `query()` method returns a Promise
+    instead of accepting a callback. Placing the UPDATE query inside the first `.then()` handler enforces ordering: the handler
+    only runs after the SELECT Promise settles, so `rows` is available to check existence before the UPDATE fires. Omitting
+    this and firing the UPDATE outside the chain creates a race condition where both queries enter the MySQL queue simultaneously
+    and the existence check is bypassed. Choice A targets the misconception that promise chaining is cosmetic — calling `.then()`
+    is the mechanism that guarantees sequential execution, not a style choice. Choice C confuses `con.promise()` with `async/await`
+    syntax — it returns a promise-based wrapper, not a syntax transformation; `await` can be used with `query()` on the wrapper.
+    Choice D incorrectly describes `con.promise()` as creating a new socket; it wraps the same underlying connection.
+
+    '
+  bloom: apply
+  source: Slide 11
+- id: nodejs-db-connect-q-01
+  type: MCQ
+  topic: 'Node.js MySQL connection: setup, query, and hosting'
+  marks: 2
+  question: "A student writes this Node.js file and runs it with `node server.js`. The process crashes immediately with `Error:\
+    \ Cannot find module 'mysql'`.\n\n```js\nconst mysql = require('mysql');\nconst con = mysql.createConnection({\n  host:\
+    \ 'localhost', user: 'root', password: '', database: 'mydb'\n});\ncon.connect(function(err) {\n  if (err) throw err;\n\
+    \  console.log('Connected!');\n});\n```\n\nWhat is the cause, and what is the fix?\n"
+  choices:
+  - '`mysql` is a built-in Node.js module that must be enabled via a config flag; run `node --enable-mysql server.js`'
+  - 'The `createConnection` call is missing the `port` property; add `port: 3306` to the config object'
+  - '`mysql` is an external package not bundled with Node.js; run `npm install mysql` in the project directory before requiring
+    it'
+  - The `require` path is wrong; use `require('./mysql')` to load a local module
+  correct: 2
+  rationale: '`mysql` is not a built-in Node.js module. Built-in modules — `http`, `fs`, `path`, `url`, `os` — are available
+    immediately via `require`. The `mysql` package must be installed from npm before it can be required; missing that step
+    causes Node.js to search `node_modules/` and fail with "Cannot find module". The fix is `npm install mysql` in the project
+    directory. Choice A is false — Node.js has no flag that enables a missing external package; built-in modules do not require
+    flags. Choice B is a plausible distractor because `port` is a real `createConnection` option, but omitting it does not
+    cause a module-not-found crash — MySQL defaults to port 3306. Choice D targets the misconception that `require` without
+    a relative path means a local file; bare module names like `''mysql''` resolve to `node_modules/`, not to a local file,
+    so the fix is installing the package, not changing the path.
+
+    '
+  bloom: understand
+  source: Slide 5, Slide 7, Quiz 7
+- id: api-documentation-q-01
+  type: MCQ
+  topic: OpenAPI / Swagger — swagger.json structure and purpose
+  marks: 2
+  question: 'A developer generates a `swagger.json` file for a RESTful API.
+
+    Which of the following does this file document?
+
+    '
+  choices:
+  - The server's deployment configuration including environment variables and port bindings
+  - The API's endpoint paths, HTTP methods, request parameters, response schemas, and authentication requirements
+  - The source code of each route handler so consumers can read the implementation
+  - The database schema including table names and column types used by the API
+  correct: 1
+  rationale: 'A `swagger.json` file is an OpenAPI / Swagger Interface Description Language document that
+
+    records the external contract of a REST API: the endpoint paths (e.g., `/patients`), their
+
+    supported HTTP methods (GET, POST, PUT, DELETE), request parameters (path params, query
+
+    params, headers), request body schemas (shape of JSON payloads), response schemas and status
+
+    codes for each outcome, and authentication requirements per endpoint. It does not describe
+
+    deployment internals or implementation details. Option A describes server configuration
+
+    (environment variables, ports) — that belongs in deployment manifests or `.env` files, not
+
+    in an API specification. Option C describes source code documentation (e.g., inline comments
+
+    or JSDoc), not an interface contract; swagger.json describes what the API accepts and returns,
+
+    not how it is implemented. Option D describes database schema documentation (e.g., an ERD or
+
+    migration file) — the storage layer is not part of the API surface that Swagger documents.
+
+    '
+  bloom: remember
+  source: Slide 11

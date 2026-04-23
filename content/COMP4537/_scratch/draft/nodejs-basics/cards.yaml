@@ -1,0 +1,127 @@
+id: nodejs-basics
+name: "Node.js runtime and single-threaded non-blocking model"
+tags: [nodejs, async, non-blocking, V8, server-scripting]
+prose: >
+  Node.js is a back-end JavaScript runtime built on the Chrome V8 engine.
+  It runs single-threaded non-blocking, handling many concurrent requests via the event loop instead of creating one thread per request.
+source: "Slide 4, Quiz 7"
+cards:
+
+  - id: nodejs-basics-card-01
+    type: cloze
+    prompt: >
+      Node.js is built on {{Chrome V8 engine}}, which compiles JavaScript to {{native machine code}}.
+    answer: "Chrome V8 engine; native machine code"
+    bloom: remember
+    source: "Slide 4"
+    explanation: >
+      V8 is Google's JavaScript engine. Compiling to native machine code gives Node.js competitive execution speed without an interpreter.
+    example: >
+      The same V8 engine runs inside Google Chrome to execute client-side JavaScript.
+
+  - id: nodejs-basics-card-02
+    type: cloze
+    prompt: >
+      Node.js executes JavaScript {{outside a web browser}} using a {{single-threaded non-blocking}} execution model.
+    answer: "outside a web browser; single-threaded non-blocking"
+    bloom: remember
+    source: "Slide 4"
+    explanation: >
+      "Single-threaded non-blocking" is the professor's exact term. One thread handles all requests by delegating I/O to the OS and processing callbacks when results arrive.
+    example: >
+      A Node.js server receiving 100 file requests issues 100 async OS calls and processes all callbacks on one thread — no waiting.
+
+  - id: nodejs-basics-card-03
+    type: name
+    prompt: >
+      In the restaurant analogy, which example represents Node.js's execution model — where a single waiter takes orders at multiple tables without waiting for the kitchen?
+    answer: "Example 1 — single-threaded non-blocking"
+    bloom: understand
+    source: "Slide 4"
+    explanation: >
+      Example 1: one waiter takes an order at Table 1, sends it to the kitchen, then immediately takes Table 2's order. The waiter never idles. This mirrors Node.js delegating I/O and moving to the next request.
+    example: >
+      Example 2 (blocking): the waiter stands at the kitchen window doing nothing until Table 1's meal is ready before going to Table 2.
+
+  - id: nodejs-basics-card-04
+    type: name
+    prompt: >
+      In the restaurant analogy, which example represents the traditional synchronous blocking model — where one waiter waits at the kitchen before serving the next table?
+    answer: "Example 2 — single-threaded blocking"
+    bloom: understand
+    source: "Slide 4"
+    explanation: >
+      Example 2 shows one thread that blocks on I/O: it cannot handle the next request until the current one completes. This is the behaviour of naive synchronous server code (e.g. PHP/ASP.NET without async).
+    example: >
+      Equivalent Node.js code: using `fs.readFileSync()` in a request handler blocks the event loop for every other request while the file loads.
+
+  - id: nodejs-basics-card-05
+    type: name
+    prompt: >
+      In the restaurant analogy, which example represents a traditional multi-threaded server — one dedicated waiter per table?
+    answer: "Example 3 — multi-threaded (thread-per-request)"
+    bloom: understand
+    source: "Slide 4"
+    explanation: >
+      Example 3 scales by adding waiters (threads) — one per table (request). Each thread blocks on its own I/O, but parallel threads mean no table waits for another. Memory cost grows linearly with concurrent users.
+    example: >
+      100 concurrent requests = 100 threads, all sitting blocked on I/O. Memory-inefficient at scale.
+
+  - id: nodejs-basics-card-06
+    type: name
+    prompt: >
+      A synchronous multi-threaded server receives 100 concurrent requests. How many threads does it create?
+    answer: "100 threads — one per request"
+    bloom: remember
+    source: "Slide 4"
+    explanation: >
+      Thread-per-request servers allocate one thread per concurrent connection. Each thread blocks on I/O, so memory scales with request count. Node.js handles the same 100 requests on one thread via non-blocking I/O.
+    example: >
+      At 100 concurrent users: synchronous server = 100 threads (100× memory cost). Node.js = 1 thread.
+
+  - id: nodejs-basics-card-07
+    type: predict
+    lang: js
+    prompt: >
+      A Node.js server calls `fs.readFile('data.json', callback)`. List the steps in execution order: (A) callback fires, (B) thread returns to event loop, (C) OS signals file ready, (D) readFile called.
+    code: |
+      const fs = require('fs');
+      const http = require('http');
+
+      http.createServer((req, res) => {
+        fs.readFile('data.json', 'utf8', (err, data) => { // step ?
+          res.end(data);                                    // step ?
+        });
+        // what happens here immediately after readFile?    // step ?
+      }).listen(3000);
+    answer: "Order: D → B → C → A. readFile is called (D), thread immediately returns to event loop (B), OS later signals file ready (C), callback fires and res.end() runs (A)."
+    bloom: apply
+    source: "Slide 4"
+    explanation: >
+      readFile is non-blocking: it registers the callback with the OS and returns immediately. The thread processes other requests. When the OS signals completion, the event loop dequeues the callback.
+    example: >
+      If the file takes 50 ms to read, the thread handles dozens of other requests during those 50 ms.
+
+  - id: nodejs-basics-card-08
+    type: name
+    prompt: >
+      Which of these is NOT a built-in Node.js module: `url`, `fs`, `http`, `mysql`?
+    answer: "mysql — it is a third-party npm package, not built-in"
+    bloom: remember
+    source: "Quiz 7"
+    explanation: >
+      Built-in modules ship with Node.js: `url` parses URLs, `fs` handles the file system, `http` creates servers. `mysql` must be installed separately via npm.
+    example: >
+      `require('fs')` — no install needed. `require('mysql')` — requires `npm install mysql` first.
+
+  - id: nodejs-basics-card-09
+    type: name
+    prompt: >
+      Which built-in Node.js module handles file system operations (read, write, delete files)?
+    answer: "`fs`"
+    bloom: remember
+    source: "Quiz 7"
+    explanation: >
+      The `fs` module exposes both synchronous (blocking) and asynchronous (non-blocking) file system methods. Use the async variants (`fs.readFile`, `fs.writeFile`) in request handlers to avoid blocking the event loop.
+    example: >
+      `fs.readFile('log.txt', 'utf8', (err, data) => { ... })` — non-blocking file read.

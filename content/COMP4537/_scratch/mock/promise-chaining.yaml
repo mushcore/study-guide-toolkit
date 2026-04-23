@@ -1,0 +1,52 @@
+- id: promise-chaining-q-01
+  type: MCQ
+  topic: ".then() Chaining, .catch(), and .finally()"
+  marks: 2
+  question: |
+    What is the output of the following code?
+
+    ```js
+    setTimeout(() => console.log('setTimeout1'), 0);
+    Promise.resolve()
+      .then(() => console.log('then1'))
+      .then(() => console.log('then2'));
+    setTimeout(() => console.log('setTimeout2'), 0);
+    ```
+  choices:
+    - "`then1`, `then2`, `setTimeout1`, `setTimeout2`"
+    - "`then1`, `setTimeout1`, `then2`, `setTimeout2`"
+    - "`setTimeout1`, `then1`, `then2`, `setTimeout2`"
+    - "`then1`, `setTimeout2`, `then2`, `setTimeout1`"
+  correct: 0
+  rationale: |
+    `.then()` callbacks are microtasks; `setTimeout` callbacks are macrotasks. The event loop drains the entire microtask queue before pulling any macrotask. `setTimeout1` is queued as a macrotask, then `then1` is queued as a microtask via `Promise.resolve().then(...)`, then `setTimeout2` is queued as a macrotask. The call stack empties. The microtask queue drains first: `then1` fires and immediately queues `then2` (the next `.then()` in the chain); `then2` fires. Only after the microtask queue is fully empty does the event loop pick up the first macrotask, printing `setTimeout1`, then `setTimeout2`. Distractor B targets the misconception that `setTimeout` callbacks can interleave with microtasks after each `.then()` fires — the macrotask queue does not get a turn between microtasks. Distractor C targets students who assume `setTimeout` fires first because it was registered before the `.then()` calls. Distractor D targets students who believe `setTimeout` callbacks are interleaved with `.then()` callbacks based on registration order rather than queue type.
+  bloom: apply
+  source: "Slide 6, ISAQuiz9 Q3"
+
+- id: promise-chaining-q-02
+  type: MCQ
+  topic: ".then() Chaining, .catch(), and .finally()"
+  marks: 2
+  question: |
+    What is the output of the following code?
+
+    ```js
+    Promise.resolve(42)
+      .finally(() => {
+        console.log('cleanup');
+        return 99;
+      })
+      .then(val => {
+        console.log(val);
+      });
+    ```
+  choices:
+    - "`cleanup`, `42`"
+    - "`cleanup`, `99`"
+    - "`cleanup`, `undefined`"
+    - "`42`, `cleanup`"
+  correct: 0
+  rationale: |
+    `.finally()` runs its callback regardless of the settled outcome but passes the original upstream value through to the next link in the chain — it does not receive an argument and its return value is ignored (unless it throws). The upstream Promise is fulfilled with `42`. `.finally()` fires, printing `cleanup`. The `return 99` inside `.finally()` is discarded. The Promise returned by `.finally()` is fulfilled with the original value `42`, so the `.then()` callback receives `42` and prints it. Distractor B targets the misconception that the return value of the `.finally()` callback replaces the upstream value — students who treat `.finally()` like `.then()` would expect `99`. Distractor C targets students who know `.finally()` receives no argument but incorrectly assume that the downstream `.then()` also receives `undefined` rather than the original fulfilled value. Distractor D targets students who assume `.finally()` runs after all downstream `.then()` handlers, reversing the order.
+  bloom: understand
+  source: "Slide 6, ISAQuiz9 Q10"

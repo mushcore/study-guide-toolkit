@@ -198,4 +198,6 @@ A **facade** gives you a static-like interface to a Laravel service. In Blade, y
 
 ---
 
+> **Pitfall:** A missing `@endforeach` (or any unclosed `@`-directive) causes Blade to throw a parse error — the template never renders. Laravel does not silently skip unclosed directives. This was a direct exam question.
+
 > **Takeaway:** Blade keeps your views clean by replacing raw PHP with @-directives and the double-brace syntax. The MVC split means your controller never writes HTML directly, and your view never queries the database directly. Always use `{{ }}` for output — switch to `{!! !!}` only when you own the content and have sanitized it. Forgetting a closing @-directive and reaching for `{!! !!}` on user input are the two most common traps.

@@ -6,6 +6,7 @@ lang: bash
 variant: starter-solution
 tags:
   - networking
+source: "Mod07 Ch20; materials/labs/Lab7.pdf"
 ---
 
 ## Prompt
@@ -46,4 +47,4 @@ ss -tlnp | grep :25   # should show 0.0.0.0:25
 
 ## Why
 
-Grading: remove `Addr=127.0.0.1` in .mc (2), `cd /etc/mail && sudo make` to regenerate .cf (2 — the #1 skipped step), local-host-names entry (1), firewall service=smtp (1), systemctl restart (1), ss verify (1). Editing .cf directly = zero marks (sendmail regenerates .cf from .mc).
+**Source**: Mod07 Ch20 + Lab 7. Grading: remove `Addr=127.0.0.1` in .mc (2), `cd /etc/mail && sudo make` to regenerate .cf (2 — the #1 skipped step), local-host-names entry (1), firewall service=smtp (1), systemctl restart (1), ss verify (1). Editing .cf directly = zero marks (sendmail regenerates .cf from .mc). Common wrong: editing `/etc/mail/sendmail.cf` directly and restarting — changes work until the next `make` in `/etc/mail` silently overwrites them from the unchanged `.mc`.

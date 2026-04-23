@@ -1,0 +1,64 @@
+- id: js-functions-q-01
+  type: MCQ
+  topic: "Function declarations, callbacks, first-class functions, closures"
+  marks: 2
+  question: |
+    What does the following code print to the console?
+
+    ```js
+    function hiGenerator(greeting) {
+      return function(name) {
+        return greeting + ', ' + name;
+      };
+    }
+    const sayHi = hiGenerator('Hello');
+    console.log(sayHi('World'));
+    ```
+  choices:
+    - "`undefined, World`"
+    - "`Hello, World`"
+    - "`ReferenceError: greeting is not defined`"
+    - "Nothing is printed — `sayHi('World')` returns a value but `console.log` is never reached"
+  correct: 1
+  rationale: |
+    `hiGenerator('Hello')` runs and binds `greeting` to `'Hello'`, then returns the inner function.
+    That inner function is a closure: it retains a reference to `greeting` in its scope chain even
+    after `hiGenerator` has returned. When `sayHi('World')` is called, `greeting` is still `'Hello'`
+    and `name` is `'World'`, so the return value is `'Hello, World'`, which `console.log` prints.
+    Distractor A (`undefined, World`) targets students who assume `greeting` is lost after
+    `hiGenerator` returns, expecting the variable to read as `undefined`. Distractor C (`ReferenceError`)
+    targets students who believe closures cannot access outer-scope variables after the enclosing
+    function exits. Distractor D targets students confused by the `console.log` call being outside
+    the function — it is in the outer scope and executes normally.
+  bloom: apply
+  source: "Slide 3, ISAQuiz6 Q12"
+
+- id: js-functions-q-02
+  type: MCQ
+  topic: "Function declarations, callbacks, first-class functions, closures"
+  marks: 2
+  question: |
+    What does the following code print to the console?
+
+    ```js
+    function tripleNumber(n) { return n * 3; }
+    for (let i = 0; i < 4; i++) {
+      console.log(tripleNumber(i));
+    }
+    ```
+  choices:
+    - "`0`, `3`, `6`, `9`"
+    - "`undefined`, `undefined`, `undefined`, `undefined`"
+    - "`0`, `3`, `6`, `9` — then `Error: tripleNumber is undefined`"
+    - "`3`, `6`, `9`, `12`"
+  correct: 0
+  rationale: |
+    `tripleNumber` returns `n * 3`. The loop runs for `i = 0, 1, 2, 3` and passes each `i` as the
+    argument. The four return values are `0`, `3`, `6`, `9`, each immediately passed to `console.log`.
+    Distractor B (`undefined × 4`) targets students who confuse a missing `return` statement with the
+    present one — in ISAQuiz3 Q12 this exact distractor appeared for a case where the function
+    lacked `return`; here the function does have `return`. Distractor C targets students who believe
+    a function cannot be called inside a loop multiple times. Distractor D (`3, 6, 9, 12`) targets
+    students who incorrectly start the loop at `i = 1` rather than `i = 0`, or who add 1 to each index.
+  bloom: apply
+  source: "Slide 3, ISAQuiz3 Q12"

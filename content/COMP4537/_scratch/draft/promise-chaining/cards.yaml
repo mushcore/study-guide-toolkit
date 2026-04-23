@@ -1,0 +1,133 @@
+id: promise-chaining
+name: ".then() Chaining, .catch(), and .finally()"
+tags: [then, catch, finally, chaining, microtask-queue]
+prose: >
+  .then() returns a new Promise — that is why chaining works.
+  Returning a value from a .then() callback fulfills the next Promise with that value.
+  Throwing rejects it and skips to the nearest .catch().
+  .finally() runs on any settled outcome but receives no value.
+  Microtask callbacks (.then(), .catch()) drain completely before any setTimeout fires.
+
+cards:
+  - id: promise-chaining-card-01
+    type: name
+    bloom: remember
+    source: "Slide 6 slide 26"
+    front: "What does calling .then() on a Promise always return?"
+    back: "A new Promise."
+    explanation: >
+      .then() producing a new Promise is the mechanism that makes chaining possible.
+      Each link in the chain is a distinct Promise object.
+    example: |
+      Promise.resolve(1).then(n => n * 2); // returns a new Promise fulfilled with 2
+
+  - id: promise-chaining-card-02
+    type: cloze
+    bloom: remember
+    source: "Slide 6 slide 31"
+    front: >
+      Inside a .then() callback, returning a plain value {{fulfills}} the next Promise,
+      while throwing an error {{rejects}} it.
+    back: "fulfills; rejects"
+    explanation: >
+      The two exit paths from a .then() callback determine the state of the Promise
+      that .then() returned: return → fulfilled, throw → rejected.
+    example: |
+      .then(n => { return n * 3; })   // fulfills next Promise with n*3
+      .then(n => { throw new Error(); }) // rejects next Promise
+
+  - id: promise-chaining-card-03
+    type: name
+    bloom: understand
+    source: "Slide 6 slide 46"
+    front: "What is .catch(fn) equivalent to in terms of .then()?"
+    back: ".then(undefined, fn)"
+    explanation: >
+      .catch() is syntactic sugar. It registers fn as the rejection handler only,
+      passing undefined as the fulfillment handler.
+    example: |
+      promise.catch(err => console.log(err));
+      // same as:
+      promise.then(undefined, err => console.log(err));
+
+  - id: promise-chaining-card-04
+    type: name
+    bloom: understand
+    source: "Slide 6 slides 48–49"
+    front: "What argument does the .finally() callback receive?"
+    back: "No argument — it is called with undefined."
+    explanation: >
+      .finally() runs on any settled outcome but is not passed the fulfilled value
+      or rejection reason. The chain passes the original value through unchanged.
+    example: |
+      Promise.resolve(42)
+        .finally(val => console.log(val)) // logs: undefined
+        .then(val => console.log(val));   // logs: 42
+
+  - id: promise-chaining-card-05
+    type: predict
+    bloom: apply
+    source: "ISAQuiz9 Q3"
+    front: |
+      Predict the console output order:
+
+      ```js
+      setTimeout(() => console.log('setTimeout1'), 0);
+      Promise.resolve()
+        .then(() => console.log('then1'))
+        .then(() => console.log('then2'));
+      setTimeout(() => console.log('setTimeout2'), 0);
+      ```
+    back: "then1, then2, setTimeout1, setTimeout2"
+    explanation: >
+      .then() callbacks are microtasks. The microtask queue drains completely
+      before any macrotask (setTimeout) fires. Both .then() callbacks run
+      before either setTimeout callback, regardless of registration order.
+    example: |
+      // Output:
+      // then1
+      // then2
+      // setTimeout1
+      // setTimeout2
+
+  - id: promise-chaining-card-06
+    type: cloze
+    bloom: apply
+    source: "Slide 6 slide 29; ISAQuiz9 Q4–Q5"
+    front: >
+      A throw inside a .then() callback causes the chain to skip all subsequent
+      .then() calls until it reaches the nearest downstream {{.catch()}}.
+      After .catch() handles the error and returns a value, the chain resumes as
+      {{fulfilled}}.
+    back: ".catch(); fulfilled"
+    explanation: >
+      Error propagation through a chain mirrors try/catch blocks:
+      throw = reject, .catch() = catch block. Returning from .catch() resumes
+      the fulfilled path.
+    example: |
+      Promise.resolve('ok')
+        .then(() => { throw new Error('oops'); })
+        .then(() => console.log('skipped'))   // never runs
+        .catch(err => { return 'recovered'; })
+        .then(val => console.log(val));        // recovered
+
+  - id: promise-chaining-card-07
+    type: predict
+    bloom: analyze
+    source: "ISAQuiz9 Q10; Slide 6 slide 48"
+    front: |
+      Predict what `.finally()` logs:
+
+      ```js
+      Promise.resolve('hello')
+        .finally(val => {
+          console.log('finally:', val);
+        });
+      ```
+    back: "finally: undefined"
+    explanation: >
+      .finally() receives no argument. The val parameter is undefined regardless
+      of the upstream fulfilled value. The original fulfilled value ('hello')
+      passes through to any downstream .then() unchanged.
+    example: |
+      // Output: finally: undefined

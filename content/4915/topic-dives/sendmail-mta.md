@@ -4,18 +4,24 @@ title: Sendmail (MTA)
 pillar: tech
 priority: high
 chapter: Mod07 Ch20
+source: "Mod07 Ch20; materials/labs/Lab7.pdf"
 tags:
   - networking
   - network
+related: [4915-topic-dns-bind, 4915-topic-iptables-netfilter]
 ---
 
-Sendmail is an **MTA** (Mail Transfer Agent). It listens on **port 25** (SMTP), queues mail, and hands off to an MDA for final delivery.
+Sendmail is an **MTA** (Mail Transfer Agent). It listens on **port 25** (SMTP), queues mail, and hands off to an MDA for final delivery. End-to-end, a message walks MUA → MTA → DNS MX lookup → remote MTA → MDA → mailbox (Source: Mod07 Ch20 + Lab 7).
 
-flowchart LR MUA\["MUA  
-(mail / Thunderbird)"\] --> MTA\["MTA  
-sendmail  
-port 25"\] MTA -->|SMTP out| REMOTE\["remote MTA"\] MTA -->|local| MDA\["MDA  
-procmail"\] MDA --> MBOX\["/var/spool/mail/USER"\] classDef blue fill:#181822,stroke:#7aa2f7,color:#e5e5e5; classDef amber fill:#201c15,stroke:#e0af68,color:#e0af68; classDef green fill:#181a18,stroke:#9ece6a,color:#9ece6a; class MUA blue; class MTA,REMOTE amber; class MDA,MBOX green;
+```mermaid
+graph LR
+  MUA["MUA<br/>(mail / Thunderbird)"] -->|submit| MTA["local MTA<br/>sendmail :25"]
+  MTA -->|DNS MX lookup| DNS["DNS<br/>MX record"]
+  DNS -->|returns host| MTA
+  MTA -->|SMTP out| RMTA["remote MTA<br/>:25"]
+  RMTA -->|local delivery| MDA["MDA<br/>procmail"]
+  MDA --> MBOX["/var/spool/mail/USER"]
+```
 
 #### Key files
 
@@ -53,3 +59,9 @@ DAEMON_OPTIONS(`Port=smtp, Name=MTA')dnl
 > Steps 3 → 4 is the step students skip. Editing `.mc` without `make` changes nothing — sendmail only reads `.cf`.
 
 **Common trap.** Editing `/etc/aliases` without running `newaliases`. Sendmail looks up the hashed DB; the text file alone has no effect.
+
+> **Pitfall**
+>
+> Editing `sendmail.mc` without running `make -C /etc/mail` does nothing — sendmail reads `sendmail.cf`, which is *compiled* from the `.mc` source. Same trap with `/etc/aliases` → `newaliases` → `aliases.db`. Always run the hash/compile step before restarting.
+
+> **Takeaway**: Sendmail is the MTA; `.mc` is the human-editable macro source that `make` compiles into `.cf`. Editing `.mc` without running `make` changes nothing. Same trap with `/etc/aliases` and `newaliases`.

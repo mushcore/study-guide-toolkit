@@ -1,0 +1,29 @@
+- id: session-auth-breeze-q-01
+  type: MCQ
+  topic: "Session Authentication with Breeze"
+  marks: 1
+  question: "Which CSS framework does Laravel Breeze use for its scaffolded views?"
+  choices:
+    - "Bootstrap"
+    - "Bulma"
+    - "Foundation"
+    - "Tailwind CSS"
+  correct: 3
+  rationale: "Laravel Breeze scaffolds all its authentication views using Tailwind CSS utility classes. The course materials explicitly distinguish Breeze (Tailwind) from `laravel/ui` (Bootstrap). Option A (Bootstrap) is the framework used by `laravel/ui` — the older authentication scaffolding package that Breeze replaced. Confusing Bootstrap with Breeze is a documented exam error. Option B (Bulma) and Option C (Foundation) are real CSS frameworks but are never used by Laravel Breeze; they are plausible-sounding distractors for a student who cannot recall the correct name."
+  bloom: remember
+  source: "auth-with-breeze_SQLite_SCRIPT.docx"
+
+- id: session-auth-breeze-q-02
+  type: MCQ
+  topic: "Session Authentication with Breeze"
+  marks: 1
+  question: "Inside a controller protected by the `auth` middleware, which call returns the authenticated user's primary key as an integer?"
+  choices:
+    - "Auth::user()->primary()"
+    - "Auth::id()"
+    - "session('user_id')"
+    - "request()->userId()"
+  correct: 1
+  rationale: "`Auth::id()` is the facade call that returns the authenticated user's integer primary key directly. It is equivalent to `Auth::user()->id` but more concise. Option A (`Auth::user()->primary()`) is invented — `primary()` is not a method on the User model. Option C (`session('user_id')`) reads a raw session key — while Breeze does store the user ID in the session, reading it directly is not the correct idiomatic pattern; `Auth::id()` is the authoritative call. Option D (`request()->userId()`) does not exist — `request()` provides access to the HTTP request object, not authentication state."
+  bloom: remember
+  source: "auth-with-breeze_SQLite_SCRIPT.docx"

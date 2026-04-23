@@ -1,0 +1,101 @@
+id: js-scope-hoisting
+name: "var/let/const scope, hoisting, event loop"
+tags: [hoisting, var, let, const, scope, block-scope]
+prose: "JavaScript hoists var declarations to the top of their enclosing function scope, initializing them to undefined. let and const are block-scoped and throw ReferenceError if accessed before their declaration line. Functions without a return statement return undefined. The event loop drains the microtask queue before picking the next macrotask."
+cards:
+  - id: js-scope-hoisting-card-01
+    type: cloze
+    prompt: "Declaring a variable with {{var}} hoists the declaration to the function top but NOT the initialization, so reading it before assignment returns {{undefined}}."
+    answer: "var; undefined"
+    explanation: "The JavaScript compiler registers all var declarations in the function scope before execution. The assignment stays in place. So the variable exists but holds undefined until the assignment line runs."
+    example: |
+      console.log(x); // undefined, not ReferenceError
+      var x = 5;
+    source: "Slide 1, ISAQuiz6"
+    bloom: remember
+
+  - id: js-scope-hoisting-card-02
+    type: cloze
+    prompt: "Accessing a {{let}} or {{const}} variable before its declaration line throws a {{ReferenceError}}, not undefined, because those declarations are in the Temporal Dead Zone."
+    answer: "let; const; ReferenceError"
+    explanation: "let and const are block-scoped. They are processed during compilation but remain inaccessible (TDZ) until the declaration line executes. Reading them early is a hard error, unlike var which silently returns undefined."
+    example: |
+      console.log(a); // ReferenceError
+      let a = 5;
+    source: "Slide 1, ISAQuiz6"
+    bloom: remember
+
+  - id: js-scope-hoisting-card-03
+    type: predict
+    prompt: |
+      Predict the output:
+      ```js
+      if (true) {
+        let a = 5;
+      }
+      console.log(a);
+      ```
+    answer: "Uncaught ReferenceError: a is not defined"
+    explanation: "let is block-scoped to the if block's {}. Once the block closes, a no longer exists in the outer scope. Accessing a outside the block throws ReferenceError — not undefined."
+    source: "ISAQuiz6 Q5"
+    bloom: apply
+
+  - id: js-scope-hoisting-card-04
+    type: predict
+    prompt: |
+      Predict the output:
+      ```js
+      if (m = []) {
+        console.log("Green");
+      }
+      var m = 10;
+      ```
+    answer: "Green"
+    explanation: "var m is hoisted so m exists before the if. The condition m = [] is an assignment expression that evaluates to [] (truthy). The if body runs and prints Green. No ReferenceError occurs."
+    source: "ISAQuiz6 Q4"
+    bloom: apply
+
+  - id: js-scope-hoisting-card-05
+    type: predict
+    prompt: |
+      Predict the output:
+      ```js
+      function foo(n) {
+        var s = 0;
+        for (let i = 0; i < n; i++) {
+          s += i;
+        }
+      }
+      console.log(foo(3));
+      ```
+    answer: "undefined"
+    explanation: "foo computes s = 3 internally but has no return statement. Every function that exits without return <value> implicitly returns undefined. console.log prints that undefined."
+    source: "ISAQuiz6 Q6"
+    bloom: analyze
+
+  - id: js-scope-hoisting-card-06
+    type: name
+    prompt: "What is the order in which the JavaScript event loop processes these three structures after the call stack empties?"
+    answer: "Microtask queue (fully drained), then one macrotask from the callback queue, then microtask queue again."
+    explanation: "Promise .then() callbacks land in the microtask queue. setTimeout/setInterval callbacks land in the macrotask (callback) queue. The microtask queue always drains completely before the event loop picks the next macrotask."
+    source: "Slide 3"
+    bloom: understand
+
+  - id: js-scope-hoisting-card-07
+    type: name
+    prompt: "var is function-scoped. What scope do let and const use?"
+    answer: "Block scope — the nearest enclosing {}."
+    explanation: "Any pair of curly braces creates a block: if, for, while, or a bare {}. let and const declared inside a block are invisible outside it."
+    source: "Slide 1"
+    bloom: remember
+
+  - id: js-scope-hoisting-card-08
+    type: cloze
+    prompt: "A function that exits without a {{return}} statement implicitly returns {{undefined}}, regardless of any values computed internally."
+    answer: "return; undefined"
+    explanation: "JavaScript automatically appends an implicit return undefined to every function that falls off the end. The caller receives undefined. Internal variables are not accessible to the caller."
+    example: |
+      function compute() { var x = 9; }
+      console.log(compute()); // undefined
+    source: "ISAQuiz6 Q6"
+    bloom: remember

@@ -1,0 +1,29 @@
+- id: nodejs-db-connect-q-01
+  type: MCQ
+  topic: "Node.js MySQL connection: setup, query, and hosting"
+  marks: 2
+  question: |
+    A student writes this Node.js file and runs it with `node server.js`. The process crashes immediately with `Error: Cannot find module 'mysql'`.
+
+    ```js
+    const mysql = require('mysql');
+    const con = mysql.createConnection({
+      host: 'localhost', user: 'root', password: '', database: 'mydb'
+    });
+    con.connect(function(err) {
+      if (err) throw err;
+      console.log('Connected!');
+    });
+    ```
+
+    What is the cause, and what is the fix?
+  choices:
+    - "`mysql` is a built-in Node.js module that must be enabled via a config flag; run `node --enable-mysql server.js`"
+    - "The `createConnection` call is missing the `port` property; add `port: 3306` to the config object"
+    - "`mysql` is an external package not bundled with Node.js; run `npm install mysql` in the project directory before requiring it"
+    - "The `require` path is wrong; use `require('./mysql')` to load a local module"
+  correct: 2
+  rationale: |
+    `mysql` is not a built-in Node.js module. Built-in modules — `http`, `fs`, `path`, `url`, `os` — are available immediately via `require`. The `mysql` package must be installed from npm before it can be required; missing that step causes Node.js to search `node_modules/` and fail with "Cannot find module". The fix is `npm install mysql` in the project directory. Choice A is false — Node.js has no flag that enables a missing external package; built-in modules do not require flags. Choice B is a plausible distractor because `port` is a real `createConnection` option, but omitting it does not cause a module-not-found crash — MySQL defaults to port 3306. Choice D targets the misconception that `require` without a relative path means a local file; bare module names like `'mysql'` resolve to `node_modules/`, not to a local file, so the fix is installing the package, not changing the path.
+  bloom: understand
+  source: "Slide 5, Slide 7, Quiz 7"

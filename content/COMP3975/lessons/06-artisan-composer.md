@@ -95,4 +95,6 @@ php artisan tinker
 >>> \App\Models\Student::find(1)
 ```
 
+> **Pitfall:** Every `make:` command uses a **colon** separator — `make:model`, `make:controller`, `make:migration`. The hyphen form (`make-migration`) does not exist. `final-practice.docx Q6` used the hyphen form as a direct distractor.
+
 > **Takeaway:** Composer creates the project and manages packages. Artisan scaffolds files, runs the server, and manages the app lifecycle. Know the colon syntax for every `make:` command — the exam tests it directly — and reach for `tinker` whenever you need to verify Eloquent behavior without a browser.

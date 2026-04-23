@@ -7,6 +7,7 @@ variant: starter-solution
 tags:
   - shell
   - scripting
+source: "Mod09 Ch28; materials/labs/Lab9.pdf; materials/past-exams/midterm.md Q59"
 ---
 
 ## Prompt
@@ -29,4 +30,4 @@ echo "Your working directory is $(pwd)"
 
 ## Why
 
-Needs shebang (1 mark), correct quoting (1 mark), command substitution (1 mark). `$(pwd)` preferred over backticks.
+**Source**: Mod09 Ch28 + Lab 9. Needs shebang (1 mark), correct quoting (1 mark), command substitution (1 mark). `$(pwd)` preferred over backticks. Common wrong: `echo Your working directory is $(pwd)` without quotes — an unquoted path with spaces gets re-split by the shell, and a leading literal-less string loses whitespace formatting; the marker docks for "not one clean line".

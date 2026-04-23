@@ -1,0 +1,14 @@
+- id: azure-laravel-deployment-q-01
+  type: MCQ
+  topic: "Azure Laravel Deployment"
+  marks: 1
+  question: "When deploying a Laravel app to Azure App Service, where must the `startup.sh` file be placed so Azure can find and execute it?"
+  choices:
+    - "Inside the `public/` directory alongside `index.php`"
+    - "In the `storage/` directory so the container can write to it"
+    - "In the project root, alongside `artisan` and `composer.json`"
+    - "In `.github/workflows/` as part of the GitHub Actions pipeline"
+  correct: 2
+  rationale: "`startup.sh` must reside in the project root — the same level as `artisan`, `composer.json`, and `.env.example`. Azure references it as `/home/site/wwwroot/startup.sh` and the Startup Command field in the portal calls `bash /home/site/wwwroot/startup.sh`. Option A (`public/`) is where web-accessible static files and `index.php` live — putting a shell script there exposes it publicly and is not where Azure looks for the startup script. Option B (`storage/`) is Laravel's runtime cache directory; Azure does not look there for startup scripts. Option D (`.github/workflows/`) is where GitHub Actions CI/CD workflow files live — Azure reads those only during build/deploy, not on each container start."
+  bloom: remember
+  source: "resources/Steps to Azure Deployment.html; resources/Fixes 2026.html"

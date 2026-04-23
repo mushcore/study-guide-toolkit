@@ -4,12 +4,21 @@ title: Samba
 pillar: tech
 priority: high
 chapter: Mod07 Ch23
+source: "Mod07 Ch23; materials/labs/Lab7.pdf"
 tags:
   - networking
   - network
+related: [4915-topic-permissions-chmod-umask, 4915-topic-dns-bind, 4915-topic-iptables-netfilter, 4915-topic-nfs]
 ---
 
-Linux ↔ Windows file/print sharing via SMB/CIFS.
+Linux ↔ Windows file/print sharing via SMB/CIFS. The client-side chain is: smb.conf declares the share → `smbpasswd` seeds a *separate* Samba password store → client runs `mount.cifs` against ports 139/445 (Source: Mod07 Ch23 + Lab 7).
+
+```mermaid
+graph LR
+  Conf["/etc/samba/smb.conf<br/>[global] + [share]"] --> SMBD["smbd daemon<br/>:139 / :445"]
+  SMBPW["smbpasswd -a user<br/>(separate from Unix pw)"] --> SMBD
+  Client["client<br/>mount.cifs //server/share"] -->|SMB over TCP| SMBD
+```
 
 Config `/etc/samba/smb.conf`. Sections:
 
@@ -68,3 +77,9 @@ Ports: 137/138 netbios-ns/dgm, 139 netbios-ssn, 445 SMB. SWAT on 901.
 > 8.  From client — `smbclient -L //server -U fred` (list shares), then `smbclient //server/public -U fred` to browse.
 >
 > Steps 4 and 5 are distinct — Unix `useradd` + Samba `smbpasswd -a`. Forgetting smbpasswd = login fails with *NT\_STATUS\_LOGON\_FAILURE*.
+
+> **Pitfall**
+>
+> Unix `useradd fred` and Samba `smbpasswd -a fred` are two **separate** steps with two separate password stores. Skipping `smbpasswd -a` is the #1 Samba login failure, and the error (`NT_STATUS_LOGON_FAILURE`) does not mention the missing Samba password.
+
+> **Takeaway**: Samba is SMB/CIFS for Linux — gives Windows clients file shares. Unix `useradd` and Samba `smbpasswd -a` are two distinct commands; skip the second and login fails with `NT_STATUS_LOGON_FAILURE`.

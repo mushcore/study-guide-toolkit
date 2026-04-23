@@ -1,0 +1,29 @@
+- id: js-arrays-loops-q-01
+  type: MCQ
+  topic: "Arrays, Loops, and Iteration Patterns"
+  marks: 2
+  question: |
+    What does the following code print to the console?
+
+    ```js
+    let arr = [];
+    arr[1] = 1234;
+    console.log(arr[0]);
+    ```
+  choices:
+    - "`1234`"
+    - "`undefined`"
+    - "`Error: cannot assign index 1 to empty array`"
+    - "`null`"
+  correct: 1
+  rationale: |
+    JavaScript arrays are sparse objects. Writing to index 1 without writing to index 0 leaves slot 0
+    uninitialized. Reading an uninitialized slot returns `undefined` — no error is thrown. Distractor A
+    (`1234`) targets students who assume a one-element array has only index 0 and expect both reads to
+    return the same value. Distractor C (`Error`) directly mirrors a wrong-answer option from ISAQuiz2
+    Q8 ("Error - cannot assign index 1 to empty array"), which students chose when they incorrectly
+    believed sparse assignment was illegal. Distractor D (`null`) targets students who conflate
+    "unassigned" with an explicit `null`.
+  bloom: understand
+  tags: [pretest]
+  source: "ISAQuiz2 Q8"

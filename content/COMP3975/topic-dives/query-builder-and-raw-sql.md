@@ -11,7 +11,7 @@ related: [eloquent-orm]
 
 ## Three data-access patterns — at a glance
 
-The professor's preference hierarchy: Eloquent ORM first, Query Builder second, raw SQL third.
+Laravel's recommended hierarchy: Eloquent ORM first, Query Builder second, raw SQL third.
 
 | Pattern | Entry point | Returns | Requires model? |
 |---|---|---|---|

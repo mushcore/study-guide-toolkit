@@ -1,5 +1,5 @@
 ---
-id: exam-strategy-and-pitfalls
+id: comp3975-exam-strategy-and-pitfalls
 title: "Exam strategy and pitfalls — COMP 3975 Final"
 pillar: process
 priority: high
@@ -77,6 +77,9 @@ Skip if you can't answer in 20 seconds. Write the question number on a scratch c
 - `php artisan migrate:refresh --seed` **drops and recreates** all tables. Running it in production destroys data. The `--force` flag is required to run it in a non-local environment.
 - Breeze installs **Tailwind CSS** (not Bootstrap). Questions that conflate Bootstrap with Breeze test this distinction.
 - The `darkaonline/l5-swagger` package requires `-W` flag: `composer require darkaonline/l5-swagger -W`. Omitting `-W` causes a dependency conflict on many Laravel versions.
+
+> **Q:** You have 90 seconds left and 8 questions remaining on the multiple-choice section. Which do you attempt first?
+> **A:** Attempt the questions you can answer in under 10 seconds — recall-level items about specific facts (command names, directory paths, HTTP status codes). Skip any question requiring reasoning about an unfamiliar scenario; guess on remaining blanks in the last 10 seconds.
 
 > **Takeaway**
 > The exam rewards exact command syntax and precise package/concept names over general understanding. Build your cheat sheet around Artisan command names, JWT claim names, and the OpenAPI/Swagger distinction — these are the highest-density, highest-error areas from the practice exam.
