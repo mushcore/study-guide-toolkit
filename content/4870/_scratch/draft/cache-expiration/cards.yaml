@@ -1,0 +1,53 @@
+id: cache-expiration
+name: "Cache expiration — Absolute, Sliding, Priority"
+tags: [cache, ttl, expiration]
+source: "notes/DataCache_SCRIPT.docx; research-cache.md §2, §4"
+prose: "`MemoryCacheEntryOptions` exposes `AbsoluteExpiration` (hard deadline), `SlidingExpiration` (idle timeout that resets on access), and `Priority` (eviction order under memory pressure). Combining absolute + sliding gives a capped-and-refreshing window."
+cards:
+  - id: cache-expiration-card-01
+    type: cloze
+    prompt: "`AbsoluteExpiration` is a {{hard}} deadline; `SlidingExpiration` resets on each {{access}}."
+    answer: "hard; access"
+    bloom: remember
+    explanation: "Absolute kills the entry at a wall-clock moment regardless of traffic. Sliding keeps hot entries alive while aging out idle ones."
+    example: "Absolute: expires at 10:00 AM. Sliding: expires 5 minutes after last read/write."
+
+  - id: cache-expiration-card-02
+    type: name
+    prompt: "When `AbsoluteExpirationRelativeToNow = 50s` and `SlidingExpiration = 20s` are BOTH set and the entry is accessed at t=15s, when does it expire?"
+    answer: "At t=50s, because Absolute is a hard ceiling that wins over the reset Sliding window."
+    bloom: apply
+    explanation: "Sliding resets the idle timer to run until t=35s when the access happens at t=15s. Absolute deadline at t=50s is still binding and farther out, so Absolute fires first. Without the access, the entry would have expired at t=20s from sliding."
+    example: "Access at 15s → sliding resets to 35s deadline → absolute 50s deadline fires first → entry dies at 50s."
+
+  - id: cache-expiration-card-03
+    type: cloze
+    prompt: "`CacheItemPriority` controls {{eviction order}} under memory pressure — NOT the entry's expiration time."
+    answer: "eviction order"
+    bloom: understand
+    explanation: "A Low-priority entry with a 1-hour Absolute still lives 1 hour unless memory pressure forces eviction. A High-priority entry with a 30-second Absolute still expires at 30 seconds."
+    example: "Priority = Low does NOT mean 'expires sooner.' It means 'dropped first when the cache is over its size limit.'"
+
+  - id: cache-expiration-card-04
+    type: cloze
+    prompt: "The four `CacheItemPriority` levels are `{{NeverRemove}}`, `{{High}}`, `{{Normal}}`, and `{{Low}}`."
+    answer: "NeverRemove; High; Normal; Low"
+    bloom: remember
+    explanation: "`NeverRemove` excludes an entry from automatic eviction (only explicit `Remove` or time-based expiration can free it). Use sparingly — it converts the cache into persistent state."
+    example: "_cache.Set(\"config\", cfg, new MemoryCacheEntryOptions { Priority = CacheItemPriority.NeverRemove });"
+
+  - id: cache-expiration-card-05
+    type: name
+    prompt: "Which `MemoryCacheEntryOptions` setting is best for session-like data that should time out when the user goes idle?"
+    answer: "`SlidingExpiration`"
+    bloom: apply
+    explanation: "Sliding resets on each access, so active users stay in cache and idle ones age out. Pair with a loose Absolute ceiling if you want a hard refresh guarantee."
+    example: "new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(15) };"
+
+  - id: cache-expiration-card-06
+    type: cloze
+    prompt: "On `IDistributedCache`, the options type is `{{DistributedCacheEntryOptions}}` and you use the fluent setters `{{SetAbsoluteExpiration}}` and `{{SetSlidingExpiration}}`."
+    answer: "DistributedCacheEntryOptions; SetAbsoluteExpiration; SetSlidingExpiration"
+    bloom: apply
+    explanation: "The shape differs between IMemoryCache (property-bag) and IDistributedCache (fluent). Semantics are identical — absolute is a hard deadline; sliding resets on access."
+    example: "new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(1)).SetSlidingExpiration(TimeSpan.FromMinutes(30));"

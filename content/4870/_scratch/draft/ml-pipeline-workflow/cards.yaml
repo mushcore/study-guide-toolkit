@@ -1,0 +1,101 @@
+id: ml-pipeline-workflow
+name: "ML.NET pipeline workflow — Load → Transform → Concatenate → Train → Evaluate → Predict"
+tags: [ml-net, pipeline]
+prose: "The canonical ML.NET program chains seven steps: create MLContext, load data into an IDataView, rename the target column to \"Label\", one-hot-encode categoricals, Concatenate features into a column named \"Features\", pick a trainer, and call Fit to get back an ITransformer. These cards drill the return types, magic column names, and trap answers the exam reuses."
+cards:
+  - id: ml-pipeline-workflow-card-01
+    type: cloze
+    front: "The root object for every ML.NET program is `{{c1::MLContext}}`, constructed with `new MLContext(seed: 0)` to make training {{c2::deterministic}}."
+    back: "`MLContext` / deterministic"
+    source: "research-mlnet.md §MLContext; card #2, #14"
+    bloom: remember
+    explanation: "`MLContext` exposes `Data`, `Transforms`, `Regression`, `MulticlassClassification`, and `Model`. Passing `seed: 0` pins the random-number generator so identical inputs produce identical models."
+    example: "`MLContext mlContext = new MLContext(seed: 0);` — every subsequent call starts `mlContext.Something`."
+  - id: ml-pipeline-workflow-card-02
+    type: cloze
+    front: "`mlContext.Data.LoadFromTextFile<T>(path, hasHeader: true, separatorChar: ',')` returns an `{{c1::IDataView}}` — an immutable, streaming view over tabular data."
+    back: "`IDataView`"
+    source: "research-mlnet.md §IDataView; card #3"
+    bloom: remember
+    explanation: "The load call is lazy: rows are not pulled into memory until a downstream transform or `Fit` asks for them. The generic `T` carries `[LoadColumn(N)]` attributes that map CSV indices to fields."
+    example: "`IDataView trainingData = mlContext.Data.LoadFromTextFile<TaxiTrip>(\"taxi-fare-train.csv\", hasHeader: true, separatorChar: ',');`"
+  - id: ml-pipeline-workflow-card-03
+    type: name
+    front: "What does `pipeline.Fit(trainingData)` return?"
+    back: "`ITransformer` — the trained, stateless, serializable model."
+    source: "research-mlnet.md §Exam Traps #3; card #4; MCQ Q3"
+    bloom: remember
+    explanation: "`Fit` runs every transform and trains the final algorithm. It does not return `IDataView` (that is what `Transform` returns), not metrics, not a `PredictionEngine`. This is the single most common MCQ distractor."
+    example: "`ITransformer model = pipeline.Fit(trainingData);` — never `IDataView model = pipeline.Fit(…)`."
+  - id: ml-pipeline-workflow-card-04
+    type: cloze
+    front: "The first step in a trainer pipeline renames the target column to the literal name `{{c1::\"Label\"}}` using the `{{c2::CopyColumns}}` transform."
+    back: "`\"Label\"` / `CopyColumns`"
+    source: "research-mlnet.md §Exam Traps #5; §Top 5 Exam Mistakes #2"
+    bloom: understand
+    explanation: "Trainers search the `IDataView` schema for a column named `\"Label\"`. If you leave `FareAmount` as the target name, the trainer cannot find it and `Fit` throws a \"column not found\" error."
+    example: "`mlContext.Transforms.CopyColumns(outputColumnName: \"Label\", inputColumnName: \"FareAmount\")`"
+  - id: ml-pipeline-workflow-card-05
+    type: cloze
+    front: "`Concatenate` must produce a single vector column named exactly `{{c1::\"Features\"}}` — trainers refuse to run if the column is called `\"Input\"` or `\"X\"`."
+    back: "`\"Features\"`"
+    source: "research-mlnet.md §Exam Traps #6; card #7"
+    bloom: understand
+    explanation: "Trainers look up their input by the hard-coded name `\"Features\"`. `Concatenate` packs the encoded columns into one vector under that name so the trainer can consume it as a single numeric input."
+    example: "`.Append(mlContext.Transforms.Concatenate(\"Features\", \"VendorIdEncoded\", \"TripDistance\"))`"
+  - id: ml-pipeline-workflow-card-06
+    type: cloze
+    front: "To convert categorical text columns such as `\"VTS\"` or `\"CMT\"` into numeric binary vectors, apply the `{{c1::OneHotEncoding}}` transform before `Concatenate`."
+    back: "`OneHotEncoding`"
+    source: "research-mlnet.md card #6; MCQ Q5"
+    bloom: apply
+    explanation: "Trainers accept only numeric input. `OneHotEncoding` expands a categorical column into one indicator column per distinct value — `\"VTS\"` becomes `[1,0]`, `\"CMT\"` becomes `[0,1]`."
+    example: "`.Append(mlContext.Transforms.Categorical.OneHotEncoding(outputColumnName: \"VendorIdEncoded\", inputColumnName: \"VendorId\"))`"
+  - id: ml-pipeline-workflow-card-07
+    type: name
+    front: "Which trainer call sits at the end of a regression pipeline in the taxi-fare example, and which namespace does it come from?"
+    back: "`mlContext.Regression.Trainers.FastTree()` — gradient-boosted decision trees from `Microsoft.ML.FastTree`."
+    source: "research-mlnet.md §Algorithms; card #9"
+    bloom: remember
+    explanation: "`FastTree` is the default regression trainer for numeric prediction. Regression namespace matters: using `mlContext.MulticlassClassification.Trainers.…` for a regression task produces wrong metrics or compile errors."
+    example: "`.Append(mlContext.Regression.Trainers.FastTree());`"
+  - id: ml-pipeline-workflow-card-08
+    type: cloze
+    front: "`[LoadColumn({{c1::0}})]` on a field maps it to the CSV column at {{c2::0-based}} index — `[LoadColumn(6)]` reads the seventh column."
+    back: "0 / 0-based"
+    source: "research-mlnet.md §Exam Traps #7"
+    bloom: remember
+    explanation: "`LoadColumn` takes a numeric index, not a header string. The index matches the CSV column position starting at zero; header names are ignored by this attribute."
+    example: "`[LoadColumn(0)] public string VendorId;` maps to the first CSV column."
+  - id: ml-pipeline-workflow-card-09
+    type: name
+    front: "After `Fit`, how do you compute regression quality metrics on a test `IDataView`?"
+    back: "`var predictions = model.Transform(testData); var metrics = mlContext.Regression.Evaluate(predictions, \"Label\", \"Score\");`"
+    source: "research-mlnet.md §Complete Workflow Step 6; card #10"
+    bloom: apply
+    explanation: "`Transform` applies the pipeline to new data and adds the `\"Score\"` column. `Regression.Evaluate` reads `\"Label\"` and `\"Score\"` to produce a `RegressionMetrics` with `RSquared`, `RootMeanSquaredError`, and `MeanAbsoluteError`."
+    example: "`Console.WriteLine($\"RSquared: {metrics.RSquared:0.##}\");`"
+  - id: ml-pipeline-workflow-card-10
+    type: cloze
+    front: "For single-row inference at runtime, wrap the trained model in a `{{c1::PredictionEngine}}` via `mlContext.Model.CreatePredictionEngine<TInput, TOutput>(model)`, then call `.Predict(example)`."
+    back: "`PredictionEngine`"
+    source: "research-mlnet.md §PredictionEngine; card #5; MCQ Q8"
+    bloom: apply
+    explanation: "`PredictionEngine<TIn, TOut>` handles one example at a time. For batch inference use `model.Transform(batch)` instead — calling `Predict` in a tight loop is the single-row API."
+    example: "`var engine = mlContext.Model.CreatePredictionEngine<TaxiTrip, TaxiTripFarePrediction>(model); var fare = engine.Predict(newTrip).FareAmount;`"
+  - id: ml-pipeline-workflow-card-11
+    type: name
+    front: "Name the seven canonical steps of an ML.NET training program in order."
+    back: "1. `new MLContext(seed: 0)` — 2. `LoadFromTextFile<T>` into `IDataView` — 3. `CopyColumns(\"Label\", target)` — 4. `OneHotEncoding` for categoricals — 5. `Concatenate(\"Features\", …)` — 6. append a trainer (`FastTree` etc.) — 7. `Fit` returns an `ITransformer`, then `Evaluate` or `CreatePredictionEngine`."
+    source: "research-mlnet.md §Quick Reference Cheat Sheet"
+    bloom: analyze
+    explanation: "Every ML.NET program follows this shape. The order matters: rename to `\"Label\"` before any transforms that touch features; encode categoricals before `Concatenate`; `Concatenate` must come before the trainer."
+    example: "Taxi-fare pipeline: load CSV → copy `FareAmount` to `\"Label\"` → one-hot `VendorId` → concatenate into `\"Features\"` → `FastTree` → `Fit` → `Evaluate` → predict."
+  - id: ml-pipeline-workflow-card-12
+    type: cloze
+    front: "Calling `mlContext.{{c1::Regression}}.Evaluate` on a regression pipeline returns `RSquared` and `RMSE`; calling `mlContext.{{c2::MulticlassClassification}}.Evaluate` instead returns accuracy metrics — picking the wrong namespace is an exam trap."
+    back: "`Regression` / `MulticlassClassification`"
+    source: "research-mlnet.md §Exam Traps #4; §Top 5 Exam Mistakes #3"
+    bloom: analyze
+    explanation: "The trainer namespace and the evaluator namespace must match the task. Using `BinaryClassification` or `MulticlassClassification` for a numeric-prediction problem yields classification metrics or a compilation error."
+    example: "Taxi-fare (numeric target) uses `mlContext.Regression.Trainers.FastTree()` and `mlContext.Regression.Evaluate(...)`."

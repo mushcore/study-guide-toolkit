@@ -1,0 +1,53 @@
+id: file-based-app-web
+name: "File-based web apps — #:sdk + minimal API"
+tags: [dotnet-10, scripting, web, minimal-api]
+source: "notes/file-based-apps.docx; research-file-based.md"
+prose: "`#:sdk Microsoft.NET.Sdk.Web` switches a file-based app from console mode to ASP.NET Core. `WebApplication.CreateBuilder(args).Build()` plus `app.MapGet/Post/Put/Delete` gives a complete minimal-API web server in one file."
+cards:
+  - id: file-based-app-web-card-01
+    type: cloze
+    prompt: "To write a file-based web API, the first line is `#:sdk {{Microsoft.NET.Sdk.Web}}` — without it, `WebApplication` is not resolvable."
+    answer: "Microsoft.NET.Sdk.Web"
+    bloom: remember
+    explanation: "The default file-based SDK is console-only. Switching to the Web SDK pulls in ASP.NET Core's implicit references so minimal-API types are available."
+    example: "#:sdk Microsoft.NET.Sdk.Web\\nvar app = WebApplication.CreateBuilder(args).Build();\\napp.MapGet(\"/\", () => \"Hi\");\\napp.Run();"
+
+  - id: file-based-app-web-card-02
+    type: name
+    prompt: "What runtime type does `WebApplication.CreateBuilder(args).Build()` return?"
+    answer: "`WebApplication` — which you then use to call `MapGet`, `MapPost`, etc., and `Run()`."
+    bloom: remember
+    explanation: "`WebApplication` is the minimal-API host. It replaces the historical `IHost` + `IApplicationBuilder` split with a single object exposing routing + lifecycle methods."
+    example: "var app = WebApplication.CreateBuilder(args).Build();"
+
+  - id: file-based-app-web-card-03
+    type: cloze
+    prompt: "A GET endpoint mapping in a file-based web app reads `app.{{MapGet}}(\"/route\", () => result)`."
+    answer: "MapGet"
+    bloom: apply
+    explanation: "Map methods take a route template and a handler delegate. Delegates can be lambdas, method references, or typed handlers with DI via parameter injection."
+    example: "app.MapGet(\"/widgets\", (AppDb db) => db.Widgets.ToList());"
+
+  - id: file-based-app-web-card-04
+    type: name
+    prompt: "How do you include an additional NuGet package in a file-based web app?"
+    answer: "Add a `#:package PackageName@Version` directive at the top of the file."
+    bloom: apply
+    explanation: "Directives stack: the SDK swap plus any number of package directives, all at the file's top. Each on its own line."
+    example: "#:sdk Microsoft.NET.Sdk.Web\\n#:package Microsoft.AspNetCore.OpenApi@10.0.0"
+
+  - id: file-based-app-web-card-05
+    type: cloze
+    prompt: "The error `The name 'WebApplication' does not exist in the current context` on a file-based `.cs` almost always means the `{{#:sdk}}` directive is missing."
+    answer: "#:sdk"
+    bloom: analyze
+    explanation: "WebApplication lives in ASP.NET Core types that the default console SDK does not reference. Adding `#:sdk Microsoft.NET.Sdk.Web` fixes the resolution."
+    example: "Add `#:sdk Microsoft.NET.Sdk.Web` as the first line of the file."
+
+  - id: file-based-app-web-card-06
+    type: name
+    prompt: "When should you convert a file-based web app to a proper .NET project?"
+    answer: "When you need multiple files, test projects, complex deployment, or CI pipelines that expect a .csproj."
+    bloom: apply
+    explanation: "Single-file form is great for demos and one-off utilities. Anything requiring structure graduates via `dotnet project convert file.cs -o Folder`."
+    example: "dotnet project convert api.cs -o ApiProject"

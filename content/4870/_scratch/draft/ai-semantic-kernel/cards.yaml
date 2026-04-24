@@ -1,0 +1,94 @@
+id: ai-semantic-kernel
+name: "Semantic Kernel SDK"
+tags: [ai, orchestration, plugins]
+prose: "Semantic Kernel is Microsoft's orchestration SDK for LLMs in .NET. A Kernel — built by KernelBuilder — holds an IChatCompletionService and plugins. A plugin is a collection of callable functions: either a native C# class whose methods carry [KernelFunction] + [Description], or a prompt directory containing skprompt.txt with {{$variable}} placeholders. Invoke everything through kernel.InvokeAsync(). The core NuGet is Microsoft.SemanticKernel; add-on packages live under Microsoft.SemanticKernel.Plugins.*. Do not confuse with Microsoft Agent Framework — agent.RunAsync() and AIFunctionFactory.Create() belong to MAF, not Semantic Kernel."
+cards:
+  - id: ai-semantic-kernel-card-01
+    type: name
+    bloom: remember
+    front: "Which class builds a Semantic Kernel `Kernel` instance fluently?"
+    back: "`KernelBuilder`"
+    explanation: "`KernelBuilder` configures services (LLM backend, logging) and constructs the `Kernel` via `Build()`. Variant `Kernel.Builder` does not exist."
+    example: "`var kernel = new KernelBuilder().AddOpenAIChatCompletion(\"gpt-4o\", apiKey).Build();`"
+    source: "research-ai.md §Register Semantic Kernel in Program.cs"
+
+  - id: ai-semantic-kernel-card-02
+    type: cloze
+    bloom: remember
+    front: "To execute a Semantic Kernel function, call `kernel.{{c1::InvokeAsync}}()`."
+    back: "InvokeAsync"
+    explanation: "`InvokeAsync` is the one call that runs any plugin function through the kernel. `kernel.Execute()` is a fake method that appears in distractors."
+    example: "`await kernel.InvokeAsync(plugin[\"RecipeGenerator\"], new(\"chocolate cake\"));`"
+    source: "research-ai.md §Kernel, §Add Plugin to Kernel (Prompt-Based)"
+
+  - id: ai-semantic-kernel-card-03
+    type: name
+    bloom: remember
+    front: "Which attribute marks a C# method as a Semantic Kernel function?"
+    back: "`[KernelFunction]`"
+    explanation: "`[KernelFunction]` tags the method for kernel discovery; pair it with `[Description]` so the LLM can choose it during tool selection. `[SkillFunction]` is a distractor."
+    example: "`[KernelFunction(\"DescribeWeather\")] [Description(\"Get weather for a city\")] public static string GetWeatherDescription(string city) => ...;`"
+    source: "research-ai.md flashcard #8, §Add Plugin to Kernel (Native C# Class)"
+
+  - id: ai-semantic-kernel-card-04
+    type: cloze
+    bloom: understand
+    front: "In a Semantic Kernel prompt template, the placeholder syntax is `{{c1::{{$variableName}}}}`."
+    back: "{{$variableName}}"
+    explanation: "The kernel substitutes each `{{$var}}` with the argument passed to `InvokeAsync` before sending the rendered prompt to the LLM."
+    example: "`skprompt.txt`: `Identify the city in this input: {{$input}}` — called with `input = \"weather in Tokyo\"`."
+    source: "research-ai.md §skprompt.txt Template, flashcard #11"
+
+  - id: ai-semantic-kernel-card-05
+    type: name
+    bloom: remember
+    front: "Which interface abstracts the LLM backend in Semantic Kernel?"
+    back: "`IChatCompletionService`"
+    explanation: "`IChatCompletionService` lets you swap OpenAI, Azure OpenAI, or Ollama backends without changing calling code. Implementations register via extension methods on `KernelBuilder` like `AddOpenAIChatCompletion`."
+    example: "`kernelBuilder.AddOpenAIChatCompletion(\"phi3\", new Uri(\"http://localhost:11434\"));` registers an Ollama-backed `IChatCompletionService`."
+    source: "research-ai.md §IChatCompletionService, flashcard #15"
+
+  - id: ai-semantic-kernel-card-06
+    type: cloze
+    bloom: apply
+    front: "To load a native C# plugin class `WeatherPlugin`, call `kernel.{{c1::ImportPluginFromType}}<WeatherPlugin>()`."
+    back: "ImportPluginFromType"
+    explanation: "`ImportPluginFromType<T>()` reflects over `T`, finds every `[KernelFunction]` method, and registers them. Use `ImportPluginFromPromptDirectory()` instead for directories containing `skprompt.txt`."
+    example: "`kernel.ImportPluginFromType<WeatherPlugin>();` makes `WeatherPlugin.GetWeatherDescription` callable via `kernel.InvokeAsync`."
+    source: "research-ai.md §Add Plugin to Kernel (Native C# Class)"
+
+  - id: ai-semantic-kernel-card-07
+    type: name
+    bloom: understand
+    front: "What file name identifies a prompt-based Semantic Kernel plugin inside its directory?"
+    back: "`skprompt.txt`"
+    explanation: "A prompt-directory plugin is a folder containing `skprompt.txt` — the template with `{{$var}}` placeholders — and optional config. `ImportPluginFromPromptDirectory()` reads this layout."
+    example: "`Plugins/CakeRecipe/skprompt.txt` contains `Write a recipe for {{$input}}.`; the kernel renders it at invoke time."
+    source: "research-ai.md §skprompt.txt Template, flashcard #10"
+
+  - id: ai-semantic-kernel-card-08
+    type: cloze
+    bloom: understand
+    front: "The ordered list tracking multi-turn conversation state in Semantic Kernel is `{{c1::ChatHistory}}` — a list of `ChatMessage` objects with a `ChatRole` (User, Assistant, System)."
+    back: "ChatHistory"
+    explanation: "`ChatHistory` carries prior turns so the LLM has context on each call. It is distinct from Microsoft Agent Framework's `AgentSession`."
+    example: "`var history = new ChatHistory(); history.AddUserMessage(\"hi\"); history.AddAssistantMessage(\"hello\");`"
+    source: "research-ai.md §ChatHistory, §Kernel → ChatHistory Flow"
+
+  - id: ai-semantic-kernel-card-09
+    type: name
+    bloom: apply
+    front: "Which Semantic Kernel method loads a plugin from a directory of `skprompt.txt` files?"
+    back: "`ImportPluginFromPromptDirectory()`"
+    explanation: "`ImportPluginFromPromptDirectory(path)` scans the directory for prompt templates and registers them as functions. `SkillFactory.Create()` is a distractor — it does not exist."
+    example: "`kernel.ImportPluginFromPromptDirectory(Path.Combine(pluginDir, \"CakeRecipe\"));`"
+    source: "research-ai.md §Add Plugin to Kernel (Prompt-Based)"
+
+  - id: ai-semantic-kernel-card-10
+    type: cloze
+    bloom: understand
+    front: "The core Semantic Kernel NuGet package is `{{c1::Microsoft.SemanticKernel}}`; add-on plugin packages live under `Microsoft.SemanticKernel.Plugins.*`."
+    back: "Microsoft.SemanticKernel"
+    explanation: "Install the core package first; add individual `Microsoft.SemanticKernel.Plugins.*` packages only when you need their integrations. The MAF package `Microsoft.Agents.AI.OpenAI` is a separate SDK."
+    example: "`dotnet add package Microsoft.SemanticKernel` brings in `Kernel`, `KernelBuilder`, `[KernelFunction]`."
+    source: "research-ai.md §NuGet Packages to Add, §Package Naming Confusion"

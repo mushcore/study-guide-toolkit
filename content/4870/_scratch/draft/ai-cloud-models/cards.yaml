@@ -1,0 +1,126 @@
+id: ai-cloud-models
+name: "GitHub Models + Azure OpenAI endpoints"
+tags: [ai, cloud, auth]
+prose: |
+  Wiring a hosted chat endpoint in .NET reduces to three knobs: endpoint URL,
+  credential object, and model name. GitHub Models uses
+  `https://models.github.ai/inference` with a GitHub PAT wrapped in
+  `AzureKeyCredential`, plus a vendor-prefixed model id like
+  `openai/gpt-4o-mini`. Azure OpenAI uses your resource URL and a deployment
+  name. Both reuse the same credential class despite the misleading name.
+cards:
+  - id: ai-cloud-models-card-01
+    type: recall
+    bloom: remember
+    source: "notes/AI-Models_MAF_SCRIPT.docx"
+    prompt: "What is the GitHub Models inference endpoint URL?"
+    answer: "https://models.github.ai/inference"
+    explanation: "HTTPS, and the `/inference` path is required. Dropping the path breaks routing."
+    example: |
+      ```json
+      "ApiEndpoint": "https://models.github.ai/inference"
+      ```
+
+  - id: ai-cloud-models-card-02
+    type: recall
+    bloom: remember
+    source: "notes/AI-Models_MAF_SCRIPT.docx"
+    prompt: "Which credential class authenticates GitHub Models calls from the OpenAI SDK?"
+    answer: "`AzureKeyCredential(token)`"
+    explanation: "Despite the `Azure` prefix, this class wraps any bearer token. No `GithubCredential` type exists in the SDK."
+    example: |
+      ```csharp
+      new AzureKeyCredential(config["GitHub:Token"]!)
+      ```
+
+  - id: ai-cloud-models-card-03
+    type: mcq
+    bloom: remember
+    source: "notes/AI-Models_MAF_SCRIPT.docx"
+    prompt: "Which credential type does a GitHub Models `ChatClient` require?"
+    choices:
+      - "`BearerTokenCredential(token)`"
+      - "`AzureKeyCredential(token)`"
+      - "`GithubCredential(token)`"
+      - "`OAuthCredential(token)`"
+    answer: "`AzureKeyCredential(token)`"
+    explanation: "`AzureKeyCredential` is reused for GitHub PATs. The other three are distractors — none exist in this SDK context."
+    example: |
+      ```csharp
+      IChatClient chatClient = new ChatClient(
+          model,
+          new AzureKeyCredential(apiKey!),
+          new OpenAIClientOptions { Endpoint = new Uri(endpoint) }
+      ).AsIChatClient();
+      ```
+
+  - id: ai-cloud-models-card-04
+    type: cloze
+    bloom: apply
+    source: "notes/AI-Models_MAF_SCRIPT.docx"
+    prompt: "Complete the `ChatClient` wiring for GitHub Models: `new ChatClient(model, new ___(apiKey!), new OpenAIClientOptions { Endpoint = new Uri(endpoint) }).___();`"
+    answer: "`AzureKeyCredential`; `AsIChatClient`"
+    explanation: "`AzureKeyCredential` carries the PAT. `.AsIChatClient()` adapts the OpenAI `ChatClient` to `Microsoft.Extensions.AI`'s `IChatClient` so MAF can consume it."
+    example: |
+      ```csharp
+      IChatClient chatClient = new ChatClient(
+          "openai/gpt-4o-mini",
+          new AzureKeyCredential(token),
+          new OpenAIClientOptions { Endpoint = new Uri("https://models.github.ai/inference") }
+      ).AsIChatClient();
+      ```
+
+  - id: ai-cloud-models-card-05
+    type: mcq
+    bloom: apply
+    source: "notes/AI-Models_MAF_SCRIPT.docx"
+    prompt: "Which model-id string is correctly formatted for GitHub Models?"
+    choices:
+      - "`gpt-4o-mini`"
+      - "`openai/gpt-4o-mini`"
+      - "`gpt-4o-mini:latest`"
+      - "`azure/gpt-4o-mini`"
+    answer: "`openai/gpt-4o-mini`"
+    explanation: "GitHub Models routes through vendor-prefixed ids. `openai/` identifies the publisher; the bare name gets rejected."
+    example: |
+      ```json
+      "Model": "openai/gpt-4o-mini"
+      ```
+
+  - id: ai-cloud-models-card-06
+    type: recall
+    bloom: remember
+    source: "notes/AI-Models_MAF_SCRIPT.docx"
+    prompt: "Which `appsettings.json` keys store the GitHub Models configuration?"
+    answer: "`GitHub:Token`, `GitHub:ApiEndpoint`, `GitHub:Model`"
+    explanation: "The PAT lives under `GitHub:Token`. Endpoint and model id live alongside it so `config[...]` binding stays tidy."
+    example: |
+      ```json
+      {
+        "GitHub": {
+          "Token": "PUT-GITHUB-PERSONAL-ACCESS-TOKEN-HERE",
+          "ApiEndpoint": "https://models.github.ai/inference",
+          "Model": "openai/gpt-4o-mini"
+        }
+      }
+      ```
+
+  - id: ai-cloud-models-card-07
+    type: mcq
+    bloom: apply
+    source: "notes/AI-Models_MAF_SCRIPT.docx; slides/CSharp_Meets_AI.pptx"
+    prompt: "You need to differentiate a GitHub Models endpoint from a local Ollama endpoint in code review. Which pair is correct?"
+    choices:
+      - "GitHub: `http://models.github.ai/inference`; Ollama: `https://localhost:11434/`"
+      - "GitHub: `https://models.github.ai/inference`; Ollama: `http://localhost:11434/`"
+      - "GitHub: `https://models.github.ai`; Ollama: `http://localhost:1143/`"
+      - "GitHub: `https://api.github.com/models`; Ollama: `http://localhost:11434/inference`"
+    answer: "GitHub: `https://models.github.ai/inference`; Ollama: `http://localhost:11434/`"
+    explanation: "GitHub is HTTPS with `/inference`. Ollama is HTTP on port `11434` with no path. Common traps: dropping `/inference`, typoing `1143` for `11434`, or swapping protocols."
+    example: |
+      ```csharp
+      // GitHub Models
+      new Uri("https://models.github.ai/inference");
+      // Ollama (local)
+      new Uri("http://localhost:11434/");
+      ```

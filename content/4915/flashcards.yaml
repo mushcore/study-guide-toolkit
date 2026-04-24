@@ -99,7 +99,7 @@ modules:
             answer: owner rwx (7=4+2+1), group r-x (5=4+0+1), other r-x (5=4+0+1).
             explanation: Each octal digit is a 3-bit permission triplet. `chmod 755` sets absolutely — it wipes any other bits. Use `chmod +x` to only *add* the execute bit without touching the rest.
             example: "`chmod 755 script.sh; ls -l script.sh` → `-rwxr-xr-x`. `chmod 644 data.txt` → `-rw-r--r--`."
-            bloom: remember
+            bloom: apply
           - type: predict
             prompt: "After `umask 022 && chmod 600 secret.txt && ls -l secret.txt`, what does `ls -l` show?"
             answer: "`-rw-------`. umask only applies to *new* files; explicit chmod overrides it."
@@ -112,7 +112,7 @@ modules:
             answer: File 644 (666 & ~022), dir 755 (777 & ~022).
             explanation: umask is a bitmask of bits to *remove* from defaults. Files start at 666 (no execute), directories at 777 (execute = traverse). 022 clears w from group and other.
             example: "`umask 022; touch f; ls -l f` → `-rw-r--r--`. `mkdir d; ls -ld d` → `drwxr-xr-x`."
-            bloom: remember
+            bloom: apply
       - id: 4915-chroot
         name: chroot
         tags:
@@ -125,7 +125,8 @@ modules:
             prompt: What does chroot do?
             answer: Changes apparent root directory for a process — filesystem-level jail.
             explanation: After chroot, the process sees the new directory as `/` and cannot `cd` above it through normal path resolution. It predates namespaces and is the mental prototype for modern container filesystem isolation — containers layer MNT namespaces + pivot_root on top for a stronger jail.
-            bloom: remember
+            example: "`sudo chroot /srv/jailenv /bin/bash` — bash sees /srv/jailenv as `/`, can't access /etc or /home on the host."
+            bloom: understand
       - id: 4915-umask
         name: umask
         tags:
@@ -172,7 +173,8 @@ modules:
             prompt: What does setgid do on a file vs a directory?
             answer: 'On a file: process runs with the file''s group GID. On a directory: new files inherit the directory''s group (collaboration pattern).'
             explanation: setgid repurposes the same bit for two behaviors. On executables it elevates group privileges during execution; on directories it changes the default-group policy so team-shared folders stay owned by the shared group.
-            bloom: remember
+            example: "`chmod g+s /srv/team` — new files created inside inherit group `team` automatically, enabling collaboration without manual chown."
+            bloom: understand
       - id: 4915-setuid
         name: setuid
         tags:
@@ -185,7 +187,8 @@ modules:
             prompt: What does setuid do?
             answer: 'Executable runs with the file owner''s UID regardless of who launched it. Classic example: /usr/bin/passwd runs as root.'
             explanation: setuid is how unprivileged users perform privileged operations like changing their own password — the binary flips the effective UID to root for the duration of the call. The security footprint is significant; misused setuid binaries are a classic privilege-escalation vector.
-            bloom: remember
+            example: "`ls -l /usr/bin/passwd` → `-rwsr-xr-x root root` — the `s` in user-execute position is the setuid bit. Any user running passwd temporarily runs as root."
+            bloom: understand
       - id: 4915-hard-link
         name: Hard link
         tags:
@@ -289,7 +292,7 @@ modules:
             prompt: By default, Linux command arguments are separated by what?
             answer: Spaces or tabs (white space, per default IFS).
             explanation: IFS (Internal Field Separator) defaults to space/tab/newline. Word splitting (step 6 of 7 expansions) uses IFS to chop unquoted variable expansions into arg tokens.
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: How do you run a bash command in the background?
             answer: 'Terminate with `&`. Example: `long_task &`.'
@@ -311,7 +314,7 @@ modules:
             answer: '`kill`. (Despite the name, it can send any signal, not just SIGKILL.)'
             explanation: "`kill -l` lists all 31+ signals. Default is SIGTERM (15) — a polite request. SIGKILL (9) is the nuclear option and cannot be caught or ignored."
             example: "`kill -HUP $(pgrep nginx)` asks nginx to reload config. `kill -9 1234` force-terminates PID 1234."
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: What is a Unix PPID?
             answer: Parent Process ID.
@@ -327,13 +330,13 @@ modules:
             answer: '`echo $myvar` (or `echo "$myvar"` to preserve spaces).'
             explanation: Unquoted `$var` goes through word splitting — whitespace inside the value becomes separate args. Quoting with double quotes suppresses word splitting but still expands `$var`.
             example: "`v='a  b'; echo $v` → `a b` (split). `echo \"$v\"` → `a  b` (preserved)."
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: What does a pipe `|` do?
             answer: Connects stdout of one process to stdin of the next.
             explanation: "`|` creates a kernel pipe (anonymous FIFO); the shell runs both commands concurrently with the pipe's read end as cmd2's fd0 and write end as cmd1's fd1. Stderr stays on fd2 and is NOT piped unless you `2>&1` first."
             example: "`ps aux | grep nginx | wc -l` — three processes running in parallel, streaming data."
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Bring background job number 2 to foreground?
             answer: '`fg %2`.'
@@ -373,7 +376,7 @@ modules:
             answer: Deletes carriage returns — converts DOS/Windows text files (CRLF) to Unix (LF).
             explanation: "DOS files end lines with `\\r\\n`; Unix uses `\\n` alone. Stray `\\r` characters cause mysterious script failures (`#!/bin/bash\\r` on the shebang line breaks execution)."
             example: "`tr -d '\\r' < windows.txt > unix.txt`. Verify with `file unix.txt` → 'ASCII text' (not 'with CRLF')."
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Which command displays the last part of a file?
             answer: '`tail`.'
@@ -452,7 +455,7 @@ modules:
             prompt: 'T/F: If you accidentally overwrite a file using redirection, you get a warning.'
             answer: '**FALSE**. Silent destruction by default.'
             explanation: "The shell's redirection operator is `O_WRONLY | O_CREAT | O_TRUNC` — file is truncated the instant the shell parses the redirection, before the command runs. Noclobber must be explicitly enabled."
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Output of `cat x y 1>hold 2>&1; cat hold` if x missing, y='This is y'?
             answer: '```bash cat: x: No such file or directory This is y ``` stderr merged into stdout before both redirect into hold.'
@@ -469,7 +472,7 @@ modules:
             answer: '`>` stdout to file (overwrite); `>>` stdout to file (append); `<` stdin from file.'
             explanation: "These map to open(2) with different flags: `>` is O_WRONLY|O_CREAT|O_TRUNC, `>>` is O_WRONLY|O_CREAT|O_APPEND, `<` is O_RDONLY. The shell performs the open before exec'ing the command."
             example: "`sort < input.txt > output.txt` — read input, write sorted output."
-            bloom: remember
+            bloom: understand
       - id: 4915-quoting
         name: Quoting
         tags:
@@ -664,7 +667,7 @@ modules:
             prompt: What does `cat file | more` do?
             answer: Pipes stdout of cat into stdin of more — displays file one screen at a time via the pager.
             explanation: "Both commands run concurrently in separate processes connected by a kernel pipe. `cat file | more` is a slightly wasteful version of `more file` — cat is the classic \"useless use of cat\" example."
-            bloom: remember
+            bloom: understand
       - id: 4915-background
         name: Background
         tags:
@@ -704,12 +707,12 @@ modules:
             prompt: What forwards a port through an encrypted connection?
             answer: '`ssh` (with `-L` local or `-R` remote forwarding).'
             explanation: ssh can tunnel arbitrary TCP streams over its encrypted channel. Useful for reaching services behind a firewall without exposing them, or giving a remote service a secure back-channel to your local machine.
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: 'T/F: rsh, rlogin, rcp all have security risks.'
             answer: '**TRUE**. Cleartext, .rhosts spoofable.'
             explanation: The r-commands (rsh, rlogin, rcp) authenticate via .rhosts files listing trusted hosts/users — easily spoofed with DNS or IP tricks. Data travels unencrypted. Replaced by ssh, scp, sftp.
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: File listing hosts denied network service access?
             answer: '`/etc/hosts.deny`.'
@@ -724,12 +727,12 @@ modules:
             prompt: What describes `odyssey.infosys.bcit.ca`?
             answer: Fully Qualified hostname (FQDN).
             explanation: An FQDN walks the full DNS tree from host up to TLD. Left-to-right goes more specific; right-to-left walks toward the root (trailing dot implicit). Unqualified names get resolved against the search list in `/etc/resolv.conf`.
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Service to offer remote mounting of Linux partitions on a Linux-only network?
             answer: '**NFS**. (SMB for Windows, NIS for user/group info, DNS for names.)'
             explanation: NFS is POSIX-semantic file sharing between Unix hosts — supports hard links, symlinks, owner/group/mode. Windows speaks SMB; Samba bridges the two worlds.
-            bloom: remember
+            bloom: understand
       - id: 4915-nfs
         name: NFS
         tags:
@@ -771,7 +774,7 @@ modules:
             prompt: Command to set a Samba password for a user?
             answer: '`smbpasswd -a username`.'
             explanation: Samba maintains its own password database (tdb) separate from Unix `/etc/shadow` — Windows uses NTLM hashes that aren't compatible with Unix crypt. `-a` adds a user; plain `smbpasswd` changes an existing password.
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Command to validate smb.conf syntax?
             answer: '`testparm`.'
@@ -789,7 +792,8 @@ modules:
             prompt: Is the NIS domain the same as the DNS domain?
             answer: No. NIS domain is independent — set separately in /etc/sysconfig/network (NISDOMAIN) or via domainname.
             explanation: NIS predates DNS-style domains and uses its own flat namespace. The NIS domain is a shared secret/label that groups a master + slaves + clients — unrelated to the DNS tree.
-            bloom: remember
+            example: "DNS domain: `bcit.ca`. NIS domain: `infosys` (arbitrary label agreed on by master + clients). Setting: `domainname infosys`."
+            bloom: understand
           - type: name
             prompt: Command to initialize an NIS master?
             answer: '`ypinit -m`.'
@@ -812,7 +816,7 @@ modules:
             prompt: LDAP ports?
             answer: 389 (LDAP), 636 (LDAPS / TLS).
             explanation: 389 is cleartext LDAP (often upgraded to TLS via StartTLS). 636 is LDAPS — TLS from the start of the connection. Prefer 636 or StartTLS; plain 389 leaks bind passwords.
-            bloom: remember
+            bloom: understand
       - id: 4915-sendmail
         name: Sendmail
         tags:
@@ -825,7 +829,8 @@ modules:
             prompt: Sendmail is classified as which type of mail agent — MUA, MTA, or MDA?
             answer: '**MTA** (Mail Transfer Agent). Accepts SMTP on port 25, routes, queues.'
             explanation: Mail-agent chain is MUA (user client like mutt) → MTA (relay like sendmail/postfix) → MDA (local delivery, procmail/dovecot) → mailbox. Sendmail is the classic MTA — accepts, queues, routes.
-            bloom: remember
+            example: "Chain: `mutt` (MUA) composes and submits → `sendmail` (MTA) routes over SMTP → `procmail` (MDA) filters into `/var/mail/user`."
+            bloom: understand
           - type: name
             prompt: Which port does sendmail listen on?
             answer: '**25** (SMTP).'
@@ -835,22 +840,25 @@ modules:
             prompt: Which file do you edit to configure sendmail — `sendmail.cf` or `sendmail.mc`?
             answer: '`sendmail.mc`. The `.cf` is generated from it by `m4` via `cd /etc/mail && make`.'
             explanation: sendmail.cf is machine-generated rule-address dragon syntax — human-hostile. sendmail.mc is the m4 macro source you actually edit; `make` runs m4 to regenerate the .cf.
-            bloom: remember
+            example: "Edit `/etc/mail/sendmail.mc`, change `Addr=127.0.0.1` → remove or set `0.0.0.0`, then `cd /etc/mail && make && systemctl restart sendmail`."
+            bloom: understand
           - type: name
             prompt: After editing `/etc/aliases`, what command must you run before changes take effect?
             answer: '`newaliases`. Rebuilds the hashed `/etc/aliases.db` that sendmail actually reads.'
             explanation: sendmail reads the compiled hash db, not the plain text file, for O(1) alias lookup. `newaliases` is equivalent to `sendmail -bi` — rebuilds the db after edits.
-            bloom: remember
+            example: "Add `webmaster: alice` to `/etc/aliases`, then `newaliases` — mail to webmaster now routes to alice. Without `newaliases`, the old db still routes the old way."
+            bloom: understand
           - type: name
             prompt: Command to list messages currently queued by sendmail?
             answer: '`mailq` (equivalent to `sendmail -bp`). Queue lives in `/var/spool/mqueue/`.'
             explanation: Messages sit in the queue while sendmail retries delivery (network down, remote MTA unreachable). `mailq` shows each message's ID, size, age, recipient, and the error that blocked delivery.
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Sendmail is running but rejects external mail. Which line in `sendmail.mc` is the cause?
             answer: '`DAEMON_OPTIONS(\`Port=smtp,Addr=127.0.0.1, Name=MTA'')dnl` — `Addr=127.0.0.1` binds loopback only. Remove it, `make`, restart.'
             explanation: "`Addr=127.0.0.1` tells sendmail to bind only on the loopback interface — external connections hit a closed port. Drop the Addr clause (or change to `0.0.0.0`) so it binds all interfaces."
-            bloom: remember
+            example: "`netstat -tlnp | grep :25` shows `127.0.0.1:25` when loopback-only; after the fix it shows `0.0.0.0:25`."
+            bloom: apply
       - id: 4915-dns
         name: DNS
         tags:
@@ -886,22 +894,25 @@ modules:
             prompt: What's a CNAME record?
             answer: 'Alias: one hostname → another (canonical) hostname.'
             explanation: "CNAME is an alias from one name to another — lookups follow the alias to find A records. Restriction: CNAME can't coexist with other records at the same name (no CNAME at zone apex)."
-            bloom: remember
+            example: "`www.example.com CNAME example.com` — `www` resolves by following the alias to example.com's A record. Change the A record and all CNAMEs pointing at it update automatically."
+            bloom: understand
           - type: name
             prompt: What's a PTR record?
             answer: 'Reverse DNS: IP → hostname.'
             explanation: PTR records live in the `in-addr.arpa` zone — `1.2.3.4` reverses to `4.3.2.1.in-addr.arpa`. Used by mail servers for anti-spam (forward-confirmed reverse DNS) and by logs that want names not numbers.
-            bloom: remember
+            example: "`dig -x 8.8.8.8` → `dns.google`. The IP `8.8.8.8` reverses to `8.8.8.8.in-addr.arpa` to find the PTR record."
+            bloom: understand
           - type: name
             prompt: What's an MX record?
             answer: Mail exchanger for the domain.
             explanation: MX records have a priority (lower = preferred) and name of a mail server accepting mail for the domain. The sender's MTA looks up MX, tries the lowest priority first, falls back on failure.
-            bloom: remember
+            example: "`dig MX example.com` → `10 mail1.example.com. 20 mail2.example.com.` — MTA tries mail1 first (lower priority), falls back to mail2."
+            bloom: understand
           - type: name
             prompt: Command to validate DNS zone files?
             answer: '`named-checkconf` (global config) and `named-checkzone zonename file` (per-zone).'
             explanation: BIND ships syntax checkers so you don't restart named into a broken state. `named-checkconf` validates `/etc/named.conf`; `named-checkzone` validates a zone file's SOA and record syntax.
-            bloom: remember
+            bloom: understand
       - id: 4915-iptables
         name: iptables
         tags:
@@ -947,7 +958,7 @@ modules:
               4. PREROUTING (nat)
               5. POSTROUTING (nat)
             explanation: INPUT hits packets destined to this host; OUTPUT hits packets originating here; FORWARD hits packets being routed through. NAT's PREROUTING rewrites dest addr on entry; POSTROUTING rewrites source addr on exit.
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Write a rule to allow incoming TCP port 22 from 10.0.0.0/8.
             answer: '`iptables -A INPUT -p tcp --dport 22 -s 10.0.0.0/8 -j ACCEPT`.'
@@ -958,7 +969,8 @@ modules:
             prompt: Difference between DROP and REJECT targets?
             answer: DROP silently discards. REJECT sends ICMP error back to sender.
             explanation: "DROP leaves the sender hanging until timeout — good for scan resistance. REJECT is immediate \"connection refused\" — better UX for legitimate clients but reveals the firewall's presence. Common: REJECT on LAN, DROP on WAN."
-            bloom: remember
+            example: "Scanning with DROP: `nmap` takes 30s per port waiting for timeout. With REJECT: `nmap` gets `port unreachable` instantly and moves on — faster scan, exposes firewall presence."
+            bloom: understand
       - id: 4915-apache
         name: Apache
         tags:
@@ -976,7 +988,7 @@ modules:
             prompt: Command to create a new Apache password file?
             answer: '`htpasswd -c /etc/httpd/passwd user`. Omit -c to add to existing.'
             explanation: htpasswd hashes passwords into a flat file for HTTP Basic Auth. `-c` creates (overwrites!) the file; omit `-c` to add more users. Referenced by `AuthUserFile` directive in a <Location> block.
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Command to list Apache VirtualHosts?
             answer: '`httpd -S`.'
@@ -1006,13 +1018,13 @@ modules:
             answer: ~/.ssh=700, authorized\_keys=600. Private keys=600.
             explanation: sshd refuses to authenticate if any of these files are group/world writable — it assumes someone may have tampered. Fix with `chmod 700 ~/.ssh && chmod 600 ~/.ssh/*`.
             example: "Symptoms of bad perms: `Permission denied (publickey)` despite correct key. Check `/var/log/auth.log` on server."
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Forward local port 8080 through bastion to internal:80?
             answer: '`ssh -L 8080:internal:80 user@bastion`.'
             explanation: "`-L local_port:target_host:target_port user@gateway` opens a listener on your machine's 8080. Traffic is tunnel-encrypted to bastion, then bastion dials internal:80 in cleartext from its own network. `internal` is resolved on bastion, not your laptop."
             example: "Visit `http://localhost:8080` in your browser to hit internal:80 through the tunnel."
-            bloom: remember
+            bloom: apply
           - type: name
             prompt: 'Difference: -L vs -R in ssh?'
             answer: |-
@@ -1020,7 +1032,7 @@ modules:
               2. `-R` remote forward (expose local service on remote port)
             explanation: "`-L` listens on *your* side, forwards to the remote network. `-R` listens on the *remote* side, forwards back to your network. Mnemonic: L = 'listen Local'; R = 'listen Remote'."
             example: "`-L 8080:db:5432 bastion` → you connect to localhost:8080 → bastion → db:5432. `-R 9000:localhost:3000 bastion` → remote users on bastion connect to localhost:9000 → your laptop:3000."
-            bloom: remember
+            bloom: understand
       - id: 4915-ftp
         name: FTP
         tags:
@@ -1033,7 +1045,8 @@ modules:
             prompt: Active vs passive FTP — who initiates data connection?
             answer: 'Active: server connects to client. Passive: client connects to server (firewall-friendly).'
             explanation: "FTP uses two connections — control (port 21) and data. Active has the server dial back to the client's random port — breaks client-side firewalls/NAT. Passive flips this: client dials the server's random port. Passive is the modern default."
-            bloom: remember
+            example: "Client behind NAT uses passive: client sends PASV, server replies with IP:port, client opens the data connection. Active would require the server to dial back through the client's NAT — impossible without port forwarding."
+            bloom: understand
       - id: 4915-hostname
         name: hostname
         tags:
@@ -1092,7 +1105,8 @@ modules:
             prompt: When is NFS safe to use?
             answer: Only **behind firewalls**. NFS has minimal authentication by default — exposing it on the internet is dangerous.
             explanation: Classic NFS trusts the client's UID — anyone who can forge UIDs on your network can read/write as any user. Kerberos-backed NFSv4 fixes this but requires setup; default NFS assumes a trusted LAN.
-            bloom: remember
+            example: "Server `/etc/exports`: `/srv/data 192.168.1.0/24(rw,sync)` — restricts access to the LAN subnet. Without a subnet restriction, any host could mount."
+            bloom: understand
   - id: package-mgmt
     name: Package management & boot
     topics:
@@ -1148,12 +1162,13 @@ modules:
             prompt: First place to look for a Linux daemon executable?
             answer: '`/usr` (specifically /usr/sbin for system daemons; /sbin for rescue-essential).'
             explanation: "/sbin = essential binaries needed for boot and rescue; /usr/sbin = post-/usr-mount system binaries (most daemons). /bin and /usr/bin are for user commands. Modern distros increasingly merge these via symlinks."
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: What is `init`?
             answer: 'First user-space process (PID 1), started by kernel at boot. Modern systems: systemd.'
             explanation: PID 1's job is to start all other services per the runlevel/target config, reap orphaned processes, and handle shutdown. systemd extends this with parallel startup, cgroup tracking, and socket activation.
-            bloom: remember
+            example: "`ps -p 1 -o comm=` → `systemd` on modern distros. Every process is a descendant — `pstree -p 1` shows the entire process tree rooted at systemd."
+            bloom: understand
       - id: 4915-pam
         name: PAM
         tags:
@@ -1166,7 +1181,8 @@ modules:
             prompt: What is Linux-PAM?
             answer: Pluggable Authentication Modules — modular authentication system configurable per-service in /etc/pam.d/ without recompiling apps.
             explanation: PAM lets you change auth policy (passwords, 2FA, LDAP, Kerberos) without touching each app. Each service (login, sshd, sudo) gets a config file listing modules to stack for auth, account, password, session management.
-            bloom: remember
+            example: "Add LDAP auth to SSH: edit `/etc/pam.d/sshd` to add `pam_ldap.so` — no SSH recompile needed. Rollback: revert the PAM config file."
+            bloom: understand
   - id: kubernetes
     name: Kubernetes & containers
     topics:
@@ -1182,27 +1198,28 @@ modules:
             answer: '`kubelet`.'
             explanation: kubelet is the node agent — it watches the API server for pod specs assigned to its node, invokes the container runtime via CRI to start containers, and reports status back. Every node runs one kubelet. (research-mod10ce-review.md §Kubelet)
             example: "`systemctl status kubelet` on a node — if kubelet is down, the node shows `NotReady` in `kubectl get nodes`."
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Executable image format used in Kubernetes?
             answer: '`OCI` (Open Container Initiative).'
             explanation: OCI standardized the image format and runtime spec across Docker, containerd, CRI-O. K8s doesn't build images — it pulls OCI-compliant images from registries and hands them to the CRI runtime on each node.
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Most common way to run a K8s app?
             answer: '`Deployment`.'
             explanation: Deployment wraps ReplicaSet and adds rolling update + rollback semantics. You declare desired pod count and template; the controller reconciles to match. Quiz 4 Q4 keyed answer.
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: What does Kubernetes use to *maintain* its state? (Quiz 4 Q5 wording — etcd is NOT in the options)
             answer: '`kube-controller-manager` — the keyed Quiz 4 answer. The manager runs reconcile loops that drive actual state toward desired state.'
             explanation: controller-manager runs the reconcile loops (Deployment controller, ReplicaSet controller, Node controller, Job controller, etc.). Each loop watches API server for spec changes and drives the cluster to match.
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Raw state *data* for a K8s cluster is persisted where?
             answer: '`etcd` — distributed key-value store. Distinct from Quiz 4 Q5, which asks what *maintains* state (controller-manager).'
             explanation: etcd stores every K8s object (pods, deployments, services, secrets) as key-value pairs. apiserver is the only component that reads/writes etcd directly — all other components go through apiserver. (research-mod10ce-review.md §Control Plane)
-            bloom: remember
+            example: "Disaster scenario: etcd data lost → all cluster objects gone (no pods, no services, no secrets). Restore from etcd backup restores the full cluster definition."
+            bloom: understand
           - type: name
             prompt: YAML section specifying container image?
             answer: '`spec`.'
@@ -1212,7 +1229,8 @@ modules:
             prompt: K8s object running one pod on every node?
             answer: '`DaemonSet`.'
             explanation: DaemonSet ensures exactly one pod per (selected) node — used for node-level agents (log collectors, CNI pods, monitoring). When a node joins, its pod is auto-created; when a node leaves, its pod is removed.
-            bloom: remember
+            example: "`kubectl get daemonsets -n kube-system` — shows `calico-node`, `kube-proxy` — both are DaemonSets because every node needs them."
+            bloom: understand
           - type: name
             prompt: What happens when a K8s node fails?
             answer: |-
@@ -1228,22 +1246,23 @@ modules:
             answer: Helps set up Linux namespaces and cgroups for a pod — holds namespaces open so other containers can join them.
             explanation: The pause container is a 1-process "infrastructure" container that sleeps forever, owning the pod's shared namespaces (NET, IPC, UTS). Other containers in the pod join those namespaces. Killing pause tears down the pod's network identity.
             example: "`docker ps` on a K8s node shows one k8s.gcr.io/pause container per running pod — these are the namespace holders."
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: K8s component that *stores* raw cluster state data?
             answer: '`etcd`. (Contrast: `kube-controller-manager` *maintains* state via reconcile loops — Quiz 4 Q5.)'
             explanation: etcd is the source of truth — a Raft-replicated key-value store. Lose etcd, you lose the cluster. controller-manager is the thing that *acts on* changes in etcd; etcd just persists them.
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: K8s object that runs a task to completion?
             answer: '`Job` (CronJob for scheduled).'
             explanation: Job tracks batch workloads — pod runs until exit 0, marked complete. Unlike Deployment which keeps pods alive indefinitely. CronJob is a Job that spawns on a schedule.
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: What is a Deployment vs ReplicaSet?
             answer: Deployment manages ReplicaSets + adds rolling-update/rollback. You generally create Deployments, not ReplicaSets directly.
             explanation: A Deployment creates a new ReplicaSet per image/spec change, ramps up new pods and down old pods for a rolling update, and keeps old ReplicaSets around for rollback. ReplicaSet alone just keeps N pods alive.
-            bloom: remember
+            example: "`kubectl rollout undo deployment/nginx` — uses the old ReplicaSet kept by the Deployment to roll back to the previous image version."
+            bloom: understand
       - id: 4915-namespaces
         name: Namespaces
         tags:
@@ -1268,23 +1287,25 @@ modules:
             prompt: What does the NET namespace isolate?
             answer: 'Network stack: interfaces, routing tables, iptables rules, sockets.'
             explanation: Each NET namespace has its own loopback, its own interface list, its own routes, its own firewall. Pods in K8s share one NET namespace across all containers via the pause container — that's why multi-container pods can talk on localhost.
-            bloom: remember
+            example: "`ip netns exec mypod ip addr` — shows only that namespace's interfaces. The host still has its own loopback and eth0 untouched."
+            bloom: understand
           - type: name
             prompt: What does the UTS namespace isolate?
             answer: Hostname and NIS domain.
             explanation: UTS = Unix Time-sharing System (historical). The namespace isolates `hostname` and `domainname` so each container can set its own without affecting the host.
-            bloom: remember
+            example: "`sudo unshare --uts bash; hostname mycontainer; hostname` → `mycontainer`. `exit`; `hostname` on host → unchanged."
+            bloom: understand
           - type: name
             prompt: Command to create new namespaces?
             answer: '`unshare`. Example: `unshare --pid --net bash`.'
             explanation: "`unshare` forks a process into fresh namespaces of the requested types. Useful for ad-hoc container-like isolation from the CLI. Requires privileges for most namespace types (USER namespace is usually unprivileged)."
             example: "`sudo unshare --uts bash; hostname container1; exit` — changes only the shell's hostname, host hostname unchanged."
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Command to enter existing namespaces of a PID?
             answer: '`nsenter -t PID -p -n -m`.'
             explanation: "nsenter joins an existing process's namespaces — `-t PID` target, then flag per type (`-p` pid, `-n` net, `-m` mount, `-u` uts, `-i` ipc). Classic use: debug inside a container from the host."
-            bloom: remember
+            bloom: understand
       - id: 4915-cgroups
         name: cgroups
         tags:
@@ -1297,12 +1318,13 @@ modules:
             answer: Limit, account, and isolate resource usage (CPU, memory, I/O, pids).
             explanation: cgroups is the kernel's accounting and throttling layer. Namespaces make things look isolated; cgroups enforce how much CPU/RAM/IO/pids a group of processes can use. K8s uses cgroups to enforce pod resource limits. (research-mod10ce-review.md §cgroups)
             example: "kubelet sets pod cgroup `memory.limit_in_bytes` from the pod spec's `resources.limits.memory`. Exceed it → OOMKilled."
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: cgroups v1 vs v2 structure?
             answer: 'v1: separate hierarchy per subsystem (cpu, memory, etc.). v2: unified hierarchy — single tree.'
             explanation: v1 mounted each controller (cpu, memory, blkio) at its own hierarchy in `/sys/fs/cgroup/<controller>/`. v2 unifies everything under one tree, simpler semantics. Most modern distros are v2; RHEL 7/8 still use v1.
-            bloom: remember
+            example: "v1: `cat /sys/fs/cgroup/memory/docker/<id>/memory.limit_in_bytes`. v2: `cat /sys/fs/cgroup/system.slice/<id>/memory.max` — single unified path."
+            bloom: understand
       - id: 4915-qos
         name: QoS
         tags:
@@ -1315,7 +1337,7 @@ modules:
             answer: '`Guaranteed`. Last evicted under pressure.'
             explanation: Guaranteed requires every container in the pod to set BOTH requests and limits for BOTH cpu and memory, AND requests == limits for each. Any slip → Burstable. kubelet derives the class from the spec; you can't set it directly.
             example: "```yaml\nresources:\n  requests: { cpu: 500m, memory: 256Mi }\n  limits:   { cpu: 500m, memory: 256Mi }\n```"
-            bloom: remember
+            bloom: understand
           - type: name
             prompt: Pod with no requests and no limits — QoS class?
             answer: '`BestEffort`. First evicted under memory pressure.'
@@ -1338,17 +1360,20 @@ modules:
             prompt: What does CNI stand for?
             answer: Container Network Interface. Plugin spec for wiring pods to networks.
             explanation: CNI is the pluggable layer K8s (and others) use to set up pod networking. kubelet invokes the CNI plugin at pod start — plugin creates veth pair, assigns pod IP, sets up routes. Different plugins (Calico, Cilium, Flannel) implement different models.
-            bloom: remember
+            example: "Pod starts → kubelet calls CNI plugin → plugin creates `veth0` pair (one end in pod net ns, one on host), assigns `10.244.1.5/24`, adds route. Pod can now reach other pods."
+            bloom: understand
           - type: name
             prompt: Which CNI uses BGP L3 routing by default?
             answer: '`Calico` (can also run IPIP/VXLAN overlay when BGP isn''t viable).'
             explanation: Calico treats each node as a BGP router and advertises pod CIDRs — no encapsulation overhead when the network supports BGP peering. Falls back to IPIP/VXLAN overlay on networks that can't route pod IPs natively.
-            bloom: remember
+            example: "Calico on bare metal: each node peers with a BGP reflector, advertises its pod CIDR. Pod packets route natively at L3 — no VXLAN tunnel overhead."
+            bloom: understand
           - type: name
             prompt: Which CNI uses eBPF?
             answer: '`Cilium`.'
             explanation: Cilium pushes networking and security policy into the kernel via eBPF programs — bypasses iptables for L3/L4 forwarding and supports rich L7 policy. Faster and more observable at scale.
-            bloom: remember
+            example: "Cilium NetworkPolicy can filter on HTTP path: `allow GET /api` but deny `POST /admin` — iptables can't do L7. Cilium's eBPF programs inspect packets inside the kernel without context switch."
+            bloom: understand
       - id: 4915-k8s-services
         name: K8s Services
         tags:
@@ -1361,12 +1386,14 @@ modules:
             prompt: Default K8s Service type?
             answer: '`ClusterIP` — internal only.'
             explanation: "ClusterIP allocates a virtual IP reachable only inside the cluster. kube-proxy on each node installs iptables/IPVS rules that DNAT ClusterIP:port to one of the healthy backend pod IPs."
-            bloom: remember
+            example: "`kubectl get svc nginx` → `CLUSTER-IP: 10.96.0.1` — only reachable from pods inside the cluster. Accessing it from your laptop (outside) fails without a NodePort or Ingress."
+            bloom: understand
           - type: name
             prompt: Service type exposing on every node's IP:port?
             answer: '`NodePort` (30000-32767).'
             explanation: NodePort opens a port on every node (default range 30000-32767) that forwards to the Service's ClusterIP. Useful for exposing without a cloud LB; LoadBalancer builds on NodePort by provisioning an external LB.
-            bloom: remember
+            example: "NodePort 32080 on a 3-node cluster: `curl node1:32080`, `curl node2:32080`, `curl node3:32080` all reach the same backend pods — any node works as an entry point."
+            bloom: understand
       - id: 4915-k8s-yaml
         name: K8s YAML
         tags:
@@ -1394,7 +1421,8 @@ modules:
             prompt: Difference between readiness and liveness probe?
             answer: 'Readiness: is pod ready for traffic? Failure removes from Service endpoints. Liveness: is pod still alive? Failure restarts container.'
             explanation: Readiness gates traffic flow — a warming pod stays in the Service but fails readiness until it's ready. Liveness catches deadlocks — a stuck process is restarted even if the TCP port is open. Different failure modes need different probes.
-            bloom: remember
+            example: "App needs 10s to warm up: readiness probe fails for 10s → pod stays running but receives no traffic. At t=10s readiness passes → added to Service endpoints. Liveness probe fires separately if the process deadlocks later."
+            bloom: understand
       - id: 4915-k8s-dns
         name: K8s DNS
         tags:
@@ -1407,7 +1435,8 @@ modules:
             prompt: Cluster DNS addon name?
             answer: '`CoreDNS`.'
             explanation: CoreDNS is the default cluster DNS since K8s 1.13 (replaced kube-dns). Pods get `/etc/resolv.conf` pointing at CoreDNS ClusterIP; names like `svc-name.namespace.svc.cluster.local` resolve to service ClusterIPs.
-            bloom: remember
+            example: "Inside a pod: `nslookup nginx.default.svc.cluster.local` → resolves to the nginx Service's ClusterIP via CoreDNS. Short form `nginx` works too via the `cluster.local` search suffix in `/etc/resolv.conf`."
+            bloom: understand
       - id: 4915-container
         name: Container
         tags:
@@ -1435,7 +1464,8 @@ modules:
             prompt: What is a container image?
             answer: 'Layered read-only template for a container: filesystem snapshot + metadata (entrypoint, env, labels). OCI-standard. Pulled from registry, run as container with a writable layer on top.'
             explanation: An image is a stack of read-only layers + a JSON manifest describing how to run it. At runtime, the container runtime (containerd, CRI-O) adds a writable top layer (copy-on-write) so the running container can modify its filesystem without mutating the image.
-            bloom: remember
+            example: "`docker run nginx` — containerd pulls the nginx image (read-only layers), adds a writable layer, starts the container. `docker run nginx` again reuses the same read-only layers, just adds a new writable layer."
+            bloom: understand
   - id: scripting
     name: Bash scripting & regex
     topics:
@@ -1757,12 +1787,14 @@ modules:
             prompt: What does kube-scheduler do?
             answer: Watches unscheduled pods, filters+scores nodes, binds pod to a node.
             explanation: "The scheduler is stateless — it watches apiserver for pods with no nodeName, runs the Filter phase (predicates: resource fit, taints) then Score phase (priorities: spread, affinity), and writes the binding back to apiserver. kubelet on the chosen node then pulls the pod."
-            bloom: remember
+            example: "New pod needs 2 CPU. Filter phase: eliminates nodes with <2 CPU free. Score phase: ranks remaining nodes by spread preference. Scheduler writes `nodeName: node-3` to apiserver; node-3's kubelet sees it and starts the container."
+            bloom: understand
           - type: name
             prompt: What does kube-controller-manager do?
             answer: Runs controllers (Deployment, ReplicaSet, Node, Job, etc.) that reconcile actual state to desired state.
             explanation: Controller-manager bundles many reconcile loops into one binary. Each loop watches its resource type in apiserver and takes action to converge. Node controller marks unresponsive nodes unhealthy; Deployment controller creates ReplicaSets from Deployment specs.
-            bloom: remember
+            example: "You set `replicas: 3` in a Deployment. controller-manager's ReplicaSet loop sees 2 running pods → creates 1 more to match desired state."
+            bloom: understand
           - type: name
             prompt: Purpose of kube-proxy?
             answer: Implements Kubernetes Service routing on each node via iptables or IPVS rules.
@@ -1772,7 +1804,8 @@ modules:
             prompt: What is CRI?
             answer: Container Runtime Interface — API between kubelet and container runtime (containerd, CRI-O).
             explanation: CRI is a gRPC API kubelet uses to start/stop containers and images. It abstracts the runtime so Kubernetes isn't tied to Docker — containerd, CRI-O, and others implement CRI. kubelet is the client; runtime is the server.
-            bloom: remember
+            example: "Swapping Docker for containerd in a cluster: only the CRI implementation changes; kubelet, scheduler, and controllers are unaffected because they all talk CRI, not Docker APIs."
+            bloom: understand
       - id: 4915-tar-simple
         name: tar simple
         tags:

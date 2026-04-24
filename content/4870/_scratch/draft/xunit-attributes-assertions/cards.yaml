@@ -1,0 +1,61 @@
+id: xunit-attributes-assertions
+name: "xUnit attributes, assertions, AAA"
+tags: [tdd, xunit, assert]
+source: "slides/TDD_xunit.pptx; notes/TDD_xunit_SCRIPT.docx; research-tdd.md"
+prose: "xUnit uses `[Fact]` for single-scenario tests and `[Theory]` + `[InlineData]` for parameterized tests. Arrange/Act/Assert organizes the body. `Assert.Equal(expected, actual)` argument order is expected-first, and `Assert.Throws<T>(() => action())` is the exception matcher."
+cards:
+  - id: xunit-attributes-assertions-card-01
+    type: cloze
+    prompt: "A single-scenario xUnit test is marked `[{{Fact}}]`; a parameterized test is marked `[{{Theory}}]` and paired with one or more `[{{InlineData}}]` rows."
+    answer: "Fact; Theory; InlineData"
+    bloom: remember
+    explanation: "Each [InlineData(...)] produces one test execution. Four [InlineData] rows = four runs of the same [Theory] method body. Individual failures are reported per-row."
+    example: "[Theory]\\n[InlineData(1, 2, 3)]\\n[InlineData(0, 0, 0)]\\npublic void Add(int a, int b, int expected) => Assert.Equal(expected, calc.Add(a, b));"
+
+  - id: xunit-attributes-assertions-card-02
+    type: cloze
+    prompt: "The canonical test body structure is {{Arrange}} / {{Act}} / {{Assert}} — setup, the operation under test, then the verification."
+    answer: "Arrange; Act; Assert"
+    bloom: understand
+    explanation: "AAA keeps tests readable and makes failures diagnosable — a stack trace points to Arrange, Act, or Assert and you know immediately whether setup, behavior, or expectations broke."
+    example: "// Arrange\\nvar calc = new Calculator();\\n// Act\\nint r = calc.Add(2, 3);\\n// Assert\\nAssert.Equal(5, r);"
+
+  - id: xunit-attributes-assertions-card-03
+    type: name
+    prompt: "What's the argument order for `Assert.Equal`?"
+    answer: "Expected first, actual second: `Assert.Equal(expected, actual)`."
+    bloom: remember
+    explanation: "The compiler doesn't enforce order. Reversing produces failure messages that lie — the Expected/Actual labels in the message will be swapped, and you'll chase the wrong value."
+    example: "Assert.Equal(5, calc.Add(2, 3));  // expected 5, actual is the result of Add"
+
+  - id: xunit-attributes-assertions-card-04
+    type: name
+    prompt: "How do you test that a method throws `ArgumentException`?"
+    answer: "`Assert.Throws<ArgumentException>(() => method(args));`"
+    bloom: apply
+    explanation: "Assert.Throws runs the lambda and asserts a specific exception type was thrown. It returns the exception instance so you can also assert on Message or custom properties."
+    example: "var ex = Assert.Throws<ArgumentException>(() => _service.DoThing(null));\\nAssert.Contains(\"cannot be null\", ex.Message);"
+
+  - id: xunit-attributes-assertions-card-05
+    type: cloze
+    prompt: "When multiple derived exception types could match, use `Assert.{{ThrowsAny}}<T>(() => action())` to accept any subtype of `T`."
+    answer: "ThrowsAny"
+    bloom: apply
+    explanation: "Assert.Throws<T> matches T EXACTLY — a derived type fails the test. Assert.ThrowsAny<T> accepts T or any subclass. Use the strict form when the exact type matters; the any form when it doesn't."
+    example: "Assert.ThrowsAny<ArgumentException>(() => action());  // ArgumentNullException and ArgumentOutOfRangeException both pass"
+
+  - id: xunit-attributes-assertions-card-06
+    type: name
+    prompt: "What xUnit assertion compares two references for being the same object (not just value-equal)?"
+    answer: "`Assert.Same(expected, actual)` (its negation: `Assert.NotSame`)."
+    bloom: understand
+    explanation: "Same compares by reference identity; Equal compares by value. For value types Equal is almost always what you want; for reference types, choose based on whether you care about identity or content."
+    example: "Assert.Same(obj, service.GetCached());  // must be the literal same instance"
+
+  - id: xunit-attributes-assertions-card-07
+    type: cloze
+    prompt: "`[Theory]` tests require at least one data attribute. Common choices: `[{{InlineData}}(...)]` for literals, `[{{MemberData}}(nameof(Method))]` for computed data, `[{{ClassData}}(typeof(Cls))]` for typed data providers."
+    answer: "InlineData; MemberData; ClassData"
+    bloom: remember
+    explanation: "[InlineData] is simplest for small literal values. [MemberData] when data requires computation or doesn't fit in an attribute. [ClassData] when data provider needs its own class with complex logic."
+    example: "[Theory]\\n[MemberData(nameof(GetSamples))]\\npublic void RoundTrip(string json) { /* ... */ }\\npublic static IEnumerable<object[]> GetSamples() { yield return new object[] { \"{}\" }; }"

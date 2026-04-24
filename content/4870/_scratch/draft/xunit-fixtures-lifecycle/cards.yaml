@@ -1,0 +1,53 @@
+id: xunit-fixtures-lifecycle
+name: "xUnit fixtures and lifecycle"
+tags: [tdd, xunit, fixture, lifecycle]
+source: "notes/TDD_xunit_SCRIPT.docx; research-tdd.md"
+prose: "xUnit creates a fresh test-class instance per test. Constructor runs before each test; `IDisposable.Dispose` runs after each test. `IClassFixture<T>` shares one instance across all tests in a class; `ICollectionFixture<T>` + `[CollectionDefinition]` + `[Collection(\"Name\")]` shares across multiple classes."
+cards:
+  - id: xunit-fixtures-lifecycle-card-01
+    type: cloze
+    prompt: "In xUnit, the test class's {{constructor}} runs before each test, and `{{IDisposable.Dispose}}` runs after — replacing older frameworks' `[SetUp]` / `[TearDown]` attributes."
+    answer: "constructor; IDisposable.Dispose"
+    bloom: remember
+    explanation: "xUnit uses standard C# object lifecycle instead of framework-specific attributes. Every [Fact] or [Theory] run gets a fresh test class instance, so state doesn't leak between tests."
+    example: "public class MyTests : IDisposable { public MyTests() { /* setup */ } public void Dispose() { /* cleanup */ } }"
+
+  - id: xunit-fixtures-lifecycle-card-02
+    type: name
+    prompt: "How do you share an expensive setup (e.g. a seeded DbContext) across all tests in one test class?"
+    answer: "Implement the setup as a fixture class and have the test class implement `IClassFixture<TFixture>`. xUnit injects the shared fixture via the test class constructor."
+    bloom: apply
+    explanation: "IClassFixture<T> creates one fixture instance per test class, shared across all tests in that class. The test class's own lifetime (constructor/Dispose per test) is unchanged."
+    example: "public class MyTests : IClassFixture<DbFixture> { public MyTests(DbFixture fx) { _fx = fx; } }"
+
+  - id: xunit-fixtures-lifecycle-card-03
+    type: cloze
+    prompt: "To share a fixture across multiple test classes, define `{{ICollectionFixture<T>}}` inside a `[{{CollectionDefinition}}(\"Name\")]` class, and decorate each participating test class with `[{{Collection}}(\"Name\")]`."
+    answer: "ICollectionFixture<T>; CollectionDefinition; Collection"
+    bloom: apply
+    explanation: "Three pieces: definition class declares the fixture, test classes join by [Collection(\"Name\")]. Tests within the collection run serially; the fixture is instantiated once per collection."
+    example: "[CollectionDefinition(\"Db\")] public class DbColl : ICollectionFixture<DbFixture> {}\\n[Collection(\"Db\")] public class UserTests { /* ... */ }\\n[Collection(\"Db\")] public class OrderTests { /* ... */ }"
+
+  - id: xunit-fixtures-lifecycle-card-04
+    type: name
+    prompt: "By default, does xUnit run tests in the same class in parallel or serially?"
+    answer: "Serially. Tests in one class run one at a time; different test classes run in parallel."
+    bloom: understand
+    explanation: "This default prevents shared-fixture races within a class. Parallelism happens at the class level, so IClassFixture-shared state is safe (no two tests touch it concurrently). Opt into full parallelization via [assembly: CollectionBehavior(...)] if needed."
+    example: "TestsInClassA: serialized. TestsInClassB: serialized. ClassA vs ClassB: parallel."
+
+  - id: xunit-fixtures-lifecycle-card-05
+    type: cloze
+    prompt: "Fixtures are {{not safe}} for tests that mutate the fixture's state — xUnit doesn't guarantee test ordering within a class, so one test's writes may or may not be visible to another."
+    answer: "not safe"
+    bloom: analyze
+    explanation: "If tests need to mutate shared state, either reset in the test class's own Dispose, or switch to fresh-per-test state (no fixture). IClassFixture is intended for read-only / idempotent setup."
+    example: "Bad: TestA adds a user, TestB counts users, result depends on execution order.\\nFix: each test manages its own state, or reset in Dispose."
+
+  - id: xunit-fixtures-lifecycle-card-06
+    type: name
+    prompt: "When should you NOT use a fixture?"
+    answer: "When setup is cheap (in-memory list, simple object graph). Fixtures add indirection; plain constructors are simpler for tests that don't need expensive shared setup."
+    bloom: understand
+    explanation: "Fixtures trade test isolation for performance. For a few-line setup there's no perf benefit; fixture overhead (an extra class, [Collection] attribute for cross-class sharing) is net negative."
+    example: "`new Calculator()` in the constructor — no fixture needed. `new MyDbContext(...)` with seed data — fixture pays off."

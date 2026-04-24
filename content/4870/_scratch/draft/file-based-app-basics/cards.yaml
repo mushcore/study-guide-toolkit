@@ -1,0 +1,61 @@
+id: file-based-app-basics
+name: "File-based .NET apps — basics"
+tags: [dotnet-10, scripting, file-based]
+source: "slides/file-based-apps.pptx; notes/file-based-apps.docx; research-file-based.md"
+prose: ".NET 10 lets you run a single `.cs` file with `dotnet run file.cs` — no `.csproj`, no `bin/`, no `obj/`. Top-level statements replace `Main`. Implicit usings include System, System.Linq, System.Collections.Generic, System.Text, System.Threading.Tasks."
+cards:
+  - id: file-based-app-basics-card-01
+    type: cloze
+    prompt: "A .NET 10 file-based app runs with `{{dotnet run}} filename.cs` — no `.csproj`, no `bin/`, no `obj/` directory."
+    answer: "dotnet run"
+    bloom: remember
+    explanation: "The CLI detects the .cs argument, creates an implicit project context, compiles in memory, and caches artifacts under `~/.dotnet/runfile/`."
+    example: "dotnet run greet.cs"
+
+  - id: file-based-app-basics-card-02
+    type: name
+    prompt: "To pass command-line args to a file-based script, what separator must you use?"
+    answer: "`--` (double-dash). Everything after it becomes `args` inside the script."
+    bloom: apply
+    explanation: "Without `--`, the CLI interprets trailing tokens as its own flags. `dotnet run greet.cs Kevin` gives you nothing; `dotnet run greet.cs -- Kevin` makes `args[0] == \"Kevin\"`."
+    example: "dotnet run greet.cs -- Kevin   // args[0] == \"Kevin\""
+
+  - id: file-based-app-basics-card-03
+    type: cloze
+    prompt: "File-based apps use {{top-level statements}}, so no `Program` class or `Main` method is needed; the file body executes as if it were inside `Main`."
+    answer: "top-level statements"
+    bloom: understand
+    explanation: "C# 9+ top-level statements let you write `Console.WriteLine(\"Hi\");` as the first line of a file. File-based apps rely on this feature exclusively."
+    example: "// greet.cs\\nConsole.WriteLine(\"Hello!\");"
+
+  - id: file-based-app-basics-card-04
+    type: name
+    prompt: "List three of the namespaces automatically imported in a file-based app."
+    answer: "System, System.Collections.Generic, System.Linq (also System.Text and System.Threading.Tasks)."
+    bloom: remember
+    explanation: "Implicit usings cover the most common BCL namespaces so short scripts don't need `using` directives. Others still require explicit `using`."
+    example: "No `using System.Linq;` needed: arr.Where(x => x > 0) just works."
+
+  - id: file-based-app-basics-card-05
+    type: cloze
+    prompt: "Compiled file-based-app binaries are cached under `~/.dotnet/{{runfile}}/` on macOS/Linux and `%USERPROFILE%\\.dotnet\\{{runfile}}\\` on Windows, keyed by filename + content hash."
+    answer: "runfile; runfile"
+    bloom: remember
+    explanation: "The cache makes subsequent runs fast. Edit the .cs file and a new hash triggers a fresh compile; other files stay cached."
+    example: "~/.dotnet/runfile/greet-3faf7380.../bin/debug/greet.dll"
+
+  - id: file-based-app-basics-card-06
+    type: name
+    prompt: "Which command converts a file-based app into a traditional .NET project with a .csproj?"
+    answer: "`dotnet project convert file.cs -o Folder`"
+    bloom: apply
+    explanation: "Use when the single-file form outgrows its use case (multi-file, tests, deployment). The command preserves `#:` directives as the equivalent MSBuild settings."
+    example: "dotnet project convert api.cs -o ApiProject"
+
+  - id: file-based-app-basics-card-07
+    type: cloze
+    prompt: "File-based apps require .NET version {{10}} or higher; earlier SDKs either error or require a separate shim."
+    answer: "10"
+    bloom: remember
+    explanation: "The `dotnet run file.cs` flow was finalized in .NET 10. On .NET 8/9 the command fails; verify with `dotnet --version` if a script mysteriously refuses to run."
+    example: "dotnet --version   // should report 10.x.x or later"

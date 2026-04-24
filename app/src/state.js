@@ -70,18 +70,13 @@ SG.buildActions = () => {
     out.push({ kind: 'course', group: 'Courses', id: c.id, label: `${c.code} — ${c.name}`, meta: SG.examState(c).label + ' to exam' });
   });
   out.push({ kind: 'dash', group: 'Jump', id: 'dashboard', label: 'Dashboard', meta: 'home' });
-  out.push({ kind: 'priorities', group: 'Views', id: 'priorities', label: 'Priorities · what to study', meta: 'weighted' });
-  out.push({ kind: 'lessons', group: 'Views', id: 'lessons', label: 'Lessons · read top to bottom', meta: 'long-form' });
-  out.push({ kind: 'dives', group: 'Views', id: 'dives', label: 'Topic deep-dives', meta: 'filterable' });
-  out.push({ kind: 'mock', group: 'Views', id: 'mock', label: 'Mock exam · timed', meta: 'MCQ' });
-  out.push({ kind: 'replay', group: 'Views', id: 'replay', label: 'Quiz replay · history', meta: 'explain' });
-  out.push({ kind: 'code', group: 'Views', id: 'code', label: 'Code / applied practice', meta: 'starter+sol' });
-  out.push({ kind: 'cheat', group: 'Views', id: 'cheat', label: 'Exam-eve cheat sheet', meta: 'print' });
-  out.push({ kind: 'shortcuts', group: 'Jump', id: 'shortcuts', label: 'Keyboard shortcuts…', meta: '?' });
-  ['priorities','lessons','dives','mock','replay','code'].forEach(v => {
-    const labels = { priorities:'Priorities', lessons:'Lessons', dives:'Topic deep-dives', mock:'Mock exam', replay:'Quiz replay', code:'Code / applied' };
-    out.push({ kind: 'view', group: 'Sections', view: v, id: 'view-'+v, label: labels[v], meta: v });
-  });
+  out.push({ kind: 'view', group: 'Views', view: 'lessons',  id: 'view-lessons',  label: 'Lessons · read top to bottom', meta: 'long-form' });
+  out.push({ kind: 'view', group: 'Views', view: 'mock',     id: 'view-mock',     label: 'Mock exam · timed', meta: 'MCQ' });
+  out.push({ kind: 'view', group: 'Views', view: 'practice', id: 'view-practice', label: 'Practice · code + applied', meta: 'starter+sol / problem+walkthrough' });
+  out.push({ kind: 'view', group: 'Views', view: 'flash',    id: 'view-flash',    label: 'Flash cards · sequential deck', meta: 'all topics' });
+  out.push({ kind: 'cheat',     group: 'Views', id: 'cheat',     label: 'Exam-eve cheat sheet', meta: 'print (conditional)' });
+  out.push({ kind: 'replay',    group: 'Views', id: 'replay',    label: 'Quiz replay · history', meta: 'explain' });
+  out.push({ kind: 'shortcuts', group: 'Jump',  id: 'shortcuts', label: 'Keyboard shortcuts…',   meta: '?' });
   window.ALL_TOPICS.forEach(t => {
     out.push({ kind: 'topic', group: 'Topics', id: t.id, courseId: t.courseId, label: t.name, meta: `${t.courseCode} · ${t.module}` });
   });

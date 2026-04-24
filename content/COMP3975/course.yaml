@@ -4,6 +4,7 @@ name: "Server-Side Web Scripting"
 exam: "2026-04-23T10:30:00-07:00"
 room: "— see course page"
 format: "60 MCQ + 10 match-two-columns + 1 coding · 80 marks · 60 min"
+cheatsheet_allowed: true
 instructor: "Medhat Elmasry"
 notes: |
   One handwritten cheat sheet (8.5×11", both sides) allowed.

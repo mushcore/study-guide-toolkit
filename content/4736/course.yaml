@@ -4,6 +4,7 @@ name: Operating Systems
 exam: "2026-04-21T15:30:00-07:00"
 room: BCIT
 format: ~90 marks · 2 hr · closed book
+cheatsheet_allowed: false
 instructor: Rahim
 notes: >-
   Closed book. Bring laptop (charged), calculator, blank paper, pencil.

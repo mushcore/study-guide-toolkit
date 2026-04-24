@@ -1,0 +1,61 @@
+id: pdf-export
+name: "PDF export with iText 7"
+tags: [pdf, itext7, report]
+source: "Labs/W13 Excel, PDF, Chart cocktail/; research-excel-pdf-chart.md §3"
+prose: "iText 7 plus `itext.bouncy-castle-adapter` are both required. Pipeline: `MemoryStream` → `PdfWriter` → `PdfDocument` → `Document`. Call `writer.SetCloseStream(false)` to keep the stream open for `FileStreamResult`, and reset `ms.Position = 0` before returning."
+cards:
+  - id: pdf-export-card-01
+    type: cloze
+    prompt: "iText 7 requires two NuGet packages: `{{itext7}}` and `{{itext.bouncy-castle-adapter}}` — the adapter is a runtime crypto dependency, not optional."
+    answer: "itext7; itext.bouncy-castle-adapter"
+    bloom: remember
+    explanation: "Installing just itext7 compiles fine but crashes at runtime when iText attempts hashing or signing. Add both packages together to avoid the late failure."
+    example: "<PackageReference Include=\"itext7\" Version=\"9.6.0\" />\\n<PackageReference Include=\"itext.bouncy-castle-adapter\" Version=\"9.6.0\" />"
+
+  - id: pdf-export-card-02
+    type: name
+    prompt: "Order the four iText 7 types you construct top-to-bottom in a PDF pipeline."
+    answer: "MemoryStream → PdfWriter(stream) → PdfDocument(writer) → Document(pdfDoc, PageSize.A4, false)"
+    bloom: apply
+    explanation: "Each layer wraps the previous. MemoryStream is the byte sink; PdfWriter writes PDF-shaped bytes; PdfDocument owns PDF file structure (pages, xref); Document is the layout engine that accepts Paragraphs and Tables."
+    example: "var ms = new MemoryStream(); var writer = new PdfWriter(ms); var pdfDoc = new PdfDocument(writer); var doc = new Document(pdfDoc, PageSize.A4, false);"
+
+  - id: pdf-export-card-03
+    type: cloze
+    prompt: "Call `writer.{{SetCloseStream}}(false)` so `document.Close()` does NOT close the underlying `MemoryStream` — you still need to read from it when returning the response."
+    answer: "SetCloseStream"
+    bloom: apply
+    explanation: "By default, closing the Document cascades and closes the writer + stream. Flipping the flag keeps the MemoryStream open for `FileStreamResult`. An alternative is returning `File(ms.ToArray(), ...)` which materializes bytes and doesn't care about the stream state."
+    example: "writer.SetCloseStream(false);"
+
+  - id: pdf-export-card-04
+    type: name
+    prompt: "What line do you need before returning a `FileStreamResult` wrapping your PDF `MemoryStream`?"
+    answer: "`ms.Position = 0;`"
+    bloom: analyze
+    explanation: "After writing, the MemoryStream's position is at the end. FileStreamResult reads from current position, finds nothing, and serves an empty file. Rewinding to 0 fixes this."
+    example: "document.Close(); ms.Position = 0; return new FileStreamResult(ms, \"application/pdf\");"
+
+  - id: pdf-export-card-05
+    type: cloze
+    prompt: "In iText, page numbering is added AFTER layout by looping over `pdfDoc.{{GetNumberOfPages}}()` and calling `document.ShowTextAligned(...)` per page."
+    answer: "GetNumberOfPages"
+    bloom: apply
+    explanation: "You can't know the total page count until content is laid out. Loop from 1 to GetNumberOfPages() and add a page-N-of-total paragraph to each page."
+    example: "for (int i = 1; i <= pdfDoc.GetNumberOfPages(); i++) document.ShowTextAligned(new Paragraph($\"Page {i} of {pdfDoc.GetNumberOfPages()}\"), 559, 806, i, TextAlignment.RIGHT, VerticalAlignment.TOP, 0);"
+
+  - id: pdf-export-card-06
+    type: name
+    prompt: "Which MIME type identifies a PDF download?"
+    answer: "`application/pdf`"
+    bloom: remember
+    explanation: "Standard MIME — browsers recognize it and either render in a built-in viewer or save to disk. `FileStreamResult` takes it as a constructor argument."
+    example: "return new FileStreamResult(ms, \"application/pdf\") { FileDownloadName = \"Report.pdf\" };"
+
+  - id: pdf-export-card-07
+    type: cloze
+    prompt: "A simpler alternative to `FileStreamResult` + `ms.Position = 0` is `return {{File}}(ms.ToArray(), \"application/pdf\", \"name.pdf\")` — the `ToArray()` is position-insensitive."
+    answer: "File"
+    bloom: apply
+    explanation: "File(byte[], mime, name) materializes the bytes, bypassing the stream-position trap. Trade-off: materializing into memory uses more RAM for large PDFs."
+    example: "return File(ms.ToArray(), \"application/pdf\", \"Report.pdf\");"

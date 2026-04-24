@@ -1,0 +1,61 @@
+id: tdd-cycle
+name: "TDD cycle — Red, Green, Refactor + Three Laws"
+tags: [tdd, discipline]
+source: "slides/TDD_xunit.pptx; notes/TDD_xunit_SCRIPT.docx; research-tdd.md"
+prose: "TDD is a loop: write a failing test (Red), write the minimum code to make it pass (Green), then clean up without breaking the test (Refactor). Robert C. Martin's Three Laws enforce test-first discipline."
+cards:
+  - id: tdd-cycle-card-01
+    type: cloze
+    prompt: "The TDD cycle has three phases: `{{Red}}` (failing test), `{{Green}}` (minimum code to pass), `{{Refactor}}` (clean up without breaking the test)."
+    answer: "Red; Green; Refactor"
+    bloom: remember
+    explanation: "Each phase has a single job. Skipping any phase defeats the purpose — no Red means you might be writing a tautological test; no Refactor means technical debt compounds."
+    example: "Red → Write Assert.Equal(4, calc.Add(2, 2));  // fails because Calculator doesn't exist\\nGreen → class Calculator { public int Add(int a, int b) => a + b; }\\nRefactor → rename, extract, simplify"
+
+  - id: tdd-cycle-card-02
+    type: name
+    prompt: "State Robert C. Martin's First Law of TDD."
+    answer: "You are not allowed to write any production code unless it is to make a failing test pass."
+    bloom: remember
+    explanation: "The First Law defines the relationship: production code exists to satisfy failing tests. Writing code without a failing test in hand breaks the TDD discipline."
+    example: "Failing test on table → you may write production code. No failing test → you may not."
+
+  - id: tdd-cycle-card-03
+    type: cloze
+    prompt: "During the {{Green}} phase, you write the {{minimum}} code necessary to make the failing test pass — not more, not less."
+    answer: "Green; minimum"
+    bloom: understand
+    explanation: "Resisting the urge to add 'just in case' logic is the hardest discipline. Extra code has no test backing it and accumulates as unverified complexity."
+    example: "Test expects Add(2, 2) → 4. Green code could be `return 4;` (passes the one test). Add more tests to force more general logic."
+
+  - id: tdd-cycle-card-04
+    type: name
+    prompt: "Why is writing the test first (the Red phase) important — what does it prove that a test written after the code cannot?"
+    answer: "It proves the test can fail when the feature is missing, confirming the test's assertion is valid and the test framework can detect the failure."
+    bloom: analyze
+    explanation: "A test written after the code might be tautological — it may check something the code trivially satisfies without you knowing. Watching it fail first eliminates that false-confidence."
+    example: "If you watch the test fail, then see it pass after implementing, you've proved: (a) the test detects absence, (b) your code fixes it."
+
+  - id: tdd-cycle-card-05
+    type: cloze
+    prompt: "In the Refactor phase, you clean up code while {{re-running tests}} after each change to ensure nothing breaks."
+    answer: "re-running tests"
+    bloom: apply
+    explanation: "Refactor happens under the safety net of green tests. Every structural change should leave all tests green. If a refactor breaks a test, undo and try a smaller step."
+    example: "Rename variable → run tests → still green → commit. Extract method → run tests → still green → commit."
+
+  - id: tdd-cycle-card-06
+    type: name
+    prompt: "When is TDD a poor fit?"
+    answer: "Exploratory spikes, UI prototyping, research code — situations where the goal is learning, not regression-proof production code."
+    bloom: understand
+    explanation: "Test-first requires you to know what the test should check; exploratory work is about discovering what you don't know. After the spike, rewrite production-worthy parts with TDD."
+    example: "Prototyping 'does ML.NET support this feature?' — write code first, test viable outputs later."
+
+  - id: tdd-cycle-card-07
+    type: cloze
+    prompt: "Robert Martin's Third Law: you are not allowed to write any more production code than is sufficient to make the {{currently failing test}} pass."
+    answer: "currently failing test"
+    bloom: remember
+    explanation: "Keeps production code tied to test coverage. Adding logic beyond the current failing test introduces untested behavior — exactly what TDD exists to prevent."
+    example: "Test: Divide(10, 2) → 5. Green body: `return 5;` — not `return a / b;`. The next test (Divide(6, 2) → 3) forces generalization."

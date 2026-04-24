@@ -1,0 +1,53 @@
+id: cache-tag-helper
+name: "Cache Tag Helper"
+tags: [cache, razor, tag-helper]
+source: "notes/Cache_Tag_Helper_SCRIPT.docx; research-cache.md §5"
+prose: "`<cache>` is the built-in Razor Tag Helper for fragment caching. Attributes `expires-after`, `expires-on`, `expires-sliding` control TTL; `vary-by-user`, `vary-by-route`, `vary-by-query`, `vary-by-cookie`, `vary-by-header`, `vary-by` create per-dimension cache keys. Backs onto `IMemoryCache`, so the web-farm problem applies."
+cards:
+  - id: cache-tag-helper-card-01
+    type: cloze
+    prompt: "`<cache expires-after=\"@TimeSpan.FromMinutes(10)\">…</cache>` caches the enclosed fragment for {{10}} minutes as an {{absolute}} TTL."
+    answer: "10; absolute"
+    bloom: remember
+    explanation: "`expires-after` is absolute-from-now. Use `expires-sliding` for a reset-on-access window, `expires-on` for a specific wall-clock deadline."
+    example: "<cache expires-after=\"@TimeSpan.FromMinutes(10)\"><p>@DateTime.Now</p></cache>"
+
+  - id: cache-tag-helper-card-02
+    type: name
+    prompt: "Which `vary-by-*` attribute gives each logged-in user their own cached fragment?"
+    answer: "`vary-by-user=\"true\"`"
+    bloom: apply
+    explanation: "Without vary-by-user, the first visitor's personalized content leaks to every subsequent viewer until the TTL fires. `vary-by-user` keys the cache by authenticated identity."
+    example: "<cache vary-by-user=\"true\"><p>Hello, @User.Identity?.Name</p></cache>"
+
+  - id: cache-tag-helper-card-03
+    type: cloze
+    prompt: "`<cache>` uses `{{IMemoryCache}}` under the hood, so it has the same {{web-farm}} problem as raw in-memory caching."
+    answer: "IMemoryCache; web-farm"
+    bloom: analyze
+    explanation: "Each server caches its own rendered HTML. Users routed round-robin across servers see diverging cached content. Workarounds: sticky sessions, short TTLs, or output caching middleware / CDN."
+    example: "Three pods → three separate <cache> fragments → same URL, three different HTML outputs depending on routing."
+
+  - id: cache-tag-helper-card-04
+    type: name
+    prompt: "List three `vary-by-*` attributes beyond `vary-by-user`."
+    answer: "`vary-by-route`, `vary-by-query`, `vary-by-cookie`, `vary-by-header` (any three)."
+    bloom: remember
+    explanation: "Each varies the cache key by a different request dimension. Combine freely — e.g. `vary-by-user + vary-by-route` produces one fragment per (user, route)."
+    example: "<cache vary-by-user=\"true\" vary-by-route=\"id\" expires-after=\"@TimeSpan.FromMinutes(5)\">...</cache>"
+
+  - id: cache-tag-helper-card-05
+    type: cloze
+    prompt: "To disable a `<cache>` block without deleting the markup, set `{{enabled}}=\"false\"` on the element."
+    answer: "enabled"
+    bloom: remember
+    explanation: "The `enabled` attribute short-circuits the caching behavior — the fragment re-renders on every request. Useful for toggling caching behind a feature flag."
+    example: "<cache enabled=\"@cachingEnabled\" expires-after=\"@TimeSpan.FromMinutes(5)\">…</cache>"
+
+  - id: cache-tag-helper-card-06
+    type: name
+    prompt: "You want to cache a product detail view per user AND per product id, with a 10-minute absolute ceiling and a 2-minute sliding window. Write the tag."
+    answer: "`<cache vary-by-user=\"true\" vary-by-route=\"id\" expires-after=\"@TimeSpan.FromMinutes(10)\" expires-sliding=\"@TimeSpan.FromMinutes(2)\">…</cache>`"
+    bloom: apply
+    explanation: "Combine vary-by dimensions and both expiration modes on one tag. Sliding keeps hot fragments alive; absolute guarantees a refresh within the ceiling."
+    example: "Same as answer."

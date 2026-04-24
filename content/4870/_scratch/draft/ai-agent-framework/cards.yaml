@@ -1,0 +1,143 @@
+id: ai-agent-framework
+name: "Microsoft Agent Framework (MAF) + tool calling"
+tags: [ai, maf, agent, tools, function-calling]
+prose: |
+  Microsoft Agent Framework (MAF) wraps an `IChatClient` into a `ChatClientAgent` via
+  `.AsAIAgent()`, registers C# delegates or lambdas as `AITool` values through
+  `AIFunctionFactory.Create`, and drives turns with `RunAsync` or `RunStreamingAsync`.
+  Multi-turn state lives in an `AgentSession` from `await agent.CreateSessionAsync()`,
+  not in a manual `ChatHistory`. Common exam traps: `.AsAgent()`, `agent.Invoke()`,
+  and `AITool.Register()` do not exist.
+cards:
+  - id: maf-base-package
+    type: cloze
+    bloom: remember
+    front: "The base NuGet package for MAF is {{Microsoft.Agents.AI}}, installed with the {{--prerelease}} flag."
+    back: "Microsoft.Agents.AI --prerelease"
+    source: "research-ai.md §NuGet Packages to Add"
+    explanation: "The base package ships separately from the OpenAI integration. Both require --prerelease because MAF is not GA. Exam distractors swap the name to 'Microsoft.AgentFramework' or drop --prerelease."
+    example: "dotnet add package Microsoft.Agents.AI --prerelease"
+
+  - id: maf-openai-package
+    type: cloze
+    bloom: remember
+    front: "To get the OpenAI-compatible `ChatClient` integration (GitHub Models, Azure OpenAI), install {{Microsoft.Agents.AI.OpenAI}} with {{--prerelease}}."
+    back: "Microsoft.Agents.AI.OpenAI --prerelease"
+    source: "research-ai.md §NuGet Packages to Add"
+    explanation: "The `.OpenAI` suffix is what pulls in the `ChatClient` type used for OpenAI-compatible endpoints. Missing this package means `.AsAIAgent()` compiles but nothing at the OpenAI layer does."
+    example: "dotnet add package Microsoft.Agents.AI.OpenAI --prerelease"
+
+  - id: maf-as-ai-agent-method
+    type: name
+    bloom: remember
+    front: "Name the extension method that wraps an `IChatClient` into a `ChatClientAgent`."
+    back: ".AsAIAgent()"
+    source: "research-ai.md §Create MAF Agent (Basic); flashcard #3"
+    explanation: "The extension lives on `IChatClient` and accepts `name`, `instructions`, and `tools`. `.AsAgent()` is a common distractor and does not compile."
+    example: "var agent = chatClient.AsAIAgent(instructions: \"You are a chef.\", name: \"RecipeAgent\");"
+
+  - id: maf-register-tool
+    type: name
+    bloom: apply
+    front: "Name the factory call that turns a C# method into an `AITool` for an MAF agent."
+    back: "AIFunctionFactory.Create"
+    source: "research-ai.md §Create MAF Agent with Tools; flashcard #2"
+    explanation: "`AIFunctionFactory.Create` takes a delegate plus `name:` and `description:`. The description is the natural-language string the LLM reads to decide when to call the tool. `AITool.Register` and `AIFunction.Create` are distractors."
+    example: |
+      AITool weatherTool = AIFunctionFactory.Create(
+          WeatherService.GetWeatherAsync,
+          name: "GetWeather",
+          description: "Get the weather details of a location using city name");
+
+  - id: maf-session-for-multiturn
+    type: predict
+    bloom: understand
+    front: "You need conversation memory across five `RunAsync` calls against one MAF agent. Do you build a `ChatHistory` list or an `AgentSession`, and how do you get it?"
+    back: "`AgentSession`, via `var session = await agent.CreateSessionAsync();` — pass it into every `RunAsync` call."
+    source: "research-ai.md §MAF Agent with Session (Multi-Turn); flashcard #6"
+    explanation: "`ChatHistory` is a manual `List<ChatMessage>` for raw `IChatClient` loops. MAF agents manage history and tool-call state inside an `AgentSession`. Passing both duplicates state."
+    example: |
+      var session = await agent.CreateSessionAsync();
+      var reply = await agent.RunAsync("What did I ask first?", session);
+
+  - id: maf-run-method-name
+    type: cloze
+    bloom: remember
+    front: "To execute an MAF agent turn and get the assembled reply, call {{agent.RunAsync(input)}} — not `agent.Invoke(input)`."
+    back: "agent.RunAsync(input)"
+    source: "research-ai.md §Create MAF Agent (Basic); flashcard #18"
+    explanation: "`RunAsync` returns the full response after all tool round-trips complete. `Invoke` is a Semantic Kernel verb and a standard distractor on MAF questions."
+    example: "var response = await agent.RunAsync(\"A dessert for a rainy Tuesday.\");"
+
+  - id: maf-streaming-method
+    type: cloze
+    bloom: apply
+    front: "To stream tokens from an MAF agent, `await foreach` over {{agent.RunStreamingAsync(input)}}."
+    back: "agent.RunStreamingAsync(input)"
+    source: "research-ai.md §MAF Agent with Streaming; flashcard #9"
+    explanation: "`RunStreamingAsync` yields updates as the model produces them. Swap it in for `RunAsync` when you want incremental output to the console or UI."
+    example: |
+      await foreach (var update in agent.RunStreamingAsync("Which planet is closest to the sun?")) {
+          Console.Write(update);
+      }
+
+  - id: maf-lambda-tool
+    type: predict
+    bloom: apply
+    front: "You have an async lambda `(string city, string weather) => Task<string>` that builds a prompt and calls `chatClient.GetResponseAsync`. How do you expose it as a tool to an MAF agent?"
+    back: "Wrap it with `AIFunctionFactory.Create(lambda, name: \"...\", description: \"...\")` and pass the result in the `tools:` array of `.AsAIAgent(...)`."
+    source: "research-ai.md §Tool Registration from Async Lambda"
+    explanation: "`AIFunctionFactory.Create` accepts delegates, including async lambdas. The lambda parameters become the tool's parameter schema sent to the LLM."
+    example: |
+      AITool poemTool = AIFunctionFactory.Create(
+          async (string city, string weather) => (await chatClient.GetResponseAsync($"Poem for {city}, {weather}")).Text,
+          name: "WriteShortPoem",
+          description: "Write a short funny poem about clothes to wear based on city and weather");
+
+  - id: maf-fake-method-as-agent
+    type: predict
+    bloom: analyze
+    front: "A multiple-choice option shows `chatClient.AsAgent(instructions: \"...\")`. Correct or distractor?"
+    back: "Distractor. The real method is `.AsAIAgent()`."
+    source: "research-ai.md §Fake Method Names in MCQ"
+    explanation: "`.AsAgent()` is a documented exam trap — it resembles the real API and compiles if you define your own extension. MAF ships `.AsAIAgent()` only."
+    example: "var agent = chatClient.AsAIAgent(name: \"Bot\", instructions: \"...\");"
+
+  - id: maf-fake-method-register
+    type: predict
+    bloom: analyze
+    front: "A choice reads `AITool.Register(WeatherService.GetWeather, \"Weather\", \"Get weather\");`. Real or distractor?"
+    back: "Distractor. Use `AIFunctionFactory.Create(WeatherService.GetWeather, name: \"Weather\", description: \"Get weather\");`."
+    source: "research-ai.md §Fake Method Names in MCQ; MCQ #1"
+    explanation: "MAF has no `AITool.Register`. All native and lambda tools flow through `AIFunctionFactory.Create`, which returns an `AITool` you pass in the `tools:` array."
+    example: |
+      AITool tool = AIFunctionFactory.Create(
+          WeatherService.GetWeather,
+          name: "Weather",
+          description: "Get weather");
+
+  - id: maf-agent-reasoning-behavior
+    type: predict
+    bloom: understand
+    front: "When you call `agent.RunAsync(input, session)` on an MAF agent with three registered tools, what actually runs?"
+    back: "The LLM reads input and tool descriptions, decides which (if any) tools to call, MAF invokes those, tool results feed back into the LLM, and the final assistant message is returned. Not all tools run."
+    source: "research-ai.md §MAF Stack; MCQ #6"
+    explanation: "MAF agents are agentic — tool selection is implicit in the LLM's output. Tools execute only when the model emits a tool-call for them. Sequential execution of every registered tool is a distractor."
+    example: "Input 'What should I wear in Vancouver?' triggers GetWeather only if the model decides it needs weather data."
+
+  - id: maf-vs-sk-verbs
+    type: diagram
+    bloom: analyze
+    front: "Sketch the verb mapping: for (a) tool registration, (b) turn execution, which method belongs to Semantic Kernel and which to MAF?"
+    back: |
+      Registration — SK: `kernel.ImportPluginFromType<T>()`; MAF: `AIFunctionFactory.Create(method, name, description)`.
+      Execution  — SK: `kernel.InvokeAsync(function, args)`; MAF: `agent.RunAsync(input, session)`.
+    source: "research-ai.md §Semantic Kernel vs. MAF Differences"
+    explanation: "MAF and SK are sibling SDKs with different vocabularies. Mixing `kernel.InvokeAsync` with `agent.RunAsync` on the same object is a classic exam trap — they do not interop directly."
+    example: |
+      // SK
+      kernel.ImportPluginFromType<WeatherPlugin>();
+      await kernel.InvokeAsync(plugin["GetWeather"], new("Vancouver"));
+      // MAF
+      AITool t = AIFunctionFactory.Create(WeatherPlugin.GetWeather, name: "GetWeather", description: "...");
+      await agent.RunAsync("Weather in Vancouver?", session);

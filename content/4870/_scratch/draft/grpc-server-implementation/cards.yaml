@@ -1,0 +1,69 @@
+id: grpc-server-implementation
+name: "gRPC server implementation"
+tags: [grpc, server, asp-net-core]
+source: "notes/gRPC_EF_SQLite_VSCode_SCRIPT.docx; Labs/W09 gRPC/; research-grpc.md"
+prose: "A gRPC server inherits from the auto-generated `[Service].[Service]Base` class and overrides one method per `rpc`. Each override takes the request type plus `ServerCallContext` and returns `Task<Response>`. Services are registered with `AddGrpc()` and routed with `MapGrpcService<T>()`."
+cards:
+  - id: grpc-server-implementation-card-01
+    type: cloze
+    prompt: "A gRPC service class inherits from `{{StudentRemote.StudentRemoteBase}}` — the pattern is `[ServiceName].[ServiceName]{{Base}}`."
+    answer: "StudentRemote.StudentRemoteBase; Base"
+    bloom: remember
+    explanation: "`Grpc.Tools` generates the base at build time. Inheriting from it is the only way to get your methods matched to the wire-level service dispatch."
+    example: "public class StudentsService : StudentRemote.StudentRemoteBase { … }"
+
+  - id: grpc-server-implementation-card-02
+    type: name
+    prompt: "Every gRPC server-side method takes two parameters. Name them in order for a unary call."
+    answer: "The request message type, then ServerCallContext."
+    bloom: remember
+    explanation: "The `ServerCallContext` carries cancellation tokens, deadlines, metadata, and peer info. Omitting it is a compile error because the `override` target requires it."
+    example: "public override Task<StudentModel> GetStudentInfo(StudentLookupModel request, ServerCallContext context) { ... }"
+
+  - id: grpc-server-implementation-card-03
+    type: cloze
+    prompt: "Server-side unary methods return `{{Task<Response>}}`. Wrap a synchronous value with `{{Task.FromResult}}(value)`."
+    answer: "Task<Response>; Task.FromResult"
+    bloom: apply
+    explanation: "gRPC methods are always asynchronous on the wire. Even when your implementation is synchronous, you must return a `Task` — `Task.FromResult` wraps the value cheaply."
+    example: "return Task.FromResult(new StudentModel { StudentId = 3 });"
+
+  - id: grpc-server-implementation-card-04
+    type: name
+    prompt: "Which two calls register gRPC services in `Program.cs`?"
+    answer: "`builder.Services.AddGrpc()` plus `app.MapGrpcService<YourService>()`."
+    bloom: apply
+    explanation: "`AddGrpc` registers framework types (serialization, interceptors, resilience). `MapGrpcService<T>` wires routing so HTTP/2 requests reach your class."
+    example: "builder.Services.AddGrpc(); … app.MapGrpcService<StudentsService>();"
+
+  - id: grpc-server-implementation-card-05
+    type: cloze
+    prompt: "Forgetting the `{{override}}` keyword on a method shadows the base-class method. The server compiles, but client calls get back `RpcException: {{UNIMPLEMENTED}}`."
+    answer: "override; UNIMPLEMENTED"
+    bloom: analyze
+    explanation: "Without `override`, your method is unrelated to the base class virtual method. The framework dispatches to the base's default, which throws UNIMPLEMENTED."
+    example: "public override Task<StudentModel> GetStudentInfo(... — the override keyword is non-optional."
+
+  - id: grpc-server-implementation-card-06
+    type: name
+    prompt: "How does a server-streaming method signature differ from a unary method?"
+    answer: "It returns `Task` (not `Task<T>`) and takes `IServerStreamWriter<T>` as a third parameter."
+    bloom: understand
+    explanation: "Streaming methods write each message via `responseStream.WriteAsync(...)` and return when the loop finishes. There is no single response object, so no `Task<T>` return."
+    example: "public override async Task RetrieveAllStudents(Empty r, IServerStreamWriter<StudentModel> stream, ServerCallContext ctx) { … }"
+
+  - id: grpc-server-implementation-card-07
+    type: cloze
+    prompt: "To inject an EF Core DbContext into a gRPC service, register it with `{{builder.Services.AddDbContext}}<T>` in `Program.cs`, then accept it in the service constructor."
+    answer: "builder.Services.AddDbContext"
+    bloom: apply
+    explanation: "gRPC services use standard ASP.NET Core DI. Any service registered in the container can be constructor-injected, and gRPC services are instantiated per-request by default."
+    example: "public StudentsService(SchoolDbContext context) => _context = context;"
+
+  - id: grpc-server-implementation-card-08
+    type: name
+    prompt: "What does the `ServerCallContext` parameter carry that you might use inside an override?"
+    answer: "Cancellation tokens, deadlines, request metadata, and peer (client) info."
+    bloom: understand
+    explanation: "Use `context.CancellationToken` to short-circuit expensive work if the client disconnects. `context.Deadline` tells you when the client will time out. `context.RequestHeaders` carries metadata like auth tokens."
+    example: "if (context.CancellationToken.IsCancellationRequested) return Task.FromResult(new Reply { IsOk = false });"

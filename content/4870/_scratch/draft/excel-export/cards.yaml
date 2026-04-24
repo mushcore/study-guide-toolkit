@@ -1,0 +1,53 @@
+id: excel-export
+name: "Excel export with ClosedXML"
+tags: [excel, closedxml, report]
+source: "Labs/W13 Excel, PDF, Chart cocktail/; research-excel-pdf-chart.md §3"
+prose: "Create `XLWorkbook`, add a worksheet, write cells with 1-based indexing, save to a `MemoryStream`, return a `FileResult` with MIME type `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`."
+cards:
+  - id: excel-export-card-01
+    type: cloze
+    prompt: "ClosedXML cell indexing is {{1-based}}: `sheet.Cell(1, 1)` is the top-left cell (A1), not `Cell(0, 0)`."
+    answer: "1-based"
+    bloom: remember
+    explanation: "The 1-based convention matches Excel's UI (row 1, column A = A1). Mixing it with C# arrays causes off-by-one bugs, especially when data loops start at row 2 (header in row 1)."
+    example: "sheet.Cell(1, 1).Value = \"Name\"; sheet.Cell(2, 1).Value = \"Alice\";"
+
+  - id: excel-export-card-02
+    type: name
+    prompt: "What MIME type identifies an .xlsx file download?"
+    answer: "`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`"
+    bloom: remember
+    explanation: "Long but precise — this is the OpenXML spreadsheet MIME. `application/excel` and `application/vnd.ms-excel` refer to older or incorrect formats."
+    example: "return File(bytes, \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\", \"Report.xlsx\");"
+
+  - id: excel-export-card-03
+    type: cloze
+    prompt: "In ClosedXML, save the workbook to a `{{MemoryStream}}` with `workbook.SaveAs(stream)`, then call `stream.{{ToArray}}()` to get bytes for `File(...)`."
+    answer: "MemoryStream; ToArray"
+    bloom: apply
+    explanation: "The byte array form works with `File(byte[], mime, name)` which returns `FileContentResult`. For very large exports, return `FileStreamResult` and remember to rewind the stream — but `ToArray` is simpler for typical report sizes."
+    example: "using var ms = new MemoryStream(); workbook.SaveAs(ms); return File(ms.ToArray(), mime, name);"
+
+  - id: excel-export-card-04
+    type: name
+    prompt: "How do you style all cells in a header range (rows 1, columns 1-3) with a background fill?"
+    answer: "`sheet.Range(sheet.Cell(1,1).Address, sheet.Cell(1,3).Address).Style.Fill.SetBackgroundColor(XLColor.Almond);`"
+    bloom: apply
+    explanation: "IXLRange applies styles to all cells in the rectangular region. Single-cell styling works via `.Style` directly on `Cell(r, c)`."
+    example: "sheet.Range(sheet.Cell(1,1).Address, sheet.Cell(1,3).Address).Style.Font.Bold = true;"
+
+  - id: excel-export-card-05
+    type: cloze
+    prompt: "After populating data, call `sheet.Columns().{{AdjustToContents}}()` to auto-fit every column's width before saving."
+    answer: "AdjustToContents"
+    bloom: apply
+    explanation: "Without autofit, users open your export and see all columns at the default ~8-character width. Call it once after all cells are written."
+    example: "sheet.Columns().AdjustToContents();  // before workbook.SaveAs(stream)"
+
+  - id: excel-export-card-06
+    type: name
+    prompt: "What ASP.NET Core return type does an Excel-export handler typically produce?"
+    answer: "`FileResult` — specifically constructed via `File(bytes, mime, filename)`."
+    bloom: remember
+    explanation: "`File(...)` is a controller/PageModel helper that creates a `FileContentResult` (or `FileStreamResult` when streaming). Both inherit from `FileResult`."
+    example: "public FileResult OnGet() => File(bytes, mime, \"Report.xlsx\");"

@@ -1,0 +1,53 @@
+id: localization-resources-cultures
+name: "Localization resources + cultures"
+tags: [i18n, culture, resx]
+source: "notes/razor_pages_localization_SCRIPT.docx; research-localization.md §2"
+prose: "Resource files live at `Resources/<folder>/<ClassName>.<culture>.resx` — the subfolder mirrors the class's project location. `CurrentCulture` controls formatting; `CurrentUICulture` controls which .resx loads. Culture providers run QueryString → Cookie → Accept-Language, first match wins."
+cards:
+  - id: localization-resources-cultures-card-01
+    type: cloze
+    prompt: "The French resource file for `Pages/Index.cshtml.cs` (class `IndexModel`) lives at `Resources/{{Pages}}/IndexModel.{{fr}}.resx`."
+    answer: "Pages; fr"
+    bloom: remember
+    explanation: "Directory structure under `Resources/` mirrors the class location. The filename is `<ClassName>.<culture>.resx` — not `<PageName>` and not flat."
+    example: "Pages/Courses.cshtml.cs (class CoursesModel) → Resources/Pages/CoursesModel.fr.resx"
+
+  - id: localization-resources-cultures-card-02
+    type: name
+    prompt: "What is the difference between `Thread.CurrentCulture` and `Thread.CurrentUICulture`?"
+    answer: "CurrentCulture controls date/number/currency formatting; CurrentUICulture controls which .resx file IStringLocalizer loads."
+    bloom: understand
+    explanation: "Setting only one produces a half-translated page — numbers in the right locale but strings in the wrong one, or vice versa. UseRequestLocalization sets both together."
+    example: "CurrentCulture=fr-FR → decimal '3,14'; CurrentUICulture=fr-FR → IndexModel.fr.resx selected."
+
+  - id: localization-resources-cultures-card-03
+    type: cloze
+    prompt: "The three default culture providers run in this order: `{{QueryString}}` → `{{Cookie}}` → `{{AcceptLanguageHeader}}`. First match wins."
+    answer: "QueryString; Cookie; AcceptLanguageHeader"
+    bloom: remember
+    explanation: "QueryString beats cookie (useful for testing / deep links). Cookie beats header (persistent user selection overrides browser default). Order is configurable via options.RequestCultureProviders."
+    example: "?culture=fr in the URL overrides a stored cookie or a browser Accept-Language: en-US header."
+
+  - id: localization-resources-cultures-card-04
+    type: name
+    prompt: "If a resource key has no match in any .resx file for the current culture, what does `IStringLocalizer<T>[\"Key\"]` return?"
+    answer: "The key itself, as a string."
+    bloom: understand
+    explanation: "The indexer returns a `LocalizedString` whose `Name` equals `Value` equals the key, with `ResourceNotFound = true`. This makes it easy to stub a site in English before any .resx files exist."
+    example: "_localizer[\"Welcome\"] where no .resx has \"Welcome\" → string \"Welcome\"."
+
+  - id: localization-resources-cultures-card-05
+    type: cloze
+    prompt: "Fallback chain: a request for `{{fr-CA}}` falls back to `{{fr}}`, which falls back to the un-suffixed default `.resx` if one exists."
+    answer: "fr-CA; fr"
+    bloom: understand
+    explanation: "ASP.NET Core walks the parent culture chain. Ship a generic `fr.resx` and you can omit region-specific `.fr-CA.resx` unless you actually need Canadian-specific translations."
+    example: "Resources/Pages/IndexModel.fr.resx alone covers both fr-CA and fr-FR users."
+
+  - id: localization-resources-cultures-card-06
+    type: name
+    prompt: "Which culture provider persists a user's language choice across sessions?"
+    answer: "CookieRequestCultureProvider (reads the `.AspNetCore.Culture` cookie)."
+    bloom: apply
+    explanation: "QueryString doesn't persist; Accept-Language reflects browser settings but not in-app selection. Only a cookie survives a browser restart and identifies the returning user."
+    example: "Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(\"fr\")), new CookieOptions { Expires = ... });"

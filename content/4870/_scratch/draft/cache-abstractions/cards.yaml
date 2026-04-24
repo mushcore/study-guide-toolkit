@@ -1,0 +1,61 @@
+id: cache-abstractions
+name: "IMemoryCache vs IDistributedCache"
+tags: [cache, architecture]
+source: "notes/DataCache_SCRIPT.docx; research-cache.md §1-2"
+prose: "`IMemoryCache` lives per-process and fails in web farms — each server holds its own copy. `IDistributedCache` lives across the network (Redis is the canonical backend) and is the only choice for load-balanced deployments."
+cards:
+  - id: cache-abstractions-card-01
+    type: cloze
+    prompt: "`{{IMemoryCache}}` stores entries in-process; `{{IDistributedCache}}` stores entries across the network, typically in Redis."
+    answer: "IMemoryCache; IDistributedCache"
+    bloom: remember
+    explanation: "The interface you register decides where entries live. In-process is microseconds-fast but per-server. Distributed is milliseconds-fast but shared across every app instance."
+    example: "builder.Services.AddMemoryCache();  // vs  builder.Services.AddStackExchangeRedisCache(...)"
+
+  - id: cache-abstractions-card-02
+    type: name
+    prompt: "Why does `IMemoryCache` produce inconsistent data in a load-balanced web farm?"
+    answer: "Each server instance holds its own separate cache — writes on Server A are invisible to Server B."
+    bloom: understand
+    explanation: "In-process memory is not shared across app instances. Request 1 on Server A caches X; Request 2 on Server B finds no cache and refetches from DB. Users see different data depending on routing."
+    example: "Two pods behind a k8s service → two separate IMemoryCache instances → cache writes diverge."
+
+  - id: cache-abstractions-card-03
+    type: cloze
+    prompt: "Two fixes for `IMemoryCache` in a multi-server deployment are: switch to `{{IDistributedCache}}` (e.g. Redis) or configure {{sticky sessions}} to route each client to the same server."
+    answer: "IDistributedCache; sticky sessions"
+    bloom: apply
+    explanation: "Redis is the clean fix — one cache, all servers see it. Sticky sessions are the lazy fix — they work until the pinned server restarts or becomes unbalanced."
+    example: "k8s sessionAffinity: ClientIP gives sticky sessions; Redis gives a proper shared cache."
+
+  - id: cache-abstractions-card-04
+    type: name
+    prompt: "When is `IMemoryCache` still appropriate?"
+    answer: "Per-process, ephemeral caching — single-server dev environments, precomputed lookup tables inside one app instance, data that does not need to survive a restart."
+    bloom: understand
+    explanation: "For values that only need to be visible within one process, IMemoryCache wins on latency (microseconds) and simplicity (no container, no serialization). The rule: cross-request-cross-server = distributed; within-process = memory."
+    example: "Parsing appsettings.json once on boot and reusing the parsed object — IMemoryCache."
+
+  - id: cache-abstractions-card-05
+    type: cloze
+    prompt: "Does `IMemoryCache` data survive an app restart? {{No}}. Does Redis-backed `IDistributedCache` survive? {{Yes}} (when Redis has AOF or RDB persistence enabled)."
+    answer: "No; Yes"
+    bloom: remember
+    explanation: "IMemoryCache is RAM inside the app process — the restart wipes it. Redis runs as a separate process/container with configurable persistence, so it can survive app restarts and redeployments."
+    example: "A pod redeployment wipes IMemoryCache; the Redis container keeps serving entries across the swap."
+
+  - id: cache-abstractions-card-06
+    type: name
+    prompt: "Which one-liner registers an in-memory cache in `Program.cs`?"
+    answer: "`builder.Services.AddMemoryCache();`"
+    bloom: remember
+    explanation: "`AddMemoryCache` wires `IMemoryCache` into DI. No options required for a basic setup."
+    example: "builder.Services.AddMemoryCache();"
+
+  - id: cache-abstractions-card-07
+    type: name
+    prompt: "Which one-liner registers a Redis-backed distributed cache in `Program.cs`?"
+    answer: "`builder.Services.AddStackExchangeRedisCache(opts => opts.Configuration = \"localhost:6379\");`"
+    bloom: apply
+    explanation: "The helper reads from `Microsoft.Extensions.Caching.StackExchangeRedis` and registers `IDistributedCache`. Any service can then inject `IDistributedCache`."
+    example: "builder.Services.AddStackExchangeRedisCache(o => o.Configuration = \"localhost:6379\");"

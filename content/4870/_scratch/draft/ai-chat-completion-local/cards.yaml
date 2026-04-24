@@ -1,0 +1,109 @@
+id: ai-chat-completion-local
+name: "Chat completion with Ollama + SLMs"
+tags: [ai, slm, ollama, streaming]
+prose: "Ollama runs Small Language Models locally on port 11434 over HTTP. The OllamaSharp NuGet package exposes OllamaApiClient, which implements IChatClient from Microsoft.Extensions.AI. You feed it a List<ChatMessage> (each message is a ChatRole plus content) and call GetStreamingResponseAsync for token-by-token output or GetResponseAsync for a buffered reply. No cloud, no API key, no internet after the initial ollama pull."
+cards:
+  - id: ai-chat-completion-local-card-01
+    type: cloze
+    front: "Ollama listens on the endpoint ___ using the ___ protocol."
+    back: "http://localhost:11434/ ; HTTP (not HTTPS)"
+    bloom: remember
+    source: "research-ai.md §Ollama; §Endpoint URL Pitfalls"
+    explanation: "Port 11434 on localhost, HTTP only. HTTPS is the GitHub Models endpoint; port 1143 is a one-digit typo trap."
+    example: "new OllamaApiClient(new Uri(\"http://localhost:11434/\"), \"phi3\")"
+
+  - id: ai-chat-completion-local-card-02
+    type: qa
+    front: "Which constructor call creates an OllamaSharp client for a local Phi-3 model?"
+    back: "new OllamaApiClient(new Uri(\"http://localhost:11434/\"), \"phi3\")"
+    bloom: remember
+    source: "research-ai.md §Call Ollama via OllamaSharp; SLM.docx Demo #1"
+    explanation: "OllamaApiClient takes a Uri and a model-id string. The returned object implements IChatClient from Microsoft.Extensions.AI."
+    example: "IChatClient chatClient = new OllamaApiClient(new Uri(\"http://localhost:11434/\"), \"phi3\");"
+
+  - id: ai-chat-completion-local-card-03
+    type: qa
+    front: "What command downloads a model into Ollama so it can be served locally?"
+    back: "ollama pull <model>  (e.g. ollama pull phi3:latest)"
+    bloom: remember
+    source: "research-ai.md §Ollama Setup Commands; flashcard #19"
+    explanation: "pull downloads weights. list/show inspect what is installed. run opens an interactive REPL against a model."
+    example: "ollama pull phi3:latest"
+
+  - id: ai-chat-completion-local-card-04
+    type: cloze
+    front: "The ChatMessage constructor takes two arguments: a ___ enum value (User, Assistant, or System) and the message ___."
+    back: "ChatRole ; content (string or structured data)"
+    bloom: understand
+    source: "research-ai.md §Chat Completion; flashcard #16; MCQ #?"
+    explanation: "Every ChatMessage carries a ChatRole plus content. A List<ChatMessage> is the conversation history re-sent on each call."
+    example: "chatHistory.Add(new ChatMessage(ChatRole.User, userPrompt));"
+
+  - id: ai-chat-completion-local-card-05
+    type: qa
+    front: "Which IChatClient method streams the reply as ChatResponseUpdate fragments instead of returning one buffered response?"
+    back: "GetStreamingResponseAsync(chatHistory)  — iterate with await foreach"
+    bloom: understand
+    source: "research-ai.md §Call Ollama via OllamaSharp; glossary §streaming"
+    explanation: "GetStreamingResponseAsync yields ChatResponseUpdate items incrementally; GetResponseAsync blocks until the full response is ready."
+    example: |
+      await foreach (ChatResponseUpdate item in
+          chatClient.GetStreamingResponseAsync(chatHistory))
+      {
+          Console.Write(item.Text);
+      }
+
+  - id: ai-chat-completion-local-card-06
+    type: qa
+    front: "You want a chatbot that runs with no cloud dependency and no API key. Which setup fits?"
+    back: "Use Ollama locally: new OllamaApiClient(new Uri(\"http://localhost:11434/\"), \"phi3\")"
+    bloom: apply
+    source: "research-ai.md §Local vs Cloud SLM; MCQ #7"
+    explanation: "GitHub Models and Azure OpenAI both require cloud credentials. Ollama serves a pulled SLM from localhost with no auth."
+    example: "IChatClient client = new OllamaApiClient(new Uri(\"http://localhost:11434/\"), \"phi3\");"
+
+  - id: ai-chat-completion-local-card-07
+    type: mcq
+    front: |
+      Which endpoint URL correctly connects OllamaSharp to a local Ollama server?
+
+      A) http://localhost:1143/
+      B) https://api.ollama.com
+      C) https://localhost:11434/inference
+      D) http://localhost:11434/
+      E) http://localhost:5000/ollama
+    back: "D"
+    bloom: apply
+    source: "research-ai.md §Endpoint URL Pitfalls; MCQ #2"
+    explanation: "A drops a digit (1143 vs 11434). B and C wrongly use HTTPS; /inference is the GitHub Models path. E invents a port. Only D matches the canonical course pattern."
+    example: "new OllamaApiClient(new Uri(\"http://localhost:11434/\"), \"phi3\")"
+
+  - id: ai-chat-completion-local-card-08
+    type: qa
+    front: "True or false: Ollama requires an internet connection to answer prompts."
+    back: "False. Internet is needed only for ollama pull to download the model; inference is fully local."
+    bloom: understand
+    source: "research-ai.md §Local vs Cloud SLM trap row"
+    explanation: "After pull, the daemon loads weights from disk and serves requests from localhost. Airplane-mode demos are a common lecture point."
+    example: "ollama pull phi3:latest   # only this step needs the internet"
+
+  - id: ai-chat-completion-local-card-09
+    type: cloze
+    front: "The third-party NuGet package for the .NET Ollama client is ___ ; the CLI binary and daemon is ___ ."
+    back: "OllamaSharp ; ollama"
+    bloom: remember
+    source: "research-ai.md §Endpoint URL Pitfalls (package confusion)"
+    explanation: "The exam may test which name is the C# package. OllamaSharp = NuGet. ollama = the command-line binary you run to pull, list, or serve models."
+    example: "dotnet add package OllamaSharp"
+
+  - id: ai-chat-completion-local-card-10
+    type: qa
+    front: "Given OllamaUrl and ModelId in appsettings.json, what two values does the OllamaApiClient constructor consume?"
+    back: "A Uri built from OllamaUrl (\"http://localhost:11434/\") and the ModelId string (e.g. \"phi3:latest\")."
+    bloom: apply
+    source: "research-ai.md §appsettings.json for Ollama; §Call Ollama via ChatClient (Direct)"
+    explanation: "Keeping URL and model id in config lets you switch SLMs without recompiling. The constructor signature is (Uri, string)."
+    example: |
+      string url = config["OllamaUrl"];
+      string modelId = config["ModelId"];
+      IChatClient client = new OllamaApiClient(new Uri(url), modelId);

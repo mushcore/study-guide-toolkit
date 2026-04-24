@@ -1,0 +1,61 @@
+id: taghelper-authoring
+name: "Tag Helper authoring"
+tags: [tag-helper, razor, asp-net-core]
+source: "notes/TagHelpers_SCRIPT.docx; research-taghelpers-blazor.md"
+prose: "A custom Tag Helper inherits from `TagHelper`, is decorated with `[HtmlTargetElement(\"tag-name\")]`, and overrides `ProcessAsync(context, output)` (or `Process` for sync bodies). PascalCase C# properties bind to kebab-case HTML attributes."
+cards:
+  - id: taghelper-authoring-card-01
+    type: cloze
+    prompt: "A custom Tag Helper inherits from the `{{TagHelper}}` base class and is decorated with `[{{HtmlTargetElement}}(\"tag-name\")]`."
+    answer: "TagHelper; HtmlTargetElement"
+    bloom: remember
+    explanation: "Both pieces are non-optional. Without the base class, the framework won't recognize the type. Without the attribute, Razor has no tag binding."
+    example: "[HtmlTargetElement(\"toon\")] public class ToonTagHelper : TagHelper { … }"
+
+  - id: taghelper-authoring-card-02
+    type: name
+    prompt: "Which override do you use when the Tag Helper body performs async I/O?"
+    answer: "`ProcessAsync(TagHelperContext, TagHelperOutput)`"
+    bloom: apply
+    explanation: "Overriding `Process` and calling `.Result` or `Task.Run` blocks the render thread and can deadlock. `ProcessAsync` lets the framework await without blocking."
+    example: "public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output) { var data = await FetchAsync(); … }"
+
+  - id: taghelper-authoring-card-03
+    type: cloze
+    prompt: "A C# property named `{{FontFamily}}` binds to the HTML attribute `{{font-family}}` — PascalCase → kebab-case is the Razor convention."
+    answer: "FontFamily; font-family"
+    bloom: understand
+    explanation: "The mapping is automatic, not configurable. `ForegroundColor` becomes `foreground-color`; `DataTestId` becomes `data-test-id`. Never use underscores in the HTML attribute."
+    example: "public string? FontFamily { get; set; }  →  <toon font-family=\"arial\">"
+
+  - id: taghelper-authoring-card-04
+    type: name
+    prompt: "Which `TagHelperOutput` call replaces the rendered tag's name?"
+    answer: "`output.TagName = \"div\"` (set to `null` to suppress the element entirely)."
+    bloom: apply
+    explanation: "`TagName` is the rendered-element name. Setting `null` renders only the inner content without wrapping tag — useful for conditional wrappers."
+    example: "output.TagName = \"span\";  // <my-tag> → <span>"
+
+  - id: taghelper-authoring-card-05
+    type: cloze
+    prompt: "`output.Content.{{SetHtmlContent}}(\"<p>Hi</p>\")` replaces the inner content, while `output.Content.{{AppendHtmlContent}}(\"<p>More</p>\")` preserves the existing inner content."
+    answer: "SetHtmlContent; AppendHtmlContent"
+    bloom: apply
+    explanation: "SetHtmlContent wipes what the page author wrote between the open and close tags. AppendHtmlContent keeps it and adds after."
+    example: "output.Content.AppendHtmlContent(\"<p>Footer</p>\");  // keeps original inner"
+
+  - id: taghelper-authoring-card-06
+    type: name
+    prompt: "How do you bind a Tag Helper to an existing `<div>` only when a specific attribute is present?"
+    answer: "`[HtmlTargetElement(\"div\", Attributes = \"toonie\")]`"
+    bloom: apply
+    explanation: "The Attributes selector restricts binding to elements carrying the named attribute. You can stack multiple [HtmlTargetElement] attributes on one class to bind several patterns."
+    example: "[HtmlTargetElement(\"div\", Attributes = \"toonie\")] public class DivToonTagHelper : TagHelper { … }"
+
+  - id: taghelper-authoring-card-07
+    type: cloze
+    prompt: "Use `output.{{SuppressOutput}}()` to render nothing at all from a Tag Helper — handy when a condition says the element should not appear."
+    answer: "SuppressOutput"
+    bloom: apply
+    explanation: "SuppressOutput removes both the wrapping tag and its content from the rendered HTML. A feature-flag helper often does this when the flag is off."
+    example: "if (!_flags.IsEnabled(Flag!)) output.SuppressOutput();"

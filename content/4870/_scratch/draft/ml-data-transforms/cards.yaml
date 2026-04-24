@@ -1,0 +1,58 @@
+id: ml-data-transforms
+name: "ML.NET data transforms"
+tags: [ml-net, feature-eng]
+prose: "Trainers in ML.NET consume two specific columns: a scalar named `\"Label\"` and a vector named `\"Features\"`. Three transforms produce them. `CopyColumns` renames your target to `\"Label\"`. `OneHotEncoding` converts each categorical text column into a numeric indicator vector under a name you choose. `Concatenate` stitches the surviving numeric columns — including every encoded output — into the single `\"Features\"` vector. Skip any step, misname a column, or forget an encoded column in the concatenate list and training breaks or silently loses a feature."
+cards:
+  - id: ml-data-transforms-card-01
+    type: cloze
+    bloom: understand
+    front: "Trainers look up the target column by the literal name `\"{{c1::Label}}\"` and the feature vector by the literal name `\"{{c2::Features}}\"`."
+    back: "Both names are hardcoded in ML.NET trainer lookups. Renaming either one breaks `Fit()` at runtime."
+
+  - id: ml-data-transforms-card-02
+    type: qa
+    bloom: understand
+    front: "What does `mlContext.Transforms.CopyColumns(outputColumnName: \"Label\", inputColumnName: \"FareAmount\")` do, and why is it required?"
+    back: "It duplicates the `FareAmount` column under the name `\"Label\"`. Regression trainers look for a column named exactly `\"Label\"` as their target; without this rename, training fails."
+
+  - id: ml-data-transforms-card-03
+    type: qa
+    bloom: understand
+    front: "Why can't a regression trainer consume a raw `VendorId` column containing strings like `\"CMT\"` and `\"VTS\"` directly?"
+    back: "Trainers operate on numeric vectors. `OneHotEncoding` performs categorical encoding: each distinct text value becomes a slot in a binary-indicator vector (e.g. `\"VTS\"` → `[0, 1]`), which the trainer can then process."
+
+  - id: ml-data-transforms-card-04
+    type: cloze
+    bloom: apply
+    front: "In `mlContext.Transforms.Categorical.OneHotEncoding(outputColumnName: \"VendorIdEncoded\", inputColumnName: \"VendorId\")`, the name `\"VendorIdEncoded\"` is {{c1::chosen by you}}, but whatever you pick must then appear in the {{c2::`Concatenate` input list}}."
+    back: "Output names are arbitrary — `\"VendorIdOH\"` works equally well. The only hard constraint is matching that exact string when you reference the encoded column downstream."
+
+  - id: ml-data-transforms-card-05
+    type: qa
+    bloom: apply
+    front: "A pipeline calls `OneHotEncoding` on `VendorId`, `RateCode`, and `PaymentType`, then `Concatenate(\"Features\", \"VendorIdEncoded\", \"PassengerCount\", \"TripDistance\")`. What silent bug exists?"
+    back: "`RateCodeEncoded` and `PaymentTypeEncoded` are encoded but never listed in `Concatenate`, so they are dropped from the `\"Features\"` vector. The pipeline compiles and trains, but on fewer features than intended."
+
+  - id: ml-data-transforms-card-06
+    type: cloze
+    bloom: apply
+    front: "When predicting taxi fare, you must exclude `TripTime` from the feature list to prevent {{c1::data leakage}}, because trip duration is unknown at {{c2::prediction time}}."
+    back: "Time-dependent columns known only after the event you're predicting leak future information into training. The model learns an unrealistic shortcut and fails on real inputs."
+
+  - id: ml-data-transforms-card-07
+    type: qa
+    bloom: apply
+    front: "Order these pipeline steps correctly: trainer `FastTree()`, `OneHotEncoding` calls, `CopyColumns(\"Label\", \"FareAmount\")`, `Concatenate(\"Features\", …)`."
+    back: "`CopyColumns(\"Label\", \"FareAmount\")` → `OneHotEncoding` calls → `Concatenate(\"Features\", …)` → `FastTree()`. Label rename and encoded-column setup must both occur before the trainer."
+
+  - id: ml-data-transforms-card-08
+    type: cloze
+    bloom: understand
+    front: "The `[LoadColumn(0)]` attribute uses a {{c1::0-based}} CSV index, whereas ClosedXML cells are {{c2::1-based}} — don't carry one convention into the other."
+    back: "ML.NET CSV column attributes start at 0 for the first column. ClosedXML's `Cell(1, 1)` addresses row 1, column 1. Mixing them causes off-by-one column mismatches."
+
+  - id: ml-data-transforms-card-09
+    type: qa
+    bloom: understand
+    front: "What does `NormalizeMinMax` do, and how does it differ in purpose from `OneHotEncoding`?"
+    back: "`NormalizeMinMax` scales numeric features to the `[0, 1]` range. `OneHotEncoding` converts text categories into numeric indicator vectors. Normalization rescales existing numbers; one-hot encoding creates numbers from text."

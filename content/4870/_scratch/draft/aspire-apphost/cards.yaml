@@ -1,0 +1,69 @@
+id: aspire-apphost
+name: ".NET Aspire AppHost"
+tags: [aspire, orchestration, apphost]
+source: "notes/aspire_SCRIPT.docx; Labs/W09 gRPC/; research-aspire.md"
+prose: "The Aspire AppHost is a separate project whose `Program.cs` builds a `DistributedApplication`. Four calls do the work: `CreateBuilder`, `AddProject<Projects.X>(name)`, `.WithReference(other)` for config injection, and `.WaitFor(other)` for startup ordering."
+cards:
+  - id: aspire-apphost-card-01
+    type: cloze
+    prompt: "The Aspire orchestrator builder is created with `DistributedApplication.{{CreateBuilder}}(args)`, and the app runs with `builder.Build().{{Run}}()`."
+    answer: "CreateBuilder; Run"
+    bloom: remember
+    explanation: "AppHost `Program.cs` follows the same pattern as any other .NET host: builder → configure → build → run. The only difference is the type is `DistributedApplication`, not `WebApplication`."
+    example: "var builder = DistributedApplication.CreateBuilder(args); … builder.Build().Run();"
+
+  - id: aspire-apphost-card-02
+    type: name
+    prompt: "What does `builder.AddProject<Projects.StudentsGrpcApi>(\"backend\")` do?"
+    answer: "Registers the StudentsGrpcApi project as a service under the logical name \"backend\"."
+    bloom: understand
+    explanation: "Logical names (e.g. \"backend\") become the service-discovery identity. Consumers reach the service via `http://backend/` instead of a hardcoded localhost URL."
+    example: "var backend = builder.AddProject<Projects.StudentsGrpcApi>(\"backend\");"
+
+  - id: aspire-apphost-card-03
+    type: cloze
+    prompt: "To make the frontend aware of the backend's URL, call `.{{WithReference}}(backend)`. To delay the frontend's startup until the backend is healthy, also call `.{{WaitFor}}(backend)`."
+    answer: "WithReference; WaitFor"
+    bloom: apply
+    explanation: "`WithReference` injects env-vars with connection info. `WaitFor` adds a health-gated startup order. Pair them when the consumer cannot recover from a cold dependency."
+    example: "builder.AddProject<Projects.Frontend>(\"frontend\").WithReference(backend).WaitFor(backend);"
+
+  - id: aspire-apphost-card-04
+    type: name
+    prompt: "In an AppHost, how do you add a containerized SQL Server resource with one database called `cms`?"
+    answer: "`builder.AddSqlServer(\"sql\").AddDatabase(\"cms\")`"
+    bloom: apply
+    explanation: "`AddSqlServer(\"sql\")` registers the server resource; `.AddDatabase(\"cms\")` chains a named database onto it. The service then `WithReference`s that database and gets `ConnectionStrings__cms` injected automatically."
+    example: "var cms = builder.AddSqlServer(\"sql\").AddDatabase(\"cms\"); api.WithReference(cms);"
+
+  - id: aspire-apphost-card-05
+    type: cloze
+    prompt: "Services reach each other via their logical name — `http://{{backend}}/` resolves to the actual host:port at runtime. This is called {{service discovery}}."
+    answer: "backend; service discovery"
+    bloom: understand
+    explanation: "Aspire's service-discovery protocol handler intercepts URLs whose host matches a registered logical name and swaps in the real address. This keeps client code identical across local dev, Docker, and cloud."
+    example: "In the Blazor app: `public const string ApiBaseUrl = \"http://backend/\";`"
+
+  - id: aspire-apphost-card-06
+    type: name
+    prompt: "Where does `AddServiceDefaults()` belong — in the AppHost's `Program.cs`, or in each service's `Program.cs`?"
+    answer: "In each service's Program.cs, never in the AppHost's."
+    bloom: analyze
+    explanation: "AppHost is the orchestrator — it shouldn't register service-side concerns like OpenTelemetry or health checks on itself. Putting `AddServiceDefaults` in AppHost breaks boot."
+    example: "Service project: builder.AddServiceDefaults();  // in WebApi/Program.cs, NOT AppHost/Program.cs"
+
+  - id: aspire-apphost-card-07
+    type: cloze
+    prompt: "The AppHost project must have a `<ProjectReference>` to each service project — run `{{dotnet add reference}}` from the AppHost `.csproj` to each service."
+    answer: "dotnet add reference"
+    bloom: apply
+    explanation: "The `Projects.X` namespace used in `AddProject<Projects.X>` is generated from referenced projects. Without the reference, the type doesn't exist and the AppHost won't compile."
+    example: "dotnet add ./Cms.AppHost reference ./Cms.WebApi/Cms.WebApi.csproj"
+
+  - id: aspire-apphost-card-08
+    type: name
+    prompt: "Which command runs the whole Aspire stack during development?"
+    answer: "`dotnet watch` (or `dotnet run`) from the AppHost project directory."
+    bloom: remember
+    explanation: "The AppHost owns orchestration, so running it starts every declared service, database, and container. Other projects are not launched directly during dev."
+    example: "cd Cms.AppHost && dotnet watch"

@@ -2,11 +2,18 @@
 // Compile `content/{courseId}/` → `content/_dist/{courseId}.js` bundles.
 // Spec: content/SCHEMA.md §Compilation + §Validation.
 //
-//   node scripts/build-content.js              # build all four courses
+//   node scripts/build-content.js              # build all courses
 //   node scripts/build-content.js 4736 4911    # subset
 //
 // Output shape (per SCHEMA §Compilation):
-//   window.CONTENT["{id}"] = { meta, modules, mockExam, lessons, codePractice, topicDives, cheatSheet };
+//   window.CONTENT["{id}"] = { meta, modules, mockExam, lessons, practice, cheatSheet };
+//
+// Breaking changes from the previous compiler:
+// - codePractice[] → practice[] with kind: code | applied discriminator.
+// - topicDives[] removed entirely.
+// - cheatSheet may be null when course.yaml.cheatsheet_allowed is false.
+// - course meta.cheatsheet_allowed required.
+// - Legacy directories `topic-dives/` and `code-practice/` fail the build.
 
 const fs = require('fs');
 const path = require('path');
@@ -18,7 +25,7 @@ const { marked } = require('marked');
 const ROOT = path.resolve(__dirname, '..');
 const CONTENT_DIR = path.join(ROOT, 'content');
 const DIST_DIR = path.join(CONTENT_DIR, '_dist');
-const COURSES = ['4736', '4870', '4911', '4915', '3522', 'COMP3975', 'COMP4537'];
+const COURSES = ['4736', '4911', '4915', '3522', 'COMP3975', 'COMP4537'];
 
 const RECOGNISED_CALLOUTS = {
   analogy: 'analogy',
@@ -61,7 +68,6 @@ function safeJsonStringify(obj) {
 // ----------------------------- markdown → blocks -----------------------------
 
 function renderInlineHtml(md) {
-  // Used for short strings: mock choices, card prompts, cheat-sheet inline.
   const html = marked.parseInline(md || '', { async: false, gfm: true });
   return html.trim();
 }
@@ -70,14 +76,8 @@ function renderBlockHtml(md) {
   return marked.parse(md || '', { async: false, gfm: true }).trim();
 }
 
-// Detect unfenced mermaid blocks and wrap them in ```mermaid fences.
-// Handles source files where flowchart/sequenceDiagram/etc. were pasted raw
-// without code fences — marked would otherwise lex them as a paragraph.
 const MERMAID_STARTER = /^\s*(flowchart\s+(TB|TD|BT|RL|LR)\b|graph\s+(TB|TD|BT|RL|LR)\b|sequenceDiagram\b|stateDiagram(-v2)?\b|classDiagram\b|erDiagram\b|journey\b|gantt\b|pie\b|gitGraph\b|mindmap\b|timeline\b)/;
 
-// Newlines inside quoted labels break the mermaid parser (it treats each
-// line as a separate statement). Convert them to <br/> so multi-line
-// node labels survive.
 function normalizeQuotedNewlines(src) {
   let out = '';
   let inQ = false;
@@ -90,20 +90,10 @@ function normalizeQuotedNewlines(src) {
   return out;
 }
 
-// Several source lessons ship mermaid as one long line (every statement on
-// the same line, space-separated). Mermaid can't parse that — statements
-// must be separated by newlines or `;`. Insert newlines before common
-// statement boundaries so at least the common shapes render.
 function reflowSingleLineMermaid(src) {
-  // Runs unconditionally — regexes are safe on well-formed multi-line
-  // source (they match keywords preceded by any whitespace, so existing
-  // newlines survive). Needed because some source files cram statements
-  // onto a single line with only label-internal newlines.
   let s = src;
-  // Split off the header keyword from the first statement.
   s = s.replace(/^(\s*(?:flowchart|graph)\s+(?:TB|TD|BT|RL|LR))\s+/, '$1\n  ');
   s = s.replace(/^(\s*(?:sequenceDiagram|classDiagram|erDiagram|journey|gantt|pie|gitGraph|mindmap|timeline|stateDiagram(?:-v2)?))\s+/, '$1\n  ');
-  // Keyword-led statements always start a new line.
   s = s.replace(/\s+(subgraph\s)/g, '\n  $1');
   s = s.replace(/\s+(end)(?!\w)/g, '\n  $1');
   s = s.replace(/\s+(direction\s)/g, '\n  $1');
@@ -112,20 +102,10 @@ function reflowSingleLineMermaid(src) {
   s = s.replace(/\s+(participant\s)/g, '\n  $1');
   s = s.replace(/\s+(autonumber\b)/g, '\n  $1');
   s = s.replace(/\s+(Note\s+(?:over|left of|right of)\s)/g, '\n  $1');
-  // After a closing node shape, if followed by a bare ID + bracket/arrow,
-  // that's the start of a new statement.
   s = s.replace(/([\]\}\)])\s+([A-Za-z]\w*)(\s*(?:\[|\{|\(|--|==|-\.))/g, '$1\n  $2$3');
-  // After an edge terminator `--> ID`, if followed by another `ID <edge>`,
-  // split so each edge statement sits on its own line. The next edge can
-  // be any mermaid flowchart edge opener: `-->`, `-.->`, `==>`, or the
-  // label variants `-- text --`, `-. text .->`, `== text ==>`.
   const EDGE_START = '(?:-->|-\\.->|==>|--\\s|==\\s|-\\.\\s)';
   s = s.replace(new RegExp(`(-->|-\\.->|==>)\\s+([A-Za-z]\\w*)\\s+(?=[A-Za-z]\\w*\\s*${EDGE_START})`, 'g'), '$1 $2\n  ');
-  // Sequence-diagram message edges (`->>`, `-->>`, `-x`, `--x`).
-  // Break before any identifier that starts a new message line.
   s = s.replace(/\s+([A-Za-z]\w*\s*(?:->>\+?|-->>\+?|->>-|--x|-x))/g, '\n  $1');
-  // `direction LR` and standalone `end` terminate a statement — the next
-  // identifier begins a fresh one.
   s = s.replace(/\b(direction\s+(?:TB|TD|BT|RL|LR))\s+(?=[A-Za-z])/g, '$1\n  ');
   s = s.replace(/(^|\n)(\s*end)\b(?!\w)[ \t]+(?=[A-Za-z])/g, '$1$2\n  ');
   return s;
@@ -149,17 +129,11 @@ function preprocessMermaid(md) {
       let inQuote = false;
       while (i < lines.length) {
         const cur = lines[i];
-        // Only treat a blank line as a block terminator when we are NOT
-        // inside a quoted node label. Source files sometimes embed a
-        // blank line inside a label (e.g. multi-paragraph code snippets).
         if (!inQuote && cur.trim() === '') break;
         block.push(cur);
         for (let k = 0; k < cur.length; k++) if (cur[k] === '"') inQuote = !inQuote;
         i++;
       }
-      // Strip accidental markdown escapes inside mermaid source.
-      // Also strip the `  ` markdown hard-break before newlines — those
-      // only exist because the source was authored as markdown paragraphs.
       const joined = block.join('\n')
         .replace(/\\([\[\]()<>_*`])/g, '$1')
         .replace(/ {2,}\n/g, '\n');
@@ -175,8 +149,6 @@ function preprocessMermaid(md) {
   return out.join('\n');
 }
 
-// Turn a markdown body into the SCHEMA LessonBlock[] array.
-// Uses marked's lexer to walk tokens, then applies callout / checkpoint / code transforms.
 function parseLessonBlocks(md) {
   const tokens = marked.lexer(preprocessMermaid(md || ''));
   const blocks = [];
@@ -244,16 +216,12 @@ function parseLessonBlocks(md) {
       case 'hr':
         break;
       default:
-        // Unknown token type — fall back to rendering as HTML.
         blocks.push({ kind: 'html', html: renderBlockHtml(tok.raw || '') });
     }
   }
   return fuseDiagramBlocks(splitCheckParagraphs(blocks));
 }
 
-// COMP 4915 lessons ship inline "Check: question?answer" prompts as plain
-// paragraph text (sometimes several concatenated in one paragraph). Convert
-// them into checkpoint blocks so the renderer's click-to-reveal works.
 function splitCheckParagraphs(blocks) {
   const out = [];
   for (const b of blocks) {
@@ -281,7 +249,6 @@ function splitCheckParagraphs(blocks) {
   return out;
 }
 
-// First '?' outside of backtick code spans marks the Q/A split.
 function findCheckpointBoundary(s) {
   let inCode = false;
   for (let i = 0; i < s.length; i++) {
@@ -291,11 +258,6 @@ function findCheckpointBoundary(s) {
   return -1;
 }
 
-// Fuse a caption paragraph + <svg> paragraph + optional legend paragraph
-// into a single `diagram` block. Matches v1 source HTML where these three
-// parts were grouped in a <div class="diagram">. The renderer turns this
-// back into one framed card so the diagram, its title, and its legend read
-// as a single unit instead of three loose paragraphs.
 function fuseDiagramBlocks(blocks) {
   const SVG_RE = /^\s*<svg\b/i;
   const out = [];
@@ -303,7 +265,6 @@ function fuseDiagramBlocks(blocks) {
   while (i < blocks.length) {
     const b = blocks[i];
     if (b && b.kind === 'p' && typeof b.html === 'string' && SVG_RE.test(b.html)) {
-      // Pop a short plain-text caption off the end if present.
       let title = null;
       const prev = out[out.length - 1];
       if (prev && prev.kind === 'p' && typeof prev.text === 'string'
@@ -312,7 +273,6 @@ function fuseDiagramBlocks(blocks) {
         title = prev.text.trim();
         out.pop();
       }
-      // Absorb a trailing legend paragraph that starts with a <strong> label.
       let legend = null;
       const next = blocks[i + 1];
       if (next && next.kind === 'p' && typeof next.html === 'string'
@@ -331,7 +291,6 @@ function fuseDiagramBlocks(blocks) {
 }
 
 function classifyBlockquote(tok) {
-  // Detect `**Q:** ... **A:** ...` checkpoint.
   const raw = tok.raw
     .replace(/^>\s?/gm, '')
     .replace(/\r\n/g, '\n')
@@ -347,7 +306,6 @@ function classifyBlockquote(tok) {
     };
   }
 
-  // Detect `**Label**` first-line callout.
   const firstLine = raw.split('\n', 1)[0].trim();
   const labelMatch = firstLine.match(/^\*\*([A-Za-z]+)\*\*\s*\.?\s*$/);
   if (labelMatch) {
@@ -365,7 +323,6 @@ function classifyBlockquote(tok) {
     }
   }
 
-  // Inline `**Label**.` at start of first line — still a callout.
   const inlineLabel = firstLine.match(/^\*\*([A-Za-z]+)\*\*[.:]?\s+(.*)$/);
   if (inlineLabel && RECOGNISED_CALLOUTS[inlineLabel[1].toLowerCase()]) {
     const key = inlineLabel[1].toLowerCase();
@@ -378,11 +335,22 @@ function classifyBlockquote(tok) {
     };
   }
 
-  // Plain blockquote.
   return {
     kind: 'html',
     html: renderBlockHtml(tok.raw)
   };
+}
+
+// ----------------------------- legacy-directory guard ------------------------
+
+function rejectLegacyDirs(dir, id) {
+  const legacy = [
+    { dirname: 'topic-dives', msg: 'deprecated `topic-dives/` directory found — dives are removed from the schema. Run `/enrich-course ' + id + '` to migrate (Category H1).' },
+    { dirname: 'code-practice', msg: 'deprecated `code-practice/` directory found — renamed to `practice/` with `kind:` discriminator. Run `/enrich-course ' + id + '` to migrate (Category H2).' }
+  ];
+  for (const { dirname, msg } of legacy) {
+    if (fs.existsSync(path.join(dir, dirname))) fail(`[${id}] ${msg}`);
+  }
 }
 
 // ----------------------------- loaders ---------------------------------------
@@ -392,6 +360,9 @@ function loadCourseMeta(dir) {
   if (!course || !course.id || !course.code || !course.name || !course.exam) {
     fail('course.yaml missing required fields at ' + dir);
   }
+  if (typeof course.cheatsheet_allowed !== 'boolean') {
+    fail('course.yaml missing required field `cheatsheet_allowed` (bool) at ' + dir);
+  }
   const meta = {
     id: course.id,
     code: course.code,
@@ -399,6 +370,7 @@ function loadCourseMeta(dir) {
     exam: course.exam,
     room: course.room || '',
     format: course.format || '',
+    cheatsheet_allowed: course.cheatsheet_allowed,
     instructor: course.instructor,
     sections: course.sections,
     notes_html: course.notes ? renderBlockHtml(course.notes) : undefined
@@ -414,6 +386,9 @@ function loadFlashcards(dir) {
     for (const t of m.topics) {
       if (!t.id || !t.name || !Array.isArray(t.cards) || t.cards.length === 0) {
         fail('invalid topic ' + t.id + ' (must have id, name, cards[])');
+      }
+      if (t.priority !== undefined) {
+        warn(`topic ${t.id} has deprecated "priority" field — remove (field no longer supported)`);
       }
       for (const card of t.cards) {
         validateCard(card, t.id);
@@ -474,10 +449,20 @@ function loadLessons(dir) {
   const lessonsDir = path.join(dir, 'lessons');
   const files = readDirFiles(lessonsDir, '.md');
   const lessons = [];
+  let strategyCount = 0;
   for (const f of files) {
     const { data, content } = matter(readFile(path.join(lessonsDir, f)));
     for (const req of ['n', 'id', 'title']) {
       if (data[req] === undefined) fail(`lesson ${f} missing frontmatter field: ${req}`);
+    }
+    if (data.kind === 'strategy') {
+      strategyCount++;
+      // Strategy lesson id is `{courseId}-exam-strategy` — per-course to satisfy
+      // global lesson-id uniqueness. Bare `exam-strategy` is accepted for new
+      // courses where the author hasn't yet prefixed.
+      if (data.id !== 'exam-strategy' && !/-exam-strategy$/.test(data.id)) {
+        fail(`lesson ${f} has kind: strategy but id is "${data.id}" (must be "exam-strategy" or "{courseId}-exam-strategy")`);
+      }
     }
     if (!content.trim()) warn(`lesson ${f} body empty`);
     const blocks = parseLessonBlocks(content);
@@ -488,40 +473,66 @@ function loadLessons(dir) {
       hook: data.hook || '',
       tags: data.tags || [],
       module: data.module || '',
-      priority: data.priority,
+      kind: data.kind,
       source: data.source,
       blocks
     });
   }
+  if (strategyCount === 0) fail(`no lesson with kind: strategy found — every course must include lessons/00-exam-strategy.md`);
+  if (strategyCount > 1) fail(`multiple lessons with kind: strategy found — exactly one required`);
   return lessons.sort((a, b) => a.n - b.n);
 }
 
-function loadCodePractice(dir) {
-  const cpDir = path.join(dir, 'code-practice');
-  const files = readDirFiles(cpDir, '.md');
+function loadPractice(dir) {
+  const pDir = path.join(dir, 'practice');
+  if (!fs.existsSync(pDir)) fail('missing `practice/` directory at ' + dir);
+  const files = readDirFiles(pDir, '.md');
+  if (files.length === 0) fail('`practice/` directory is empty at ' + dir);
   const problems = [];
   for (const f of files) {
-    const { data, content } = matter(readFile(path.join(cpDir, f)));
-    for (const req of ['n', 'id', 'title', 'lang']) {
-      if (data[req] === undefined) fail(`code-practice ${f} missing frontmatter: ${req}`);
+    const { data, content } = matter(readFile(path.join(pDir, f)));
+    for (const req of ['n', 'id', 'title', 'kind', 'source']) {
+      if (data[req] === undefined) fail(`practice ${f} missing frontmatter field: ${req}`);
     }
-    const variant = data.variant || 'starter-solution';
-    const parsed = parseCodePracticeBody(content, variant, f, data.lang);
-    problems.push({
-      n: data.n,
-      id: data.id,
-      title: data.title,
-      lang: data.lang,
-      tags: data.tags || [],
-      variant,
-      ...parsed
-    });
+    if (data.kind !== 'code' && data.kind !== 'applied') {
+      fail(`practice ${f} has invalid kind: "${data.kind}" (must be "code" or "applied")`);
+    }
+    if (data.kind === 'code') {
+      if (!data.lang) fail(`practice ${f} (kind: code) missing frontmatter field: lang`);
+      const variant = data.variant || 'starter-solution';
+      if (variant !== 'starter-solution' && variant !== 'annotation') {
+        fail(`practice ${f} has invalid variant: "${variant}" (must be "starter-solution" or "annotation")`);
+      }
+      const parsed = parseCodePracticeBody(content, variant, f, data.lang);
+      problems.push({
+        kind: 'code',
+        variant,
+        n: data.n,
+        id: data.id,
+        title: data.title,
+        lang: data.lang,
+        tags: data.tags || [],
+        source: data.source,
+        ...parsed
+      });
+    } else {
+      // kind: applied
+      const parsed = parseAppliedPracticeBody(content, f);
+      problems.push({
+        kind: 'applied',
+        n: data.n,
+        id: data.id,
+        title: data.title,
+        tags: data.tags || [],
+        source: data.source,
+        ...parsed
+      });
+    }
   }
   return problems.sort((a, b) => a.n - b.n);
 }
 
-function parseCodePracticeBody(md, variant, fname, lang) {
-  // Split on H2 headings.
+function splitH2Sections(md) {
   const sections = {};
   const re = /^##\s+(.+?)\s*$/gm;
   const heads = [];
@@ -533,13 +544,18 @@ function parseCodePracticeBody(md, variant, fname, lang) {
     const body = md.slice(s.end, next ? next.idx : md.length).trim();
     sections[s.title.toLowerCase()] = body;
   }
+  return sections;
+}
+
+function parseCodePracticeBody(md, variant, fname, lang) {
+  const sections = splitH2Sections(md);
 
   if (variant === 'annotation') {
     if (!sections['code'] || !sections['notes']) {
-      fail(`code-practice ${fname} (annotation) missing Code/Notes sections`);
+      fail(`practice ${fname} (kind: code, variant: annotation) missing Code/Notes sections`);
     }
     const codeMatch = sections['code'].match(/```[\w-]*\n([\s\S]*?)\n```/);
-    if (!codeMatch) fail(`code-practice ${fname} Code section has no fenced block`);
+    if (!codeMatch) fail(`practice ${fname} Code section has no fenced block`);
     const notes = parseAnnotationNotes(sections['notes']);
     return { code: codeMatch[1], notes };
   }
@@ -547,17 +563,17 @@ function parseCodePracticeBody(md, variant, fname, lang) {
   // starter-solution
   const need = ['prompt', 'starter', 'solution', 'why'];
   for (const k of need) {
-    if (!sections[k]) fail(`code-practice ${fname} missing H2 "${k[0].toUpperCase() + k.slice(1)}"`);
+    if (!sections[k]) fail(`practice ${fname} (kind: code) missing H2 "${k[0].toUpperCase() + k.slice(1)}"`);
   }
   const starterFence = sections['starter'].match(/```([\w-]*)\n([\s\S]*?)\n```/);
   const solFence = sections['solution'].match(/```([\w-]*)\n([\s\S]*?)\n```/);
-  if (!starterFence) fail(`code-practice ${fname} Starter has no fenced block`);
-  if (!solFence) fail(`code-practice ${fname} Solution has no fenced block`);
+  if (!starterFence) fail(`practice ${fname} Starter has no fenced block`);
+  if (!solFence) fail(`practice ${fname} Solution has no fenced block`);
 
   const extraStarter = sections['starter'].match(/```[\w-]*\n[\s\S]*?\n```[\s\S]+?```[\w-]*\n/);
-  if (extraStarter) warn(`code-practice ${fname} Starter has multiple fences`);
+  if (extraStarter) warn(`practice ${fname} Starter has multiple fences`);
   const extraSol = sections['solution'].match(/```[\w-]*\n[\s\S]*?\n```[\s\S]+?```[\w-]*\n/);
-  if (extraSol) warn(`code-practice ${fname} Solution has multiple fences`);
+  if (extraSol) warn(`practice ${fname} Solution has multiple fences`);
 
   return {
     prompt_html: renderBlockHtml(sections['prompt']),
@@ -567,18 +583,33 @@ function parseCodePracticeBody(md, variant, fname, lang) {
   };
 }
 
+function parseAppliedPracticeBody(md, fname) {
+  const sections = splitH2Sections(md);
+  const need = ['problem', 'walkthrough', 'common wrong approaches', 'why'];
+  for (const k of need) {
+    if (!sections[k]) {
+      const prettyName = k.split(' ').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
+      fail(`practice ${fname} (kind: applied) missing H2 "${prettyName}"`);
+    }
+  }
+  return {
+    problem_html: renderBlockHtml(sections['problem']),
+    walkthrough_html: renderBlockHtml(sections['walkthrough']),
+    common_wrong_html: renderBlockHtml(sections['common wrong approaches']),
+    why_html: renderBlockHtml(sections['why'])
+  };
+}
+
 function parseAnnotationNotes(md) {
   const lines = md.split('\n');
   const notes = [];
   for (const line of lines) {
-    // `- **line N** · tag — text`  or  `- **lines 1–N** · tag — text`
     const m = line.match(/^\s*-\s+\*\*line[s]?\s+([0-9–\-,\s]+)\*\*\s*[·.]\s*(.+?)\s*[—-]\s*(.+)$/);
     if (m) {
       const lineStr = m[1].trim();
       const first = parseInt(lineStr.match(/\d+/)?.[0] || '0', 10);
       notes.push({ line: first, tag: m[2].trim(), text: m[3].trim() });
     } else if (/\S/.test(line)) {
-      // Loose bullet — keep as line 0.
       const loose = line.replace(/^\s*-\s+/, '').trim();
       if (loose && !/^<!--/.test(loose)) notes.push({ line: 0, tag: 'note', text: loose });
     }
@@ -586,30 +617,22 @@ function parseAnnotationNotes(md) {
   return notes;
 }
 
-function loadTopicDives(dir) {
-  const td = path.join(dir, 'topic-dives');
-  const files = readDirFiles(td, '.md');
-  const dives = [];
-  for (const f of files) {
-    const { data, content } = matter(readFile(path.join(td, f)));
-    if (!data.id || !data.title) fail(`topic-dive ${f} missing id/title`);
-    const blocks = parseLessonBlocks(content);
-    dives.push({
-      id: data.id,
-      title: data.title,
-      pillar: data.pillar || 'tech',
-      priority: data.priority || 'mid',
-      chapter: data.chapter,
-      tags: data.tags || [],
-      blocks
-    });
-  }
-  const prio = { high: 0, mid: 1, low: 2 };
-  return dives.sort((a, b) => (prio[a.priority] || 1) - (prio[b.priority] || 1) || a.title.localeCompare(b.title));
-}
+function loadCheatSheet(dir, cheatsheetAllowed) {
+  const cheatPath = path.join(dir, 'cheat-sheet.md');
+  const exists = fs.existsSync(cheatPath);
 
-function loadCheatSheet(dir) {
-  const src = readFile(path.join(dir, 'cheat-sheet.md'));
+  if (!cheatsheetAllowed) {
+    if (exists) {
+      fail(`cheat-sheet.md present but course.yaml has cheatsheet_allowed: false — delete the file (the real exam doesn't permit one) or flip the flag`);
+    }
+    return null;
+  }
+
+  if (!exists) {
+    fail(`course.yaml has cheatsheet_allowed: true but cheat-sheet.md is missing at ${dir}`);
+  }
+
+  const src = readFile(cheatPath);
   const { data, content } = matter(src);
   const re = /^##\s+(.+?)\s*$/gm;
   const heads = [];
@@ -635,16 +658,16 @@ function loadCheatSheet(dir) {
 function buildCourse(id) {
   const dir = path.join(CONTENT_DIR, id);
   if (!fs.existsSync(dir)) fail('missing content dir: ' + dir);
+  rejectLegacyDirs(dir, id);
   const meta = loadCourseMeta(dir);
   if (meta.id !== id) fail(`course.yaml id "${meta.id}" !== dir name "${id}"`);
   const modules = loadFlashcards(dir);
   const mockExam = loadMockExam(dir);
   const lessons = loadLessons(dir);
-  const codePractice = loadCodePractice(dir);
-  const topicDives = loadTopicDives(dir);
-  const cheatSheet = loadCheatSheet(dir);
+  const practice = loadPractice(dir);
+  const cheatSheet = loadCheatSheet(dir, meta.cheatsheet_allowed);
 
-  return { meta, modules, mockExam, lessons, codePractice, topicDives, cheatSheet };
+  return { meta, modules, mockExam, lessons, practice, cheatSheet };
 }
 
 function main() {
@@ -655,8 +678,7 @@ function main() {
   const manifest = { courses: [], builtAt: new Date().toISOString() };
   const globalTopicIds = new Set();
   const globalLessonIds = new Set();
-  const globalCodeIds = new Set();
-  const globalDiveIds = new Set();
+  const globalPracticeIds = new Set();
 
   for (const id of targets) {
     process.stdout.write(`Building ${id}... `);
@@ -671,13 +693,9 @@ function main() {
       if (globalLessonIds.has(l.id)) fail(`duplicate lesson id: ${l.id}`);
       globalLessonIds.add(l.id);
     }
-    for (const c of bundle.codePractice) {
-      if (globalCodeIds.has(c.id)) fail(`duplicate code-practice id: ${c.id}`);
-      globalCodeIds.add(c.id);
-    }
-    for (const d of bundle.topicDives) {
-      if (globalDiveIds.has(d.id)) fail(`duplicate topic-dive id: ${d.id}`);
-      globalDiveIds.add(d.id);
+    for (const p of bundle.practice) {
+      if (globalPracticeIds.has(p.id)) fail(`duplicate practice id: ${p.id}`);
+      globalPracticeIds.add(p.id);
     }
 
     const payload = safeJsonStringify(bundle);
@@ -685,18 +703,25 @@ function main() {
     const outPath = path.join(DIST_DIR, `${id}.js`);
     fs.writeFileSync(outPath, js);
     const hash = sha256(js);
+
+    const practiceByKind = bundle.practice.reduce((acc, p) => {
+      acc[p.kind] = (acc[p.kind] || 0) + 1;
+      return acc;
+    }, {});
+
     manifest.courses.push({
       id,
       file: path.relative(ROOT, outPath),
       hash,
+      cheatsheet_allowed: bundle.meta.cheatsheet_allowed,
       counts: {
         modules: bundle.modules.length,
         topics: bundle.modules.reduce((a, m) => a + m.topics.length, 0),
         cards: bundle.modules.reduce((a, m) => a + m.topics.reduce((b, t) => b + t.cards.length, 0), 0),
         lessons: bundle.lessons.length,
-        codePractice: bundle.codePractice.length,
-        topicDives: bundle.topicDives.length,
-        cheatBlocks: bundle.cheatSheet.blocks.length,
+        practice: bundle.practice.length,
+        practiceByKind,
+        cheatBlocks: bundle.cheatSheet ? bundle.cheatSheet.blocks.length : null,
         mockQuestions: bundle.mockExam.questions.length
       }
     });

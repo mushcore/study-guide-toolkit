@@ -1,0 +1,61 @@
+id: aspire-orchestrated-resources
+name: ".NET Aspire orchestrated resources"
+tags: [aspire, sql-server, redis, orchestration]
+source: "notes/aspire_SCRIPT.docx; research-aspire.md"
+prose: "AppHost declares infrastructure resources with `AddSqlServer`, `AddRedis`, `AddPostgres`, etc. under logical names. `.WithReference(resource)` injects the resource's connection info into consuming services as environment variables. Services consume it via typed helpers like `AddSqlServerDbContext<T>(name)`."
+cards:
+  - id: aspire-orchestrated-resources-card-01
+    type: cloze
+    prompt: "To register a SQL Server container with one database called `cms`: `builder.{{AddSqlServer}}(\"sql\").{{AddDatabase}}(\"cms\")`."
+    answer: "AddSqlServer; AddDatabase"
+    bloom: remember
+    explanation: "`AddSqlServer` registers the server resource under a logical name. `.AddDatabase` chains a named database onto it. The returned resource handle is what services `WithReference` to."
+    example: "var db = builder.AddSqlServer(\"sql\").AddDatabase(\"cms\");"
+
+  - id: aspire-orchestrated-resources-card-02
+    type: name
+    prompt: "How does a consuming service receive the connection string for an Aspire-managed SQL Server database named `cms`?"
+    answer: "Aspire injects `ConnectionStrings__cms` as an environment variable when the service process launches."
+    bloom: understand
+    explanation: "The double-underscore is .NET's hierarchical-config convention — `ConnectionStrings__cms` equals `builder.Configuration.GetConnectionString(\"cms\")`. Aspire writes it; the service reads it."
+    example: "builder.AddSqlServerDbContext<CmsDbContext>(\"cms\"); // reads ConnectionStrings__cms automatically"
+
+  - id: aspire-orchestrated-resources-card-03
+    type: cloze
+    prompt: "A consuming service only receives a resource's connection info if the AppHost chains `.{{WithReference}}(resource)` onto `AddProject<>(...)`."
+    answer: "WithReference"
+    bloom: apply
+    explanation: "`AddProject` alone launches the service but shares no resource info. `WithReference` is the bridge that translates resource declarations into env-vars on the consumer."
+    example: "builder.AddProject<Projects.Api>(\"api\").WithReference(db);"
+
+  - id: aspire-orchestrated-resources-card-04
+    type: name
+    prompt: "In a service's `Program.cs`, how do you wire EF Core to an Aspire-managed SQL Server database named `cms`?"
+    answer: "`builder.AddSqlServerDbContext<CmsDbContext>(\"cms\")`"
+    bloom: apply
+    explanation: "This helper ships in `Aspire.Microsoft.EntityFrameworkCore.SqlServer`. It reads `ConnectionStrings__cms` automatically and configures `DbContextOptions`."
+    example: "builder.AddSqlServerDbContext<CmsDbContext>(\"cms\"); // that's the only setup needed"
+
+  - id: aspire-orchestrated-resources-card-05
+    type: name
+    prompt: "How do you register a Redis cache resource in the AppHost?"
+    answer: "`var cache = builder.AddRedis(\"cache\");`"
+    bloom: remember
+    explanation: "No `.AddDatabase` chain — Redis is a single key-value store per resource. Services consume it with `builder.AddRedisDistributedCache(\"cache\")`."
+    example: "AppHost: var cache = builder.AddRedis(\"cache\"); api.WithReference(cache);\nService: builder.AddRedisDistributedCache(\"cache\");"
+
+  - id: aspire-orchestrated-resources-card-06
+    type: cloze
+    prompt: "To pass an arbitrary env-var from AppHost to one specific service, use `.{{WithEnvironment}}(key, value)`."
+    answer: "WithEnvironment"
+    bloom: apply
+    explanation: "Scoped to that one project's process. Prefer this over leaking values globally. The service reads it via `IConfiguration` or `Environment.GetEnvironmentVariable`."
+    example: "api.WithEnvironment(\"FeatureFlags__NewCheckout\", \"true\");"
+
+  - id: aspire-orchestrated-resources-card-07
+    type: name
+    prompt: "Your service throws \"connection string not found\" at runtime even though AppHost has `AddSqlServer(\"sql\").AddDatabase(\"cms\")`. What's the most likely omission?"
+    answer: "The consuming service's `AddProject<>(...)` call is missing `.WithReference(db)`."
+    bloom: analyze
+    explanation: "Declaring the resource is not enough. Without `WithReference`, Aspire never injects the connection string into the target service's environment."
+    example: "builder.AddProject<Projects.Api>(\"api\").WithReference(db).WaitFor(db);"

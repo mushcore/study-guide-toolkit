@@ -1,6 +1,6 @@
 ---
 name: author-course
-description: Progress tracker and dispatcher for Phase A course authoring. Checks current stage and tells the user which stage skill to invoke next in a fresh session. Use when the user invokes /author-course, starts a new course, or wants to know where they left off.
+description: Progress tracker and dispatcher for Phase A course authoring. Checks current stage and tells which stage skill to invoke next. Use when the user invokes /author-course, starts a new course, or wants to know where they left off.
 argument-hint: <course-id> [materials-path]
 allowed-tools: Read, Write, Bash, Glob
 disable-model-invocation: false
@@ -8,20 +8,20 @@ disable-model-invocation: false
 
 # author-course — progress dispatcher
 
-Each stage of course authoring runs in its own fresh Claude Code session via a dedicated skill. This skill only tracks progress and routes you to the right next step.
+Stages chain in a single session by default — each stage skill, when complete, points to the next and the user (or you) invokes it directly without a session reset. Each stage skill is also safe to invoke standalone in a fresh session. This dispatcher only tracks progress and routes to the right next step.
 
 ## What this skill does
 
 1. Parse `$ARGUMENTS` → `{id}` + optional `{materials_path}` (default: `courses/COMP{id}/materials/`).
 2. If `content/{id}/_scratch/progress.md` does not exist: run preflight, initialize it, tell user to start Stage 1.
-3. If it exists: read `Current stage:` and report it, then tell the user exactly which skill to invoke in a new session.
+3. If it exists: read `Current stage:` and report it, then tell the user exactly which skill to invoke next (same session is the default; fresh session also works).
 
 ## Preflight (runs once, only if no progress file)
 
 1. Confirm cwd is `/Users/kevinliang/BCIT/CST/TERM4`.
 2. Glob `{materials_path}/**` — must be non-empty (minimum: slides + syllabus or past-exams). Stop if empty.
 3. Glob `content/{id}/` — if ≥3 `.md` files exist outside `_scratch/`, ask user to confirm overwrite or use `/enrich-course`.
-4. `mkdir -p content/{id}/{_scratch/draft,_scratch/mock,lessons,code-practice,topic-dives}`.
+4. `mkdir -p content/{id}/{_scratch/draft,_scratch/mock,lessons,practice}`. Do NOT create `topic-dives/` or `code-practice/` — those are deprecated per STANDARDS / SCHEMA and trigger Pass 1.14 criticals.
 5. Write `content/{id}/_scratch/progress.md`:
 
 ```markdown
@@ -52,4 +52,4 @@ stage1
 | `stage5` | `/author-stage5 {id}` |
 | `done` | "All stages complete. Run `cd app && npm run dev` to smoke-test, then `./deploy.sh`." |
 
-Tell the user to open a new Claude Code session and invoke the skill listed above. Each stage skill reads everything it needs from files — no context from this session is needed.
+Recommend the user invoke the skill listed above. Fresh-session resets are optional — each stage skill reads everything it needs from files and is safe to invoke either immediately after the previous stage (same session, context carries forward) or in a fresh session.

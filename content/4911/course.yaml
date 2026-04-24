@@ -4,6 +4,7 @@ name: Developing Enterprise Service
 exam: "2026-04-20T10:30:00-07:00"
 room: SW05 2875
 format: Final Exam — MCQ + T/F + Short Answer + Essay + Code Annotation
+cheatsheet_allowed: false
 instructor: Bruce Link
 notes: |
   Source: study guide cover "Mon Apr 20 · 10:30 · SW05 2875".

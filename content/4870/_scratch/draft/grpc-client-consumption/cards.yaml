@@ -1,0 +1,61 @@
+id: grpc-client-consumption
+name: "gRPC client consumption"
+tags: [grpc, client, di, asp-net-core]
+source: "notes/gRPC_EF_SQLite_VSCode_SCRIPT.docx; Labs/W09 gRPC/; research-grpc.md"
+prose: "A gRPC client project shares the `.proto` file with the server but sets `GrpcServices=\"Client\"` in its `.csproj`. Clients are constructed from a long-lived `GrpcChannel.ForAddress(url)` or registered via `AddGrpcClient<T>()` for DI. Blazor pages awaiting gRPC calls must use `@rendermode InteractiveServer`."
+cards:
+  - id: grpc-client-consumption-card-01
+    type: cloze
+    prompt: "To generate only the client-side stub from a shared `.proto`, the `.csproj` entry is `<Protobuf Include=\"…\" GrpcServices=\"{{Client}}\" />`."
+    answer: "Client"
+    bloom: remember
+    explanation: "`GrpcServices` chooses which code `Grpc.Tools` emits. `Server` produces the base class; `Client` produces the stub; `Both` produces both and is rarely needed."
+    example: "<Protobuf Include=\"Protos\\students.proto\" GrpcServices=\"Client\" />"
+
+  - id: grpc-client-consumption-card-02
+    type: name
+    prompt: "Which method constructs a long-lived gRPC connection given a URL?"
+    answer: "GrpcChannel.ForAddress(url)"
+    bloom: remember
+    explanation: "The channel holds the HTTP/2 connection. Creating one is expensive; reuse across many client stubs. Client stubs themselves are cheap throwaway objects bound to a channel."
+    example: "using var channel = GrpcChannel.ForAddress(\"http://localhost:5099\");"
+
+  - id: grpc-client-consumption-card-03
+    type: cloze
+    prompt: "For DI-based client registration in ASP.NET Core, use `builder.Services.{{AddGrpcClient}}<StudentRemote.StudentRemoteClient>(opts => opts.Address = new Uri(\"http://localhost:5099\"))` after adding the {{Grpc.Net.ClientFactory}} NuGet package."
+    answer: "AddGrpcClient; Grpc.Net.ClientFactory"
+    bloom: apply
+    explanation: "`AddGrpcClient` wires the client into the DI container with channel pooling, resilience handlers, and OpenTelemetry. Plain `new GrpcChannel` in Program.cs loses all those benefits."
+    example: "builder.Services.AddGrpcClient<StudentRemote.StudentRemoteClient>(o => o.Address = new Uri(\"http://backend\"));"
+
+  - id: grpc-client-consumption-card-04
+    type: name
+    prompt: "What render mode must a Blazor page use so it can `await` a gRPC client call inside `OnInitializedAsync`?"
+    answer: "`@rendermode InteractiveServer` (or `InteractiveWebAssembly` / `InteractiveAuto`)."
+    bloom: apply
+    explanation: "Static server rendering completes before asynchronous work resolves. An interactive mode keeps the component alive and re-renders when the awaited task finishes."
+    example: "@page \"/students\"\n@rendermode InteractiveServer\n@inject StudentRemote.StudentRemoteClient _g"
+
+  - id: grpc-client-consumption-card-05
+    type: cloze
+    prompt: "gRPC client methods are exposed in two forms: a blocking `{{Xxx}}(...)` and an asynchronous `{{XxxAsync}}(...)` that returns a `Task<T>` you await."
+    answer: "Xxx; XxxAsync"
+    bloom: understand
+    explanation: "Protocol Buffers generate both forms. The Async form is what you almost always call from managed code — the blocking form can deadlock in sync contexts."
+    example: "var reply = await client.GetStudentInfoAsync(request); // not client.GetStudentInfo(request)"
+
+  - id: grpc-client-consumption-card-06
+    type: name
+    prompt: "A Blazor client gets `ConnectionRefused` every time it calls the gRPC server. What is the first thing to check?"
+    answer: "That the client's Uri matches the server's `launchSettings.json` applicationUrl (including port and http vs https)."
+    bloom: analyze
+    explanation: "Port drift between server launch profile and client config is the single most common cause. Aspire service discovery via `http://backend/` eliminates this class of bug entirely."
+    example: "Server listens on https://localhost:7001. Client Uri must be exactly that URL — not http://localhost:5001."
+
+  - id: grpc-client-consumption-card-07
+    type: cloze
+    prompt: "Once registered with `AddGrpcClient<T>()`, inject the stub anywhere with `{{@inject}}` (Razor) or constructor injection (plain C# services)."
+    answer: "@inject"
+    bloom: apply
+    explanation: "DI-registered gRPC clients are transient by default. Each request gets a fresh stub bound to a pooled channel."
+    example: "@inject StudentRemote.StudentRemoteClient _grpcClient"

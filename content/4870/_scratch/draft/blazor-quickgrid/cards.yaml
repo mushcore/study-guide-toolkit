@@ -1,0 +1,61 @@
+id: blazor-quickgrid
+name: "Blazor QuickGrid"
+tags: [blazor, ui, quickgrid]
+source: "notes/BlazorServer_QuickGrid.docx; notes/BlazorWasm_QuickGrid.docx; Labs/W07 QuickGrid/; research-taghelpers-blazor.md"
+prose: "`<QuickGrid Items=\"IQueryable<T>\" Pagination=\"PaginationState\">` plus `<PropertyColumn>` for simple bindings and `<TemplateColumn>` with `SortBy` for custom markup. Live filter via `<input @bind @bind:event=\"oninput\">` + computed IQueryable. Host page needs an interactive render mode."
+cards:
+  - id: blazor-quickgrid-card-01
+    type: cloze
+    prompt: "A `QuickGrid` binds to an `{{IQueryable<T>}}` via `Items=\"@...\"`, with paging controlled by a `{{PaginationState}}` declared in `@code`."
+    answer: "IQueryable<T>; PaginationState"
+    bloom: apply
+    explanation: "IQueryable lets EF Core translate filtering / paging to SQL. PaginationState's `ItemsPerPage` decides page size; a sibling `<Paginator State=\"@state\">` component renders the controls."
+    example: "private PaginationState _p = new() { ItemsPerPage = 10 };"
+
+  - id: blazor-quickgrid-card-02
+    type: name
+    prompt: "How do you make a `PropertyColumn` sortable?"
+    answer: "Add the `Sortable=\"true\"` attribute."
+    bloom: remember
+    explanation: "PropertyColumn already knows which property to sort by — setting Sortable=\"true\" is sufficient. TemplateColumn needs an explicit SortBy because it has no implicit sort key."
+    example: "<PropertyColumn Property=\"@(s => s.FirstName)\" Sortable=\"true\" />"
+
+  - id: blazor-quickgrid-card-03
+    type: cloze
+    prompt: "A `TemplateColumn` needs `{{SortBy}}` to be sortable; `Sortable=\"true\"` alone does nothing on a TemplateColumn."
+    answer: "SortBy"
+    bloom: apply
+    explanation: "TemplateColumn's render fragment might touch many properties, so QuickGrid can't infer a single sort key. SortBy takes a GridSort<T> you build fluently."
+    example: "<TemplateColumn Title=\"Name\" SortBy=\"@GridSort<Student>.ByAscending(s => s.LastName)\"><div>@context.FirstName @context.LastName</div></TemplateColumn>"
+
+  - id: blazor-quickgrid-card-04
+    type: name
+    prompt: "How do you build a multi-key sort expression for a `TemplateColumn`?"
+    answer: "`GridSort<T>.ByAscending(x => x.First).ThenAscending(x => x.Second)` (or `.ThenDescending(...)`)."
+    bloom: apply
+    explanation: "Chain as many .ThenAscending / .ThenDescending calls as you need. Each one tie-breaks equal rows from the previous key."
+    example: "GridSort<Student>.ByAscending(s => s.FirstName).ThenAscending(s => s.LastName);"
+
+  - id: blazor-quickgrid-card-05
+    type: cloze
+    prompt: "For a live-filter input, use `@bind=\"_filter\" @bind:event=\"{{oninput}}\"` — not the default onchange — so the filter updates on every keystroke."
+    answer: "oninput"
+    bloom: apply
+    explanation: "The default @bind event is onchange, which fires only when the input loses focus. Users typing in a search box expect instant filtering — oninput fires per keystroke."
+    example: "<input @bind=\"_filter\" @bind:event=\"oninput\" />"
+
+  - id: blazor-quickgrid-card-06
+    type: name
+    prompt: "What render-mode directive must a page hosting a QuickGrid declare for sorting / paging / filtering to work?"
+    answer: "`@rendermode InteractiveServer` (or `InteractiveWebAssembly` / `InteractiveAuto`)."
+    bloom: remember
+    explanation: "Static server rendering produces initial HTML but no client-side runtime. Interactive modes keep the component alive so clicks and input events trigger re-renders."
+    example: "@page \"/students\"\n@rendermode InteractiveServer"
+
+  - id: blazor-quickgrid-card-07
+    type: cloze
+    prompt: "Calling `{{.ToList()}}` on your data source before binding to QuickGrid breaks server-side SQL translation — keep the expression as `IQueryable<T>` all the way to the grid."
+    answer: ".ToList()"
+    bloom: analyze
+    explanation: "ToList() materializes the entire result set into memory, after which filtering / paging happens in .NET. For large tables this wrecks performance. Let the grid see an IQueryable and EF Core builds an efficient SQL query per page."
+    example: "// wrong: _students.Where(...).ToList()\n// right: _students.Where(...)"

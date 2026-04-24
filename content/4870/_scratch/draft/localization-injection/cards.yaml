@@ -1,0 +1,53 @@
+id: localization-injection
+name: "Localizer injection — IStringLocalizer, IHtmlLocalizer, IViewLocalizer"
+tags: [i18n, di]
+source: "notes/razor_pages_localization_SCRIPT.docx; research-localization.md §2, §5"
+prose: "`IStringLocalizer<T>` for code-behind plain text; `IHtmlLocalizer<T>` for code-behind HTML content that should NOT be encoded; `IViewLocalizer` for direct `.cshtml` use via `@inject`. Shared app-wide strings use a marker `SharedResource` class plus `IStringLocalizerFactory.Create`."
+cards:
+  - id: localization-injection-card-01
+    type: cloze
+    prompt: "In a Razor view (`.cshtml`), inject the view-scoped localizer with `@inject {{IViewLocalizer}} Localizer`."
+    answer: "IViewLocalizer"
+    bloom: remember
+    explanation: "IViewLocalizer picks up the resource file matching the view's generated class. IStringLocalizer<T> and IHtmlLocalizer<T> are for code-behind injection."
+    example: "@inject IViewLocalizer Localizer\n<h1>@Localizer[\"Welcome\"]</h1>"
+
+  - id: localization-injection-card-02
+    type: name
+    prompt: "When should you use `IHtmlLocalizer<T>` instead of `IStringLocalizer<T>`?"
+    answer: "When the translated string contains HTML markup that must render as HTML, not HTML-encoded text."
+    bloom: apply
+    explanation: "IStringLocalizer returns a plain string that Razor HTML-encodes. IHtmlLocalizer returns IHtmlContent which Razor passes through verbatim. Use it for translations containing <a>, <strong>, etc."
+    example: ".resx value: \"Read <a href=\\\"/docs\\\">the docs</a>\" → use IHtmlLocalizer so the anchor renders as a link."
+
+  - id: localization-injection-card-03
+    type: cloze
+    prompt: "A PageModel localizes plain text by constructor-injecting `{{IStringLocalizer<IndexModel>}}` and accessing values via the indexer: `_localizer[\"{{Key}}\"]`."
+    answer: "IStringLocalizer<IndexModel>; Key"
+    bloom: apply
+    explanation: "The generic parameter drives both DI resolution and the resource-file name mapping. The indexer returns a LocalizedString that implicitly converts to string."
+    example: "public IndexModel(IStringLocalizer<IndexModel> localizer) => _localizer = localizer; ... ViewData[\"Msg\"] = _localizer[\"Welcome\"];"
+
+  - id: localization-injection-card-04
+    type: name
+    prompt: "How do you implement app-wide shared strings used by many pages?"
+    answer: "Create an empty marker class `SharedResource`, build a service using `IStringLocalizerFactory.Create(nameof(SharedResource), assemblyName)`, register it as a singleton, and inject where needed."
+    bloom: apply
+    explanation: "This avoids duplicating the same translations across every per-class .resx. Pair with `Resources/SharedResource.<culture>.resx` files. DataAnnotations localization often targets this shared class too."
+    example: "builder.Services.AddSingleton<SharedLocalizer>(); ... @inject SharedLocalizer S ... @S.Get(\"CompanyName\")"
+
+  - id: localization-injection-card-05
+    type: cloze
+    prompt: "Localizers accept positional format arguments: `_localizer[\"{{GreetUser}}\", userName]` with a .resx value of `\"Hello, {0}!\"`."
+    answer: "GreetUser"
+    bloom: apply
+    explanation: "Positional args let translators reorder placeholders in languages with different word order. Prefer this over string concatenation which cannot express reorderings."
+    example: "_localizer[\"ItemsCount\", 3] with .resx \"{0} items\" → \"3 items\" (en) / \"3 articles\" (fr)"
+
+  - id: localization-injection-card-06
+    type: name
+    prompt: "What error do you get if you use `@inject IViewLocalizer` without calling `AddViewLocalization()` in Program.cs?"
+    answer: "A runtime exception: 'No service for type IViewLocalizer has been registered.'"
+    bloom: analyze
+    explanation: "AddLocalization registers IStringLocalizer<T> and IHtmlLocalizer<T>; it does NOT register IViewLocalizer. The view-scoped localizer requires AddViewLocalization() on the MVC/Razor Pages builder."
+    example: "builder.Services.AddRazorPages().AddViewLocalization();   // enables IViewLocalizer"

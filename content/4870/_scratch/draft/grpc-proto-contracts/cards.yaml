@@ -1,0 +1,87 @@
+id: grpc-proto-contracts
+name: "gRPC .proto contracts"
+tags: [grpc, protobuf, contract-first]
+source: "slides/gRPC.pptx; notes/gRPC_EF_SQLite_VSCode_SCRIPT.docx; research-grpc.md"
+prose: "These cards drill the proto3 syntax you must read and write on the exam — keywords, field-tag rules, and the defaults that trip students up."
+cards:
+  - id: grpc-proto-contracts-card-01
+    type: cloze
+    prompt: "In a `.proto` file, the `{{1}}` keyword declares a gRPC service and each `{{2}}` keyword inside declares one callable method."
+    answer: "service; rpc"
+    bloom: remember
+    explanation: "The generator walks every `rpc` line inside a `service` block to emit one C# method per RPC on both the server base class and the client stub."
+    example: "service StudentRemote {\n  rpc GetStudentInfo (StudentLookupModel) returns (StudentModel);\n}"
+
+  - id: grpc-proto-contracts-card-02
+    type: cloze
+    prompt: "Proto field tags `1` through `{{1}}` encode in one byte; tags `{{2}}` and higher take two bytes."
+    answer: "15; 16"
+    bloom: remember
+    explanation: "Protobuf packs the wire-type and tag number into a varint. Values below 16 fit in the first byte's 4 available tag bits, so frequently-sent fields should live in the 1–15 range."
+    example: "message Person {\n  int32 id = 1;      // 1-byte tag\n  string bio = 16;   // 2-byte tag\n}"
+
+  - id: grpc-proto-contracts-card-03
+    type: name
+    prompt: "What is the default value of an unset `string` field in proto3?"
+    answer: "The empty string \"\"."
+    bloom: remember
+    explanation: "Proto3 removed the `null` / `HasField` concept for scalars. The server cannot distinguish 'client sent nothing' from 'client sent an empty string' on a plain `string` field."
+    example: "message Reply { string result = 1; }  // unset Result is \"\""
+
+  - id: grpc-proto-contracts-card-04
+    type: cloze
+    prompt: "The `{{1}}` keyword in a `message` definition maps to a `List<T>` in the generated C# code."
+    answer: "repeated"
+    bloom: understand
+    explanation: "`repeated` marks a field as a zero-or-more collection. `protoc` emits a `RepeatedField<T>` property that implements `IList<T>`, which is how you iterate or add items in C#."
+    example: "message StudentList {\n  repeated StudentModel items = 1;\n}"
+
+  - id: grpc-proto-contracts-card-05
+    type: name
+    prompt: "You delete the field `string school = 4;` from a deployed `.proto`. Can you safely reuse tag `4` for a new `int32 gradeLevel = 4;`?"
+    answer: "No — reusing a tag number is forbidden. Old clients still sending tag 4 as a string will be misdecoded as the new `int32`."
+    bloom: analyze
+    explanation: "Field tags are the immutable binary wire identifier. Changing a tag's type without changing its number silently corrupts any already-deployed client. Either pick a fresh tag or mark the old one `reserved`."
+    example: "message Student {\n  reserved 4;             // protect old tag\n  int32 gradeLevel = 5;   // new field, new tag\n}"
+
+  - id: grpc-proto-contracts-card-06
+    type: predict
+    prompt: "Given this proto, what does the generated C# class for `StudentLookupModel` expose, and what is the default value of `StudentId` on a freshly-constructed instance?"
+    lang: proto
+    code: |
+      message StudentLookupModel {
+        int32 studentId = 1;
+      }
+    answer: "A C# class `StudentLookupModel` with a public `int StudentId { get; set; }` property. A `new StudentLookupModel()` has `StudentId == 0` because proto3 unset `int32` defaults to zero."
+    bloom: apply
+    explanation: "`protoc` PascalCases proto field names for C#, so `studentId` becomes `StudentId`. Proto3 scalar defaults are 0 / \"\" / false — there is no null option for plain scalars."
+    example: "var req = new StudentLookupModel();\n// req.StudentId == 0"
+
+  - id: grpc-proto-contracts-card-07
+    type: cloze
+    prompt: "In a `.csproj`, `<Protobuf Include=\"Protos\\x.proto\" GrpcServices=\"{{1}}\" />` generates the abstract base class your service implementation inherits from."
+    answer: "Server"
+    bloom: understand
+    explanation: "The `GrpcServices` attribute controls which half of the contract `protoc` emits. `Server` yields the `ServiceNameBase` class; `Client` yields the `ServiceNameClient` stub; `Both` yields both."
+    example: "<Protobuf Include=\"Protos\\students.proto\" GrpcServices=\"Server\" />"
+
+  - id: grpc-proto-contracts-card-08
+    type: name
+    prompt: "What does `option csharp_namespace = \"GrpcStudentsServer\";` do in a `.proto` file?"
+    answer: "It sets the C# namespace that `protoc` wraps around every generated class for this `.proto`."
+    bloom: remember
+    explanation: "Without this option, `protoc` derives the namespace from the `package` directive, which may not match your C# project's conventions. The option lets the proto and C# namespaces diverge."
+    example: "option csharp_namespace = \"GrpcStudentsServer\";\npackage greet;"
+
+  - id: grpc-proto-contracts-card-09
+    type: predict
+    prompt: "A client sends this proto message with `studentId` left unset. What does the server see?"
+    lang: proto
+    code: |
+      message StudentLookupModel {
+        int32 studentId = 1;
+      }
+    answer: "The server reads `request.StudentId == 0`. Proto3 cannot distinguish 'unset' from 'explicit zero' for a plain `int32` — both serialize identically on the wire."
+    bloom: analyze
+    explanation: "This is the proto3-no-null trap. If you need to tell 'missing' from 'zero', wrap the field in a singleton `message` or use a `google.protobuf.Int32Value` wrapper, which does carry presence information."
+    example: "if (request.StudentId == 0) {\n  // could mean unset OR id = 0\n}"

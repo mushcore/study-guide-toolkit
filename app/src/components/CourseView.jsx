@@ -24,15 +24,16 @@ const CourseView = ({ courseId, onJumpTopic, onJumpRoute }) => {
   const weakest = SG.courseWeakest(course);
   const pctMastered = total ? Math.round((mastered / total) * 100) : 0;
 
+  const practiceCount = (window.PRACTICE && window.PRACTICE[courseId]) ? window.PRACTICE[courseId].length : 0;
   const subpages = [
-    { key: 'priorities', title: 'Priorities',     sub: 'what to study · weighted',          meta: 'weighted plan' },
-    { key: 'lessons',    title: 'Lessons',        sub: 'long-form walk-throughs',            meta: 'read top-to-bottom' },
-    { key: 'dives',      title: 'Topic Deep-Dives', sub: 'searchable · tag filter',          meta: `${total} topics` },
-    { key: 'mock',       title: 'Mock Exam',      sub: 'timed MCQ · mirrors real format',   meta: course.format },
-    { key: 'code',       title: courseId === '4911' ? 'Code Annotation' : 'Code / Applied', sub: courseId === '4911' ? 'line-by-line reading' : 'starter + solution',  meta: 'practice' },
-    { key: 'cheat',      title: 'Cheat Sheet',    sub: 'printable · exam-eve',               meta: '8.5×11' },
-    { key: 'flash',      title: 'Flash Cards',    sub: 'all topics · sequential deck',       meta: `${total} cards` },
+    { key: 'lessons',  title: 'Lessons',     sub: 'long-form walk-throughs',           meta: 'read top-to-bottom' },
+    { key: 'mock',     title: 'Mock Exam',   sub: 'timed MCQ · mirrors real format',   meta: course.format },
+    { key: 'practice', title: 'Practice',    sub: 'code + applied · lab/exam-grounded', meta: `${practiceCount} items` },
+    { key: 'flash',    title: 'Flash Cards', sub: 'all topics · sequential deck',      meta: `${total} cards` },
   ];
+  if (course.cheatsheet_allowed) {
+    subpages.push({ key: 'cheat', title: 'Cheat Sheet', sub: 'printable · exam-eve', meta: '8.5×11' });
+  }
 
   const startTopRecall = () => {
     if (weakest) onJumpTopic(weakest);

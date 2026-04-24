@@ -4,6 +4,7 @@ name: Special Topics in MIS (UNIX / Linux / Kubernetes)
 exam: "2026-04-23T13:30:00-07:00"
 room: SW01 3190
 format: Final Exam — MCQ + TF + SHORT + ESSAY
+cheatsheet_allowed: false
 instructor: Bruce Link
 notes: |
   Source: study guide cover "Thu Apr 23 · 13:30 · SW01 3190".

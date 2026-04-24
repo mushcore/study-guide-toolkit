@@ -1,0 +1,53 @@
+id: localization-setup
+name: "Localization setup — AddLocalization + UseRequestLocalization"
+tags: [i18n, middleware, program-cs]
+source: "notes/razor_pages_localization_SCRIPT.docx; research-localization.md §3"
+prose: "Register services with `AddLocalization(opts => opts.ResourcesPath = \"Resources\")`, declare supported cultures via `Configure<RequestLocalizationOptions>`, add `AddViewLocalization()` to the MVC/Razor builder, and — critically — call `app.UseRequestLocalization()` middleware."
+cards:
+  - id: localization-setup-card-01
+    type: cloze
+    prompt: "The service registration for localization is `builder.Services.{{AddLocalization}}(opts => opts.ResourcesPath = \"{{Resources}}\")`."
+    answer: "AddLocalization; Resources"
+    bloom: remember
+    explanation: "`AddLocalization` registers IStringLocalizer<T>, IHtmlLocalizer<T>, and the factory. ResourcesPath points at the root folder where .resx files live."
+    example: "builder.Services.AddLocalization(opts => opts.ResourcesPath = \"Resources\");"
+
+  - id: localization-setup-card-02
+    type: name
+    prompt: "Which middleware call applies the detected culture to each incoming request?"
+    answer: "`app.UseRequestLocalization()`"
+    bloom: remember
+    explanation: "Without the middleware call, no culture provider ever runs, so CurrentCulture / CurrentUICulture stay at defaults. This is the #1 silent-failure cause for 'my app never translates anything.'"
+    example: "app.UseRequestLocalization();   // must run early in the pipeline"
+
+  - id: localization-setup-card-03
+    type: cloze
+    prompt: "Inside `RequestLocalizationOptions`, `{{SupportedCultures}}` controls the allowed `CurrentCulture` values (formatting); `{{SupportedUICultures}}` controls the allowed `CurrentUICulture` values (.resx selection)."
+    answer: "SupportedCultures; SupportedUICultures"
+    bloom: understand
+    explanation: "Two separate lists because in theory an app could format dates as en-US while showing French UI. In practice, set both to the same list."
+    example: "opts.SupportedCultures = opts.SupportedUICultures = new[] { new CultureInfo(\"en\"), new CultureInfo(\"fr\") };"
+
+  - id: localization-setup-card-04
+    type: name
+    prompt: "What does `builder.Services.AddMvc().AddViewLocalization()` enable?"
+    answer: "`IViewLocalizer` injection directly in `.cshtml` files via `@inject`."
+    bloom: apply
+    explanation: "AddLocalization alone gives you IStringLocalizer<T> in code-behind. AddViewLocalization adds the view-scoped IViewLocalizer used by @inject in Razor markup."
+    example: "builder.Services.AddRazorPages().AddViewLocalization();   // @inject IViewLocalizer Localizer now works"
+
+  - id: localization-setup-card-05
+    type: cloze
+    prompt: "`UseRequestLocalization` must run {{before}} any endpoint routing / handler in the pipeline — typically just after `CreateBuilder().Build()`."
+    answer: "before"
+    bloom: apply
+    explanation: "Middleware runs in registration order. Put UseRequestLocalization after UseRouting and endpoint handlers run with the default culture even when the user's preferred culture could have been detected."
+    example: "app.UseRequestLocalization(); app.UseStaticFiles(); app.UseRouting(); ..."
+
+  - id: localization-setup-card-06
+    type: name
+    prompt: "What's the single most likely missing line if services are registered but language never changes at runtime?"
+    answer: "`app.UseRequestLocalization()` middleware call."
+    bloom: analyze
+    explanation: "Without the middleware, no request-culture provider executes. Every request uses DefaultRequestCulture. Adding the line at the top of the pipeline usually fixes it immediately."
+    example: "Add `app.UseRequestLocalization();` after `var app = builder.Build();`."

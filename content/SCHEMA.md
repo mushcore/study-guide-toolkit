@@ -18,19 +18,20 @@ content/
 │   ├── flashcards.yaml                    # full flashcard bank, grouped
 │   ├── mock-exam.yaml                     # timed MCQ bank
 │   ├── lessons/
-│   │   ├── 01-<kebab-slug>.md
-│   │   ├── 02-<kebab-slug>.md
-│   │   └── NN-<kebab-slug>.md
-│   ├── code-practice/
+│   │   ├── 00-exam-strategy.md           # special lesson — frontmatter kind: strategy
 │   │   ├── 01-<kebab-slug>.md
 │   │   └── NN-<kebab-slug>.md
-│   ├── topic-dives/
-│   │   ├── <kebab-slug>.md               # no numeric prefix; ordered by frontmatter `priority`
-│   │   └── ...
-│   └── cheat-sheet.md                     # single file, H2 per block
+│   ├── practice/                          # unified practice tree (was code-practice/)
+│   │   ├── 01-<kebab-slug>.md            # frontmatter kind: code | applied
+│   │   └── NN-<kebab-slug>.md
+│   └── cheat-sheet.md                     # OPTIONAL: only present when course.yaml has cheatsheet_allowed: true
 ```
 
 `{courseId}` ∈ `{ "4736", "4870", "4911", "4915" }`.
+
+Removed from earlier versions of this schema:
+- `topic-dives/` — dive content was redundant with lessons. Worked examples, pitfalls, and concreteness-fading rules moved into lesson requirements. See `content/STANDARDS.md §Content types`.
+- Course-wide priorities view — invited browsing (low-utility re-reading per Dunlosky 2013). Topic ordering is now purely an internal Stage 1 authoring-sequence concern, not a consumer-facing subview.
 
 ---
 
@@ -63,6 +64,7 @@ Tiny metadata. Matches the "Course" object in the app's data model.
 | `exam` | ISO datetime | Must include TZ offset. |
 | `room` | string | Physical room. |
 | `format` | string | Free-text: `"90 MCQ + short answer · 120 min"`. |
+| `cheatsheet_allowed` | bool | `true` when the real exam permits a learner-prepared cheat-sheet / reference page; `false` otherwise. Controls whether `cheat-sheet.md` is authored and whether the app exposes the subview. |
 
 **Optional:**
 
@@ -80,6 +82,7 @@ name: "Operating Systems"
 exam: "2026-04-22T13:30:00-07:00"
 room: "SE06-220"
 format: "90 MCQ + short answer · 120 min"
+cheatsheet_allowed: true
 instructor: "—"
 notes: |
   Open book. Closed laptop.
@@ -116,7 +119,6 @@ modules:
 | `tags` | list[string] | ✓ | At least one tag. |
 | `prose` | string | ✓ | 1–2 sentence summary, shown above cards. |
 | `cards` | list[Card] | ✓ | At least one card. |
-| `priority` | `high` \| `mid` \| `low` | optional | Author hint; loader may ignore. |
 | `source` | string | optional | Lecture/slide reference. |
 
 **Optional fields on every card type** (passed through the build verbatim; surfaced in the UI where the renderer supports them):
@@ -260,12 +262,12 @@ module: "Concurrency & Sync"   # display module name
 
 | Field | Type | Notes |
 |-------|------|-------|
-| `priority` | `high`\|`mid`\|`low` | Author hint. |
+| `kind` | `strategy` | When present, marks the exam-strategy lesson. Waives the retrieval-checkpoint and opens-concrete rules. See §6 below. Most lessons omit this field. |
 | `source` | string | Lecture/slide reference. Required by STANDARDS for RAG grounding. |
 | `reading_time_min` | int | Estimated minutes. |
 | `related` | list[string] | Other lesson IDs or topic IDs. Required by STANDARDS for schema interconnection (CLT germane load). |
 | `bloom_levels` | list[enum] | Cognitive levels the lesson spans, e.g. `[understand, apply, analyze]`. Required by STANDARDS. Array (not scalar) because lessons span levels. |
-| `pedagogy` | `productive-failure` \| `worked-example-first` \| `concreteness-fading` | Opening pattern. Productive-failure lessons open with a problem or paradox before teaching; worked-example-first show a fully worked case first; concreteness-fading opens concrete and generalizes. Defaults to concreteness-fading when omitted. See STANDARDS.md §Productive failure vs worked examples. |
+| `pedagogy` | `productive-failure` \| `worked-example-first` \| `concreteness-fading` | Opening pattern. Productive-failure lessons open with a problem or paradox before teaching; worked-example-first show a fully worked case first; concreteness-fading opens concrete and generalizes. Defaults to concreteness-fading when omitted. Ignored when `kind: strategy`. See STANDARDS.md §Productive failure vs worked examples. |
 
 **Body — CommonMark with these conventions:**
 
@@ -338,31 +340,32 @@ Standard GFM tables:
 
 ---
 
-### 5. `code-practice/NN-<slug>.md`
+### 5. `practice/NN-<slug>.md`
 
-Coding problems with starter + solution + explanation. One problem per file.
+Application drill — every file traces to a lab, assignment, or past-exam question per STANDARDS §Practice source discipline. The `kind:` frontmatter discriminator selects one of two body schemas.
 
-**Frontmatter:**
-```yaml
----
-n: 1
-id: jpa-entity-auto-pk
-title: "JPA entity with auto-gen PK"
-lang: java                     # default language for code fences below
-tags: [jpa, entities]
-source: "Lab 04"               # optional at schema level; STANDARDS requires it
-pedagogy: worked-example-first # optional: worked-example-first | productive-failure | completion-problem
----
-```
+**Frontmatter (required):**
 
-**Optional frontmatter:**
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `n` | int | ✓ | Integer, 1-based. |
+| `id` | string | ✓ | kebab-case, globally unique. |
+| `title` | string | ✓ | |
+| `kind` | `code` \| `applied` | ✓ | Selects body schema (below). |
+| `tags` | list[string] | ✓ | At least one. |
+| `source` | string | ✓ | Traces to `materials/labs/*`, `materials/assignments/*`, or `materials/past-exams/*`. Variant notation: `Lab 04 Q2 (variant — simpler SQL join, 3 tables → 2)`. |
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `source` | string | Traceable citation (past-exam Q#, lab, slide). Required by STANDARDS. |
-| `pedagogy` | enum | See STANDARDS.md §Productive failure vs worked examples. Defaults to `worked-example-first` for algorithmic drills, `productive-failure` for design problems. |
+**Frontmatter (kind-specific / optional):**
 
-**Body — four H2 sections in this order:**
+| Field | Applies | Type | Notes |
+|-------|---------|------|-------|
+| `lang` | `kind: code` | string | Language tag for code fences. Required for `kind: code`. |
+| `variant` | `kind: code` | `starter-solution` \| `annotation` | Defaults to `starter-solution`. `annotation` selects the read-and-annotate body schema below. |
+| `pedagogy` | both | `worked-example-first` \| `productive-failure` \| `completion-problem` | See STANDARDS.md §Productive failure vs worked examples. |
+
+#### Body — `kind: code`, `variant: starter-solution` (default)
+
+Exactly four H2 sections in this order:
 
 ```markdown
 ## Prompt
@@ -394,31 +397,19 @@ public class Customer {
 
 ## Why
 
-`@Entity` + `@Table` map the class. `@Id` + `@GeneratedValue` declares the PK.
+`@Entity` + `@Table` map the class. `@Id` + `@GeneratedValue` declares the PK. Common wrong approach: using `@GenericGenerator` without `strategy` — breaks on MySQL.
 ```
 
 **Invariants:**
 - Exactly four H2 sections: `Prompt`, `Starter`, `Solution`, `Why`. In that order.
 - `Starter` contains exactly one fenced code block.
 - `Solution` contains exactly one fenced code block.
-- Both fences use the same language tag as frontmatter `lang`.
+- Both fences use the language tag from frontmatter `lang`.
+- `## Why` names ≥1 common wrong approach per STANDARDS §Elaborated feedback.
 
-**COMP 4911 variant — line-annotated reading:**
+#### Body — `kind: code`, `variant: annotation`
 
-For 4911 problems that are "read & annotate" rather than "write from scratch", use this variant — signalled by frontmatter `variant: annotation`:
-
-```yaml
----
-n: 1
-id: ejb-stateless-session
-title: "@Stateless session bean"
-lang: java
-variant: annotation
-tags: [ejb, session-beans]
----
-```
-
-**Body — two H2 sections:**
+Read-and-annotate style. Two H2 sections:
 
 ```markdown
 ## Code
@@ -447,47 +438,78 @@ public class OrderService {
 - Each item starts with `**line N**` (1-based, matching the code block), then ` · `, then a short tag (1–3 words), then ` — `, then the note text.
 - Compiler parses this into `[{ line: int, tag: string, text: string }, …]`.
 
+#### Body — `kind: applied`
+
+Non-code application: page-table fills, matrix calculations, state-transition walkthroughs, diagram completion, RAG analysis, etc. Exactly four H2 sections in this order:
+
+```markdown
+## Problem
+
+A 32-bit virtual address space uses two-level paging with 10/10/12 bit split. Given the page directory + page table entries in the SVG below, translate virtual address `0x00402AF0` to a physical address.
+
+<svg viewBox="0 0 640 260">...</svg>
+
+## Walkthrough
+
+1. Split `0x00402AF0` → directory index `0x001`, table index `0x002`, offset `0xAF0`.
+2. Directory entry at index `0x001` → page-table base `0x7C000`.
+3. Page-table entry at `0x7C000 + 0x002 × 4` → frame number `0x005`.
+4. Physical address = `(0x005 << 12) | 0xAF0 = 0x05AF0`.
+
+## Common wrong approaches
+
+- Forgetting the `<< 12` shift on the frame number: produces `0x5 + 0xAF0 = 0xAF5`.
+- Using the virtual offset against the directory entry instead of walking through the table: skips level 2.
+
+## Why
+
+Two-level paging trades one extra memory access for a dense sparse-address-space representation. The 10/10/12 split maps 1024 directory entries × 1024 table entries × 4 KB pages = 4 GB virtual. Practising translation manually is the only way to internalise the bit-field boundaries.
+```
+
+**Invariants:**
+- Exactly four H2 sections: `Problem`, `Walkthrough`, `Common wrong approaches`, `Why`. In that order.
+- `## Problem` contains the task statement plus any supporting visuals (inline SVG for diagrams, fenced `text` or `mermaid` blocks where applicable). No fenced *code* blocks required.
+- `## Walkthrough` is an ordered or unordered list of ≥3 steps OR a prose ≥3-sentence derivation. One-line walkthroughs are a defect.
+- `## Common wrong approaches` is an unordered list of ≥1 item, each item named and explained.
+- `## Why` is ≥2 sentences explaining mechanism + transferability.
+
 ---
 
-### 6. `topic-dives/<slug>.md`
+### 6. Exam-strategy lesson — `lessons/00-exam-strategy.md`
 
-Deep reference material for a single topic. Similar to lessons but non-ordered and typically more terse/table-heavy.
+Every course has exactly one strategy lesson, produced in Stage 2. It's a normal lesson file but with two distinguishing frontmatter fields and a waiver on two body rules.
 
 **Frontmatter:**
 ```yaml
 ---
-id: deadlock
-title: "Deadlock — prevention, avoidance, detection, recovery"
-pillar: tech                   # tech | process
-priority: high                 # high | mid | low
-chapter: "Ch 5-7"              # optional free-text reference
-tags: [deadlock, concurrency]
-source: "Part 9"               # optional at schema level; STANDARDS requires it
-bloom_levels: [understand, apply, analyze]  # optional; STANDARDS requires it
-related: [memory, paging]      # optional; STANDARDS requires ≥1 cross-link
+n: 0
+id: "{courseId}-exam-strategy"   # e.g. 4736-exam-strategy — prefixed to satisfy global lesson-id uniqueness
+title: "Exam strategy and pitfalls"
+hook: "Time allocation, top pitfalls, when to skip."
+kind: strategy                   # waives retrieval-checkpoint + opens-concrete rules
+tags: [strategy, exam-prep]
+module: "Exam prep"
+source: "materials/past-exams/* + materials/syllabus/*"
 ---
 ```
 
-**Body:** same Markdown conventions as lessons (callouts, code, tables, diagrams). No ordering constraint — dives are navigated by the UI via tag filter / search.
+**Waivers (per STANDARDS §Per-course required artifacts):**
+- Strategy lessons MAY skip the `> **Q:**/**A:**` retrieval checkpoint (it's meta, not zero-to-one teaching).
+- Strategy lessons MAY open with structure / bullet lists instead of a concrete instance.
 
-**Optional frontmatter** (same semantics as lesson frontmatter):
-
-| Field | Type | Notes |
-|-------|------|-------|
-| `source` | string | Traceable citation. Required by STANDARDS. |
-| `bloom_levels` | list[enum] | Cognitive levels the dive spans. Required by STANDARDS. |
-| `related` | list[string] | Other lesson/dive/topic IDs. Required by STANDARDS (CLT germane load). |
-
-**Required content for specific dive types** (enforced by `/audit-content`, not by the build):
-
-- **`exam-strategy-and-pitfalls`** — every course must include a dive with this id, `priority: high`. Contents: time allocation per question type, Part-1-vs-Part-2 strategy (if applicable), top-5 pitfalls extracted from past-exam solution keys, "when to skip and return" heuristics. Source: `materials/past-exams/` + any `generated/exam-study/research-*.md`. See STANDARDS.md §Per-course required artifacts.
-- **Problem-solving topic dives** — must include ≥1 `**Example**` callout with step-by-step worked reasoning, and ≥1 `**Pitfall**` callout.
+**Required body content** (enforced by `/audit-content`):
+- Time allocation per question type (derive from exam format + past-exam patterns).
+- Part-1 vs Part-2 strategy if the exam has two parts.
+- Top 5 pitfalls from past-exam solution keys — cite file + question number for each.
+- "When to skip and return" heuristic.
+- Domain-specific off-by-one / unit / ordering traps.
+- ≥1 `**Pitfall**` callout and ≥1 `**Takeaway**` callout.
 
 ---
 
-### 7. `cheat-sheet.md`
+### 7. `cheat-sheet.md` (conditional)
 
-Printable exam-eve summary. One file per course.
+Printable exam-eve summary. Authored **only when** `course.yaml` sets `cheatsheet_allowed: true` — i.e. the real exam permits a learner-prepared reference. When `cheatsheet_allowed: false`, this file must NOT exist; the app hides the subview; audit flags its presence as a defect.
 
 **Frontmatter:** optional course-wide metadata only; per-block metadata goes in the body.
 
@@ -542,17 +564,16 @@ Both output modes produce the same object shape:
 
 ```ts
 type CompiledCourse = {
-  meta: { id, code, name, exam, room, format, instructor?, sections?, notes_html? },
+  meta: { id, code, name, exam, room, format, cheatsheet_allowed, instructor?, sections?, notes_html? },
   modules: Module[],                              // from flashcards.yaml
   mockExam: { duration_seconds, pass_mark?, questions: Question[] },
-  lessons: Lesson[],                              // from lessons/*.md, sorted by n
-  codePractice: CodeProblem[],                    // from code-practice/*.md, sorted by n
-  topicDives: TopicDive[],                        // from topic-dives/*.md, sorted by priority→title
-  cheatSheet: { title?, blocks: { heading, body_html, body_md }[] }
+  lessons: Lesson[],                              // from lessons/*.md, sorted by n (00-exam-strategy first)
+  practice: PracticeItem[],                       // from practice/*.md, sorted by n
+  cheatSheet: { title?, blocks: { heading, body_html, body_md }[] } | null   // null when cheatsheet_allowed is false
 };
 
 type Lesson = {
-  n: int, id, title, hook, tags, module, priority?, source?,
+  n: int, id, title, hook, tags, module, kind?: 'strategy', source?,
   blocks: LessonBlock[]                           // parsed from body
 };
 
@@ -565,15 +586,29 @@ type LessonBlock =
   | { kind: 'mermaid', source }
   | { kind: 'html', html };                       // SVG, iframes, etc.
 
-type CodeProblem = {
-  n, id, title, lang, tags,
-  variant: 'starter-solution' | 'annotation',
-  // starter-solution:
-  prompt_html?, starter?, solution?, why_html?,
-  // annotation:
-  code?, notes?: { line: int, tag: string, text: string }[]
-};
+type PracticeItem =
+  | {   // kind: code, variant: starter-solution
+      kind: 'code', variant: 'starter-solution',
+      n, id, title, lang, tags, source,
+      prompt_html, starter, solution, why_html
+    }
+  | {   // kind: code, variant: annotation
+      kind: 'code', variant: 'annotation',
+      n, id, title, lang, tags, source,
+      code, notes: { line: int, tag: string, text: string }[]
+    }
+  | {   // kind: applied
+      kind: 'applied',
+      n, id, title, tags, source,
+      problem_html, walkthrough_html, common_wrong_html, why_html
+    };
 ```
+
+Breaking changes from the previous schema:
+- `codePractice` → `practice`; items now carry a `kind` discriminator.
+- `topicDives` removed entirely.
+- `cheatSheet` may be `null` for courses that don't allow a cheat-sheet.
+- `lessons[]` may include a `kind: 'strategy'` lesson (always id `exam-strategy`, `n: 0`).
 
 Consumers that want less structure can use the raw HTML in each block; consumers that want React components consume the typed blocks.
 
@@ -585,9 +620,10 @@ Consumers that want less structure can use the raw HTML in each block; consumers
 |------|-------|
 | Fix a typo in a lesson | Edit the `.md` file. Re-run `npm run build-content`. |
 | Add a new lesson | Create `lessons/NN-slug.md` with next `n`. Build. |
+| Add a practice item | Create `practice/NN-slug.md` with next `n` and appropriate `kind:`. Build. |
 | Add a flashcard to existing topic | Append to `cards:` list in `flashcards.yaml`. Build. |
 | Add a new module | Add entry to `modules:` in `flashcards.yaml`, including its topics. Build. |
-| Add a new course | Create `{newId}/` with all 7 files. Add id to the build script's course list. |
+| Add a new course | Create `{newId}/` with the required files per §Directory layout. Add id to the build script's course list. |
 | Add a new card type | Update this doc → update validator → update compiler → update consumers. |
 | Add a new callout variant | Update this doc → update compiler's callout map → update consumer CSS. |
 | Add a new pedagogical rule | Update `content/STANDARDS.md` first (with citation) → add check to `/audit-content` → reference from this doc if it affects file shape. |
@@ -598,11 +634,15 @@ Consumers that want less structure can use the raw HTML in each block; consumers
 
 Hard failures (build aborts):
 - Unparseable YAML or Markdown frontmatter.
-- Missing required frontmatter field.
-- Duplicate `id` anywhere (topic, lesson, code-practice, mock-exam question).
+- Missing required frontmatter field (including `course.yaml.cheatsheet_allowed`, `practice.kind`, `practice.source`).
+- Duplicate `id` anywhere (topic, lesson, practice item, mock-exam question).
 - `cloze` card with no `{{…}}` blanks.
 - `mock-exam` question with `correct` out of range.
-- `code-practice` file missing required H2 sections or the wrong number of code fences.
+- `practice` file with `kind: code` (starter-solution variant) missing required H2s (`Prompt`/`Starter`/`Solution`/`Why`) or wrong number of code fences.
+- `practice` file with `kind: code` (annotation variant) missing required H2s (`Code`/`Notes`).
+- `practice` file with `kind: applied` missing required H2s (`Problem`/`Walkthrough`/`Common wrong approaches`/`Why`).
+- `cheat-sheet.md` present when `course.yaml.cheatsheet_allowed: false` (or vice-versa).
+- No lesson with `kind: strategy` in a course (every course must have exactly one); multiple lessons with `kind: strategy`. Canonical id: `{courseId}-exam-strategy` (per-course, to preserve global lesson-id uniqueness). Bare `exam-strategy` is accepted.
 
 Warnings (build succeeds, reports to stderr):
 - Unknown callout label.

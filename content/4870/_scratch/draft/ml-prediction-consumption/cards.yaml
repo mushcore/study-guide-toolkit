@@ -1,0 +1,52 @@
+id: ml-prediction-consumption
+title: "ML.NET inference and model persistence"
+module: "AI in .NET"
+tags: [ml-net, inference]
+cards:
+  - id: ml-prediction-consumption-card-01
+    type: cloze
+    bloom: remember
+    front: "`pipeline.Fit(trainingData)` returns an instance of `{{c1::ITransformer}}`, not an `IDataView`."
+    back: "`Fit` trains the pipeline and hands back the stateless, serializable trained model — the `ITransformer`. The `IDataView` is the input, not the output."
+
+  - id: ml-prediction-consumption-card-02
+    type: qa
+    bloom: understand
+    front: "You need to score one new `TaxiTrip` at inference time. Which ML.NET type do you create, and from which factory?"
+    back: "Create a `PredictionEngine<TaxiTrip, TaxiTripFarePrediction>` via `mlContext.Model.CreatePredictionEngine<TIn, TOut>(model)`, then call `Predict(trip)`. It is the single-row inference wrapper around an `ITransformer`."
+
+  - id: ml-prediction-consumption-card-03
+    type: cloze
+    bloom: remember
+    front: "The prediction field on an ML.NET regression output class is decorated with `[ColumnName(\"{{c1::Score}}\")]`."
+    back: "Regression trainers write their output into a column literally named `Score`. Using `[ColumnName(\"Prediction\")]` leaves the field at its default value because the binding misses."
+
+  - id: ml-prediction-consumption-card-04
+    type: qa
+    bloom: apply
+    front: "Write the two-line C# to persist `model` (an `ITransformer`) to `model.zip` using `trainingData`'s schema."
+    back: "```csharp\nmlContext.Model.Save(model, trainingData.Schema, \"model.zip\");\n```\nOne call. Pass the model, the training `DataViewSchema`, and the path. Omitting the schema produces a zip that won't load correctly."
+
+  - id: ml-prediction-consumption-card-05
+    type: qa
+    bloom: apply
+    front: "You have `model.zip` on disk. Load it back into an `ITransformer` and capture its schema."
+    back: "```csharp\nDataViewSchema schema;\nITransformer loaded = mlContext.Model.Load(\"model.zip\", out schema);\n```\n`Load` returns the transformer; the schema comes back through the `out` parameter."
+
+  - id: ml-prediction-consumption-card-06
+    type: cloze
+    bloom: understand
+    front: "For batch inference on an entire `IDataView`, call `model.{{c1::Transform}}(dataView)` — not `CreatePredictionEngine`."
+    back: "`PredictionEngine` is the single-row path. `Transform` is the batch path: it returns a new `IDataView` with the `Score` column appended."
+
+  - id: ml-prediction-consumption-card-07
+    type: qa
+    bloom: understand
+    front: "Why is sharing one `PredictionEngine` across threads a bug, and what is the recommended fix for a web API?"
+    back: "`PredictionEngine<TIn, TOut>` is not thread-safe — concurrent `Predict` calls corrupt its internal buffers. Use `PredictionEnginePool<TIn, TOut>` from `Microsoft.Extensions.ML`, or give each thread its own engine."
+
+  - id: ml-prediction-consumption-card-08
+    type: qa
+    bloom: apply
+    front: "A teammate writes `mlContext.Model.Save(model, null, \"model.zip\")` and the code compiles. What breaks, and when?"
+    back: "It breaks at load time. Without the `DataViewSchema`, the saved zip lacks the column-name and type metadata ML.NET needs to reconstruct inputs, so `Load` returns a transformer that can't be bound to a `PredictionEngine` correctly. Always pass `trainingData.Schema`."

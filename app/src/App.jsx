@@ -7,13 +7,10 @@ import CourseView from './components/CourseView.jsx';
 import RecallCard from './components/RecallCard.jsx';
 import CheatSheet from './components/CheatSheet.jsx';
 import { Tweaks, ShortcutOverlay } from './components/Overlays.jsx';
-import Priorities from './components/Priorities.jsx';
 import Lessons from './components/Lessons.jsx';
-import TopicDives from './components/TopicDives.jsx';
 import MockExam from './components/MockExam.jsx';
 import QuizReplay from './components/QuizReplay.jsx';
-import CodeApplied from './components/CodeApplied.jsx';
-import CodeAnnotation from './components/CodeAnnotation.jsx';
+import Practice from './components/Practice.jsx';
 import FlashCards from './components/FlashCards.jsx';
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
@@ -181,12 +178,10 @@ const App = () => {
         )}
 
         {route.name === 'course' && <CourseView courseId={route.courseId} onJumpTopic={jumpTopic} onJumpRoute={setRoute}/>}
-        {route.name === 'priorities' && <Priorities courseId={route.courseId} onJumpTopic={jumpTopic}/>}
         {route.name === 'lessons' && <Lessons courseId={route.courseId}/>}
-        {route.name === 'dives' && <TopicDives courseId={route.courseId} onJumpTopic={jumpTopic}/>}
         {route.name === 'mock' && <MockExam courseId={route.courseId}/>}
         {route.name === 'replay' && <QuizReplay onJumpTopic={jumpTopic}/>}
-        {route.name === 'code' && (route.courseId === '4911' ? <CodeAnnotation courseId={route.courseId}/> : <CodeApplied courseId={route.courseId}/>)}
+        {route.name === 'practice' && <Practice courseId={route.courseId}/>}
         {route.name === 'topic' && topic && (
           <RecallCard
             topic={topic}
@@ -215,7 +210,20 @@ const App = () => {
             <button className="reveal-btn" onClick={() => setRoute({name:'dashboard'})}>← Back to dashboard</button>
           </div>
         )}
-        {route.name === 'cheat' && <CheatSheet courseId={route.courseId}/>}
+        {route.name === 'cheat' && (() => {
+          const c = window.COURSES.find(x => x.id === route.courseId);
+          if (c && c.cheatsheet_allowed === false) {
+            return (
+              <div className="page">
+                <div className="eyebrow">{c.code} · cheat sheet unavailable</div>
+                <h1 className="h1">This exam doesn't allow a cheat sheet</h1>
+                <p className="sub">Authoring one would waste effort — the real exam forbids bringing a reference. Study from lessons + practice + mock instead.</p>
+                <button className="reveal-btn" onClick={() => setRoute({name:'course', courseId: route.courseId})}>← Back to course</button>
+              </div>
+            );
+          }
+          return <CheatSheet courseId={route.courseId}/>;
+        })()}
         {route.name === 'flash' && (
           <FlashCards
             courseId={route.courseId}

@@ -3,10 +3,13 @@
 //   #/                         → { name: 'dashboard' }
 //   #/c/4736                   → { name: 'course', courseId: '4736' }
 //   #/c/4736/<subview>         → { name: subview, courseId: '4736' }
+//     subview ∈ { lessons, mock, practice, cheat, flash }
+//     (cheat is hidden in-app when the course's cheatsheet_allowed is false,
+//      but the route still exists; the component handles the empty state.)
 //   #/t/<topic-id>             → { name: 'topic', topicId, courseId (derived) }
 //   #/replay                   → { name: 'replay' }
 
-const SUBVIEWS = new Set(['priorities', 'lessons', 'dives', 'mock', 'code', 'cheat', 'flash']);
+const SUBVIEWS = new Set(['lessons', 'mock', 'practice', 'cheat', 'flash']);
 
 export function parseHash(hash) {
   const h = (hash || '').replace(/^#/, '').replace(/^\/+/, '');

@@ -4,6 +4,7 @@ name: "Object Oriented Programming 2"
 exam: "2026-04-21T13:00:00-07:00"
 room: "SW05-1840"
 format: "5 T/F + 15 MCQ + 1 UML Draw + 1 Output Trace + 1 Guided Coding (2 parts) · 90 min · 51 marks · paper exam"
+cheatsheet_allowed: true
 instructor: "Jeffrey Yim"
 notes: |
   Cumulative final, weighted toward post-midterm material (design patterns).

@@ -1,0 +1,37 @@
+id: ml-automl-cli
+cards:
+  - id: ml-automl-cli-card-01
+    type: cloze
+    front: "The ML.NET AutoML command-line tool is named {{c1::`mlnet`}} (lowercase, no dot); the framework it targets is written {{c2::`ML.NET`}} (uppercase, dotted)."
+    back: "The CLI and the framework have different casing. `mlnet` is installed via `dotnet tool install -g mlnet-win-x64` (swap the suffix for `osx-x64` or `linux-x64`)."
+    tags: [ml-net, automl, naming]
+
+  - id: ml-automl-cli-card-02
+    type: qa
+    front: "What does this command do? `mlnet regression --dataset taxi-fare-train.csv --label-col 6 --train-time 60 --has-header true`"
+    back: "Runs AutoML for a regression task on `taxi-fare-train.csv`, predicts the column at index 6, explores 40+ algorithm/hyperparameter combinations for 60 seconds, and emits a console project wired to the best model. `--has-header true` says the CSV starts with a header row."
+    tags: [ml-net, automl, cli]
+
+  - id: ml-automl-cli-card-03
+    type: cloze
+    front: "The `--label-col` flag accepts either a 0-based {{c1::index}} (e.g. `6`) or a column {{c2::name}} (e.g. `FareAmount`)."
+    back: "Use the index when the header text is uncertain or missing — passing a name that does not match the CSV header causes silent failure."
+    tags: [ml-net, automl, flags]
+
+  - id: ml-automl-cli-card-04
+    type: qa
+    front: "Which `mlnet` flag sets the exploration budget, and what are its units?"
+    back: "`--train-time`, in seconds. A larger value generally surfaces better models, but returns diminish — doubling from 60 to 120 seconds rarely doubles RSquared."
+    tags: [ml-net, automl, flags]
+
+  - id: ml-automl-cli-card-05
+    type: qa
+    front: "After `mlnet regression` finishes, what artifact does it emit?"
+    back: "A full console project — source files, a `.csproj`, and a `.zip` model — wired to the winning pipeline. You run it with `dotnet run`. The CLI does not emit a bare model file on its own."
+    tags: [ml-net, automl, output]
+
+  - id: ml-automl-cli-card-06
+    type: cloze
+    front: "AutoML explores {{c1::40+}} regression variants within the `--train-time` budget and ranks them; the ``top-5`` list is {{c2::not guaranteed to be globally optimal}}."
+    back: "AutoML searches the algorithm + hyperparameter space it has time to reach. Larger `--train-time` explores more combinations, but the winner is only the best model AutoML happened to try."
+    tags: [ml-net, automl, pitfall]

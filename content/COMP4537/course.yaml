@@ -4,6 +4,7 @@ name: "Internet Software Architecture"
 exam: "2026-04-24T15:30:00-07:00"
 room: "SW3 1750"
 format: "Mixed MCQ and written/short-answer · 1 double-sided printed cheat sheet permitted · Learning Hub (laptop required)"
+cheatsheet_allowed: true
 instructor: "Amir Amintabar, PhD"
 notes: |
   Thursday April 24, 2026 at 3:30 PM in SW3 1750. Bring one double-sided printed cheat sheet (letter-sized, both sides). No other notes permitted.

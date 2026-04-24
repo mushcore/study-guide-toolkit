@@ -6,6 +6,8 @@ This document is the canonical pedagogical contract for every artifact this syst
 
 **Authority.** This doc overrides anything in `ADD-NEW-COURSE.md`, `content/SCHEMA.md`, or the skill prompts where they conflict. Those docs govern pipeline mechanics and schema; this one governs pedagogy. Update this doc first when the standards change, then update consumers.
 
+**Content types.** The system produces: **lessons** (zero-to-one teaching), **flashcards** (atomic drill), **practice** (lab/assignment/past-exam grounded application — `kind: code` or `kind: applied`), **mock-exam** (timed novel-surface-form retrieval), and an optional **cheat-sheet** (only when the real exam permits one). Topic-dives and a standalone priorities view were removed: dives duplicated lesson content, and priorities invited browsing (low-utility re-reading per Dunlosky 2013). Exam strategy is a single `kind: strategy` lesson (fixed id `exam-strategy`, typically `lessons/00-exam-strategy.md`), not a separate artifact.
+
 **Evidence filter.** Only well-replicated findings appear as rules. Live / fragile research (e.g. disfluency-as-desirable-difficulty, font-hard effects, learning-styles matching) is explicitly excluded — these have failed replication or meta-analysis and are not actionable here.
 
 ---
@@ -69,8 +71,7 @@ Two replicable findings pull opposite directions. Resolution governs lesson vs c
 |---|---|---|
 | Lessons introducing a new *concept* | Productive failure: open with a problem or paradox, let the reader predict, then reveal. `> **Q:**` checkpoints implement this. | Deep conceptual schema formation. |
 | Lessons for *procedures* (algorithms, translation rules, syntax) | Worked-example-first: show one fully worked, then a partially worked, then ask the learner to complete. | Procedural fluency. |
-| Code practice | Worked-example-first for algorithmic drills; productive-failure for design problems (e.g. "write the schema for X"). Frontmatter flag `pedagogy: worked-example-first | productive-failure | completion-problem` when non-default. | Matches the cognitive task. |
-| Topic-dives | Concreteness-fading (see below): open with a concrete instance, generalize. | Reference + reinforcement. |
+| Practice (`kind: code` or `kind: applied`) | Worked-example-first for algorithmic drills; productive-failure for design problems (e.g. "write the schema for X"). Frontmatter flag `pedagogy: worked-example-first | productive-failure | completion-problem` when non-default. | Matches the cognitive task. |
 
 ---
 
@@ -78,7 +79,7 @@ Two replicable findings pull opposite directions. Resolution governs lesson vs c
 
 `Concreteness fading in mathematics and science instruction` (*Educational Psychology Review*). Start with a concrete, grounded example; progressively fade to abstract representations. Superior to concrete-only OR abstract-only for both initial learning and transfer.
 
-**Enforcement:** every lesson and dive opens with a concrete instance (a specific input, a named example, a historical case), then generalizes. A lesson that opens with `X is defined as …` without a prior concrete anchor fails principle 2 of the authoring rules. This is a stronger rule than "concrete before abstract" — it requires a *gradient*, not just a single example.
+**Enforcement:** every lesson opens with a concrete instance (a specific input, a named example, a historical case), then generalizes. A lesson that opens with `X is defined as …` without a prior concrete anchor fails principle 2 of the authoring rules. This is a stronger rule than "concrete before abstract" — it requires a *gradient*, not just a single example.
 
 ---
 
@@ -114,7 +115,7 @@ Attempting a question *before* studying the material improves subsequent learnin
 
 **Enforcement:**
 - Every mock-question `rationale` field includes (a) the mechanism behind the correct answer, AND (b) the misconception each distractor targets. A rationale that only restates the correct answer is a defect.
-- Code-practice `## Why` sections address the mechanism and name 1–2 common wrong approaches, not just restate the solution.
+- Practice `## Why` sections address the mechanism and name 1–2 common wrong approaches, not just restate the solution.
 - Flashcard `explanation` fields are mechanism-first, not answer-first.
 
 ---
@@ -124,8 +125,8 @@ Attempting a question *before* studying the material improves subsequent learnin
 `When and where do we apply what we learn? A taxonomy for far transfer` (Barnett & Ceci, *Psychological Bulletin* 128). Learners who practice one surface form of a problem fail to transfer to novel surface forms. Practicing multiple surface forms of the same deep structure enables transfer.
 
 **Enforcement:**
-- Mock-exam banks include at least 2 questions testing the same *deep concept* through different *surface features* (different numbers, different framings, different contexts). Identical-surface-feature questions are not practice — they're inflating the count.
-- Code-practice problems on the same topic vary in inputs, constraints, or phrasing. E.g. page-table translation problems span single-level, two-level, and inverted representations.
+- Mock-exam banks include at least 3 questions testing the same *deep concept* through different *surface features* (different numbers, different framings, different contexts) for every high-weight topic. Identical-surface-feature questions are not practice — they're inflating the count.
+- Practice problems on the same topic vary in inputs, constraints, or phrasing. E.g. page-table translation problems span single-level, two-level, and inverted representations.
 - Worked examples include both the specific solution AND a note on "what changes if …" so the learner sees the variable axis.
 
 ---
@@ -142,7 +143,7 @@ Multiple meta-analyses converge: retrieval effect size rises with (a) feedback p
 
 ## Bloom's taxonomy — revised (Anderson & Krathwohl 2001)
 
-Six cognitive levels. Target distribution in a course's drill pool: ~30% Remember, ~30% Understand, ~25% Apply, ~15% Analyze+. Exams test at Apply/Analyze; courses that drill only at Remember fail on Apply questions.
+Six cognitive levels. Target distribution in a course's drill pool: ~20% Remember, ~25% Understand, ~35% Apply, ~20% Analyze+. Exams test at Apply/Analyze; courses that drill only at Remember fail on Apply questions. The distribution is weighted toward application because practice + mock-exam are the retention engine — lessons teach once, retrieval + application do the heavy lifting.
 
 **Enforcement:**
 - Every card, mock question, and checkpoint has a Bloom's tag (card `bloom:` field; question `bloom:` field; lesson frontmatter `bloom_levels: [remember, apply]` array).
@@ -172,9 +173,57 @@ Hard gates (every card must pass):
 Every authored unit traces to `materials/` or a `generated/exam-study/research-*.md` note. LLM parametric knowledge is a forbidden source. This is the guardrail against hallucinated content that looks plausible but contradicts the course.
 
 **Enforcement:**
-- `source:` field on every card, mock question, code-practice file, lesson, and dive.
+- `source:` field on every card, mock question, practice file, and lesson.
 - Audit spot-checks a random sample of 10 cards per pass: cited source must exist and contain the claim.
 - Acceptable source formats: `Part 9, Slide 12` / `Lab 06` / `Final_exam_practice_Sol.pdf p.3 Q7` / `research-deadlock.md §2.1` / `Ch 14 p.482`.
+
+---
+
+## Exam-scope discipline
+
+Every authored unit must also trace to what the **final exam actually covers**. Source discipline ensures claims are true; exam-scope discipline ensures they're *worth learning*. Lecture-only material the exam won't test is bloat — every minute a learner spends on it is a minute not spent on in-scope retrieval practice.
+
+**Single source of truth.** Each course's `materials/` contains a doc listing final-exam coverage — typically the syllabus exam section, an instructor email, a prof-provided study guide, a final review sheet, or a list of testable topics on the course website. Stage 1 of authoring must locate this doc and write `content/{id}/_scratch/exam-scope.md` — a verbatim list of in-scope topics with citation. If no such doc exists in `materials/`, authoring stops; the learner is told to source it from the instructor. LLM judgment on "seems exam-relevant" is forbidden.
+
+**Topic scope tags.** Every topic in the topic-map is tagged one of:
+- `in-scope: tested` — appears in past-exam bank.
+- `in-scope: listed` — appears on the exam-coverage doc but no past-exam question yet.
+- `in-scope: prereq` — foundational background explicitly referenced by an in-scope topic (e.g. "see page-table basics"). Authored only as short scaffolding *inside* a dependent lesson; no standalone lesson/practice/mock entries.
+- `out-of-scope` — lecture-only or textbook-only material with no exam coverage. Dropped from authoring.
+
+**Enforcement.**
+- Stage 1 produces `_scratch/exam-scope.md` before anything else; missing = stop.
+- Stages 3/4 (lesson + practice + cards + mock authoring) loop only over `in-scope: tested | listed` topics.
+- `prereq` content lives inline in dependent lessons, never as its own file.
+- `out-of-scope` topics are skipped. If a learner needs them, that's self-study outside this tool.
+- Audit Pass 9 checks every authored file's topic resolves to an entry in `_scratch/exam-scope.md`. Unmapped = critical.
+
+**Fallback for vague coverage docs.** If the exam-coverage doc is coarse ("lectures 1–12 plus labs"), the filter loosens back to lecture + lab inclusion — still tighter than "whatever appeared in materials". Pure textbook-only material never qualifies without explicit instructor mention.
+
+**Midterms vs finals — different roles.** Scope (what IS tested) comes only from the exam-coverage doc. A midterm on its own does NOT define scope — it describes what was tested on the midterm, not the final. What the midterm *does* provide is **structural pattern**: question phrasing, marks distribution, depth expected per question type, distractor conventions, typical traps. Instructors recycle structural patterns between midterm and final reliably. Use midterms to calibrate Stage 4 mock-exam style and Stage 3 practice depth, but never use the midterm topic list as exam-scope.
+
+---
+
+## Practice source discipline
+
+The `practice/` tree is the retention engine — paired with mock-exam, it enforces application-level mastery that lessons alone can't produce. Practice items exist **only to simulate what the exam will ask the learner to do**.
+
+Real exam questions consistently take the form "build/compute/fill in something similar to but different from / easier than what you did in labs and assignments." Practice must mirror this.
+
+**Every practice item traces to exactly one of:**
+- `materials/labs/` — a lab handout or solution.
+- `materials/assignments/` — an assignment specification.
+- `materials/past-exams/` — a past-exam coding or applied question.
+
+**Variant rule.** "Similar but different or easier" is the default transformation from source to practice item. Vary exactly one dimension — numbers, constraints, entity names, input size, table shape — while preserving the deep concept. The `source:` string records both original and variation: `source: Lab 04 Q2 (variant — simpler SQL join, 3 tables → 2)`.
+
+**Coverage gate.** For every lab + assignment + past-exam coding/applied question in `materials/`, ≥1 matching `practice/` file must exist. Audit flags uncovered entries as critical.
+
+**Invented practice is forbidden.** No practice item without a lab / assignment / past-exam anchor. LLM-generated "here's a similar problem" grounded only in concept knowledge is banned — that path produces plausible but exam-irrelevant drills.
+
+**Two kinds** (frontmatter `kind:`):
+- `code` — write or complete code. Current starter-solution or annotation variant schemas.
+- `applied` — non-code application (page-table fills, calculations, diagram completion, state-transition walkthroughs, RAG analysis). Schema: `## Problem`, `## Walkthrough` (step-by-step), `## Common wrong approaches`, `## Why`. Inline SVG when the problem has visual structure.
 
 ---
 
@@ -194,18 +243,18 @@ The site is public. Every artifact is consumed by peers who skipped every lectur
 
 This matrix is the ground truth for what every content type must carry. Skills and audits validate against it.
 
-| Dimension | Card | Lesson | Dive | Code-practice | Mock-Q | Cheat-block |
-|---|---|---|---|---|---|---|
-| **1. Source citation** | `source:` required | frontmatter `source:` required | frontmatter `source:` required | frontmatter `source:` required | `source:` required | block-level comment OK |
-| **2. Bloom's tag** | `bloom:` required | `bloom_levels: [...]` required | `bloom_levels: [...]` required | — (inherent) | `bloom:` required | — |
-| **3. Elaborative encoding** | `explanation` required | closing `**Takeaway**` required | closing `**Takeaway**` required | `## Why` required (schema) | `rationale` required (schema) | — |
-| **4. Worked example** | `example` recommended | `**Example**` callout ≥1 for non-conceptual topics | same | `## Solution` required (schema) | — | — |
-| **5. Dual coding** | `diagram` type where applicable | Mermaid/SVG required if concept is visual | same | inline SVG where applicable | — | — |
-| **6. Retrieval affordance** | inherent | `> **Q:**/**A:**` checkpoint ≥1 | linked flashcards OR inline checkpoint ≥1 | inherent | inherent | — |
-| **7. Pitfall / distractor callout** | — | `**Pitfall**` required for non-trivial | `**Pitfall**` required for non-trivial | common-wrong note in `## Why` | distractor analysis in `rationale` (MCQ/MULTI) | — |
-| **8. Concept variability** | — | — | — | ≥1 variant per topic in the bank | ≥2 surface forms per deep concept | — |
-| **9. Concreteness fading** | — | opens concrete, generalizes | opens concrete, generalizes | — | — | — |
-| **10. Active recall prompt** (self-explanation cue) | UI-level | `> **Q:**/**A:**` checkpoints | inline Q/A or linked cards | — | — | — |
+| Dimension | Card | Lesson | Practice | Mock-Q | Cheat-block |
+|---|---|---|---|---|---|
+| **1. Source citation** | `source:` required | frontmatter `source:` required | frontmatter `source:` required — must resolve to lab / assignment / past-exam | `source:` required | block-level comment OK |
+| **2. Bloom's tag** | `bloom:` required | `bloom_levels: [...]` required | — (inherent) | `bloom:` required | — |
+| **3. Elaborative encoding** | `explanation` required | closing `**Takeaway**` required | `## Why` required (schema) | `rationale` required (schema) | — |
+| **4. Worked example** | `example` recommended | `**Example**` callout ≥1 for non-conceptual topics | `## Solution` (code kind) / `## Walkthrough` (applied kind) — required (schema) | — | — |
+| **5. Dual coding** | `diagram` type where applicable | Mermaid/SVG required if concept is visual | inline SVG required for applied kind when the problem has visual structure (page tables, RAGs, matrices, state machines) | — | — |
+| **6. Retrieval affordance** | inherent | `> **Q:**/**A:**` checkpoint ≥1 | inherent | inherent | — |
+| **7. Pitfall / distractor callout** | — | `**Pitfall**` required for non-trivial | common-wrong note in `## Why` (code) / `## Common wrong approaches` (applied) | distractor analysis in `rationale` (MCQ/MULTI) | — |
+| **8. Concept variability** | — | — | ≥2 variants per procedural concept | ≥3 surface forms per high-weight deep concept | — |
+| **9. Concreteness fading** | — | opens concrete, generalizes | — | — | — |
+| **10. Active recall prompt** (self-explanation cue) | UI-level | `> **Q:**/**A:**` checkpoints | — | — | — |
 
 ---
 
@@ -213,10 +262,11 @@ This matrix is the ground truth for what every content type must carry. Skills a
 
 Every course's `content/{id}/` tree must include:
 
-1. **`topic-dives/exam-strategy-and-pitfalls.md`** (`priority: high`) — time allocation, Part-1 vs Part-2 strategy, domain-specific traps (off-by-one, sign bits, ordering), "when to skip and return" heuristics, the top 5 pitfalls extracted from past-exam solution keys. Sourced from `materials/past-exams/` + any `generated/exam-study/research-*.md`. This artifact is non-negotiable — it's the single highest-leverage topic in the exam-prep window.
-2. **Formulas quick-reference cheat-block** — one `##` block in `cheat-sheet.md` titled `Formulas — quick reference` whenever the course contains formulas. Terse, no derivations, symbols defined once at the top. Skip only for non-quantitative courses (rare).
-3. **Diagram-based code-practice from past exams** — for every past-exam question that includes a diagram (page tables, RAGs, matrices, state machines, timing), a matching code-practice file must exist with inline SVG reproducing the layout. Past-exam questions without course coverage = critical defect.
-4. **Pretest mock-exam subset** — mock-exam has a `tags: [pretest]` subset of ~5–10 questions the learner is advised to attempt on day one (see study-plan skills).
+1. **Exam-scope source** — `content/{id}/_scratch/exam-scope.md`, produced in Stage 1 from the exam-coverage doc in `materials/` (syllabus exam section, instructor-provided study guide, final review sheet, or equivalent). Verbatim list of what the final exam covers, with citation to the source file. Authoring without this file is forbidden. See §Exam-scope discipline below.
+2. **`lessons/00-exam-strategy.md`** (`kind: strategy`) — time allocation per question type, Part-1 vs Part-2 strategy if applicable, domain-specific traps (off-by-one, sign bits, ordering), "when to skip and return" heuristics, top 5 pitfalls extracted from past-exam solution keys. Sourced from `materials/past-exams/` + any `generated/exam-study/research-*.md`. Non-negotiable: single highest-leverage artifact in the exam-prep window. The `strategy` kind waives the opens-concrete rule and the retrieval-checkpoint rule (it's exam-prep meta, not zero-to-one teaching).
+3. **Practice coverage** — for every lab, assignment, and past-exam coding/applied question in `materials/`, ≥1 matching `practice/NN-<slug>.md` file exists. Uncovered lab/assignment/past-exam entries = critical defect. See §Practice source discipline below.
+4. **Pretest mock-exam subset** — mock-exam has a `tags: [pretest]` subset of 8–12 questions the learner is advised to attempt on day one (see study-plan skills).
+5. **Cheat-sheet (conditional)** — `cheat-sheet.md` is authored **only if** `course.yaml` has `cheatsheet_allowed: true` (i.e. the real exam permits a learner-prepared reference). When authored, it must include a `## Formulas — quick reference` block for any quantitative course. When `cheatsheet_allowed: false`, no cheat-sheet file is produced and the app hides the subview.
 
 ---
 
@@ -224,27 +274,33 @@ Every course's `content/{id}/` tree must include:
 
 **Hard gates** — blocking. `/add-course` refuses to register; `/audit-content` reports as critical. These are the non-negotiables:
 
+- `_scratch/exam-scope.md` exists and every authored file's topic resolves to an entry in it.
 - Every card/question/file has `source:`.
-- Every lesson has ≥1 retrieval checkpoint.
-- Every problem-solving topic-dive has ≥1 worked example.
-- Every non-trivial topic-dive has ≥1 `**Pitfall**`.
+- Every practice file's `source:` resolves to a lab, assignment, or past-exam entry in `materials/`.
+- Every lab, assignment, and past-exam coding/applied question in `materials/` has ≥1 matching practice file (practice coverage gate).
+- Every non-strategy lesson has ≥1 retrieval checkpoint (`> **Q:**/**A:**`).
+- Every non-trivial lesson has ≥1 `**Pitfall**` callout.
+- Every problem-solving lesson has ≥1 `**Example**` callout with step-by-step reasoning.
 - Every mock MCQ/MULTI `rationale` addresses each distractor (not just verifies the correct answer).
-- Every code-practice file has the schema-required H2 sections (already invariant).
-- `topic-dives/exam-strategy-and-pitfalls.md` exists.
+- Every practice file has the schema-required H2 sections (already invariant).
+- `lessons/00-exam-strategy.md` exists with `kind: strategy`.
+- When `course.yaml` has `cheatsheet_allowed: true`, `cheat-sheet.md` exists. When `false`, the file must NOT exist.
 - Zero private-data matches.
 - Zero duplicate ids.
 
 **Advisory** — surfaced in audit, non-blocking. These flag quality gaps for iterative improvement:
 
-- Bloom's distribution within ±10pts of 30/30/25/15.
+- Bloom's distribution within ±10pts of 20/25/35/20.
 - Cards have `explanation` + `example` (not just answer).
 - Cards span ≥2 `type`s per topic.
-- Lessons open concrete (concreteness fading); not with a bare definition.
-- Diagram present for visual concepts.
+- Non-strategy lessons open concrete (concreteness fading); not with a bare definition.
+- Diagram present for visual concepts (lesson + applied practice).
 - Signaling in lessons (headings, callouts, integrated labels).
 - `related:` frontmatter links to ≥1 other topic.
-- Formulas cheat-block present (courses with formulas).
-- Pretest mock-exam subset tagged.
+- Formulas cheat-block present (when `cheatsheet_allowed: true` and course has formulas).
+- Pretest mock-exam subset tagged (8–12 questions).
+- ≥3 surface forms per high-weight deep concept in mock-exam.
+- ≥2 variants per procedural concept in practice tree.
 - Conversational register (personalization principle).
 
 ---

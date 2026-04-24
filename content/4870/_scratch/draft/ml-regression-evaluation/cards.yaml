@@ -1,0 +1,97 @@
+id: ml-regression-evaluation
+name: "ML.NET regression evaluation — FastTree, RMSE, R²"
+tags: [ml-net, regression, metrics]
+prose: "Regression trainers live on mlContext.Regression.Trainers; FastTree (gradient-boosted trees in Microsoft.ML.FastTree) is the default. You split an IDataView with mlContext.Data.TrainTestSplit(data, testFraction: 0.2) or average across folds with mlContext.Regression.CrossValidate. Evaluation runs through mlContext.Regression.Evaluate(predictions, \"Label\", \"Score\"), which returns a RegressionMetrics object. Read metrics.RSquared (variance explained, 0–1, unitless), metrics.RootMeanSquaredError (average error in the label's original units, lower is better), and metrics.MeanAbsoluteError (absolute error, more robust to outliers). The namespace must match the task: Regression.Evaluate produces regression metrics, MulticlassClassification.Evaluate does not. The score argument names the prediction column; FastTree writes to \"Score\"."
+cards:
+  - id: ml-regression-evaluation-card-01
+    type: cloze
+    front: "The default gradient-boosted-trees regression trainer is created with ___ and ships in the ___ package."
+    back: "mlContext.Regression.Trainers.FastTree() ; Microsoft.ML.FastTree"
+    bloom: remember
+    source: "research-mlnet.md §Regression Trainers; card #9"
+    explanation: "FastTree is the default choice for general regression. Its output column is named \"Score\". SdcaRegression and LightGbmRegression are alternatives; LightGbm additionally requires Microsoft.ML.LightGbm."
+    example: ".Append(mlContext.Regression.Trainers.FastTree())"
+
+  - id: ml-regression-evaluation-card-02
+    type: qa
+    front: "Which call partitions an IDataView into 80% training and 20% test subsets?"
+    back: "mlContext.Data.TrainTestSplit(dataView, testFraction: 0.2)  — returns a DataOperationsCatalog.TrainTestData with TrainSet and TestSet."
+    bloom: remember
+    source: "research-mlnet.md §TrainTestSplit; card #15"
+    explanation: "TrainTestSplit sits on mlContext.Data, not mlContext.Regression. You fit the pipeline on TrainSet and evaluate predictions from TestSet."
+    example: |
+      var split = mlContext.Data.TrainTestSplit(dataView, testFraction: 0.2);
+      ITransformer model = pipeline.Fit(split.TrainSet);
+      var predictions = model.Transform(split.TestSet);
+
+  - id: ml-regression-evaluation-card-03
+    type: cloze
+    front: "Call ___ to run k-fold cross-validation: it trains k models, each on (k-1) folds, and reports ___ metrics across all folds."
+    back: "mlContext.Regression.CrossValidate(pipeline, data, numberOfFolds: 5) ; averaged"
+    bloom: understand
+    source: "research-mlnet.md §CrossValidate"
+    explanation: "CrossValidate gives a tighter performance estimate than a single TrainTestSplit because every row serves as test data in exactly one fold."
+    example: "var cv = mlContext.Regression.CrossValidate(pipeline, data, numberOfFolds: 5);"
+
+  - id: ml-regression-evaluation-card-04
+    type: qa
+    front: "Which line evaluates a regression model and returns a RegressionMetrics object?"
+    back: "var metrics = mlContext.Regression.Evaluate(predictions, \"Label\", \"Score\");"
+    bloom: apply
+    source: "research-mlnet.md §Evaluation Metrics; card #10"
+    explanation: "The first string is the label column (you renamed the target to \"Label\" via CopyColumns). The second is the score column — FastTree writes its prediction to \"Score\". Mismatched names break Evaluate."
+    example: |
+      IDataView predictions = model.Transform(split.TestSet);
+      var metrics = mlContext.Regression.Evaluate(predictions, "Label", "Score");
+      Console.WriteLine($"R²: {metrics.RSquared:0.##}");
+
+  - id: ml-regression-evaluation-card-05
+    type: cloze
+    front: "R² is exposed as ___ on RegressionMetrics, ranges from ___ to ___, and reports the fraction of ___ the model explains."
+    back: "metrics.RSquared ; 0 ; 1 ; variance"
+    bloom: understand
+    source: "research-mlnet.md §Regression Metrics"
+    explanation: "R² = 1 − (SS_residual / SS_total). It is unitless. 0.89 means the model explains 89% of the label's variance, not that it is 89% accurate."
+    example: "Console.WriteLine($\"RSquared: {metrics.RSquared:0.##}\");"
+
+  - id: ml-regression-evaluation-card-06
+    type: qa
+    front: "A taxi-fare model reports RSquared = 0.89 and RootMeanSquaredError = 3.3 on the test set. What do those numbers mean?"
+    back: "The model explains 89% of variance in FareAmount, and predicted fares miss the actual fare by about $3.30 on average."
+    bloom: evaluate
+    source: "research-mlnet.md §Regression Metrics example; MCQ #4"
+    explanation: "RMSE inherits the label's units (dollars here). R² is unitless variance-explained. Distractors conflate the two — \"89% accurate with 3.3% error\" is wrong on both counts."
+    example: "metrics.RSquared = 0.89 ; metrics.RootMeanSquaredError = 3.30 ; label column = FareAmount (USD)"
+
+  - id: ml-regression-evaluation-card-07
+    type: mcq
+    front: |
+      You trained a regression model and want to print R² and RMSE on a held-out test set. Which snippet is correct?
+
+      A) var metrics = mlContext.MulticlassClassification.Evaluate(predictions, "Label", "Score");
+      B) var metrics = mlContext.Regression.Evaluate(predictions, "Label", "Prediction");
+      C) var metrics = mlContext.Regression.Evaluate(predictions, "Label", "Score");
+      D) var metrics = mlContext.Regression.Trainers.Evaluate(predictions);
+    back: "C"
+    bloom: apply
+    source: "research-mlnet.md §Evaluation Metrics; §Exam Traps"
+    explanation: "A uses the wrong namespace — MulticlassClassification returns accuracy metrics, not RSquared. B passes the wrong score-column name; FastTree emits \"Score\". D is not a real method — Evaluate lives on the task catalog (Regression), not on Trainers."
+    example: "var metrics = mlContext.Regression.Evaluate(predictions, \"Label\", \"Score\");"
+
+  - id: ml-regression-evaluation-card-08
+    type: qa
+    front: "Why is RootMeanSquaredError a better reality check than RSquared when a stakeholder asks \"how far off are predictions?\""
+    back: "RMSE is in the label's original units (dollars for fare, seconds for duration) so it answers the question directly. RSquared is unitless variance-explained and says nothing about the size of an individual miss."
+    bloom: understand
+    source: "research-mlnet.md §Regression Metrics"
+    explanation: "RMSE = √(Σ(predicted − actual)² / n). It punishes large errors more than MeanAbsoluteError does. MAE is the robust-to-outliers alternative."
+    example: "RSquared = 0.89 (89% variance explained) ; RMSE = 3.30 (≈ $3.30 average miss)"
+
+  - id: ml-regression-evaluation-card-09
+    type: cloze
+    front: "RootMeanSquaredError measures error in the label's ___ units, while RSquared is ___ and ranges 0 to 1."
+    back: "original (e.g. dollars for fare) ; unitless"
+    bloom: remember
+    source: "research-mlnet.md §Regression Metrics; §Exam Traps"
+    explanation: "Claiming \"RMSE = 3.3%\" or \"RSquared is in dollars\" swaps the two. RMSE inherits units; R² never does."
+    example: "metrics.RootMeanSquaredError = 3.30   // dollars, because FareAmount is in USD"

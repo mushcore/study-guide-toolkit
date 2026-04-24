@@ -1,0 +1,61 @@
+id: aspire-service-defaults
+name: ".NET Aspire ServiceDefaults"
+tags: [aspire, observability, health-checks]
+source: "notes/aspire_SCRIPT.docx; research-aspire.md"
+prose: "Every Aspire service calls `builder.AddServiceDefaults()` at configure time and `app.MapDefaultEndpoints()` at map time. Together they install service discovery, OpenTelemetry, `/health` + `/alive` endpoints, and HttpClient resilience."
+cards:
+  - id: aspire-service-defaults-card-01
+    type: cloze
+    prompt: "Every Aspire service's `Program.cs` calls `builder.{{AddServiceDefaults}}()` and `app.{{MapDefaultEndpoints}}()`."
+    answer: "AddServiceDefaults; MapDefaultEndpoints"
+    bloom: remember
+    explanation: "`AddServiceDefaults` registers services (discovery, OTel, health checks, resilience). `MapDefaultEndpoints` exposes the HTTP endpoints (`/health`, `/alive`). Both are required."
+    example: "builder.AddServiceDefaults(); … app.MapDefaultEndpoints();"
+
+  - id: aspire-service-defaults-card-02
+    type: name
+    prompt: "What four capabilities does `AddServiceDefaults()` install?"
+    answer: "Service discovery, OpenTelemetry, default health checks, HttpClient resilience."
+    bloom: understand
+    explanation: "These are the four Aspire primitives that every service is expected to have. Registering them manually in each service would produce dozens of lines; the extension consolidates them."
+    example: "ConfigureOpenTelemetry + AddDefaultHealthChecks + AddServiceDiscovery + ConfigureHttpClientDefaults(AddStandardResilienceHandler)"
+
+  - id: aspire-service-defaults-card-03
+    type: cloze
+    prompt: "Aspire exposes two health endpoints: `{{/health}}` for readiness (all checks pass) and `{{/alive}}` for liveness (checks tagged \"live\" only)."
+    answer: "/health; /alive"
+    bloom: remember
+    explanation: "Readiness gates traffic routing; liveness gates container restarts. Kubernetes maps them to `readinessProbe` and `livenessProbe` respectively."
+    example: "curl http://backend/health → 200 when ready; curl http://backend/alive → 200 when the process is alive."
+
+  - id: aspire-service-defaults-card-04
+    type: name
+    prompt: "Which `.csproj` change connects a service to its ServiceDefaults library?"
+    answer: "A `<ProjectReference>` to the ServiceDefaults project (add via `dotnet add reference`)."
+    bloom: apply
+    explanation: "ServiceDefaults is a separate class library project in the solution. Each service project references it so the `AddServiceDefaults` extension method is available."
+    example: "dotnet add ./Cms.WebApi reference ./Cms.ServiceDefaults/Cms.ServiceDefaults.csproj"
+
+  - id: aspire-service-defaults-card-05
+    type: cloze
+    prompt: "`AddServiceDefaults()` belongs in {{each service's}} `Program.cs`, NOT in the {{AppHost's}} `Program.cs`."
+    answer: "each service's; AppHost's"
+    bloom: analyze
+    explanation: "AppHost is the orchestrator — it shouldn't register service-side concerns. Putting `AddServiceDefaults` there makes the orchestrator try to configure telemetry on itself and breaks boot."
+    example: "AppHost/Program.cs: DistributedApplication.CreateBuilder + AddProject calls only. WebApi/Program.cs: AddServiceDefaults here."
+
+  - id: aspire-service-defaults-card-06
+    type: name
+    prompt: "A new service appears red in the Aspire Dashboard. What is the single most likely cause?"
+    answer: "The service is missing `builder.AddServiceDefaults()` so it has no `/health` endpoint."
+    bloom: analyze
+    explanation: "The dashboard polls `/health` for every registered project. Without default health checks, the endpoint returns 404 and the dashboard flags it red."
+    example: "Add builder.AddServiceDefaults(); and app.MapDefaultEndpoints(); to fix."
+
+  - id: aspire-service-defaults-card-07
+    type: cloze
+    prompt: "`AddServiceDefaults` also configures HttpClientFactory: every `HttpClient` created through DI inherits {{AddStandardResilienceHandler}} and {{AddServiceDiscovery}}."
+    answer: "AddStandardResilienceHandler; AddServiceDiscovery"
+    bloom: understand
+    explanation: "This is why `HttpClient` calls to `http://backend/` work without per-client setup. The factory applies both resilience policies and name resolution globally."
+    example: "builder.Services.ConfigureHttpClientDefaults(http => { http.AddStandardResilienceHandler(); http.AddServiceDiscovery(); });"

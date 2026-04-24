@@ -1,0 +1,53 @@
+id: file-based-app-directives
+name: "File-based app #: directives"
+tags: [dotnet-10, scripting, directives]
+source: "notes/file-based-apps.docx; research-file-based.md §2.4"
+prose: "Four directives put build metadata into a file-based `.cs` — `#:package` for NuGet, `#:property` for MSBuild properties, `#:sdk` for SDK selection, `#:project` for project references. No space after the colon."
+cards:
+  - id: file-based-app-directives-card-01
+    type: cloze
+    prompt: "The NuGet-package directive is `#:{{package}} PackageName@Version` — note: no space after the {{colon}}."
+    answer: "package; colon"
+    bloom: remember
+    explanation: "`#:package Spectre.Console@0.49.1` is legal; `#: package Spectre.Console@0.49.1` is not. The spaced form is a classic exam distractor."
+    example: "#:package Spectre.Console@0.49.1"
+
+  - id: file-based-app-directives-card-02
+    type: name
+    prompt: "Which directive switches the file's SDK to support ASP.NET Core minimal APIs?"
+    answer: "`#:sdk Microsoft.NET.Sdk.Web`"
+    bloom: apply
+    explanation: "The default SDK (`Microsoft.NET.Sdk`) is console-only. `Microsoft.NET.Sdk.Web` adds `WebApplication`, routing, middleware, etc."
+    example: "#:sdk Microsoft.NET.Sdk.Web\\nvar app = WebApplication.CreateBuilder(args).Build();"
+
+  - id: file-based-app-directives-card-03
+    type: cloze
+    prompt: "To set an MSBuild property like the target framework, use `#:{{property}} TargetFramework={{net10.0}}`."
+    answer: "property; net10.0"
+    bloom: apply
+    explanation: "Stack multiple #:property directives for more settings (LangVersion, Nullable, etc.). The `=` has no spaces around it."
+    example: "#:property TargetFramework=net10.0\\n#:property Nullable=enable"
+
+  - id: file-based-app-directives-card-04
+    type: name
+    prompt: "How do you reference a local .csproj from a file-based .cs?"
+    answer: "`#:project ./Relative/Path/Lib.csproj`"
+    bloom: apply
+    explanation: "The path is resolved relative to the file-based .cs's location. Useful when a one-off script consumes types from a shared library."
+    example: "#:project ./MyLibrary/MyLibrary.csproj\\nusing MyLibrary;\\nvar p = new Person();"
+
+  - id: file-based-app-directives-card-05
+    type: cloze
+    prompt: "The four `#:` directives are: `#:{{package}}`, `#:{{property}}`, `#:{{sdk}}`, and `#:{{project}}`. Each has NO space after the colon."
+    answer: "package; property; sdk; project"
+    bloom: remember
+    explanation: "Each directive targets one build-configuration concern. Stack as many as needed; each must sit on its own line."
+    example: "#:sdk Microsoft.NET.Sdk.Web\\n#:package Microsoft.AspNetCore.OpenApi@10.0.0\\n#:property Nullable=enable"
+
+  - id: file-based-app-directives-card-06
+    type: name
+    prompt: "Is `#: sdk Microsoft.NET.Sdk.Web` (with a space after the colon) valid?"
+    answer: "No. Directive names sit flush against `#:` with no whitespace between."
+    bloom: analyze
+    explanation: "The spaced form is the most common distractor in exams because it reads naturally. Always proofread for the zero-space rule."
+    example: "#:sdk Microsoft.NET.Sdk.Web   (correct)\\n#: sdk Microsoft.NET.Sdk.Web  (invalid)"

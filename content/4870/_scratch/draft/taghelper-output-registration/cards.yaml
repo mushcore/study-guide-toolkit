@@ -1,0 +1,61 @@
+id: taghelper-output-registration
+name: "Tag Helper output + _ViewImports registration"
+tags: [tag-helper, razor, view-imports]
+source: "notes/TagHelpers_SCRIPT.docx; research-taghelpers-blazor.md"
+prose: "Tag Helpers are registered globally in `_ViewImports.cshtml` via `@addTagHelper *, AssemblyName`. In the helper's `Process`/`ProcessAsync`, the `TagHelperOutput` exposes `TagName`, `Content`, `PreContent`, `PostContent`, `Attributes`, and `SuppressOutput`."
+cards:
+  - id: taghelper-output-registration-card-01
+    type: cloze
+    prompt: "Tag Helpers are registered in `{{_ViewImports.cshtml}}` with the directive `@addTagHelper *, {{AssemblyName}}`."
+    answer: "_ViewImports.cshtml; AssemblyName"
+    bloom: remember
+    explanation: "The `*` glob imports every Tag Helper in the assembly. Swap `*` for a fully qualified type name when you want to register only one."
+    example: "@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers\n@addTagHelper *, MyApp"
+
+  - id: taghelper-output-registration-card-02
+    type: name
+    prompt: "Where should you register a Tag Helper assembly — in each .cshtml file, or in `_ViewImports.cshtml`?"
+    answer: "In `_ViewImports.cshtml`. Individual .cshtml files inherit the registrations."
+    bloom: understand
+    explanation: "Registration is hierarchical — `_ViewImports.cshtml` in a subdirectory adds to the registrations from ancestor directories. Per-page registration is not the convention."
+    example: "Pages/_ViewImports.cshtml registers once; Pages/Admin/Dashboard.cshtml inherits automatically."
+
+  - id: taghelper-output-registration-card-03
+    type: cloze
+    prompt: "To scope a Tag Helper registration to pages under `Pages/Admin/` only, drop a `_ViewImports.cshtml` into `{{Pages/Admin/}}` with the `@addTagHelper` directive."
+    answer: "Pages/Admin/"
+    bloom: apply
+    explanation: "Sub-folder _ViewImports.cshtml files extend their parent. The admin page picks up both registrations; pages outside `Admin/` see only the root set."
+    example: "Pages/Admin/_ViewImports.cshtml: @addTagHelper *, MyApp.AdminHelpers"
+
+  - id: taghelper-output-registration-card-04
+    type: name
+    prompt: "Which `TagHelperOutput` method renders nothing at all from a helper?"
+    answer: "`output.SuppressOutput()`"
+    bloom: apply
+    explanation: "Suppresses both the tag and its content. Use when a condition says the element should not appear (feature gate, empty model, etc.)."
+    example: "if (!_flags.IsEnabled(Flag!)) output.SuppressOutput();"
+
+  - id: taghelper-output-registration-card-05
+    type: cloze
+    prompt: "Given `<mytag>existing</mytag>` plus `output.PreContent.SetHtmlContent(\"[pre]\"); output.Content.AppendHtmlContent(\"[appended]\");` the rendered inner block reads `{{[pre]existing[appended]}}`."
+    answer: "[pre]existing[appended]"
+    bloom: apply
+    explanation: "PreContent injects HTML at the start of the inner area. Content.AppendHtmlContent adds after existing content. PostContent goes at the end. PreElement / PostElement (not shown) inject OUTSIDE the tag."
+    example: "output.PreContent + output.Content + output.PostContent ordered inside the rendered element."
+
+  - id: taghelper-output-registration-card-06
+    type: name
+    prompt: "Which call removes an HTML attribute the page author wrote on the tag?"
+    answer: "`output.Attributes.RemoveAll(\"attribute-name\")`"
+    bloom: apply
+    explanation: "RemoveAll strips every attribute matching the name (supports case-insensitive match). SetAttribute replaces; this one deletes."
+    example: "output.Attributes.RemoveAll(\"data-legacy\");"
+
+  - id: taghelper-output-registration-card-07
+    type: cloze
+    prompt: "To disable a globally-registered Tag Helper in one Razor file, use the directive `@{{removeTagHelper}} \"FullType, AssemblyName\"`."
+    answer: "removeTagHelper"
+    bloom: remember
+    explanation: "Rarely used but handy when a third-party package adds helpers you want to opt out of for specific pages. Pair @addTagHelper with @removeTagHelper at different scopes."
+    example: "@removeTagHelper \"Microsoft.AspNetCore.Mvc.TagHelpers.CacheTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers\""

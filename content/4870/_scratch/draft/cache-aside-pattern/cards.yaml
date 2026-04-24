@@ -1,0 +1,61 @@
+id: cache-aside-pattern
+name: "Cache-aside pattern"
+tags: [cache, pattern, getorset, invalidation]
+source: "notes/DataCache_SCRIPT.docx; notes/redis_SCRIPT.docx; research-cache.md §3"
+prose: "Cache-aside: check cache, on miss fetch from source, store result, return. `GetOrCreateAsync` on `IMemoryCache` and `GetOrSetAsync<T>` extension on `IDistributedCache` give a one-line form. Writers must invalidate affected keys via `Remove(key)`."
+cards:
+  - id: cache-aside-pattern-card-01
+    type: cloze
+    prompt: "The three steps of cache-aside are: (1) {{look up}} in the cache, (2) on {{hit}} return cached, (3) on {{miss}} fetch, store, return."
+    answer: "look up; hit; miss"
+    bloom: remember
+    explanation: "The same sequence at every call site: check, hit/miss branch, store-and-return on miss. Wrappers like GetOrCreateAsync collapse this into one call."
+    example: "if (!cache.TryGetValue(k, out v)) { v = fetch(); cache.Set(k, v, opts); } return v;"
+
+  - id: cache-aside-pattern-card-02
+    type: name
+    prompt: "Which single `IMemoryCache` method checks the cache, runs a factory on miss, stores the result, and returns it?"
+    answer: "`GetOrCreateAsync` (or `GetOrCreate` for synchronous factories)."
+    bloom: apply
+    explanation: "The factory runs only on cache miss. This is the idiomatic .NET helper — prefer it over hand-rolled TryGetValue + Set pairs for readability."
+    example: "var p = await cache.GetOrCreateAsync(\"key\", entry => { entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); return FetchAsync(); });"
+
+  - id: cache-aside-pattern-card-03
+    type: cloze
+    prompt: "`IDistributedCache` works in raw {{byte arrays}}, so consumers typically wrap it with extension methods that serialize to {{JSON}}."
+    answer: "byte arrays; JSON"
+    bloom: understand
+    explanation: "The interface has Get/Set on byte[]. A JSON extension (SetAsync<T>, TryGetValue<T>, GetOrSetAsync<T>) hides serialization and matches the IMemoryCache ergonomics."
+    example: "bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value));"
+
+  - id: cache-aside-pattern-card-04
+    type: name
+    prompt: "After an `AddGame` write to the DB, what must you call on the cache to prevent stale reads?"
+    answer: "`_cache.Remove(key)` for every affected cached key."
+    bloom: apply
+    explanation: "Cache-aside doesn't know when the source changes. The writer is responsible for invalidating affected keys after SaveChangesAsync — otherwise reads serve stale data until the TTL fires."
+    example: "await _db.SaveChangesAsync(); _cache.Remove(\"games\"); _cache.Remove($\"games:country:{game.Country}\");"
+
+  - id: cache-aside-pattern-card-05
+    type: cloze
+    prompt: "`TryGetValue<T>` takes an `{{out}}` parameter: `if (cache.TryGetValue<Product>(\"key\", out var product)) { ... }`."
+    answer: "out"
+    bloom: apply
+    explanation: "TryGetValue returns bool; the value is set via the out parameter. `if (cache.TryGetValue(\"key\", product))` is wrong — the compiler requires `out var`."
+    example: "if (cache.TryGetValue<Product>(\"key\", out var product)) return product!;"
+
+  - id: cache-aside-pattern-card-06
+    type: name
+    prompt: "Why does JSON-round-tripping through `IDistributedCache` lose polymorphic type information by default?"
+    answer: "System.Text.Json omits the runtime type — deserializing to a base type strips derived-type properties."
+    bloom: analyze
+    explanation: "A List<Dog> : Animal cached as JSON and read back as List<Animal> keeps only Animal properties. Fix: cache the concrete type, use a discriminator property, or enable TypeInfoResolver settings."
+    example: "Cache: new List<Dog>{...} → JSON → read as List<Animal> → breeds lost. Fix: keep the concrete type explicit in the cache signature."
+
+  - id: cache-aside-pattern-card-07
+    type: cloze
+    prompt: "The helper `GetOrSetAsync<T>` defaults, in the course's example, to `{{SetAbsoluteExpiration(TimeSpan.FromHours(1))}}` combined with `{{SetSlidingExpiration(TimeSpan.FromMinutes(30))}}`."
+    answer: "SetAbsoluteExpiration(TimeSpan.FromHours(1)); SetSlidingExpiration(TimeSpan.FromMinutes(30))"
+    bloom: remember
+    explanation: "A 1-hour hard ceiling with a 30-minute idle window — sensible defaults for most read-heavy data. Override with your own `DistributedCacheEntryOptions` when finer control is needed."
+    example: "opts ??= new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(1)).SetSlidingExpiration(TimeSpan.FromMinutes(30));"

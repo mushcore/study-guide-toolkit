@@ -1,0 +1,53 @@
+id: redis-configuration
+name: "Redis configuration — Docker, StackExchange.Redis"
+tags: [redis, docker, stackexchange-redis]
+source: "slides/redis.pptx; notes/redis_SCRIPT.docx; research-cache.md §6"
+prose: "Start Redis with `docker run --name redis -d -p 6379:6379 redis`. Wire it to ASP.NET Core with `builder.Services.AddStackExchangeRedisCache(opts => opts.Configuration = \"localhost:6379\")` after adding the `Microsoft.Extensions.Caching.StackExchangeRedis` NuGet package."
+cards:
+  - id: redis-configuration-card-01
+    type: cloze
+    prompt: "Redis's default port is {{6379}}. The conventional Docker invocation is `docker run --name redis -d -p {{6379}}:{{6379}} redis`."
+    answer: "6379; 6379; 6379"
+    bloom: remember
+    explanation: "Every Redis example in the course assumes 6379. `-d` runs detached; `-p host:container` maps the port; `redis` is the official Docker Hub image."
+    example: "docker run --name redis -d -p 6379:6379 redis"
+
+  - id: redis-configuration-card-02
+    type: name
+    prompt: "Which NuGet package provides the `AddStackExchangeRedisCache` extension?"
+    answer: "`Microsoft.Extensions.Caching.StackExchangeRedis`"
+    bloom: remember
+    explanation: "Without this package, the extension method doesn't compile. `StackExchange.Redis` is the underlying client library; the `Microsoft.Extensions.Caching.*` package wraps it for `IDistributedCache`."
+    example: "dotnet add package Microsoft.Extensions.Caching.StackExchangeRedis"
+
+  - id: redis-configuration-card-03
+    type: cloze
+    prompt: "In the Redis CLI, `{{SETEX}} destination 10 \"Tokyo\"` sets the key with a {{10-second}} expiration."
+    answer: "SETEX; 10-second"
+    bloom: remember
+    explanation: "SETEX = SET + EXpiration (seconds). Sub-second precision needs PSETEX, which takes milliseconds."
+    example: "SETEX greeting 60 \"hello for a minute\""
+
+  - id: redis-configuration-card-04
+    type: name
+    prompt: "What does `AbortOnConnectFail = true` do when Redis is unreachable at startup?"
+    answer: "It causes the app to fail fast at startup instead of silently running with a no-op cache."
+    bloom: apply
+    explanation: "In production you want the orchestrator to notice and restart the pod. `false` (the default) silently retries in the background — fine for dev, hazardous for prod."
+    example: "new StackExchange.Redis.ConfigurationOptions { AbortOnConnectFail = true, EndPoints = { \"localhost:6379\" } };"
+
+  - id: redis-configuration-card-05
+    type: cloze
+    prompt: "Under .NET Aspire, you skip the connection string and use `builder.{{AddRedisDistributedCache}}(\"cache\")` in the service's `Program.cs`; AppHost declares the resource with `builder.{{AddRedis}}(\"cache\")`."
+    answer: "AddRedisDistributedCache; AddRedis"
+    bloom: apply
+    explanation: "Aspire registers the Redis container resource and injects the connection string via environment variables. The typed helper reads the injected string automatically — no `opts.Configuration` literal needed."
+    example: "AppHost: var cache = builder.AddRedis(\"cache\"); api.WithReference(cache);\nApi: builder.AddRedisDistributedCache(\"cache\");"
+
+  - id: redis-configuration-card-06
+    type: name
+    prompt: "Name five Redis data structures."
+    answer: "String, Hash, List, Set, Sorted Set."
+    bloom: remember
+    explanation: "Recognition-level only — `IDistributedCache` just does byte-keyed `Get`/`Set`, which maps to the String type. The other types appear in Redis CLI usage and Redis-native C# clients."
+    example: "SET user:1 \"Alice\"  | HSET user:1 name Alice age 30  |  LPUSH feed p1 p2  |  SADD tags x y  |  ZADD board 100 alice"
