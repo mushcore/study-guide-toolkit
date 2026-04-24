@@ -204,10 +204,12 @@
 .ds-code-inline {
   font-family: var(--font-mono);
   font-size: var(--fs-12);
-  color: var(--accent);
+  color: var(--text);
   background: var(--panel-3);
+  border: 1px solid var(--border-strong);
   padding: 1px 5px;
   border-radius: var(--r-xs);
+  margin: 0 1px;
 }
 
 .ds-code-block {

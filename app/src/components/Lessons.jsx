@@ -1,6 +1,6 @@
 // Lessons — long-form read-through, capped reading column, callouts, checkpoints.
 import React from 'react';
-import { Highlighted } from './Highlighted.jsx';
+import { Highlighted, HtmlWithCode } from './Highlighted.jsx';
 import { Markdown } from './Markdown.jsx';
 
 let mermaidDiagramCounter = 0;
@@ -48,11 +48,11 @@ export const LessonBlock = ({ b }) => {
   if (!b) return null;
   switch (b.kind) {
     case 'p':
-      return <p dangerouslySetInnerHTML={{__html: b.html}}/>;
+      return <HtmlWithCode as="p" html={b.html}/>;
     case 'h2':
-      return <h3 dangerouslySetInnerHTML={{__html: b.html}}/>;
+      return <HtmlWithCode as="h3" html={b.html}/>;
     case 'h3':
-      return <h4 dangerouslySetInnerHTML={{__html: b.html}}/>;
+      return <HtmlWithCode as="h4" html={b.html}/>;
     case 'code':
       return <Highlighted code={b.code} lang={b.lang || 'plaintext'} className="code hl-block"/>;
     case 'callout': {
@@ -61,14 +61,14 @@ export const LessonBlock = ({ b }) => {
       return (
         <div className={`callout callout-${v} ${v}`}>
           <strong className="callout-label">{label} —</strong>{' '}
-          <span dangerouslySetInnerHTML={{__html: b.html}}/>
+          <HtmlWithCode as="span" html={b.html}/>
         </div>
       );
     }
     case 'checkpoint':
       return <Checkpoint q={b.q} a={b.a} />;
     case 'table':
-      return <div className="lesson-table" dangerouslySetInnerHTML={{__html: b.html}}/>;
+      return <HtmlWithCode className="lesson-table" html={b.html}/>;
     case 'mermaid':
       return <MermaidDiagram source={b.source}/>;
     case 'diagram':
@@ -81,7 +81,7 @@ export const LessonBlock = ({ b }) => {
       );
     case 'html':
     default:
-      return <div className="lesson-html" dangerouslySetInnerHTML={{__html: b.html || ''}}/>;
+      return <HtmlWithCode className="lesson-html" html={b.html || ''}/>;
   }
 };
 
@@ -105,7 +105,7 @@ const Lessons = ({ courseId }) => {
   const num = String(L.n).padStart(2, '0');
 
   return (
-    <div className="page">
+    <div className="page" data-course-id={courseId}>
       <div className="eyebrow">{course.code} · lessons · read top to bottom</div>
       <h1 className="h1">Lessons</h1>
       <p className="sub">Long-form walk-throughs. Each one ends with a checkpoint you can self-grade.</p>
