@@ -151,16 +151,14 @@ builder.AddSqlServerDbContext<ApplicationDbContext>("sqldata");
 > **Note**
 > The connection string **does not live in `appsettings.json`** anymore. Aspire writes it to `ConnectionStrings__sqldata` as an env-var when the service starts. Typed helper methods (`AddSqlServerDbContext`, `AddRedisClient`, etc.) read the env-var by logical name.
 
-### Other common resources
+### Resources demoed in this course
 
 | Resource | AppHost call |
 |---|---|
 | SQL Server | `builder.AddSqlServer("name").AddDatabase("dbname")` |
-| Postgres | `builder.AddPostgres("name").AddDatabase("dbname")` |
 | Redis | `builder.AddRedis("name")` |
-| RabbitMQ | `builder.AddRabbitMQ("name")` |
-| Azure Storage | `builder.AddAzureStorage("name")` |
-| MongoDB | `builder.AddMongoDB("name")` |
+
+(Aspire supports many more — Postgres, RabbitMQ, MongoDB, Azure Storage — but only SQL Server and Redis appear in the W09/W12 labs.)
 
 ### Arbitrary env-vars
 
