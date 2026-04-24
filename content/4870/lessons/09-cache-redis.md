@@ -13,19 +13,19 @@ related: [aspire]
 ## Two cache abstractions
 
 ```cs
-// DataCacheDemo — in-process, per-server
-builder.Services.AddMemoryCache();          // resolves IMemoryCache
+// === IN-PROCESS MEMORY CACHE (per-server, fast, lost on restart) ===
+builder.Services.AddMemoryCache();          // Injects IMemoryCache
 
-// WebApiFIFA — network-backed, shared across servers
+// === DISTRIBUTED CACHE (Redis-backed, shared across servers, survives restart) ===
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = "localhost";
+    options.Configuration = "localhost";    // Redis server address
     options.ConfigurationOptions = new StackExchange.Redis.ConfigurationOptions
     {
-        AbortOnConnectFail = true,
+        AbortOnConnectFail = true,          // Crash if Redis unreachable at startup
         EndPoints = { options.Configuration }
     };
-});                                         // resolves IDistributedCache
+});                                         // Injects IDistributedCache
 ```
 
 `IMemoryCache` — microseconds, per-process, lost on restart.
@@ -44,17 +44,20 @@ public class IndexModel : PageModel
     private async Task<Product[]> GetProductsAsync()
     {
         var cacheKey = "productList";
+        // Try to retrieve from cache (out-parameter pattern)
         if (!_memoryCache.TryGetValue(cacheKey, out Product[]? productList))
         {
+            // Cache miss: fetch from external API
             HttpClient client = new HttpClient();
             var stream = client.GetStreamAsync("https://northwind.vercel.app/api/products");
             productList = await JsonSerializer.DeserializeAsync<Product[]>(await stream);
 
+            // Cache with expiration options
             var cacheExpiryOptions = new MemoryCacheEntryOptions
             {
-                AbsoluteExpiration  = DateTime.Now.AddSeconds(50),
-                Priority            = CacheItemPriority.High,
-                SlidingExpiration   = TimeSpan.FromSeconds(20)
+                AbsoluteExpiration  = DateTime.Now.AddSeconds(50),  // Hard deadline
+                Priority            = CacheItemPriority.High,        // Eviction priority (not TTL)
+                SlidingExpiration   = TimeSpan.FromSeconds(20)       // Idle timeout (resets on access)
             };
             _memoryCache.Set(cacheKey, productList, cacheExpiryOptions);
         }
@@ -70,35 +73,45 @@ public class IndexModel : PageModel
 The `DistributedCacheExtensions.cs` helper JSON-serializes under the hood:
 
 ```cs
+// Main extension: cache-aside pattern with factory lambda
 public static async Task<T?> GetOrSetAsync<T>(this IDistributedCache cache, string key,
     Func<Task<T>> task, DistributedCacheEntryOptions? options = null)
 {
+    // Use defaults if no options provided (30m sliding + 1h absolute)
     options ??= new DistributedCacheEntryOptions()
         .SetSlidingExpiration(TimeSpan.FromMinutes(30))
         .SetAbsoluteExpiration(TimeSpan.FromHours(1));
 
+    // Try to get from cache (hit → return immediately)
     if (cache.TryGetValue(key, out T? value) && value is not null)
         return value;
 
+    // Cache miss: execute factory function to fetch fresh data
     value = await task();
+    // Store in cache if fetch succeeded
     if (value is not null)
         await cache.SetAsync<T>(key, value, options);
 
     return value;
 }
 
+// Helper: serialize object to JSON and store as bytes
 public static Task SetAsync<T>(this IDistributedCache cache, string key, T value,
     DistributedCacheEntryOptions options)
 {
+    // JSON-serialize object to bytes (Redis stores bytes)
     var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value, serializerOptions));
     return cache.SetAsync(key, bytes, options);
 }
 
+// Helper: deserialize bytes from Redis back to object
 public static bool TryGetValue<T>(this IDistributedCache cache, string key, out T? value)
 {
+    // Get raw bytes from Redis
     var val = cache.Get(key);
     value = default;
     if (val == null) return false;
+    // Deserialize from JSON
     value = JsonSerializer.Deserialize<T>(val, serializerOptions);
     return true;
 }
@@ -107,17 +120,21 @@ public static bool TryGetValue<T>(this IDistributedCache cache, string key, out 
 ## `GameService` — consumer pattern (primary ctor)
 
 ```cs
+// Service with primary constructor dependency injection
 public class GameService(ApplicationDbContext context,
                         IDistributedCache cache,
                         ILogger<GameService> logger)
 {
+    // Read with cache-aside pattern
     public async Task<List<Game>> GetByCountry(string country)
     {
+        // Cache key includes parameter (different countries = different cache entries)
         var cacheKey = $"games:country:{country}";
         var cacheOptions = new DistributedCacheEntryOptions()
-            .SetAbsoluteExpiration(TimeSpan.FromMinutes(20))
-            .SetSlidingExpiration(TimeSpan.FromMinutes(2));
+            .SetAbsoluteExpiration(TimeSpan.FromMinutes(20))  // Hard 20m deadline
+            .SetSlidingExpiration(TimeSpan.FromMinutes(2));   // 2m idle timeout
 
+        // GetOrSetAsync: if cache hit, return cached list; if miss, run lambda to query DB
         var games = await cache.GetOrSetAsync(
             cacheKey,
             async () => await context.Games
@@ -128,12 +145,14 @@ public class GameService(ApplicationDbContext context,
         return games!;
     }
 
+    // Write with cache invalidation
     public async Task Add(Game game)
     {
+        // Write to database
         await context.Games.AddAsync(game);
         await context.SaveChangesAsync();
 
-        // Invalidate
+        // Invalidate related cache entries (manual invalidation required!)
         cache.Remove("games");
     }
 }
@@ -148,9 +167,9 @@ Three pieces: key (with parameter), factory lambda (runs on miss), per-call opti
 ```cs
 new MemoryCacheEntryOptions
 {
-    AbsoluteExpiration  = DateTime.Now.AddSeconds(50),
-    SlidingExpiration   = TimeSpan.FromSeconds(20),
-    Priority            = CacheItemPriority.High
+    AbsoluteExpiration  = DateTime.Now.AddSeconds(50),  // Hard TTL: dies at wall-clock time
+    SlidingExpiration   = TimeSpan.FromSeconds(20),     // Idle timeout: resets on every access
+    Priority            = CacheItemPriority.High        // Eviction order under memory pressure
 }
 ```
 
@@ -158,8 +177,8 @@ new MemoryCacheEntryOptions
 
 ```cs
 new DistributedCacheEntryOptions()
-    .SetAbsoluteExpiration(TimeSpan.FromMinutes(20))
-    .SetSlidingExpiration(TimeSpan.FromMinutes(2));
+    .SetAbsoluteExpiration(TimeSpan.FromMinutes(20))   // Hard TTL from now
+    .SetSlidingExpiration(TimeSpan.FromMinutes(2));    // Idle timeout: resets on access
 ```
 
 | Option | Meaning |
@@ -175,7 +194,9 @@ Combined: entry dies at `min(absolute, idle-since-last-access + sliding)`.
 ## Docker Redis
 
 ```bash
+# Start Redis container (detached, port 6379)
 docker run --name redis -d -p 6379:6379 redis
+# Open CLI to inspect cache contents
 docker exec -it redis redis-cli
 ```
 
@@ -197,11 +218,12 @@ OK
 
 Built-in Razor Tag Helper. Wrap any block:
 
-```cs
-<cache vary-by-user="true"
-       vary-by-route="id"
-       expires-after="@TimeSpan.FromMinutes(10)"
-       expires-sliding="@TimeSpan.FromMinutes(2)">
+```html
+<!-- Built-in Razor Tag Helper: caches rendered HTML output -->
+<cache vary-by-user="true"                                   <!-- Separate cache per authenticated user -->
+       vary-by-route="id"                                    <!-- Separate cache per route param value -->
+       expires-after="@TimeSpan.FromMinutes(10)"             <!-- Hard TTL: 10 minutes -->
+       expires-sliding="@TimeSpan.FromMinutes(2)">           <!-- Idle timeout: 2 minutes -->
     @await Html.PartialAsync("_ProductDetail", Model)
 </cache>
 ```

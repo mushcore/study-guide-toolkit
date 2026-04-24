@@ -13,9 +13,11 @@ related: [ml-pipeline, ml-regression-evaluation]
 ## Single-row inference — `PredictionEngine`
 
 ```cs
+// PredictionEngine wraps model for single-row inference (not batches)
 var engine = mlContext.Model
     .CreatePredictionEngine<TaxiTrip, TaxiTripFarePrediction>(model);
 
+// Create sample input — all fields required by model (values become features after pipeline transforms)
 var sample = new TaxiTrip
 {
     VendorId = "VTS",
@@ -24,10 +26,12 @@ var sample = new TaxiTrip
     TripTime = 1140,
     TripDistance = 3.75f,
     PaymentType = "CRD",
-    FareAmount = 0          // placeholder — what you predict
+    FareAmount = 0          // Placeholder value (will be overwritten by prediction)
 };
 
+// Predict single row — runs through entire pipeline and returns typed output
 var prediction = engine.Predict(sample);
+// FareAmount field populated by [ColumnName("Score")] binding
 Console.WriteLine($"Predicted fare: {prediction.FareAmount:0.####}");
 ```
 
@@ -42,6 +46,7 @@ Returns new `IDataView` with `Score` column appended. Use for tabular inputs.
 ## Save — needs schema
 
 ```cs
+// Save trained model + schema to zip file (schema needed to rehydrate pipeline)
 mlContext.Model.Save(model, dataView.Schema, "Data/Model.zip");
 ```
 
@@ -50,9 +55,11 @@ Without `DataViewSchema`, the zip does not rehydrate into a working pipeline.
 ## Load — schema out-param
 
 ```cs
+// Load model from zip file (out param returns schema for reconstruction)
 DataViewSchema modelSchema;
 ITransformer trainedModel = mlContext.Model.Load("Data/Model.zip", out modelSchema);
 
+// Wrap loaded model in PredictionEngine for single-row inference
 var engine = mlContext.Model
     .CreatePredictionEngine<TaxiTrip, TaxiTripFarePrediction>(trainedModel);
 ```
@@ -62,16 +69,22 @@ Loaded model behaves identically to freshly-fit one.
 ## End-to-end demo sequence
 
 ```cs
-// Train
+// === TRAINING PHASE ===
+// Fit pipeline and get trained model
 ITransformer model = pipeline.Fit(trainingData);
+// Persist to disk for reuse in other processes/sessions
 mlContext.Model.Save(model, trainingData.Schema, _modelPath);
 
-// Later — load + predict
+// === INFERENCE PHASE (different process/session) ===
+// Create fresh MLContext in new process
 mlContext = new MLContext(seed: 0);
+// Load trained model from disk
 DataViewSchema modelSchema;
 ITransformer trainedModel = mlContext.Model.Load(_modelPath, out modelSchema);
+// Wrap in prediction engine for single-row inference
 var engine = mlContext.Model
     .CreatePredictionEngine<TaxiTrip, TaxiTripFarePrediction>(trainedModel);
+// Make prediction
 var prediction = engine.Predict(sample);
 ```
 

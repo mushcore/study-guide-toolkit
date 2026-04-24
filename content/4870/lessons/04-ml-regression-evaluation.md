@@ -15,12 +15,15 @@ related: [ml-pipeline, ml-prediction-consumption]
 TaxiFarePrediction splits by using two separate CSVs — not by calling a split function:
 
 ```cs
+// Use separate CSV files to split train/test (no overlap — ensures fair evaluation)
 string trainDataPath = Path.Combine(Environment.CurrentDirectory, "Data", "taxi-fare-train.csv");
 string testDataPath  = Path.Combine(Environment.CurrentDirectory, "Data", "taxi-fare-test.csv");
 
+// Load training data and fit the model
 IDataView trainingData = mlContext.Data.LoadFromTextFile<TaxiTrip>(
     trainDataPath, hasHeader: true, separatorChar: ',');
 
+// Train model on training data only (test data never seen during training)
 ITransformer model = pipeline.Fit(trainingData);
 ```
 
@@ -29,12 +32,18 @@ Test rows never seen during `Fit` → metrics measure generalisation.
 ## `Regression.Evaluate` — three requirements
 
 ```cs
+// Load test data (never seen during training)
 IDataView testData = mlContext.Data.LoadFromTextFile<TaxiTrip>(
     testDataPath, hasHeader: true, separatorChar: ',');
+// Generate predictions using trained model
 var predictions = model.Transform(testData);
 
+// Evaluate: compare predictions to actual labels, return RegressionMetrics
+// "Label" = actual target (renamed from FareAmount), "Score" = predicted value from FastTree
 var metrics = mlContext.Regression.Evaluate(predictions, "Label", "Score");
+// RSquared: fraction of variance explained (0–1, closer to 1 = better)
 Console.WriteLine($"RSquared Score:          {metrics.RSquared:0.##}");
+// RMSE: average prediction error in label units (dollars, lower = better)
 Console.WriteLine($"Root Mean Squared Error: {metrics.RootMeanSquaredError:#.##}");
 ```
 
@@ -47,6 +56,8 @@ Console.WriteLine($"Root Mean Squared Error: {metrics.RootMeanSquaredError:#.##}
 ```cs
 public class TaxiTripFarePrediction
 {
+    // FastTree writes predictions to "Score" column (not "Prediction")
+    // ColumnName must match exactly, or binding fails silently
     [ColumnName("Score")] public float FareAmount;
 }
 ```

@@ -3,82 +3,87 @@ pass_mark: 0.5
 questions:
 
   # ============================================================
-  # AI — 13 questions (13 marks)
+  # AI — 13 questions
   # ============================================================
 
   - id: mq-ai-01
     type: MCQ
-    topic: "Semantic Kernel credential (W02)"
+    topic: "SK credential (W02)"
     marks: 1
-    question: "W02 lab wires GitHub Models through `OpenAIClient`. Which credential class does it pass?"
+    question: "Which credential class does W02's `OpenAIClient` constructor take?"
     choices:
       - "`AzureKeyCredential(pat)`"
       - "`ApiKeyCredential(pat)`"
       - "`BearerTokenCredential(pat)`"
       - "`GithubCredential(pat)`"
+      - "`TokenCredential(pat)`"
     correct: 1
-    rationale: "W02 lab uses `new OpenAIClient(new ApiKeyCredential(githubPAT), new OpenAIClientOptions { Endpoint = new Uri(uri) })`. `ApiKeyCredential` lives in `System.ClientModel`. `AzureKeyCredential` (from `Azure.Core`) is for a different SDK (`ChatCompletionsClient` / `Azure.AI.Inference`). The other two options don't exist."
+    rationale: "`new OpenAIClient(new ApiKeyCredential(githubPAT), new OpenAIClientOptions { Endpoint = new Uri(uri) })`. `ApiKeyCredential` is in `System.ClientModel`. `AzureKeyCredential` is `Azure.Core` — different SDK."
     source: "Labs/W02 AI on Github/GitHubAiModelSK/Program.cs"
     bloom: remember
     tags: [pretest]
 
   - id: mq-ai-02
     type: MCQ
-    topic: "GitHub Models endpoint URL"
+    topic: "GitHub Models endpoint (W02)"
     marks: 1
-    question: "Which endpoint URL goes into `OpenAIClientOptions.Endpoint` for GitHub Models?"
+    question: "W02 `OpenAIClientOptions.Endpoint` — which URL?"
     choices:
       - "`https://api.github.com/ai`"
       - "`https://models.github.ai/inference`"
       - "`https://api.openai.com/v1`"
       - "`http://localhost:11434/inference`"
+      - "`https://models.inference.ai.azure.com`"
     correct: 1
-    rationale: "GitHub Models exposes inference at `https://models.github.ai/inference` — HTTPS, with the `/inference` path segment. Without `/inference`, requests fail. Ollama is `http://localhost:11434/` (different path, different protocol)."
+    rationale: "GitHub Models inference endpoint: `https://models.github.ai/inference`. Without the `/inference` path, requests fail. Ollama is `http://localhost:11434/` (different host, no path)."
     source: "Labs/W02 AI on Github/GitHubAiModelSK/appsettings.json"
     bloom: remember
 
   - id: mq-ai-03
     type: MCQ
-    topic: "Semantic Kernel service injection"
+    topic: "SK constructor injection (W02)"
     marks: 1
-    question: "Which SK interface does W02's `IndexModel` inject through its constructor?"
+    question: "W02 `IndexModel` constructor — which interface injected?"
     choices:
       - "`IKernel`"
       - "`IChatCompletionService`"
       - "`IChatClient`"
       - "`IChatHistoryService`"
+      - "`IKernelAgent`"
     correct: 1
-    rationale: "W02 PageModel has `public IndexModel(IChatCompletionService chat)` — that service is registered by `builder.Services.AddOpenAIChatCompletion(modelId, client); builder.Services.AddKernel();` in Program.cs. `IChatClient` belongs to `Microsoft.Extensions.AI` (Ollama/MAF), not SK."
+    rationale: "`public IndexModel(IChatCompletionService chat)` — registered by `AddOpenAIChatCompletion(modelId, client)` + `AddKernel()`. `IChatClient` is the MEA / OllamaSharp interface, not SK."
     source: "Labs/W02 AI on Github/GitHubAiModelSK/Pages/Index.cshtml.cs"
     bloom: understand
 
   - id: mq-ai-04
     type: MCQ
-    topic: "SK ChatHistory constructor"
+    topic: "ChatHistory system prompt (W02)"
     marks: 1
-    question: "In W02 the PageModel creates `ChatHistory chat = new(\"You are an AI assistant...\");`. What does the string argument represent?"
+    question: "`new ChatHistory(\"You are an AI assistant...\")` — string arg role?"
     choices:
-      - "A user message appended to the history"
-      - "The system prompt — instructions the model follows for the whole conversation"
+      - "First user message appended to history"
+      - "System prompt — model instructions for the whole conversation"
       - "The model identifier"
       - "The assistant's initial greeting"
+      - "A session token for multi-turn memory"
     correct: 1
-    rationale: "`ChatHistory`'s string-parameter constructor sets the system prompt. User turns are added via `chat.AddUserMessage(...)`; assistant turns via `chat.AddAssistantMessage(...)`. Model id was registered separately in `AddOpenAIChatCompletion(modelId, client)`."
+    rationale: "`ChatHistory(string systemPrompt)` sets the system message. User turns: `chat.AddUserMessage(...)`. Model id was registered separately in `AddOpenAIChatCompletion`."
     source: "Labs/W02 AI on Github/GitHubAiModelSK/Pages/Index.cshtml.cs"
     bloom: understand
 
   - id: mq-ai-05
     type: MCQ
-    topic: "SK streaming method"
+    topic: "SK streaming call (W02)"
     marks: 1
-    question: "How does W02's PageModel stream tokens from the chat service?"
+    question: "W02 streams tokens — which call?"
     choices:
       - "`await _chat.GetStreamAsync(chat)`"
       - "`await foreach (var m in _chat.GetStreamingChatMessageContentsAsync(chat)) sb.Append(m.Content);`"
       - "`await _chat.StreamAsync(chat, writer)`"
       - "`await _chat.CompleteStreamingAsync(chat, Console.Out)`"
+      - "`await _chat.SendStreamAsync(chat)`"
     correct: 1
-    rationale: "The method is `GetStreamingChatMessageContentsAsync(chatHistory)`. It returns `IAsyncEnumerable<StreamingChatMessageContent>` — iterate with `await foreach`, concatenate each item's `.Content`. The other three are fabrications."
+    rationale: "`GetStreamingChatMessageContentsAsync` returns `IAsyncEnumerable<StreamingChatMessageContent>`. Iterate with `await foreach`, append `.Content`. The others are fabrications."
     source: "Labs/W02 AI on Github/GitHubAiModelSK/Pages/Index.cshtml.cs"
     bloom: apply
 
@@ -86,30 +91,32 @@ questions:
     type: MCQ
     topic: "MAF agent construction"
     marks: 1
-    question: "Which line wraps an `IChatClient` into a Microsoft Agent Framework agent?"
+    question: "Which extension wraps `IChatClient` into a MAF agent?"
     choices:
       - "`chatClient.AsAgent(name, instructions)`"
       - "`chatClient.AsAIAgent(name, instructions)`"
       - "`chatClient.ToAgent(name, instructions)`"
       - "`new ChatAgent(chatClient, options)`"
+      - "`chatClient.CreateAgent(name, instructions)`"
     correct: 1
-    rationale: "The extension method is `.AsAIAgent(name, instructions)`, from `Microsoft.Agents.AI`. `.AsAgent()` does not exist — common distractor. MAF also supports `new ChatClientAgent(client, ChatClientAgentOptions)` as an alternate shape, but `new ChatAgent(...)` is not real."
+    rationale: "`.AsAIAgent(name, instructions)` from `Microsoft.Agents.AI`. `.AsAgent()` does not exist. `new ChatClientAgent(client, ChatClientAgentOptions)` is also real but `new ChatAgent(...)` is not."
     source: "code-examples/20260324_docker-slms/docker-slms/FunnyDockerMAF.cs"
     bloom: remember
     tags: [pretest]
 
   - id: mq-ai-07
     type: MCQ
-    topic: "MAF session for multi-turn"
+    topic: "MAF multi-turn session"
     marks: 1
-    question: "To maintain context across multiple `agent.RunAsync` calls, what do you create?"
+    question: "MAF multi-turn context — what do you create?"
     choices:
       - "A new `ChatHistory`"
-      - "An `AgentSession` via `await agent.CreateSessionAsync()`"
+      - "`AgentSession` via `await agent.CreateSessionAsync()`"
       - "A `ConversationContext` singleton"
-      - "Nothing — the agent retains state automatically"
+      - "Nothing — agent retains state automatically"
+      - "A `ChatThread` via `agent.NewThread()`"
     correct: 1
-    rationale: "FunnyDockerMAF demos `AgentSession session = await agent.CreateSessionAsync();` then passes it into streaming calls. `ChatHistory` belongs to SK (not MAF). The agent has no server-side memory — you supply it via session."
+    rationale: "`AgentSession session = await agent.CreateSessionAsync()` then pass it into streaming calls. `ChatHistory` is SK, not MAF. Agent has no server-side memory — supplied via session."
     source: "code-examples/20260324_docker-slms/docker-slms/FunnyDockerMAF.cs"
     bloom: apply
 
@@ -117,44 +124,47 @@ questions:
     type: MCQ
     topic: "MAF streaming method"
     marks: 1
-    question: "Which method streams an MAF agent's response incrementally?"
+    question: "MAF agent streaming method?"
     choices:
       - "`agent.StreamResponseAsync(input)`"
       - "`agent.RunStreamingAsync(input, options: new ChatClientAgentRunOptions(chatOptions))`"
       - "`agent.RunAsync(input, stream: true)`"
       - "`agent.GetStreamAsync(input)`"
+      - "`agent.StreamAsync(input)`"
     correct: 1
-    rationale: "FunnyDockerMAF demos `await foreach (var update in agent.RunStreamingAsync(userInput, options: new ChatClientAgentRunOptions(chatOptions)))`. Each `update.Text` carries a token fragment. `RunAsync` returns a single response, not a stream."
+    rationale: "`RunStreamingAsync(input, options: new ChatClientAgentRunOptions(chatOptions))` — iterate with `await foreach`, read `update.Text`. `RunAsync` is single buffered response."
     source: "code-examples/20260324_docker-slms/docker-slms/FunnyDockerMAF.cs"
     bloom: remember
 
   - id: mq-ai-09
     type: MCQ
-    topic: "Ollama endpoint"
+    topic: "Ollama daemon URL"
     marks: 1
-    question: "Which URL does `OllamaApiClient` connect to for a locally-running Ollama daemon?"
+    question: "`OllamaApiClient` local daemon URL?"
     choices:
       - "`https://localhost:11434`"
       - "`http://localhost:1143`"
       - "`http://localhost:11434/`"
       - "`http://ollama.local/inference`"
+      - "`http://localhost:11434/v1`"
     correct: 2
-    rationale: "Ollama runs on port 11434 over HTTP (no TLS by default). Port 1143 is an off-by-one typo. `http://ollama.local/inference` confuses Ollama's path (none) with GitHub Models' `/inference`."
+    rationale: "Ollama: port 11434, HTTP (no TLS). Port 1143 is off-by-one. `http://ollama.local/inference` confuses Ollama's path (none) with GitHub Models' `/inference`."
     source: "code-examples/20260324_Ollama/Ollama/SLM.OllamaClient/Program.cs"
     bloom: remember
 
   - id: mq-ai-10
     type: MCQ
-    topic: "OllamaSharp + IChatClient"
+    topic: "OllamaApiClient interface"
     marks: 1
-    question: "What interface does `new OllamaApiClient(uri, modelId)` implement?"
+    question: "`new OllamaApiClient(uri, modelId)` implements which interface?"
     choices:
       - "`IChatCompletionService`"
       - "`IChatClient`"
       - "`IOllamaClient`"
       - "`IAIAgent`"
+      - "`ILanguageModel`"
     correct: 1
-    rationale: "`OllamaApiClient` (from `OllamaSharp`) implements `IChatClient` from `Microsoft.Extensions.AI`. The demo types the variable as `IChatClient chatClient = new OllamaApiClient(...)`. `IChatCompletionService` is the SK interface. The other two options are fabrications."
+    rationale: "`OllamaApiClient` (from OllamaSharp) implements `IChatClient` from `Microsoft.Extensions.AI`. Demo types it as `IChatClient chatClient = new OllamaApiClient(...)`. `IChatCompletionService` is SK."
     source: "code-examples/20260324_Ollama/Ollama/SLM.OllamaClient/Program.cs"
     bloom: understand
 
@@ -162,94 +172,100 @@ questions:
     type: MCQ
     topic: "IChatClient streaming"
     marks: 1
-    question: "Which method on `IChatClient` yields `ChatResponseUpdate` items as tokens arrive?"
+    question: "`IChatClient` streaming method returning `ChatResponseUpdate` items?"
     choices:
       - "`GetResponseAsync(messages)`"
       - "`GetStreamingResponseAsync(messages)`"
       - "`StreamResponseAsync(messages)`"
       - "`CompleteStreamingAsync(messages)`"
+      - "`GetChatStreamAsync(messages)`"
     correct: 1
-    rationale: "`GetStreamingResponseAsync` returns `IAsyncEnumerable<ChatResponseUpdate>`. Iterate with `await foreach`, concatenate `.Text`. `GetResponseAsync` returns a single buffered `ChatResponse`."
+    rationale: "`GetStreamingResponseAsync` returns `IAsyncEnumerable<ChatResponseUpdate>`. `GetResponseAsync` returns a single buffered `ChatResponse`."
     source: "code-examples/20260324_Ollama/Ollama/SLM.OllamaClient/Program.cs"
     bloom: remember
 
   - id: mq-ai-12
     type: MCQ
-    topic: "Docker SLM credential"
+    topic: "Docker SLM credential placeholder"
     marks: 1
-    question: "In the Docker-SLM demo (`FunnyDockerMAF.cs`), what string is passed to `ApiKeyCredential` for a locally-hosted model?"
+    question: "Docker-SLM `ApiKeyCredential` placeholder string?"
     choices:
       - "The actual GitHub PAT"
-      - "An environment variable `DOCKER_SLM_KEY`"
-      - "The literal string `\"unused\"`"
+      - "Environment variable `DOCKER_SLM_KEY`"
+      - "`\"unused\"`"
       - "An empty string"
+      - "`\"local\"`"
     correct: 2
-    rationale: "`new ApiKeyCredential(\"unused\")` — local OpenAI-compatible runtimes ignore the credential but the SDK constructor requires a non-null string. The placeholder keeps the shape identical to cloud paths."
+    rationale: "`new ApiKeyCredential(\"unused\")` — local runtimes ignore credentials but the SDK requires a non-null string. Keeps shape identical to cloud paths."
     source: "code-examples/20260324_docker-slms/docker-slms/FunnyDockerMAF.cs"
     bloom: understand
 
   - id: mq-ai-13
     type: MCQ
-    topic: "MAF agent method confusion"
+    topic: "MAF invocation method"
     marks: 1
-    question: "Which method name is REAL for invoking a Microsoft Agent Framework agent?"
+    question: "Which MAF agent invocation method is REAL?"
     choices:
       - "`agent.Invoke(input)`"
       - "`agent.Execute(input)`"
       - "`agent.RunAsync(input)`"
       - "`agent.CallAsync(input)`"
+      - "`agent.DispatchAsync(input)`"
     correct: 2
-    rationale: "MAF uses `RunAsync` (sync one-shot) and `RunStreamingAsync` (streaming). `Invoke` belongs to Semantic Kernel (`kernel.InvokeAsync`). The other two don't exist."
+    rationale: "MAF uses `RunAsync` (one-shot) and `RunStreamingAsync` (streaming). `Invoke` belongs to SK (`kernel.InvokeAsync`). Others fabricated."
     source: "code-examples/20260324_Ollama/Ollama/MAF.Phi3/Program.cs"
     bloom: analyze
 
   # ============================================================
-  # ML.NET — 12 questions (12 marks)
+  # ML.NET — 12 questions
   # ============================================================
 
   - id: mq-mlnet-01
     type: MCQ
-    topic: "ML.NET Fit() return type"
+    topic: "Fit() return type"
     marks: 1
-    question: "What does `pipeline.Fit(trainingData)` return?"
+    question: "`pipeline.Fit(trainingData)` return type?"
     choices:
       - "`IDataView`"
       - "`ITransformer`"
       - "`RegressionMetrics`"
       - "`MLContext`"
+      - "`TrainedModel`"
     correct: 1
-    rationale: "`Fit` produces `ITransformer` — the trained, stateless, serializable model. `IDataView` is the INPUT (the training data). `RegressionMetrics` is what `Regression.Evaluate` returns. `MLContext` is the root container created at step one."
+    rationale: "`Fit` produces `ITransformer` — the trained, serializable model. `IDataView` is the INPUT. `RegressionMetrics` is from `Regression.Evaluate`. `MLContext` is the root container."
     source: "code-examples/TaxiFarePrediction/Program.cs"
     bloom: remember
     tags: [pretest]
 
   - id: mq-mlnet-02
     type: MCQ
-    topic: "Features column name is hardcoded"
+    topic: "Features column name"
     marks: 1
-    question: "Why does `mlContext.Transforms.Concatenate(\"Inputs\", \"VendorIdEncoded\", \"TripDistance\")` break training?"
+    question: "Why does `Concatenate(\"Inputs\", ...)` break training?"
     choices:
-      - "Concatenate requires at least three input columns"
-      - "Trainers look up the feature vector by the literal name `\"Features\"` — other names break the lookup"
-      - "The column `Inputs` conflicts with ASP.NET Core's `Inputs` keyword"
-      - "Concatenate only accepts numeric columns, not one-hot vectors"
+      - "Concatenate requires ≥3 inputs"
+      - "Trainers look up the feature vector by the literal name `\"Features\"`"
+      - "`Inputs` conflicts with ASP.NET Core"
+      - "Concatenate only accepts numeric columns"
+      - "`Inputs` is reserved for input schema metadata"
     correct: 1
-    rationale: "`FastTree` and every other regression trainer hardcode the lookup to the column named `\"Features\"`. Rename the Concatenate output to anything else and the trainer throws at fit time. Same story with `\"Label\"` — rename via `CopyColumns(\"Label\", \"FareAmount\")` first."
+    rationale: "`FastTree` and all regression trainers hardcode the column lookup to `\"Features\"`. Any other name throws at fit time. Same with `\"Label\"`."
     source: "code-examples/TaxiFarePrediction/Program.cs"
     bloom: understand
 
   - id: mq-mlnet-03
     type: MCQ
-    topic: "CopyColumns — rename target"
+    topic: "CopyColumns Label"
     marks: 1
-    question: "Why does every TaxiFarePrediction pipeline start with `CopyColumns(\"Label\", \"FareAmount\")`?"
+    question: "Why start every TaxiFarePrediction pipeline with `CopyColumns(\"Label\", \"FareAmount\")`?"
     choices:
-      - "Because `FareAmount` must be cloned before transformation"
-      - "Trainers lookup the target column by the literal name `\"Label\"`; CopyColumns gives your target that name"
-      - "To convert FareAmount from string to float"
-      - "To force the column to be first in the schema"
+      - "`FareAmount` must be cloned before transforms"
+      - "Trainers find target by the literal name `\"Label\"`; CopyColumns gives it that name"
+      - "Converts `FareAmount` from string to float"
+      - "Forces `Label` column first in schema"
+      - "Avoids name collision with model output `\"Score\"`"
     correct: 1
-    rationale: "`Label` is the hardcoded target column name. `CopyColumns(outputColumnName: \"Label\", inputColumnName: \"FareAmount\")` duplicates the fare value under the name the trainer expects."
+    rationale: "`Label` is the hardcoded target column name. `CopyColumns(\"Label\", \"FareAmount\")` duplicates the fare value under the name the trainer expects."
     source: "code-examples/TaxiFarePrediction/Program.cs"
     bloom: understand
 
@@ -257,29 +273,31 @@ questions:
     type: MCQ
     topic: "OneHotEncoding purpose"
     marks: 1
-    question: "What does `Categorical.OneHotEncoding(\"VendorIdEncoded\", \"VendorId\")` do?"
+    question: "`OneHotEncoding(\"VendorIdEncoded\", \"VendorId\")` does what?"
     choices:
-      - "Hashes the string to a single 32-bit integer"
-      - "Expands each distinct text value into a binary-indicator vector"
-      - "Replaces each text value with the mean fare for that vendor"
-      - "Normalizes the string length to 8 characters"
+      - "Hashes string to 32-bit integer"
+      - "Expands each value into a binary-indicator vector"
+      - "Replaces text with mean fare per vendor"
+      - "Normalizes string length to 8 chars"
+      - "Converts string to 64-bit integer hash"
     correct: 1
-    rationale: "One-hot encoding expands `\"VTS\"` to `[0, 1]` and `\"CMT\"` to `[1, 0]` (with more slots for more distinct values). Trainers only accept numeric input — string columns need encoding before reaching `Concatenate`."
+    rationale: "Expands `\"VTS\"` → `[0,1]`, `\"CMT\"` → `[1,0]`. Trainers require numeric input — string columns need encoding before `Concatenate`."
     source: "code-examples/TaxiFarePrediction/Program.cs"
     bloom: understand
 
   - id: mq-mlnet-05
     type: MCQ
-    topic: "Regression.Evaluate metrics"
+    topic: "RSquared metric"
     marks: 1
-    question: "Which property reads the fraction of variance explained by a regression model?"
+    question: "`RegressionMetrics` property for fraction of variance explained?"
     choices:
       - "`metrics.Accuracy`"
       - "`metrics.RSquared`"
       - "`metrics.F1Score`"
       - "`metrics.Precision`"
+      - "`metrics.MeanAbsoluteError`"
     correct: 1
-    rationale: "`RegressionMetrics` exposes `RSquared` (0–1, unitless, variance explained), `RootMeanSquaredError` (label units), and `MeanAbsoluteError`. `Accuracy`, `F1Score`, `Precision` are classification metrics — wrong namespace."
+    rationale: "`RSquared` (0–1, unitless, variance explained). `RMSE` is in label units. `Accuracy`, `F1Score`, `Precision` are classification metrics."
     source: "code-examples/TaxiFarePrediction/Program.cs"
     bloom: remember
 
@@ -287,14 +305,15 @@ questions:
     type: MCQ
     topic: "RMSE units"
     marks: 1
-    question: "A taxi-fare model reports `RSquared = 0.89, RootMeanSquaredError = 3.30`. What does RMSE = 3.30 mean?"
+    question: "Taxi-fare model: `RMSE = 3.30`. Meaning?"
     choices:
-      - "The model is 3.30% accurate"
-      - "Predictions miss the actual fare by about $3.30 on average"
-      - "The model took 3.30 seconds to train"
-      - "The model explains 3.30 of variance"
+      - "Model is 3.30% accurate"
+      - "Predictions miss actual fare by ~$3.30 on average"
+      - "Training took 3.30 seconds"
+      - "Model explains 3.30 of variance"
+      - "Predictions are off by 3.30%"
     correct: 1
-    rationale: "RMSE is in the label's original units — dollars here. On average a predicted fare misses the actual fare by about $3.30. RMSE is not a percentage. R² (0.89) is the variance-explained measure, also not \"accuracy.\""
+    rationale: "RMSE is in the label's original units — dollars here. Average miss is ~$3.30. RMSE is not a percentage. R² measures variance explained."
     source: "code-examples/TaxiFarePrediction/Program.cs"
     bloom: analyze
 
@@ -302,153 +321,163 @@ questions:
     type: MCQ
     topic: "Score column binding"
     marks: 1
-    question: "Your prediction class is `public class TaxiTripFarePrediction { [ColumnName(\"Prediction\")] public float FareAmount; }`. `Evaluate` returns `RSquared = 0`. Why?"
+    question: "`[ColumnName(\"Prediction\")]` on prediction class — `Evaluate` returns R²=0. Why?"
     choices:
-      - "The test data is empty"
-      - "`FastTree` writes its prediction to a column named `\"Score\"`, not `\"Prediction\"`"
-      - "The model file is corrupted"
-      - "The label column is missing"
+      - "Test data is empty"
+      - "FastTree writes prediction to `\"Score\"`, not `\"Prediction\"`"
+      - "Model file is corrupted"
+      - "Label column is missing"
+      - "FastTree expects `\"Output\"`, not `\"Prediction\"`"
     correct: 1
-    rationale: "Regression trainers write predictions to `\"Score\"`. Marking the field `[ColumnName(\"Prediction\")]` leaves `FareAmount` at zero — binding fails silently. Use `[ColumnName(\"Score\")]`."
+    rationale: "Regression trainers write to `\"Score\"`. `[ColumnName(\"Prediction\")]` leaves the field at zero — binding fails silently. Use `[ColumnName(\"Score\")]`."
     source: "code-examples/TaxiFarePrediction/Program.cs"
     bloom: analyze
 
   - id: mq-mlnet-08
     type: MCQ
-    topic: "Single-row prediction factory"
+    topic: "PredictionEngine factory"
     marks: 1
-    question: "Which method creates a single-row inference wrapper over a trained `ITransformer`?"
+    question: "Single-row inference wrapper over `ITransformer`?"
     choices:
       - "`mlContext.Model.CreatePredictionEngine<TIn, TOut>(model)`"
       - "`mlContext.Inference.CreateEngine<TIn, TOut>(model)`"
       - "`model.CreatePredictor<TIn, TOut>()`"
       - "`new PredictionEngine<TIn, TOut>(model)`"
+      - "`mlContext.Model.CreateEngine<TIn, TOut>(model, schema)`"
     correct: 0
-    rationale: "`mlContext.Model.CreatePredictionEngine<TaxiTrip, TaxiTripFarePrediction>(model)` is the factory. The wrapper exposes `.Predict(row)`. The constructor form is internal; the other two are fabrications."
+    rationale: "`mlContext.Model.CreatePredictionEngine<TaxiTrip, TaxiTripFarePrediction>(model)`. Exposes `.Predict(row)`. Constructor form is internal."
     source: "code-examples/TaxiFarePrediction/Program.cs"
     bloom: remember
 
   - id: mq-mlnet-09
     type: MCQ
-    topic: "Model persistence — save"
+    topic: "Model.Save overload"
     marks: 1
-    question: "Which overload saves a trained model so it can be reloaded later?"
+    question: "Save trained model — correct overload?"
     choices:
       - "`mlContext.Model.Save(model, path)`"
       - "`mlContext.Model.Save(model, dataView.Schema, path)`"
       - "`model.Save(path)`"
       - "`mlContext.Model.Export(model, path)`"
+      - "`model.Export(path)`"
     correct: 1
-    rationale: "`Save(model, schema, path)` is the canonical overload — `DataViewSchema` carries column names/types needed to rehydrate the pipeline. Demo: `mlContext.Model.Save(model, dataView.Schema, _modelPath);`."
+    rationale: "`Save(model, schema, path)` — `DataViewSchema` carries column names/types needed to rehydrate. Demo: `mlContext.Model.Save(model, dataView.Schema, _modelPath);`"
     source: "code-examples/TaxiFarePrediction/Program.cs"
     bloom: remember
 
   - id: mq-mlnet-10
     type: MCQ
-    topic: "Model persistence — load"
+    topic: "Model.Load signature"
     marks: 1
-    question: "Which signature loads a saved `.zip` model back into memory?"
+    question: "Load saved `.zip` model — correct signature?"
     choices:
       - "`ITransformer m = mlContext.Model.Load(path)`"
       - "`ITransformer m = mlContext.Model.Load(path, out DataViewSchema schema)`"
       - "`ITransformer m = ITransformer.Load(path)`"
       - "`ITransformer m = new Transformer(path)`"
+      - "`ITransformer m = mlContext.Model.Load(path, ref schema)`"
     correct: 1
-    rationale: "`Load(path, out DataViewSchema schema)` returns the model + yields the schema via out-parameter. Demo: `ITransformer trainedModel = mlContext.Model.Load(_modelPath, out modelSchema);`."
+    rationale: "`Load(path, out DataViewSchema schema)` returns model + yields schema via out-parameter. Demo: `ITransformer trainedModel = mlContext.Model.Load(_modelPath, out modelSchema);`"
     source: "code-examples/TaxiFarePrediction/Program.cs"
     bloom: remember
 
   - id: mq-mlnet-11
     type: MCQ
-    topic: "LoadColumn indexing"
+    topic: "LoadColumn index base"
     marks: 1
-    question: "`public class TaxiTrip { [LoadColumn(0)] public string VendorId; ... }`. What is the `0`?"
+    question: "`[LoadColumn(0)]` on first CSV column — what is `0`?"
     choices:
-      - "The 1-based CSV column position"
-      - "The 0-based CSV column index"
-      - "The size of the column in bytes"
-      - "The column's priority rank"
+      - "1-based CSV column position"
+      - "0-based CSV column index"
+      - "Column size in bytes"
+      - "Column priority rank"
+      - "Encoding type (0 = string)"
     correct: 1
-    rationale: "`[LoadColumn(N)]` is 0-based — the first CSV column is index 0. Contrast with ClosedXML where `Cell(1, 1)` is A1 (1-based). Mixing conventions when copying between them is where off-by-one bugs hide."
+    rationale: "`[LoadColumn(N)]` is 0-based. First CSV column = index 0. Contrast ClosedXML where `Cell(1,1)` is A1 (1-based)."
     source: "code-examples/TaxiFarePrediction/Models/TaxiTrip.cs"
     bloom: remember
 
   - id: mq-mlnet-12
     type: MCQ
-    topic: "AutoML CLI flag"
+    topic: "AutoML train-time flag"
     marks: 1
-    question: "Which flag sets AutoML's exploration budget?"
+    question: "AutoML CLI flag for exploration time budget?"
     choices:
       - "`--dataset`"
       - "`--label-col`"
       - "`--train-time`"
       - "`--max-models`"
+      - "`--epochs`"
     correct: 2
-    rationale: "`--train-time 60` allocates 60 seconds to explore algorithm+hyperparameter combinations. `--dataset` is the CSV path; `--label-col` is the target column (index or name); `--max-models` isn't a flag."
+    rationale: "`--train-time 60` allocates 60 seconds for algorithm+hyperparameter exploration. `--dataset` is CSV path; `--label-col` is target column. `--epochs` and `--max-models` are not valid flags."
     source: "code-examples/TaxiFareAutoML"
     bloom: remember
 
   # ============================================================
-  # Cache / Redis — 8 questions (8 marks)
+  # Cache / Redis — 8 questions
   # ============================================================
 
   - id: mq-cache-01
     type: MCQ
     topic: "IMemoryCache registration"
     marks: 1
-    question: "Which `Program.cs` call registers `IMemoryCache`?"
+    question: "Register `IMemoryCache` in Program.cs?"
     choices:
       - "`builder.Services.AddMemoryCache();`"
       - "`builder.Services.AddDistributedMemoryCache();`"
       - "`builder.Services.AddCache();`"
       - "`builder.Services.AddScoped<IMemoryCache, MemoryCache>();`"
+      - "`builder.Services.AddInMemoryCache();`"
     correct: 0
-    rationale: "`AddMemoryCache()` registers the interface `IMemoryCache`. DataCacheDemo uses this. `AddDistributedMemoryCache()` registers `IDistributedCache` with an in-memory adapter (different interface, different scenarios)."
+    rationale: "`AddMemoryCache()` registers `IMemoryCache`. `AddDistributedMemoryCache()` registers `IDistributedCache` with an in-memory adapter — different interface."
     source: "code-examples/20260330_DataCacheDemo/DataCacheDemo/Program.cs"
     bloom: remember
 
   - id: mq-cache-02
     type: MCQ
-    topic: "IMemoryCache lookup pattern"
+    topic: "IMemoryCache check-then-fetch"
     marks: 1
-    question: "Which pattern does DataCacheDemo use to check-then-fetch with `IMemoryCache`?"
+    question: "DataCacheDemo's `IMemoryCache` check-then-fetch pattern?"
     choices:
       - "`var p = _cache.GetOrCreateAsync(key, factory);`"
-      - "`if (!_cache.TryGetValue(key, out Product[]? products)) { products = await fetch(); _cache.Set(key, products, options); }`"
+      - "`if (!_cache.TryGetValue(key, out T? v)) { v = await fetch(); _cache.Set(key, v, opts); }`"
       - "`_cache.Read(key) ?? await fetch();`"
       - "`await _cache.PopulateAsync(key, factory);`"
+      - "`_cache.GetOrSet(key, factory, opts);`"
     correct: 1
-    rationale: "DataCacheDemo `Index.cshtml.cs` uses `TryGetValue(key, out T? v)` + `Set(key, v, options)`. On miss, fetch and set with `MemoryCacheEntryOptions`. `GetOrCreateAsync` exists in ML.NET+ but wasn't demoed in the lab."
+    rationale: "`TryGetValue(key, out T? v)` + on miss fetch + `Set(key, v, MemoryCacheEntryOptions)`. `GetOrCreateAsync` was not demoed in the lab."
     source: "code-examples/20260330_DataCacheDemo/DataCacheDemo/Pages/Index.cshtml.cs"
     bloom: apply
 
   - id: mq-cache-03
     type: MCQ
-    topic: "MemoryCacheEntryOptions expiration"
+    topic: "Absolute vs sliding expiry"
     marks: 1
-    question: "`new MemoryCacheEntryOptions { AbsoluteExpiration = DateTime.Now.AddSeconds(50), SlidingExpiration = TimeSpan.FromSeconds(20) }`. The entry is never accessed after being set. When does it expire?"
+    question: "Entry never accessed after set. `AbsoluteExpiration=+50s`, `SlidingExpiration=+20s`. Expires when?"
     choices:
-      - "At t+50 seconds"
-      - "At t+20 seconds — sliding expiration fires since no access reset it"
-      - "It never expires because Priority wasn't set"
-      - "Immediately — both options conflict"
+      - "t+50s"
+      - "t+20s — sliding fires first since no access"
+      - "Never — Priority not set"
+      - "Immediately — options conflict"
+      - "t+70s — options sum together"
     correct: 1
-    rationale: "The entry dies at `min(absolute, idle-since-last-access + sliding)`. With no access, sliding at t+20 fires first. If accessed at t+15, sliding resets and absolute at t+50 would eventually win."
+    rationale: "Expires at `min(absolute, idle+sliding)`. No access → sliding at t+20 fires first. Accessed at t+15 → sliding resets; absolute at t+50 wins."
     source: "code-examples/20260330_DataCacheDemo/DataCacheDemo/Pages/Index.cshtml.cs"
     bloom: analyze
 
   - id: mq-cache-04
     type: MCQ
-    topic: "Priority semantics"
+    topic: "CacheItemPriority semantics"
     marks: 1
-    question: "What does `CacheItemPriority.Low` mean for a cached entry?"
+    question: "`CacheItemPriority.Low` means what?"
     choices:
-      - "The entry expires sooner than `Normal` entries"
-      - "The entry is evicted first when the cache is under memory pressure"
-      - "The entry is stored on disk instead of in memory"
-      - "The entry is only visible to admin users"
+      - "Entry expires sooner than `Normal`"
+      - "Entry evicted first under memory pressure"
+      - "Entry stored on disk"
+      - "Entry visible to admins only"
+      - "Entry skipped during cache warm-up"
     correct: 1
-    rationale: "Priority controls EVICTION order under memory pressure, not TTL. A `Low`-priority entry with a 1-hour absolute still lives 1 hour unless memory pressure forces eviction."
+    rationale: "Priority controls EVICTION ORDER under memory pressure, not TTL. `Low` with 1-hour absolute still lives 1 hour unless pressure forces eviction."
     source: "code-examples/20260330_DataCacheDemo/DataCacheDemo/Pages/Index.cshtml.cs"
     bloom: understand
 
@@ -456,14 +485,15 @@ questions:
     type: MCQ
     topic: "Redis registration"
     marks: 1
-    question: "Which Program.cs call registers `IDistributedCache` backed by Redis (per WebApiFIFA_REDIS_Final)?"
+    question: "Register `IDistributedCache` backed by Redis?"
     choices:
       - "`builder.Services.AddRedis(\"localhost\");`"
-      - "`builder.Services.AddStackExchangeRedisCache(options => { options.Configuration = \"localhost\"; options.ConfigurationOptions = new StackExchange.Redis.ConfigurationOptions { AbortOnConnectFail = true, EndPoints = { options.Configuration } }; });`"
+      - "`builder.Services.AddStackExchangeRedisCache(options => { options.Configuration = \"localhost\"; options.ConfigurationOptions = new ConfigurationOptions { AbortOnConnectFail = true, EndPoints = { options.Configuration } }; });`"
       - "`builder.Services.AddDistributedCache(\"redis://localhost:6379\");`"
       - "`builder.Services.AddRedisClient(\"localhost\");`"
+      - "`builder.Services.AddRedisDistributed(\"localhost\");`"
     correct: 1
-    rationale: "`AddStackExchangeRedisCache(opts => ...)` registers `IDistributedCache` backed by Redis. The demo sets both `Configuration` and a `ConfigurationOptions` block with `AbortOnConnectFail = true` so missing Redis crashes startup instead of silently swallowing writes."
+    rationale: "`AddStackExchangeRedisCache(opts => ...)`. Sets both `Configuration` and a `ConfigurationOptions` block with `AbortOnConnectFail = true` so missing Redis crashes startup immediately."
     source: "code-examples/20260330_WebApiFIFA_REDIS_Final/WebApiFIFA_REDIS_Final/Program.cs"
     bloom: remember
 
@@ -471,78 +501,83 @@ questions:
     type: MCQ
     topic: "AbortOnConnectFail behavior"
     marks: 1
-    question: "With `AbortOnConnectFail = false` (the default), what happens when Redis is not running at app startup?"
+    question: "`AbortOnConnectFail = false` (default) — Redis not running. What happens?"
     choices:
-      - "The app crashes immediately"
+      - "App crashes immediately"
       - "Cache writes silently no-op; reads return null"
-      - "The framework spawns a local Redis instance automatically"
+      - "Framework spawns local Redis"
       - "Writes fall back to in-process memory"
+      - "Writes succeed; Redis syncs later when available"
     correct: 1
-    rationale: "Default `false` means Stack Exchange Redis retries in the background and swallows failures. Cache writes succeed with no exception but no data lands in Redis. `true` crashes fast so orchestrators (containers) replace the unhealthy app."
+    rationale: "Default `false` → Stack Exchange Redis retries in background and swallows failures. Cache writes succeed with no exception but nothing lands in Redis. `true` crashes fast so orchestrators restart the container."
     source: "code-examples/20260330_WebApiFIFA_REDIS_Final/WebApiFIFA_REDIS_Final/Program.cs"
     bloom: analyze
 
   - id: mq-cache-07
     type: MCQ
-    topic: "DistributedCacheExtensions.GetOrSetAsync"
+    topic: "GetOrSetAsync on miss"
     marks: 1
-    question: "The WebApiFIFA lab's `GetOrSetAsync<T>` extension does what on cache MISS?"
+    question: "`GetOrSetAsync<T>` on cache MISS — what happens?"
     choices:
       - "Throws `KeyNotFoundException`"
-      - "Invokes the factory lambda, stores the result as JSON bytes via `SetAsync`, returns the value"
+      - "Invokes factory, stores result as JSON bytes via `SetAsync`, returns value"
       - "Returns `default(T)` immediately"
-      - "Re-runs the DB query on every call regardless of cache state"
+      - "Re-runs DB query on every call regardless"
+      - "Returns `default(T)`, schedules async background refresh"
     correct: 1
-    rationale: "Check `TryGetValue` → if miss, `await factory()` → if result non-null, `await cache.SetAsync<T>(key, value, options)` → return. Internally `SetAsync<T>` serializes to JSON bytes via `Encoding.UTF8.GetBytes(JsonSerializer.Serialize(value, ...))`."
+    rationale: "Miss → `await factory()` → if non-null `await cache.SetAsync<T>(key, value, options)` → return. `SetAsync` serializes to JSON bytes via `Encoding.UTF8.GetBytes(JsonSerializer.Serialize(...))`."
     source: "code-examples/20260330_WebApiFIFA_REDIS_Final/WebApiFIFA_REDIS_Final/Models/DistributedCacheExtensions.cs"
     bloom: understand
 
   - id: mq-cache-08
     type: MCQ
-    topic: "Cache invalidation"
+    topic: "Cache invalidation on write"
     marks: 1
-    question: "Users see stale games after an admin adds a new one via `POST /api/games`. Which line is missing from the `Add` handler?"
+    question: "Admin adds game via `POST /api/games`. Users still see stale list. Missing line?"
     choices:
       - "`await cache.RefreshAsync(\"games\");`"
       - "`cache.Remove(\"games\");` after `SaveChangesAsync()`"
       - "`await cache.ReloadAsync();`"
-      - "Nothing — TTL handles it automatically"
+      - "Nothing — TTL handles it"
+      - "`await cache.ExpireAsync(\"games\");`"
     correct: 1
-    rationale: "The `GameService.Add` handler in the lab explicitly calls `cache.Remove(\"games\");` after `SaveChangesAsync()`. Cache-aside requires manual invalidation on writes — TTL alone serves stale data until expiration."
+    rationale: "`GameService.Add` calls `cache.Remove(\"games\");` after `SaveChangesAsync()`. Cache-aside requires manual invalidation on writes — TTL alone serves stale data until expiration."
     source: "code-examples/20260330_WebApiFIFA_REDIS_Final/WebApiFIFA_REDIS_Final/Models/GameService.cs"
     bloom: apply
 
   # ============================================================
-  # File-based apps — 8 questions (8 marks)
+  # File-based apps — 8 questions
   # ============================================================
 
   - id: mq-file-01
     type: MCQ
-    topic: "Running a file-based app"
+    topic: "File-based app args"
     marks: 1
-    question: "How do you run `Locations.cs` and pass `Kevin` as its first argument?"
+    question: "Run `Locations.cs`, pass `Kevin` as first arg?"
     choices:
       - "`dotnet run Locations.cs Kevin`"
       - "`dotnet run Locations.cs -- Kevin`"
       - "`dotnet Locations.cs --args Kevin`"
       - "`dotnet run --script Locations.cs Kevin`"
+      - "`dotnet script Locations.cs Kevin`"
     correct: 1
-    rationale: "The `--` separator routes arguments to the script rather than to `dotnet run`. Without `--`, `Kevin` would be interpreted as a flag to `dotnet` and never reach the script's `args`."
-    source: "code-examples/20260324_file-based-apps/file-based-apps/example-2/HelloScript.cs"
+    rationale: "`--` routes arguments to the script, not to `dotnet run`. Without `--`, `Kevin` is interpreted as a flag to `dotnet` and never reaches `args`."
+    source: "code-examples/20260324_file-based-apps/file-based-apps/example-4/Locations.cs"
     bloom: apply
 
   - id: mq-file-02
     type: MCQ
     topic: "Directive syntax"
     marks: 1
-    question: "Which of the following is VALID file-based-app directive syntax?"
+    question: "Valid file-based-app directive syntax?"
     choices:
       - "`#: package Spectre.Console@0.49.1`"
       - "`#:package Spectre.Console@0.49.1`"
       - "`//:package Spectre.Console@0.49.1`"
       - "`@package Spectre.Console@0.49.1`"
+      - "`##package Spectre.Console@0.49.1`"
     correct: 1
-    rationale: "The `#:` prefix must be immediately followed by the directive name — no space. `#: package` fails. `//` is a C# comment; `@` isn't a directive marker."
+    rationale: "`#:` immediately followed by the directive name — no space. `#: package` fails. `//` is a C# comment; `@` and `##` are not directive markers."
     source: "code-examples/20260324_file-based-apps/file-based-apps/example-4/Locations.cs"
     bloom: remember
 
@@ -550,14 +585,15 @@ questions:
     type: MCQ
     topic: "#:package directive"
     marks: 1
-    question: "Which directive adds the `Spectre.Console` NuGet package to a file-based app?"
+    question: "Add Spectre.Console NuGet to file-based app?"
     choices:
       - "`#:package Spectre.Console@0.49.1`"
       - "`#:nuget Spectre.Console@0.49.1`"
       - "`#:using Spectre.Console`"
       - "`#:reference Spectre.Console`"
+      - "`#:install Spectre.Console@0.49.1`"
     correct: 0
-    rationale: "`#:package <Name>@<Version>`. Omit the `@version` to get the latest stable (risky for reproducibility). No such directive as `#:nuget` or `#:reference`."
+    rationale: "`#:package <Name>@<Version>`. Omit `@version` for latest stable. No `#:nuget`, `#:reference`, or `#:install` directives exist."
     source: "code-examples/20260324_file-based-apps/file-based-apps/example-4/Locations.cs"
     bloom: remember
 
@@ -565,29 +601,31 @@ questions:
     type: MCQ
     topic: "#:property directive"
     marks: 1
-    question: "Which directive sets the target framework on a file-based app?"
+    question: "Set target framework in file-based app?"
     choices:
       - "`#:property TargetFramework=net10.0`"
       - "`#:target net10.0`"
       - "`#:framework TargetFramework:net10.0`"
       - "`#:sdk TargetFramework=net10.0`"
+      - "`#:project TargetFramework=net10.0`"
     correct: 0
-    rationale: "`#:property <Name>=<Value>` sets MSBuild properties. Example-2 uses `#:property TargetFramework=net9.0`. No spaces around the `=`."
+    rationale: "`#:property <Name>=<Value>` sets MSBuild properties. Example-2: `#:property TargetFramework=net9.0`. No spaces around `=`."
     source: "code-examples/20260324_file-based-apps/file-based-apps/example-2/HelloScript.cs"
     bloom: remember
 
   - id: mq-file-05
     type: MCQ
-    topic: "#:sdk directive for web apps"
+    topic: "#:sdk Web"
     marks: 1
-    question: "Which directive turns a file-based app into an ASP.NET Core minimal-API web host?"
+    question: "Enable ASP.NET Core minimal-API in file-based app?"
     choices:
       - "`#:sdk Microsoft.NET.Sdk`"
       - "`#:sdk Microsoft.NET.Sdk.Web`"
       - "`#:sdk Microsoft.AspNetCore.Sdk`"
       - "`#:sdk WebApplication`"
+      - "`#:sdk Microsoft.AspNetCore.App`"
     correct: 1
-    rationale: "`#:sdk Microsoft.NET.Sdk.Web` pulls in ASP.NET Core, making `WebApplication.CreateBuilder(args)` resolvable. The default SDK (`Microsoft.NET.Sdk`) is console-only. `FileBasedWebApi/WebApi.cs` uses this directive."
+    rationale: "`#:sdk Microsoft.NET.Sdk.Web` pulls in ASP.NET Core. Default SDK is console-only — `WebApplication` not resolvable without it."
     source: "code-examples/20260324_file-based-apps/file-based-apps/FileBasedWebApi/WebApi.cs"
     bloom: remember
     tags: [pretest]
@@ -596,108 +634,115 @@ questions:
     type: MCQ
     topic: "#:project directive"
     marks: 1
-    question: "Which directive references a sibling .NET class library project?"
+    question: "Reference sibling class library project?"
     choices:
       - "`#:project ./MyLibrary/MyLibrary.csproj`"
       - "`#:reference ./MyLibrary.dll`"
       - "`#:import ./MyLibrary/`"
       - "`#:using MyLibrary`"
+      - "`#:assembly ./MyLibrary/MyLibrary.csproj`"
     correct: 0
-    rationale: "`#:project <relative-path-to-.csproj>`. Example-3 `Where.cs` uses `#:project ./MyLibrary/MyLibrary.csproj` and then `using MyLibrary;` makes the `Person` type available."
+    rationale: "`#:project <relative-path-to-.csproj>`. Example-3 `Where.cs` uses `#:project ./MyLibrary/MyLibrary.csproj` then `using MyLibrary;` makes `Person` available."
     source: "code-examples/20260324_file-based-apps/file-based-apps/example-3/Where.cs"
     bloom: remember
 
   - id: mq-file-07
     type: MCQ
-    topic: "Default console SDK limitation"
+    topic: "Missing #:sdk Web — build result"
     marks: 1
-    question: "Your file-based app has `var builder = WebApplication.CreateBuilder(args);` but no `#:sdk` directive. What happens at build?"
+    question: "File-based app calls `WebApplication.CreateBuilder` but has no `#:sdk` directive. Build result?"
     choices:
-      - "Everything works — ASP.NET Core types are always available"
+      - "Works — ASP.NET Core types always available"
       - "Compile error: `WebApplication` not found"
-      - "Runtime error when the first request arrives"
-      - "The CLI auto-imports the Web SDK"
+      - "Runtime error on first request"
+      - "CLI auto-imports Web SDK"
+      - "Warning only — CLI installs missing SDK automatically"
     correct: 1
-    rationale: "Without `#:sdk Microsoft.NET.Sdk.Web`, the default console SDK lacks ASP.NET Core types. The compile error is `type or namespace name 'WebApplication' not found`. `using` directives alone cannot import types that aren't in the referenced SDK."
+    rationale: "Without `#:sdk Microsoft.NET.Sdk.Web`, compile fails: `type or namespace 'WebApplication' not found`. `using` directives can't import types absent from the SDK."
     source: "code-examples/20260324_file-based-apps/file-based-apps/FileBasedWebApi/WebApi.cs"
     bloom: analyze
 
   - id: mq-file-08
     type: MCQ
-    topic: "File-based app — convert to project"
+    topic: "Convert to project"
     marks: 1
-    question: "You've outgrown a single-file script. Which CLI command creates a traditional project from it?"
+    question: "Outgrown single-file script — convert to traditional project?"
     choices:
       - "`dotnet new console -n MyProj --from-file file.cs`"
       - "`dotnet project convert file.cs -o MyProj`"
       - "`dotnet migrate file.cs MyProj`"
       - "`dotnet publish file.cs --project MyProj`"
+      - "`dotnet file export file.cs -o MyProj`"
     correct: 1
-    rationale: "`dotnet project convert file.cs -o Folder` creates a folder containing the `.csproj`, moves the `.cs` into it, and preserves each `#:` directive as its MSBuild equivalent."
+    rationale: "`dotnet project convert file.cs -o Folder` creates `.csproj`, moves `.cs` in, preserves each `#:` directive as its MSBuild equivalent."
     source: "notes/file-based-apps.docx"
     bloom: remember
 
   # ============================================================
-  # gRPC — 7 questions (7 marks)
+  # gRPC — 7 questions
   # ============================================================
 
   - id: mq-grpc-01
     type: MCQ
-    topic: "Proto version syntax"
+    topic: "proto3 syntax declaration"
     marks: 1
-    question: "Which line declares the Protobuf version at the top of the W09 `students.proto`?"
+    question: "First line of `students.proto`?"
     choices:
       - "`version \"3\";`"
       - "`syntax = \"proto3\";`"
       - "`proto = \"3.0\";`"
       - "`#:proto 3`"
+      - "`protocol = proto3;`"
     correct: 1
-    rationale: "`syntax = \"proto3\";` is the mandatory first line. Without it, `protoc` assumes proto2 (different defaults, different semantics)."
+    rationale: "`syntax = \"proto3\";` is mandatory first line. Without it, `protoc` assumes proto2 (different defaults, different wire semantics)."
     source: "Labs/W09 gRPC/GrpcBasics/GrpcStudentsServer/Protos/students.proto"
     bloom: remember
 
   - id: mq-grpc-02
     type: MCQ
-    topic: "Proto field tags are permanent"
+    topic: "Field tag permanence"
     marks: 1
-    question: "Your service has `message Person { string name = 1; int32 age = 2; }` deployed. You want to drop `age` and add `string email`. What is the SAFE rewrite?"
+    question: "Drop `age` (tag 2), add `email`. Safe rewrite?"
     choices:
       - "`message Person { string name = 1; string email = 2; }`"
       - "`message Person { string name = 1; reserved 2; string email = 3; }`"
       - "`message Person { string email = 1; string name = 2; }`"
       - "`message Person { string name = 1; string email = 2; deprecated int32 age = 3; }`"
+      - "`message Person { string name = 1; int32 age = 2 [deprecated = true]; string email = 3; }`"
     correct: 1
-    rationale: "Tags are permanent wire contracts. Reusing tag 2 for a new `string email` breaks every deployed client that interprets tag 2 as `int32 age`. Mark removed tags `reserved`, allocate a fresh tag (3) for new fields."
+    rationale: "Tags are permanent wire contracts. Reusing tag 2 for `string email` breaks every deployed client that reads tag 2 as `int32 age`. Mark removed tags `reserved`, allocate fresh tag (3) for new fields."
     source: "Labs/W09 gRPC/GrpcBasics/GrpcStudentsServer/Protos/students.proto"
     bloom: analyze
 
   - id: mq-grpc-03
     type: MCQ
-    topic: "Server implementation — inheritance"
+    topic: "Server base class"
     marks: 1
-    question: "Which class does `StudentsService` inherit from in W09?"
+    question: "`StudentsService` inherits from?"
     choices:
       - "`StudentRemoteService`"
       - "`StudentRemote.StudentRemoteBase`"
       - "`GrpcService<StudentRemote>`"
       - "`ServiceBase`"
+      - "`GrpcServiceBase`"
     correct: 1
-    rationale: "`Grpc.Tools` generates `[ServiceName].[ServiceName]Base` per service. The lab: `public class StudentsService : StudentRemote.StudentRemoteBase`."
+    rationale: "`Grpc.Tools` generates `[ServiceName].[ServiceName]Base`. Lab: `public class StudentsService : StudentRemote.StudentRemoteBase`."
     source: "Labs/W09 gRPC/GrpcBasics/GrpcStudentsServer/Services/StudentsService.cs"
     bloom: remember
 
   - id: mq-grpc-04
     type: MCQ
-    topic: "Server method signature"
+    topic: "Unary override signature"
     marks: 1
-    question: "What is the signature of `GetStudentInfo` override in `StudentsService`?"
+    question: "Correct `GetStudentInfo` override signature?"
     choices:
       - "`public override Task<StudentModel> GetStudentInfo(StudentLookupModel request)`"
       - "`public override Task<StudentModel> GetStudentInfo(StudentLookupModel request, ServerCallContext context)`"
       - "`public override StudentModel GetStudentInfo(StudentLookupModel request)`"
       - "`public override async Task<StudentModel> GetStudentInfo(HttpContext context)`"
+      - "`public override Task<StudentModel> GetStudentInfo(int id, ServerCallContext context)`"
     correct: 1
-    rationale: "Every unary override takes `(Request, ServerCallContext)` and returns `Task<Response>`. `ServerCallContext` is mandatory — it carries cancellation tokens, deadlines, and metadata."
+    rationale: "Every unary override: `(Request, ServerCallContext)` → `Task<Response>`. `ServerCallContext` is mandatory — carries cancellation tokens, deadlines, metadata."
     source: "Labs/W09 gRPC/GrpcBasics/GrpcStudentsServer/Services/StudentsService.cs"
     bloom: apply
 
@@ -705,78 +750,83 @@ questions:
     type: MCQ
     topic: "gRPC server registration"
     marks: 1
-    question: "Which two calls register the gRPC stack and route to `StudentsService`?"
+    question: "Register gRPC and route `StudentsService`?"
     choices:
       - "`builder.Services.AddGrpc(); app.MapGrpcService<StudentsService>();`"
       - "`builder.Services.AddGrpcCore(); app.UseGrpcService<StudentsService>();`"
       - "`builder.Services.AddGrpc<StudentsService>(); app.MapGrpc();`"
       - "`builder.Services.AddService<StudentsService>(); app.UseGrpc();`"
+      - "`builder.Services.AddGrpc(); app.UseGrpcService<StudentsService>();`"
     correct: 0
-    rationale: "`AddGrpc()` registers framework types. `MapGrpcService<T>()` routes requests matching `/StudentRemote/...` to your service."
+    rationale: "`AddGrpc()` registers framework types. `MapGrpcService<T>()` routes requests matching `/StudentRemote/...` to the service."
     source: "Labs/W09 gRPC/GrpcBasics/GrpcStudentsServer/Program.cs"
     bloom: remember
 
   - id: mq-grpc-06
     type: MCQ
-    topic: "Client project .csproj config"
+    topic: "GrpcServices attribute"
     marks: 1
-    question: "A Blazor client project has `<Protobuf Include=\"Protos\\students.proto\" GrpcServices=\"Server\" />`. Build fails with `StudentRemoteClient not found`. Fix?"
+    question: "Client `.csproj` has `GrpcServices=\"Server\"` — `StudentRemoteClient` not found. Fix?"
     choices:
       - "Add `<GenerateClient>true</GenerateClient>`"
       - "Flip to `GrpcServices=\"Client\"`"
-      - "Rename the file to `client.proto`"
+      - "Rename file to `client.proto`"
       - "Add `using Grpc.Client;`"
+      - "Add `<IncludeClient>true</IncludeClient>`"
     correct: 1
-    rationale: "`GrpcServices=\"Server\"` generates only the server base class. `\"Client\"` generates the callable stub. Use `\"Both\"` only when one project hosts both roles."
+    rationale: "`GrpcServices=\"Server\"` generates only the server base class. `\"Client\"` generates the callable stub. Use `\"Both\"` only if one project hosts both roles."
     source: "Labs/W09 gRPC/GrpcBasics/BlazorGrpcClient/BlazorGrpcClient.csproj"
     bloom: analyze
 
   - id: mq-grpc-07
     type: MCQ
-    topic: "Client DI with Aspire"
+    topic: "Aspire gRPC client address"
     marks: 1
-    question: "Which URL does the W09 Blazor client pass to `AddGrpcClient<StudentRemote.StudentRemoteClient>(opts => opts.Address = ...)`?"
+    question: "W09 Blazor client `AddGrpcClient` address with Aspire?"
     choices:
       - "`new Uri(\"http://localhost:5099\")`"
       - "`new Uri(\"http://backend\")`"
       - "`new Uri(\"grpc://localhost\")`"
       - "`new Uri(builder.Configuration[\"GrpcUrl\"])`"
+      - "`new Uri(builder.Configuration[\"GrpcEndpoint\"])`"
     correct: 1
-    rationale: "The lab uses `http://backend` — the Aspire logical name matching `AddProject<Projects.GrpcStudentsServer>(\"backend\")` in AppHost. Aspire's service discovery resolves it to the actual port at runtime."
+    rationale: "`http://backend` — the Aspire logical name matching `AddProject<Projects.GrpcStudentsServer>(\"backend\")` in AppHost. Aspire service discovery resolves it to the actual port at runtime."
     source: "Labs/W09 gRPC/GrpcBasics/BlazorGrpcClient/Program.cs"
     bloom: remember
 
   # ============================================================
-  # TDD — 6 questions (6 marks)
+  # TDD — 6 questions
   # ============================================================
 
   - id: mq-tdd-01
     type: MCQ
-    topic: "TDD cycle"
+    topic: "TDD cycle order"
     marks: 1
-    question: "In strict TDD, what is the correct order for each cycle?"
+    question: "TDD cycle — correct order?"
     choices:
       - "Write code, write test, clean up"
-      - "Red (failing test), Green (minimum code to pass), Refactor"
+      - "Red (failing test), Green (min code to pass), Refactor"
       - "Design, implement, test"
       - "Plan, prototype, harden"
+      - "Refactor, test, implement"
     correct: 1
-    rationale: "TDD cycle: write a failing test (Red), write the minimum production code to pass (Green), refactor while tests stay green. Tests drive design, not the other way around."
+    rationale: "Red → Green → Refactor. Tests drive design. Every line of production code exists because a failing test demanded it."
     source: "materials/project/GoodBooks/test/"
     bloom: remember
 
   - id: mq-tdd-02
     type: MCQ
-    topic: "xUnit one-run test"
+    topic: "xUnit one-run attribute"
     marks: 1
-    question: "Which attribute marks an xUnit test method that runs once with no parameters?"
+    question: "xUnit — one-run parameterless test attribute?"
     choices:
       - "`[Test]`"
       - "`[Fact]`"
       - "`[TestMethod]`"
       - "`[Case]`"
+      - "`[Run]`"
     correct: 1
-    rationale: "`[Fact]` is xUnit's one-run attribute. `[Test]` is NUnit. `[TestMethod]` is MSTest. `[Case]` isn't a real attribute in any of the three frameworks."
+    rationale: "`[Fact]` is xUnit. `[Test]` is NUnit. `[TestMethod]` is MSTest. `[Case]` and `[Run]` don't exist in any of the three frameworks."
     source: "materials/project/GoodBooks/test/GoodBooks.BackendTests/Financial/AccountTests.cs"
     bloom: remember
     tags: [pretest]
@@ -785,108 +835,115 @@ questions:
     type: MCQ
     topic: "xUnit parameterized test"
     marks: 1
-    question: "How do you parameterize an xUnit test with three inline input sets?"
+    question: "Parameterize xUnit test with three inline input sets?"
     choices:
       - "`[Fact]` three times with different suffixes"
       - "`[Theory]` + three `[InlineData(...)]` rows"
       - "`[TestCase(...)]` three times"
       - "`[DataRow(...)]` within a `[Fact]`"
+      - "`[DataDriven]` + three `[DataRow(...)]` rows"
     correct: 1
-    rationale: "xUnit's `[Theory]` + `[InlineData(args)]`. `[TestCase]` is NUnit; `[DataRow]` is MSTest. GoodBooks BaseServiceTests uses this pattern for the three `SequenceNumberTypes`."
+    rationale: "xUnit: `[Theory]` + `[InlineData(args)]`. `[TestCase]` is NUnit; `[DataRow]` is MSTest; `[DataDriven]` doesn't exist."
     source: "materials/project/GoodBooks/test/GoodBooks.ServicesTests/BaseServiceTests.cs"
     bloom: apply
 
   - id: mq-tdd-04
     type: MCQ
-    topic: "Assert argument order"
+    topic: "Assert.Equal argument order"
     marks: 1
-    question: "Which call order is correct for `Assert.Equal` in xUnit?"
+    question: "Correct `Assert.Equal` argument order in xUnit?"
     choices:
       - "`Assert.Equal(actual, expected)`"
       - "`Assert.Equal(expected, actual)`"
-      - "Either order works — the framework compares them"
+      - "Either order — framework compares both"
       - "`Assert.Equal(value)` (single-arg)"
+      - "`Assert.Equals(expected, actual)`"
     correct: 1
-    rationale: "Expected first, actual second: `Assert.Equal(expected, actual)`. The compiler doesn't enforce order, but failure messages read `\"Expected: X, but was: Y\"` — swapped arguments mean the failure message blames the wrong value."
+    rationale: "Expected first, actual second. Swapped: failure message reads `\"Expected: 5, but was: 4\"` — blames the wrong value. `Assert.Equals` is the object method, not an xUnit assertion."
     source: "materials/project/GoodBooks/test/GoodBooks.BackendTests/Financial/AccountTests.cs"
     bloom: apply
 
   - id: mq-tdd-05
     type: MCQ
-    topic: "Moq stub"
+    topic: "Moq Setup.Returns"
     marks: 1
-    question: "Which Moq call stubs a `Table` property to return an in-memory list?"
+    question: "Moq — stub `Table` property to return in-memory list?"
     choices:
       - "`_mockRepo.Returns(r => r.Table, banks.AsQueryable());`"
       - "`_mockRepo.Setup(r => r.Table).Returns(banks.AsQueryable());`"
       - "`_mockRepo.Stub(r => r.Table = banks.AsQueryable());`"
       - "`_mockRepo.Mock(r => r.Table, banks);`"
+      - "`_mockRepo.Configure(r => r.Table).Returns(banks.AsQueryable());`"
     correct: 1
-    rationale: "`.Setup(r => r.Table).Returns(banks.AsQueryable())`. `Setup` expresses which member call to intercept (via expression tree); `Returns` supplies the value. Access the fake via `.Object`."
+    rationale: "`.Setup(r => r.Table).Returns(banks.AsQueryable())`. Setup = which member to intercept. Returns = value. Access fake via `.Object`."
     source: "materials/project/GoodBooks/test/GoodBooks.ServicesTests/BaseServiceTests.cs"
     bloom: apply
 
   - id: mq-tdd-06
     type: MCQ
-    topic: "Moq verification"
+    topic: "Moq Verify Times.Once"
     marks: 1
-    question: "Which assertion fails the test if `Update` was never called?"
+    question: "Assert `Update` was called exactly once?"
     choices:
       - "`_mockRepo.Called(r => r.Update(It.IsAny<T>()));`"
       - "`_mockRepo.Verify(r => r.Update(It.IsAny<T>()), Times.Once);`"
       - "`Assert.Mock(_mockRepo, r => r.Update(...));`"
       - "`_mockRepo.Assert(r => r.Update(...));`"
+      - "`_mockRepo.Expect(r => r.Update(It.IsAny<T>()));`"
     correct: 1
-    rationale: "`.Verify(expr, Times.Once)` asserts the method was called exactly once. Other `Times` values: `Never`, `AtLeast(n)`, `AtMost(n)`, `Exactly(n)`."
+    rationale: "`.Verify(expr, Times.Once)` asserts called exactly once. Other values: `Never`, `AtLeast(n)`, `AtMost(n)`, `Exactly(n)`. `Expect` is a Moq4 method for setup, not assertion."
     source: "materials/project/GoodBooks/test/GoodBooks.ServicesTests/BaseServiceTests.cs"
     bloom: apply
 
   # ============================================================
-  # .NET Aspire — 5 questions (5 marks)
+  # .NET Aspire — 5 questions
   # ============================================================
 
   - id: mq-aspire-01
     type: MCQ
-    topic: "AppHost builder type"
+    topic: "AppHost builder"
     marks: 1
-    question: "Which line creates the Aspire AppHost builder?"
+    question: "Aspire AppHost builder creation?"
     choices:
       - "`var builder = WebApplication.CreateBuilder(args);`"
       - "`var builder = DistributedApplication.CreateBuilder(args);`"
       - "`var builder = Host.CreateDefaultBuilder(args);`"
       - "`var builder = AspireApplication.Create(args);`"
+      - "`var builder = Aspire.CreateBuilder(args);`"
     correct: 1
-    rationale: "`DistributedApplication.CreateBuilder(args)` creates an orchestrator builder specifically for Aspire. `WebApplication.CreateBuilder` is for service projects, not the AppHost."
+    rationale: "`DistributedApplication.CreateBuilder(args)` is the Aspire orchestrator builder. `WebApplication.CreateBuilder` is for service projects, not AppHost."
     source: "code-examples/SoccerFIFA_Aspire/SoccerFIFA/SoccerFIFA.AppHost/AppHost.cs"
     bloom: remember
 
   - id: mq-aspire-02
     type: MCQ
-    topic: "WithReference + WaitFor"
+    topic: "WithReference vs WaitFor"
     marks: 1
-    question: "What do `.WithReference(db)` and `.WaitFor(db)` do respectively?"
+    question: "`.WithReference(db)` and `.WaitFor(db)` — respective effects?"
     choices:
-      - "Both inject the connection string; redundant"
-      - "`WithReference` injects config as env-var; `WaitFor` delays startup until dependency reports healthy"
-      - "`WithReference` runs migrations; `WaitFor` polls the DB"
-      - "`WithReference` creates a firewall rule; `WaitFor` sets a timeout"
+      - "Both inject connection string; redundant"
+      - "`WithReference` injects config as env-var; `WaitFor` delays startup until dependency healthy"
+      - "`WithReference` runs migrations; `WaitFor` polls DB"
+      - "`WithReference` creates firewall rule; `WaitFor` sets timeout"
+      - "`WithReference` injects binary; `WaitFor` delays startup"
     correct: 1
-    rationale: "`WithReference` wires configuration (writes `ConnectionStrings__X` into the consumer's env); `WaitFor` delays the consumer's startup until the resource is healthy. Both are needed when the consumer can't survive a cold dependency."
+    rationale: "`WithReference` writes `ConnectionStrings__X` into the consumer's env. `WaitFor` delays consumer startup until resource reports healthy. Both needed when consumer can't survive a cold dependency."
     source: "code-examples/SoccerFIFA_Aspire/SoccerFIFA/SoccerFIFA.AppHost/AppHost.cs"
     bloom: understand
 
   - id: mq-aspire-03
     type: MCQ
-    topic: "ServiceDefaults location"
+    topic: "AddServiceDefaults location"
     marks: 1
-    question: "Where does `builder.AddServiceDefaults()` belong?"
+    question: "`builder.AddServiceDefaults()` belongs in?"
     choices:
-      - "In the AppHost's `Program.cs`"
-      - "In each service project's `Program.cs`"
-      - "In the `ServiceDefaults` class library's `Program.cs`"
-      - "In `appsettings.json`"
+      - "AppHost's `Program.cs`"
+      - "Each service project's `Program.cs`"
+      - "`ServiceDefaults` class library's `Program.cs`"
+      - "`appsettings.json`"
+      - "Shared project's startup class"
     correct: 1
-    rationale: "Each service project calls `builder.AddServiceDefaults()` at configure-time and `app.MapDefaultEndpoints()` at map-time. Putting it in AppHost breaks boot — the orchestrator tries to register OpenTelemetry + health checks on itself."
+    rationale: "Each service project calls `builder.AddServiceDefaults()` at configure-time and `app.MapDefaultEndpoints()` at map-time. AppHost is an orchestrator — registering telemetry + health checks on it crashes boot."
     source: "code-examples/SoccerFIFA_Aspire/SoccerFIFA/SoccerFIFA.ServiceDefaults/Extensions.cs"
     bloom: apply
 
@@ -894,46 +951,49 @@ questions:
     type: MCQ
     topic: "/health vs /alive"
     marks: 1
-    question: "What is the difference between `/health` and `/alive` endpoints registered by `MapDefaultEndpoints`?"
+    question: "`/health` vs `/alive` — difference?"
     choices:
-      - "`/health` is for humans, `/alive` is for bots"
-      - "`/health` requires all checks to pass (readiness); `/alive` requires only checks tagged `\"live\"` (liveness)"
+      - "`/health` for humans, `/alive` for bots"
+      - "`/health` = readiness (all checks); `/alive` = liveness (only `\"live\"`-tagged checks)"
       - "`/health` uses HTTPS, `/alive` uses HTTP"
-      - "They are aliases — both do the same thing"
+      - "They are aliases"
+      - "`/health` = external traffic; `/alive` = internal-only"
     correct: 1
-    rationale: "`/health` is readiness (route traffic or not). `/alive` is liveness (restart container or not) — only `\"live\"`-tagged checks count. Kubernetes maps them to `readinessProbe` and `livenessProbe`."
+    rationale: "`/health` = readiness (route traffic or not). `/alive` = liveness (restart container or not) — only `\"live\"`-tagged checks. Maps to Kubernetes `readinessProbe` / `livenessProbe`."
     source: "code-examples/SoccerFIFA_Aspire/SoccerFIFA/SoccerFIFA.ServiceDefaults/Extensions.cs"
     bloom: understand
 
   - id: mq-aspire-05
     type: MCQ
-    topic: "Typed resource consumption"
+    topic: "AddSqlServerDbContext"
     marks: 1
-    question: "AppHost has `builder.AddSqlServer(\"theserver\").AddDatabase(\"sqldata\")`. Which service-side call consumes the DB?"
+    question: "AppHost: `AddSqlServer(\"theserver\").AddDatabase(\"sqldata\")`. Service consumes via?"
     choices:
       - "`builder.Services.AddDbContext<T>(opts => opts.UseSqlServer(\"sqldata\"));`"
       - "`builder.AddSqlServerDbContext<ApplicationDbContext>(\"sqldata\");`"
       - "`builder.Services.AddSingleton<ApplicationDbContext>();`"
       - "`builder.Services.AddAspireDb(\"sqldata\");`"
+      - "`builder.AddAspireDatabase<ApplicationDbContext>(\"sqldata\");`"
     correct: 1
-    rationale: "`AddSqlServerDbContext<T>(\"sqldata\")` reads the Aspire-injected `ConnectionStrings__sqldata` env-var and wires EF Core with zero manual configuration. WebApiFIFA uses exactly this line."
+    rationale: "`AddSqlServerDbContext<T>(\"sqldata\")` reads Aspire-injected `ConnectionStrings__sqldata` env-var and wires EF Core — zero manual configuration needed."
     source: "code-examples/SoccerFIFA_Aspire/SoccerFIFA/WebApiFIFA/Program.cs"
     bloom: remember
 
   # ============================================================
-  # Localization — 4 questions (4 marks)
+  # Localization — 4 questions
   # ============================================================
 
   - id: mq-loc-01
     type: MCQ
-    topic: "AddLocalization resources path"
+    topic: "ResourcesPath setting"
     marks: 1
-    question: "W10 registers `builder.Services.AddLocalization(options => options.ResourcesPath = \"Resources\");`. What does `ResourcesPath` set?"
+    question: "`AddLocalization(options => options.ResourcesPath = \"Resources\")` — sets what?"
     choices:
-      - "The single `.resx` file to load"
-      - "The root folder containing all `.resx` files"
-      - "The namespace of the generated resource classes"
-      - "The culture fallback chain"
+      - "Single `.resx` file to load"
+      - "Root folder containing all `.resx` files"
+      - "Namespace of generated resource classes"
+      - "Culture fallback chain"
+      - "Language fallback order"
     correct: 1
     rationale: "`ResourcesPath` is the root folder under which the framework looks for per-class `.resx` files. `Resources/Pages/IndexModel.fr.resx` sits under this root."
     source: "Labs/W10 Localization/Sports/Program.cs"
@@ -943,63 +1003,67 @@ questions:
     type: MCQ
     topic: "CurrentCulture vs CurrentUICulture"
     marks: 1
-    question: "Which statement is TRUE about `CurrentCulture` vs `CurrentUICulture`?"
+    question: "`CurrentCulture` vs `CurrentUICulture` — TRUE statement?"
     choices:
-      - "They are synonyms — setting one sets the other"
-      - "`CurrentCulture` controls formatting (dates/numbers); `CurrentUICulture` controls which `.resx` loads"
-      - "`CurrentCulture` is global; `CurrentUICulture` is per-request"
-      - "`CurrentUICulture` is for server-side; `CurrentCulture` is for client-side"
+      - "Synonyms — setting one sets both"
+      - "`CurrentCulture` = date/number formatting; `CurrentUICulture` = `.resx` file selection"
+      - "`CurrentCulture` = global; `CurrentUICulture` = per-request"
+      - "`CurrentUICulture` = server-side; `CurrentCulture` = client-side"
+      - "Both control `.resx` selection; formatting ignores both"
     correct: 1
-    rationale: "`CurrentCulture` drives formatting (`.ToString()`, `decimal.ToString(\"C\")`). `CurrentUICulture` drives resource-file selection (`IStringLocalizer[...]`). Setting only one leaves the other at default — why `SupportedCultures` AND `SupportedUICultures` must both be configured."
+    rationale: "`CurrentCulture` drives formatting (`.ToString()`, `decimal.ToString(\"C\")`). `CurrentUICulture` drives resource-file selection (`IStringLocalizer[...]`). Must configure both `SupportedCultures` AND `SupportedUICultures`."
     source: "Labs/W10 Localization/Sports/Program.cs"
     bloom: understand
 
   - id: mq-loc-03
     type: MCQ
-    topic: "UseRequestLocalization missing"
+    topic: "UseRequestLocalization middleware"
     marks: 1
-    question: "`AddLocalization`, `Configure<RequestLocalizationOptions>`, `AddViewLocalization` are all registered. Users report language never switches. What is the single most likely missing line?"
+    question: "Culture never switches despite full localization setup. Most likely missing line?"
     choices:
       - "`app.UseLocalization();`"
       - "`app.UseRequestLocalization();`"
       - "`app.UseCulture();`"
       - "`app.MapLocalization();`"
+      - "`app.UseLocalizationMiddleware();`"
     correct: 1
-    rationale: "`UseRequestLocalization()` is the middleware that actually runs the culture providers per request and sets `CurrentCulture` + `CurrentUICulture`. Without it, every request falls through to the default culture silently."
+    rationale: "`UseRequestLocalization()` is the middleware that runs culture providers per request and sets `CurrentCulture` + `CurrentUICulture`. Without it, every request falls through to default culture silently."
     source: "Labs/W10 Localization/Sports/Program.cs"
     bloom: analyze
 
   - id: mq-loc-04
     type: MCQ
-    topic: "IViewLocalizer injection site"
+    topic: "IViewLocalizer injection"
     marks: 1
-    question: "Which directive injects `IViewLocalizer` into a `.cshtml` file?"
+    question: "Inject `IViewLocalizer` into a `.cshtml` file?"
     choices:
       - "`@using IViewLocalizer`"
       - "`@inject IViewLocalizer Localizer`"
       - "`@addTagHelper IViewLocalizer`"
       - "`@model IViewLocalizer`"
+      - "`@using IViewLocalizer Localizer`"
     correct: 1
-    rationale: "`@inject TypeName Name` — here `@inject IViewLocalizer Localizer`. Then use as `@Localizer[\"Key\"]`. Requires `AddViewLocalization()` in Program.cs."
+    rationale: "`@inject TypeName Name`. Then use `@Localizer[\"Key\"]`. Requires `AddViewLocalization()` registered in Program.cs."
     source: "notes/razor_pages_localization_SCRIPT.docx"
     bloom: remember
 
   # ============================================================
-  # Tag Helpers — 3 questions (3 marks)
+  # Tag Helpers — 3 questions
   # ============================================================
 
   - id: mq-tag-01
     type: MCQ
-    topic: "Base class"
+    topic: "TagHelper base class"
     marks: 1
-    question: "Which class does ToonTagDemo's `ToonTag` inherit from?"
+    question: "ToonTag base class?"
     choices:
       - "`Controller`"
       - "`TagHelper`"
       - "`Component`"
       - "`RazorComponent`"
+      - "`ViewComponent`"
     correct: 1
-    rationale: "All custom Tag Helpers inherit from `TagHelper` (in `Microsoft.AspNetCore.Razor.TagHelpers`)."
+    rationale: "All custom Tag Helpers inherit from `TagHelper` (`Microsoft.AspNetCore.Razor.TagHelpers`)."
     source: "code-examples/ToonTagDemo/ToonTagDemo/TagHelpers/ToonTag.cs"
     bloom: remember
 
@@ -1007,12 +1071,13 @@ questions:
     type: MCQ
     topic: "PascalCase to kebab-case"
     marks: 1
-    question: "A Tag Helper has `public string? FontFamily { get; set; }`. Which HTML attribute binds to it?"
+    question: "`public string? FontFamily` → HTML attribute name?"
     choices:
       - "`fontfamily`"
       - "`FontFamily`"
       - "`font-family`"
       - "`font_family`"
+      - "`fontFamily`"
     correct: 2
     rationale: "Razor auto-translates PascalCase to kebab-case. `FontFamily` → `font-family`. Usage: `<toon font-family=\"arial\">`."
     source: "code-examples/ToonTagDemo/ToonTagDemo/TagHelpers/ToonTag.cs"
@@ -1020,69 +1085,73 @@ questions:
 
   - id: mq-tag-03
     type: MCQ
-    topic: "_ViewImports registration"
+    topic: "_ViewImports Tag Helper registration"
     marks: 1
-    question: "Which directive in `_ViewImports.cshtml` registers a specific Tag Helper type by name?"
+    question: "Register specific Tag Helper by name in `_ViewImports.cshtml`?"
     choices:
       - "`@using ToonTagDemo.TagHelpers`"
       - "`@addTagHelper \"ToonTagDemo.TagHelpers.ToonTag, ToonTagDemo\"`"
       - "`@registerTagHelper ToonTag`"
       - "`@inject ToonTag`"
+      - "`@addTagHelper \"ToonTag\"`"
     correct: 1
-    rationale: "`@addTagHelper \"FullTypeName, AssemblyName\"` registers one helper. Wildcard form: `@addTagHelper *, AssemblyName`. `_ViewImports.cshtml` is the canonical location — not per-page."
+    rationale: "`@addTagHelper \"FullTypeName, AssemblyName\"`. Wildcard: `@addTagHelper *, AssemblyName`. `_ViewImports.cshtml` is canonical — not per-page."
     source: "code-examples/ToonTagDemo/ToonTagDemo/Pages/_ViewImports.cshtml"
     bloom: remember
 
   # ============================================================
-  # Blazor QuickGrid — 2 questions (2 marks)
+  # Blazor QuickGrid — 2 questions
   # ============================================================
 
   - id: mq-quickgrid-01
     type: MCQ
     topic: "Paginator binding"
     marks: 1
-    question: "The W07 server lab declares `private PaginationState pagination = new PaginationState { ItemsPerPage = 15 };`. Which line renders the paginator controls?"
+    question: "W07 server lab: `PaginationState pagination = new { ItemsPerPage = 15 }`. Render paginator controls?"
     choices:
       - "`<Paginator Pagination=\"@pagination\" />`"
       - "`<Paginator State=\"@pagination\" />`"
       - "`<Paginator Items=\"@pagination\" />`"
       - "`<PaginationControl State=\"@pagination\" />`"
+      - "`<PaginationBar State=\"@pagination\" />`"
     correct: 1
-    rationale: "Server lab uses `<Paginator State=\"@pagination\" />`. The BlazorSchool WASM variant uses `Value=\"@pages\">` — both valid, attribute name differs per template."
+    rationale: "Server lab: `<Paginator State=\"@pagination\" />`. BlazorSchool WASM variant uses `Value=\"@pages\"` — attribute name differs by template."
     source: "Labs/W07 QuickGrid/BlazorStudents/Components/Pages/StudentPages/Index.razor"
     bloom: remember
 
   - id: mq-quickgrid-02
     type: MCQ
-    topic: "Live filter binding"
+    topic: "oninput vs onchange"
     marks: 1
-    question: "Why does the W07 lab pair `@bind=\"FilterValue\"` with `@bind:event=\"oninput\"`?"
+    question: "W07 filter pairs `@bind` with `@bind:event=\"oninput\"`. Why?"
     choices:
       - "Performance optimization"
-      - "`@bind` alone defaults to `onchange` which only fires on focus loss — `oninput` fires on each keystroke for live filtering"
-      - "Required by `QuickGrid` framework"
-      - "To enable server-side validation"
+      - "`@bind` defaults to `onchange` (focus loss only); `oninput` fires per keystroke for live filtering"
+      - "Required by QuickGrid framework"
+      - "Enables server-side validation"
+      - "Required by QuickGrid for SSR compatibility"
     correct: 1
-    rationale: "`@bind` defaults to `onchange` — binding only updates when the input loses focus. Live filtering needs `@bind:event=\"oninput\"` so each keystroke refreshes `FilterValue` and triggers re-evaluation of `FilteredStudents`."
+    rationale: "`@bind` alone fires `onchange` — binding updates only on blur. `oninput` fires each keystroke, refreshing `FilterValue` and re-evaluating `FilteredStudents` immediately."
     source: "Labs/W07 QuickGrid/BlazorStudents/Components/Pages/StudentPages/Index.razor"
     bloom: analyze
 
   # ============================================================
-  # Excel / PDF / Chart — 2 questions (2 marks)
+  # Excel / PDF / Chart — 2 questions
   # ============================================================
 
   - id: mq-report-01
     type: MCQ
     topic: "ClosedXML cell indexing"
     marks: 1
-    question: "In W13's `Excel.cshtml.cs`, `worksheet.Cell(1, 1).Value = \"Game Id\"` writes to which Excel cell?"
+    question: "ClosedXML: `worksheet.Cell(1, 1).Value = \"Game Id\"` — which cell?"
     choices:
       - "`A0`"
       - "`A1`"
       - "`B1`"
       - "`B2`"
+      - "`A2`"
     correct: 1
-    rationale: "ClosedXML is 1-based and matches Excel's UI labels. `Cell(row=1, col=1)` = A1. Contrast with `[LoadColumn(N)]` in ML.NET which is 0-based — easy confusion when copying between readers."
+    rationale: "ClosedXML is 1-based: `Cell(row=1, col=1)` = A1. Contrast with `[LoadColumn(N)]` in ML.NET which is 0-based."
     source: "Labs/w13/FifaWorldCup/Pages/Excel.cshtml.cs"
     bloom: remember
 
@@ -1090,13 +1159,104 @@ questions:
     type: MCQ
     topic: "PDF MemoryStream rewind"
     marks: 1
-    question: "Your iText 7 handler constructs a `PdfWriter(ms)` → `PdfDocument` → `Document`, adds content, calls `document.Close()`, then returns `new FileStreamResult(ms, \"application/pdf\")`. Users download zero-byte files. What is missing?"
+    question: "iText 7 handler returns zero-byte PDF. What is missing?"
     choices:
-      - "Adding `await` before `document.Close()`"
-      - "Setting `ms.Position = 0` after `document.Close()` and before constructing `FileStreamResult`"
-      - "Calling `writer.Flush()` before `Close`"
-      - "Passing `PageSize.A4` to `PdfDocument`"
+      - "`await` before `document.Close()`"
+      - "`ms.Position = 0` after `document.Close()` and before `FileStreamResult`"
+      - "`writer.Flush()` before `Close`"
+      - "`PageSize.A4` to `PdfDocument`"
+      - "Disposing `PdfDocument` before writing to stream"
     correct: 1
-    rationale: "`PdfWriter` advances `MemoryStream.Position` to the end. `FileStreamResult` reads from current position to end — zero bytes. Always `ms.Position = 0` before returning, or use `File(ms.ToArray(), \"application/pdf\", \"name.pdf\")` which is position-insensitive."
+    rationale: "`PdfWriter` advances `MemoryStream.Position` to end. `FileStreamResult` reads from current position — zero bytes. Fix: `ms.Position = 0` before returning, or use `File(ms.ToArray(), ...)` which is position-insensitive."
     source: "Labs/w13/FifaWorldCup/Pages/PdfReport.cshtml.cs"
     bloom: analyze
+
+  # ============================================================
+  # MATCHING — 10 pairs (10 marks)
+  # ============================================================
+
+  - id: mq-match-01
+    type: SHORT
+    topic: "Matching — terms to descriptions"
+    marks: 10
+    question: |
+      Match each item in **Column A** to the correct description in **Column B**. Write your answer as `1→X, 2→X, ...`
+
+      | # | Column A | # | Column B |
+      |---|----------|---|----------|
+      | 1 | `ApiKeyCredential` | A | ML.NET — renames a column to the trainer's hardcoded target name |
+      | 2 | `IChatCompletionService` | B | Aspire — creates the distributed application orchestrator builder |
+      | 3 | `IChatClient` | C | gRPC — generated server base class (one per proto service) |
+      | 4 | `.AsAIAgent(name, instructions)` | D | xUnit — parameterized test; one execution per data row |
+      | 5 | `CopyColumns("Label", "FareAmount")` | E | Semantic Kernel — interface for `GetStreamingChatMessageContentsAsync` |
+      | 6 | `ITransformer` | F | MAF — extension that wraps `IChatClient` as an AI agent |
+      | 7 | `syntax = "proto3";` | G | SK / GitHub Models — `System.ClientModel` auth credential class |
+      | 8 | `StudentRemote.StudentRemoteBase` | H | OllamaSharp — `Microsoft.Extensions.AI` chat interface |
+      | 9 | `DistributedApplication.CreateBuilder` | I | `.proto` — mandatory syntax declaration (first line) |
+      | 10 | `[Theory] + [InlineData]` | J | ML.NET — `Fit()` return type; trained, serializable pipeline |
+    correct: "1→G, 2→E, 3→H, 4→F, 5→A, 6→J, 7→I, 8→C, 9→B, 10→D"
+    rationale: |
+      1→G: `ApiKeyCredential` (System.ClientModel) is used in W02 for GitHub Models auth.
+      2→E: `IChatCompletionService` is the SK interface — exposes `GetStreamingChatMessageContentsAsync`.
+      3→H: `IChatClient` (Microsoft.Extensions.AI) is what `OllamaApiClient` implements.
+      4→F: `.AsAIAgent(name, instructions)` wraps any `IChatClient` into a MAF agent.
+      5→A: `CopyColumns("Label", "FareAmount")` gives the trainer's hardcoded target name.
+      6→J: `pipeline.Fit(trainingData)` returns `ITransformer`.
+      7→I: `syntax = "proto3";` is the mandatory first line of every .proto file.
+      8→C: `Grpc.Tools` generates `[ServiceName].[ServiceName]Base` per proto service.
+      9→B: `DistributedApplication.CreateBuilder(args)` is the Aspire AppHost builder.
+      10→D: `[Theory]` + `[InlineData(...)]` runs one execution per data row in xUnit.
+    source: "multiple labs"
+    bloom: remember
+
+  # ============================================================
+  # CODING — 1 question (5 marks)
+  # ============================================================
+
+  - id: mq-code-01
+    type: SHORT
+    topic: "Coding — gRPC server override"
+    marks: 5
+    question: |
+      The proto file defines:
+
+      ```
+      syntax = "proto3";
+      service StudentRemote {
+        rpc GetStudentInfo (StudentLookupModel) returns (StudentModel);
+      }
+      message StudentLookupModel { int32 id = 1; }
+      message StudentModel {
+        int32 id = 1;
+        string first_name = 2;
+        string last_name = 3;
+      }
+      ```
+
+      `StudentsService` inherits the correct base class. An injected `_db` is an EF Core `DbContext` with `DbSet<Student> Students`. `Student` has `Id` (int), `FirstName` (string), `LastName` (string).
+
+      **Write ONLY the `GetStudentInfo` override** — complete method signature and body.
+    correct: |
+      ```csharp
+      public override Task<StudentModel> GetStudentInfo(
+          StudentLookupModel request, ServerCallContext context)
+      {
+          var student = _db.Students.FirstOrDefault(s => s.Id == request.Id);
+          var reply = new StudentModel
+          {
+              Id = student.Id,
+              FirstName = student.FirstName,
+              LastName = student.LastName
+          };
+          return Task.FromResult(reply);
+      }
+      ```
+
+      Key marks:
+      - Correct signature: `(StudentLookupModel request, ServerCallContext context)` returning `Task<StudentModel>`
+      - Access `request.Id` (proto field → C# property)
+      - Build `StudentModel` with proto field names (snake_case → PascalCase C# properties)
+      - Return `Task.FromResult(reply)` for sync body
+    rationale: "Override must match `(Request, ServerCallContext) → Task<Response>`. Proto snake_case fields (`first_name`) map to PascalCase C# properties (`FirstName`). Sync body uses `Task.FromResult`. `ServerCallContext` is mandatory even if unused."
+    source: "Labs/W09 gRPC/GrpcBasics/GrpcStudentsServer/Services/StudentsService.cs"
+    bloom: apply

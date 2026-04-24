@@ -13,6 +13,7 @@ related: [ml-pipeline]
 ## Run the CLI
 
 ```bash
+# Regression task on CSV | target: column 6 (0-based) | explore for 60 seconds | file has header row
 mlnet regression --dataset taxi-fare-train.csv --label-col 6 --train-time 60 --has-header true
 ```
 
@@ -21,6 +22,7 @@ Task: regression. Dataset: CSV. Label: column at index 6 (0-based). Budget: 60 s
 ## Install once per machine
 
 ```bash
+# Install AutoML CLI globally (platform-specific: mlnet-win-x64 | mlnet-osx-x64 | mlnet-linux-x64)
 dotnet tool install -g mlnet-win-x64
 ```
 
@@ -55,7 +57,7 @@ Top 5 models (by RSquared):
 CLI generates a full console project — source files, `.csproj`, `.zip` model — wired to the winning pipeline. Use with:
 
 ```cs
-// Generated wrapper
+// Generated input class (property names may differ from CSV headers — check generated files)
 var sampleData = new TaxiFareModel.ModelInput()
 {
     Vendor_id = "CMT",
@@ -66,7 +68,9 @@ var sampleData = new TaxiFareModel.ModelInput()
     Payment_type = "CRD",
 };
 
+// Call generated Predict() — wraps the winning pipeline + trained model
 var predictionResult = TaxiFareModel.Predict(sampleData);
+// Access Score property for regression output
 Console.WriteLine($"Predicted Fare_amount: {predictionResult.Score}");
 ```
 

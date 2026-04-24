@@ -15,20 +15,25 @@ related: [grpc, cache-redis]
 From SoccerFIFA `AppHost.cs`:
 
 ```cs
+// Create the distributed application orchestrator
 var builder = DistributedApplication.CreateBuilder(args);
 
+// Register SQL Server resource with a logical name + create database
 var sqlServerDb = builder.AddSqlServer("theserver")
                          .AddDatabase("sqldata");
 
+// Register API service with:
 var api = builder.AddProject<Projects.WebApiFIFA>("backend")
-    .WithReference(sqlServerDb)
-    .WaitFor(sqlServerDb)
-    .WithEnvironment("ParentCompany", builder.Configuration["Company"]);
+    .WithReference(sqlServerDb)           // Inject SQL connection info as env-var
+    .WaitFor(sqlServerDb)                 // Don't start API until DB is healthy
+    .WithEnvironment("ParentCompany", builder.Configuration["Company"]);  // Inject config value
 
+// Register frontend service
 builder.AddProject<Projects.BlazorFIFA>("frontend")
-    .WithReference(api)
-    .WaitFor(api);
+    .WithReference(api)           // Inject API's logical name + port
+    .WaitFor(api);                // Don't start UI until API is healthy
 
+// Start orchestrator
 builder.Build().Run();
 ```
 
@@ -50,18 +55,21 @@ The string in `AddProject<>("backend")` is the service's **logical name**. Consu
 ### SQL Server
 
 ```cs
+// Register SQL Server container + database resource in Aspire
 var sqlServerDb = builder.AddSqlServer("theserver")
                          .AddDatabase("sqldata");
 
+// Register API and inject connection info
 builder.AddProject<Projects.WebApiFIFA>("backend")
-    .WithReference(sqlServerDb)
-    .WaitFor(sqlServerDb);
+    .WithReference(sqlServerDb)     // Aspire writes ConnectionStrings__sqldata to env
+    .WaitFor(sqlServerDb);          // Ensure DB is healthy before starting API
 ```
 
 Service consumes via typed helper:
 
 ```cs
-// WebApiFIFA/Program.cs
+// WebApiFIFA/Program.cs — consumer side
+// Register EF Core DbContext + read connection string from env var (set by AppHost via WithReference)
 builder.AddSqlServerDbContext<ApplicationDbContext>("sqldata");
 ```
 
@@ -82,12 +90,14 @@ Every service project in an Aspire solution calls exactly two methods:
 ```cs
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();          // 1. at configure time
+// 1. Register Aspire defaults (OTel, health checks, service discovery, resilience)
+builder.AddServiceDefaults();
 
 builder.Services.AddControllers();
 var app = builder.Build();
 
-app.MapDefaultEndpoints();             // 2. at map time
+// 2. Map health check endpoints (/health, /alive) — only in Development
+app.MapDefaultEndpoints();
 app.MapControllers();
 app.Run();
 ```
@@ -100,13 +110,19 @@ From `SoccerFIFA.ServiceDefaults/Extensions.cs`:
 public static TBuilder AddServiceDefaults<TBuilder>(this TBuilder builder)
     where TBuilder : IHostApplicationBuilder
 {
+    // Enable OpenTelemetry: distributed tracing, metrics, logs
     builder.ConfigureOpenTelemetry();
+    // Add /health (readiness) and /alive (liveness) endpoints
     builder.AddDefaultHealthChecks();
+    // Enable service discovery: resolve "http://backend" to actual ports
     builder.Services.AddServiceDiscovery();
 
+    // Configure default HttpClient behavior for outbound calls
     builder.Services.ConfigureHttpClientDefaults(http =>
     {
+        // Add retry + timeout policies
         http.AddStandardResilienceHandler();
+        // Enable service discovery for HTTP calls to other services
         http.AddServiceDiscovery();
     });
 
@@ -139,10 +155,12 @@ public static WebApplication MapDefaultEndpoints(this WebApplication app)
 {
     if (app.Environment.IsDevelopment())
     {
+        // /health = readiness probe (all checks must pass)
         app.MapHealthChecks("/health");
+        // /alive = liveness probe (only "live" tagged checks)
         app.MapHealthChecks("/alive", new HealthCheckOptions
         {
-            Predicate = r => r.Tags.Contains("live")
+            Predicate = r => r.Tags.Contains("live")  // Filter to liveness checks only
         });
     }
     return app;

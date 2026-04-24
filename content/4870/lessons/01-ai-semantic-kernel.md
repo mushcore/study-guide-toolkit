@@ -19,18 +19,23 @@ using System.ClientModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load AI credentials and endpoint from appsettings.json
 var modelId   = builder.Configuration["AI:Model"]!;
 var uri       = builder.Configuration["AI:Endpoint"]!;
 var githubPAT = builder.Configuration["AI:PAT"]!;
 
+// Configure OpenAI client to use GitHub Models endpoint instead of OpenAI's
 var client = new OpenAIClient(
     new ApiKeyCredential(githubPAT),
     new OpenAIClientOptions { Endpoint = new Uri(uri) });
 
+// Register the chat completion service with the GitHub Models client
 builder.Services.AddOpenAIChatCompletion(modelId, client);
+// Register Semantic Kernel and all its dependencies in the DI container
 builder.Services.AddKernel();
 
 builder.Services.AddRazorPages();
+// Session storage requires distributed cache to persist ChatHistory across requests
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 ```
@@ -52,10 +57,13 @@ using Microsoft.SemanticKernel.ChatCompletion;
 
 public class IndexModel : PageModel
 {
+    // Injected from DI container — resolves to OpenAI client wired in Program.cs
     private readonly IChatCompletionService _chat;
     public IndexModel(IChatCompletionService chat) => _chat = chat;
 
+    // Two-way model binding: form POST populates this, then pass to GetStreamingChatMessageContentsAsync
     [BindProperty] public string? UserMessage { get; set; }
+    // Holds accumulated chat history for display on the Razor page
     public List<ChatEntry> ChatMessages { get; set; } = new();
 }
 ```
@@ -65,19 +73,23 @@ public class IndexModel : PageModel
 `ChatHistory` constructor takes system prompt directly:
 
 ```cs
+// ChatHistory tracks system prompt + all prior turns (for multi-turn conversation context)
 ChatHistory chat = new(@"
     You are an AI assistant that helps people find information.
     The response must be brief and should not exceed one paragraph.
     If you do not know the answer then simply say 'I do not know the answer'.");
 
+// Reconstruct conversation history from session storage (User + Assistant messages alternate)
 foreach (var entry in chatEntries)
 {
     if (entry.Role == "User") chat.AddUserMessage(entry.Message);
     else                      chat.AddAssistantMessage(entry.Message);
 }
 
+// Add the current form submission to the conversation
 chat.AddUserMessage(UserMessage);
 
+// Stream the response token-by-token (for real-time UI updates)
 StringBuilder sb = new();
 await foreach (var message in _chat.GetStreamingChatMessageContentsAsync(chat))
 {
@@ -89,13 +101,15 @@ var response = sb.ToString();
 ## Session persistence
 
 ```cs
+// Deserialize chat history from distributed cache (empty list if first request)
 var historyJson = HttpContext.Session.GetString("ChatHistory");
 var chatEntries = string.IsNullOrEmpty(historyJson)
     ? new List<ChatEntry>()
     : System.Text.Json.JsonSerializer.Deserialize<List<ChatEntry>>(historyJson)!;
 
-// ... run turn, append User + Assistant entries ...
+// ... run turn, append User + Assistant entries to chatEntries list ...
 
+// Persist updated history back to session storage for next request
 HttpContext.Session.SetString("ChatHistory",
     System.Text.Json.JsonSerializer.Serialize(chatEntries));
 ```

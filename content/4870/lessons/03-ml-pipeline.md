@@ -24,6 +24,8 @@ Each step has one purpose. Miss one and training breaks.
 ```cs
 using Microsoft.ML;
 
+// MLContext is the root factory for all ML.NET operations — data, transforms, trainers, model save/load
+// seed: 0 makes random operations deterministic (same data → same model every run)
 MLContext mlContext = new MLContext(seed: 0);
 ```
 
@@ -32,6 +34,7 @@ Single entry point. Reach `mlContext.Data` (loaders), `mlContext.Transforms` (fe
 ## Step 2 — Load into `IDataView`
 
 ```cs
+// Load CSV into IDataView (immutable, lazy stream) — type param maps columns to class fields
 IDataView trainingData = mlContext.Data.LoadFromTextFile<TaxiTrip>(
     trainDataPath, hasHeader: true, separatorChar: ',');
 ```
@@ -41,13 +44,14 @@ IDataView trainingData = mlContext.Data.LoadFromTextFile<TaxiTrip>(
 ```cs
 public class TaxiTrip
 {
-    [LoadColumn(0)] public string VendorId;
-    [LoadColumn(1)] public string RateCode;
-    [LoadColumn(2)] public float PassengerCount;
-    [LoadColumn(3)] public float TripTime;
-    [LoadColumn(4)] public float TripDistance;
-    [LoadColumn(5)] public string PaymentType;
-    [LoadColumn(6)] public float FareAmount;
+    // LoadColumn maps CSV column index (0-based) to field — order in class doesn't matter
+    [LoadColumn(0)] public string VendorId;        // CSV column 0
+    [LoadColumn(1)] public string RateCode;        // CSV column 1
+    [LoadColumn(2)] public float PassengerCount;   // CSV column 2
+    [LoadColumn(3)] public float TripTime;         // CSV column 3 (but excluded from features — see pipeline)
+    [LoadColumn(4)] public float TripDistance;     // CSV column 4
+    [LoadColumn(5)] public string PaymentType;     // CSV column 5
+    [LoadColumn(6)] public float FareAmount;       // CSV column 6 (target — will be renamed to "Label")
 }
 ```
 
@@ -66,6 +70,8 @@ Trainers look up target by exact string `"Label"`. Rename with `CopyColumns` BEF
 `VendorId = "VTS"` becomes `[0, 1]`. `VendorId = "CMT"` becomes `[1, 0]`.
 
 ```cs
+// Convert text categories to numeric vectors: "VTS" → [0,1], "CMT" → [1,0]
+// First param = output column name, second param = input column name
 .Append(mlContext.Transforms.Categorical.OneHotEncoding("VendorIdEncoded", "VendorId"))
 .Append(mlContext.Transforms.Categorical.OneHotEncoding("RateCodeEncoded", "RateCode"))
 .Append(mlContext.Transforms.Categorical.OneHotEncoding("PaymentTypeEncoded", "PaymentType"))
@@ -76,6 +82,9 @@ Output name is your choice. Name matters because the next step references it.
 ## Step 5 — Pack features into `"Features"` vector
 
 ```cs
+// Pack all numeric/encoded features into a single vector named "Features"
+// Output name MUST be exactly "Features" — trainers hardcode this lookup
+// Note: TripTime excluded because it's unknown at prediction time (data leakage risk)
 .Append(mlContext.Transforms.Concatenate("Features",
     "VendorIdEncoded", "RateCodeEncoded", "PassengerCount",
     "TripDistance", "PaymentTypeEncoded"))
@@ -88,6 +97,7 @@ Output name MUST be literal `"Features"`. Trainers hardcode that lookup.
 ## Step 6 — Add the trainer
 
 ```cs
+// FastTree = gradient-boosted decision-tree ensemble, optimal for regression
 .Append(mlContext.Regression.Trainers.FastTree())
 ```
 
@@ -96,7 +106,9 @@ Output name MUST be literal `"Features"`. Trainers hardcode that lookup.
 ## Step 7 — `Fit` returns `ITransformer`
 
 ```cs
+// Fit() trains the pipeline and returns a trained, serializable model (NOT IDataView)
 ITransformer model = pipeline.Fit(trainingData);
+// Serialize model to disk with its schema — needed to load and run predictions later
 mlContext.Model.Save(model, trainingData.Schema, "Data/Model.zip");
 ```
 
@@ -105,16 +117,22 @@ mlContext.Model.Save(model, trainingData.Schema, "Data/Model.zip");
 ## Full pipeline (TaxiFarePrediction)
 
 ```cs
+// Complete pipeline: rename target → encode categories → pack features → train
 var pipeline = mlContext.Transforms
+    // Step 1: Rename FareAmount to "Label" (trainers hardcode this name)
     .CopyColumns(outputColumnName: "Label", inputColumnName: "FareAmount")
+    // Step 2: Encode text features to numeric vectors
     .Append(mlContext.Transforms.Categorical.OneHotEncoding("VendorIdEncoded", "VendorId"))
     .Append(mlContext.Transforms.Categorical.OneHotEncoding("RateCodeEncoded", "RateCode"))
     .Append(mlContext.Transforms.Categorical.OneHotEncoding("PaymentTypeEncoded", "PaymentType"))
+    // Step 3: Pack all encoded + numeric features into single "Features" vector
     .Append(mlContext.Transforms.Concatenate("Features",
         "VendorIdEncoded", "RateCodeEncoded", "PassengerCount",
         "TripDistance", "PaymentTypeEncoded"))
+    // Step 4: Add regression trainer
     .Append(mlContext.Regression.Trainers.FastTree());
 
+// Step 5: Train on data and return stateless ITransformer
 ITransformer model = pipeline.Fit(trainingData);
 ```
 

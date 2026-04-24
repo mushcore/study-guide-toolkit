@@ -70,6 +70,7 @@ Keywords:
 
 ```xml
 <ItemGroup>
+  <!-- GrpcServices controls code generation: "Server" (base class), "Client" (stubs), or "Both" -->
   <Protobuf Include="Protos\students.proto" GrpcServices="Server" />
 </ItemGroup>
 ```
@@ -81,23 +82,28 @@ Keywords:
 ```cs
 using Grpc.Core;
 
+// Inherit from generated base class: [ServiceName].[ServiceName]Base
 public class StudentsService : StudentRemote.StudentRemoteBase
 {
     private readonly ILogger<StudentsService> _logger;
     private readonly SchoolDbContext _context;
 
+    // Constructor receives logged-in DI dependencies
     public StudentsService(ILogger<StudentsService> logger, SchoolDbContext context)
     {
         _logger = logger;
         _context = context;
     }
 
+    // Override rpc method: signature is (Request, ServerCallContext) → Task<Response>
+    // ServerCallContext carries metadata like authentication headers
     public override Task<StudentModel> GetStudentInfo(
         StudentLookupModel request, ServerCallContext context)
     {
         var c = _context.Students!.Find(request.StudentId);
         if (c is null) return Task.FromResult(new StudentModel());
 
+        // Map database entity to protobuf message and wrap in Task
         return Task.FromResult(new StudentModel {
             StudentId = c.StudentId,
             FirstName = c.FirstName,
@@ -106,8 +112,10 @@ public class StudentsService : StudentRemote.StudentRemoteBase
         });
     }
 
+    // Multiple overrides for different RPC methods
     public override Task<Reply> InsertStudent(StudentModel request, ServerCallContext context)
     {
+        // Create database entity from protobuf request
         var s = new Student {
             StudentId = request.StudentId,
             LastName = request.LastName,
@@ -117,6 +125,7 @@ public class StudentsService : StudentRemote.StudentRemoteBase
         _context.Students!.Add(s);
         _context.SaveChanges();
 
+        // Return protobuf reply message
         return Task.FromResult(new Reply {
             Result = $"Student {request.FirstName} inserted.",
             IsOk = true
@@ -134,11 +143,14 @@ Three rules:
 ## Server streaming override
 
 ```cs
+// Streaming override: return type Task (no single response)
+// Extra parameter: IServerStreamWriter<T> to send multiple messages
 public override async Task RetrieveAllStudents(
     Empty request,
     IServerStreamWriter<StudentModel> responseStream,
     ServerCallContext context)
 {
+    // Iterate database and stream each record to client
     foreach (var s in _context.Students!)
         await responseStream.WriteAsync(new StudentModel { /* ... */ });
 }
@@ -150,13 +162,18 @@ Streaming: return type `Task` (no response), extra `IServerStreamWriter<T>` para
 
 ```cs
 var builder = WebApplication.CreateBuilder(args);
+// AddServiceDefaults() configures Aspire service defaults (health checks, logging, etc.)
 builder.AddServiceDefaults();
+// Register gRPC middleware
 builder.Services.AddGrpc();
+// Configure database (EF Core + SQLite)
 builder.Services.AddDbContext<SchoolDbContext>(opts =>
     opts.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")!));
 
 var app = builder.Build();
+// Map gRPC service implementation to listen on HTTP/2 gRPC port
 app.MapGrpcService<StudentsService>();
+// Aspire health check endpoints
 app.MapDefaultEndpoints();
 app.Run();
 ```
@@ -170,9 +187,11 @@ builder.AddServiceDefaults();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Register gRPC client stub in DI container
+// Address uses Aspire logical name "backend" (resolved by service discovery)
 builder.Services.AddGrpcClient<StudentRemote.StudentRemoteClient>(options =>
 {
-    options.Address = new Uri("http://backend");       // Aspire logical name
+    options.Address = new Uri("http://backend");       // Resolves to gRPC server via Aspire
 });
 ```
 
@@ -181,11 +200,14 @@ Blazor page consumes via `@inject`:
 ```cs
 @page "/students"
 @rendermode InteractiveServer
+// Inject gRPC client from DI container
 @inject StudentRemote.StudentRemoteClient _grpc
 
 @code {
+    // Call gRPC method when Blazor component initializes
     protected override async Task OnInitializedAsync()
     {
+        // Call async gRPC method — automatically marshals to protobuf and sends
         var reply = await _grpc.GetStudentInfoAsync(
             new StudentLookupModel { StudentId = 3 });
     }
@@ -197,9 +219,12 @@ Blazor page consumes via `@inject`:
 ```cs
 var builder = DistributedApplication.CreateBuilder(args);
 
+// Register gRPC server project with logical name "backend"
 var grpc = builder.AddProject<Projects.GrpcStudentsServer>("backend");
+// Register Blazor client with reference to backend + ordering constraint
 builder.AddProject<Projects.BlazorGrpcClient>("frontend")
-    .WithReference(grpc).WaitFor(grpc);
+    .WithReference(grpc)    // Client can resolve "http://backend" to server's gRPC port
+    .WaitFor(grpc);         // Start server before client
 
 builder.Build().Run();
 ```

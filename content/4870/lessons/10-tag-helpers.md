@@ -15,31 +15,38 @@ related: [cache-redis]
 ```cs
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
+// Bind to <toon> elements (custom tag)
 [HtmlTargetElement("toon")]
-[HtmlTargetElement(Attributes = "toonie")]        // stacked — two bindings
+// Also bind to any element with toonie attribute (stacked decorators = multiple patterns)
+[HtmlTargetElement(Attributes = "toonie")]
 public class ToonTag : TagHelper
 {
-    public string? FontFamily { get; set; }         // kebab-case: font-family
-    public string? FontSize { get; set; }
-    public string? ForegroundColor { get; set; }
+    // PascalCase property automatically maps to kebab-case attribute in Razor markup
+    public string? FontFamily { get; set; }      // Binds to: font-family="..."
+    public string? FontSize { get; set; }        // Binds to: font-size="..."
+    public string? ForegroundColor { get; set; } // Binds to: foreground-color="..."
 
+    // Override ProcessAsync for helpers that await (DB, HTTP, file I/O)
     public async override Task ProcessAsync(
         TagHelperContext context,
         TagHelperOutput output)
     {
+        // Fetch data asynchronously
         IEnumerable<Toon> toons = await GetToonsAsync();
 
+        // Build inline style from properties
         string customStyle =
             $"font-family: {FontFamily};font-size: {FontSize};color: {ForegroundColor};";
-        output.Attributes.SetAttribute("style", customStyle);
+        output.Attributes.SetAttribute("style", customStyle);  // Add/replace attribute
 
+        // Generate HTML table dynamically
         string html = "<table><tr><th>Name</th><th>Picture</th></tr>";
         foreach (var item in toons)
             html += $"<tr><td>{item.FirstName} {item.LastName}</td>" +
                     $"<td><img src='{item.PictureUrl}' style='width:50px'/></td></tr>";
         html += "</table>";
 
-        output.Content.SetHtmlContent(html);
+        output.Content.SetHtmlContent(html);  // Replace inner HTML with generated table
     }
 }
 ```
@@ -82,10 +89,12 @@ ToonTagDemo does not rewrite `output.TagName` — rendered element stays `<toon>
 
 Razor does NOT auto-discover Tag Helpers. From `ToonTagDemo/Pages/_ViewImports.cshtml`:
 
-```cs
+```razor
 @using ToonTagDemo
 @namespace ToonTagDemo.Pages
+<!-- Built-in tag helpers: <cache>, <environment>, <partial>, asp-for, asp-controller, etc. -->
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<!-- Custom tag helpers: wildcard register all in assembly OR specific type register one -->
 @addTagHelper "ToonTagDemo.TagHelpers.ToonTag, ToonTagDemo"
 ```
 
