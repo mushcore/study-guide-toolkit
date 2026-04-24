@@ -7,7 +7,11 @@ import { Markdown } from './Markdown.jsx';
 const RecallCard = ({ topic, onRate, onNext, onPrev, idxInQueue, queueLen, onJumpTopic, active = true }) => {
   const [cardIdx, setCardIdx] = React.useState(0);
   const [revealed, setRevealed] = React.useState(false);
-  const card = topic.cards[cardIdx];
+  const card = topic.cards && topic.cards.length > 0 ? topic.cards[cardIdx] : null;
+
+  if (!card) {
+    return <div className="page"><p>No card available</p></div>;
+  }
 
   React.useEffect(() => { setCardIdx(0); setRevealed(false); }, [topic.id]);
 
@@ -33,7 +37,7 @@ const RecallCard = ({ topic, onRate, onNext, onPrev, idxInQueue, queueLen, onJum
     };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
-  });
+  }, [active, cardIdx, revealed, prevCard, nextCard, rate]);
 
   const modeLabel = {
     cloze: 'Cloze deletion',

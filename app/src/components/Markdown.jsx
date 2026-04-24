@@ -85,18 +85,41 @@ function tokenize(text) {
   return merged;
 }
 
-function InlineCode({ code }) {
+function InlineCode({ code, tokens }) {
   const ref = React.useRef(null);
+  const hasCloze = tokens && tokens.some(t => t.t === 'cloze');
+  const codeText = tokens ? tokens.map(t => {
+    if (t.t === 'text') return t.v;
+    if (t.t === 'cloze') return `{{${t.v}}}`;
+    return '';
+  }).join('') : code;
+  
+  // Highlight non-cloze code
   React.useEffect(() => {
-    if (!ref.current || !window.hljs) return;
+    if (hasCloze || !ref.current || !window.hljs) return;
     try {
-      const res = window.hljs.highlightAuto(code || '');
+      const res = window.hljs.highlightAuto(codeText || '');
       ref.current.innerHTML = res.value;
     } catch {
-      ref.current.textContent = code || '';
+      ref.current.textContent = codeText || '';
     }
-  }, [code]);
-  return <code ref={ref} className="hljs ds-code-inline">{code}</code>;
+  }, [codeText, hasCloze]);
+  
+  // If no cloze blanks, use simple highlighted code
+  if (!hasCloze) {
+    return <code ref={ref} className="hljs ds-code-inline">{codeText}</code>;
+  }
+  
+  // If cloze blanks exist, render tokens manually (no syntax highlighting to preserve cloze spans)
+  return (
+    <code className="hljs ds-code-inline">
+      {tokens.map((t, i) => {
+        if (t.t === 'text') return <span key={i}>{t.v}</span>;
+        if (t.t === 'cloze') return <span key={i} className="cloze">{t.v}</span>;
+        return null;
+      })}
+    </code>
+  );
 }
 
 function CodeBlock({ code, lang }) {
@@ -127,7 +150,11 @@ function renderNodes(tokens, keyPrefix = '') {
       case 'text': return <React.Fragment key={k}>{tok.v}</React.Fragment>;
       case 'bold': return <strong key={k}>{renderNodes(tokenize(tok.v), `${k}-`)}</strong>;
       case 'em':   return <em key={k}>{renderNodes(tokenize(tok.v), `${k}-`)}</em>;
-      case 'code': return <InlineCode key={k} code={tok.v} />;
+      case 'code': {
+        // Tokenize code content for cloze blanks (e.g., `https://...{{inference}}`)
+        const codeTokens = tokenize(tok.v);
+        return <InlineCode key={k} tokens={codeTokens} />;
+      }
       case 'codeblock': return <CodeBlock key={k} code={tok.v} lang={tok.lang} />;
       case 'cloze': return <span key={k} className="cloze">{renderNodes(tokenize(tok.v), `${k}-`)}</span>;
       default: return null;

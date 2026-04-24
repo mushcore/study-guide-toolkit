@@ -181,24 +181,8 @@ const App = () => {
         {route.name === 'lessons' && <Lessons courseId={route.courseId}/>}
         {route.name === 'mock' && <MockExam courseId={route.courseId}/>}
         {route.name === 'replay' && <QuizReplay onJumpTopic={jumpTopic}/>}
-        {route.name === 'practice' && route.courseId === '4870' && (
-          <div className="page">
-            <div className="eyebrow">COMP 4870 · practice disabled</div>
-            <h1 className="h1">Practice temporarily unavailable</h1>
-            <p className="sub">Practice items are being updated to match the trimmed lab+demo scope. Use Lessons, Mock Exam, and Cheat Sheet for now.</p>
-            <button className="reveal-btn" onClick={() => setRoute({name:'course', courseId: route.courseId})}>← Back to course</button>
-          </div>
-        )}
-        {route.name === 'practice' && route.courseId !== '4870' && <Practice courseId={route.courseId}/>}
-        {route.name === 'topic' && topic && topic.courseId === '4870' && (
-          <div className="page">
-            <div className="eyebrow">COMP 4870 · recall disabled</div>
-            <h1 className="h1">Topic recall temporarily unavailable</h1>
-            <p className="sub">Flash cards for this topic are being regenerated. Use Lessons, Mock Exam, and Cheat Sheet for now.</p>
-            <button className="reveal-btn" onClick={() => setRoute({name:'course', courseId: topic.courseId})}>← Back to course</button>
-          </div>
-        )}
-        {route.name === 'topic' && topic && topic.courseId !== '4870' && (
+        {route.name === 'practice' && <Practice courseId={route.courseId}/>}
+        {route.name === 'topic' && topic && (
           <RecallCard
             topic={topic}
             onRate={rate}
@@ -240,15 +224,7 @@ const App = () => {
           }
           return <CheatSheet courseId={route.courseId}/>;
         })()}
-        {route.name === 'flash' && route.courseId === '4870' && (
-          <div className="page">
-            <div className="eyebrow">COMP 4870 · flash cards disabled</div>
-            <h1 className="h1">Flash cards temporarily unavailable</h1>
-            <p className="sub">Flash cards are being regenerated to match the trimmed lab+demo scope. Use Lessons, Mock Exam, and Cheat Sheet for now.</p>
-            <button className="reveal-btn" onClick={() => setRoute({name:'course', courseId: route.courseId})}>← Back to course</button>
-          </div>
-        )}
-        {route.name === 'flash' && route.courseId !== '4870' && (
+        {route.name === 'flash' && (
           <FlashCards
             courseId={route.courseId}
             onRate={rate}

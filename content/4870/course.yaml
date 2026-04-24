@@ -5,6 +5,7 @@ exam: "2026-04-24T10:30:00-07:00"
 room: "SE12-327"
 format: "60 MCQ + 10 match-two-columns + 1 coding · 80 marks · 60 min"
 cheatsheet_allowed: true
+practice_allowed: false
 instructor: "Medhat Elmasry"
 notes: |
   Coverage: weeks 7–13 of the syllabus.

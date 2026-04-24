@@ -1,15 +1,33 @@
 {
   "courses": [
     {
+      "id": "4736",
+      "file": "content/_dist/4736.js",
+      "hash": "32563ea23c317ca7",
+      "cheatsheet_allowed": false,
+      "counts": {
+        "modules": 3,
+        "topics": 5,
+        "cards": 157,
+        "lessons": 11,
+        "practice": 11,
+        "practiceByKind": {
+          "code": 11
+        },
+        "cheatBlocks": null,
+        "mockQuestions": 77
+      }
+    },
+    {
       "id": "4870",
       "file": "content/_dist/4870.js",
-      "hash": "4f93a355eca7d80b",
+      "hash": "b22d9e13ad7d281f",
       "cheatsheet_allowed": true,
       "counts": {
-        "modules": 6,
-        "topics": 35,
-        "cards": 258,
-        "lessons": 18,
+        "modules": 11,
+        "topics": 15,
+        "cards": 79,
+        "lessons": 16,
         "practice": 19,
         "practiceByKind": {
           "code": 18,
@@ -18,7 +36,97 @@
         "cheatBlocks": 13,
         "mockQuestions": 72
       }
+    },
+    {
+      "id": "4911",
+      "file": "content/_dist/4911.js",
+      "hash": "b7383b9d60fdcbdd",
+      "cheatsheet_allowed": false,
+      "counts": {
+        "modules": 6,
+        "topics": 21,
+        "cards": 150,
+        "lessons": 11,
+        "practice": 5,
+        "practiceByKind": {
+          "code": 5
+        },
+        "cheatBlocks": null,
+        "mockQuestions": 81
+      }
+    },
+    {
+      "id": "4915",
+      "file": "content/_dist/4915.js",
+      "hash": "9b618af492200864",
+      "cheatsheet_allowed": false,
+      "counts": {
+        "modules": 8,
+        "topics": 72,
+        "cards": 203,
+        "lessons": 12,
+        "practice": 16,
+        "practiceByKind": {
+          "code": 16
+        },
+        "cheatBlocks": null,
+        "mockQuestions": 86
+      }
+    },
+    {
+      "id": "3522",
+      "file": "content/_dist/3522.js",
+      "hash": "1fe1719872e1a0da",
+      "cheatsheet_allowed": true,
+      "counts": {
+        "modules": 6,
+        "topics": 44,
+        "cards": 90,
+        "lessons": 45,
+        "practice": 13,
+        "practiceByKind": {
+          "code": 13
+        },
+        "cheatBlocks": 15,
+        "mockQuestions": 49
+      }
+    },
+    {
+      "id": "COMP3975",
+      "file": "content/_dist/COMP3975.js",
+      "hash": "e5d2e90811443e51",
+      "cheatsheet_allowed": true,
+      "counts": {
+        "modules": 7,
+        "topics": 17,
+        "cards": 144,
+        "lessons": 18,
+        "practice": 14,
+        "practiceByKind": {
+          "code": 14
+        },
+        "cheatBlocks": 14,
+        "mockQuestions": 46
+      }
+    },
+    {
+      "id": "COMP4537",
+      "file": "content/_dist/COMP4537.js",
+      "hash": "69ccebeb6372ae17",
+      "cheatsheet_allowed": true,
+      "counts": {
+        "modules": 6,
+        "topics": 29,
+        "cards": 235,
+        "lessons": 30,
+        "practice": 25,
+        "practiceByKind": {
+          "code": 25
+        },
+        "cheatBlocks": 23,
+        "mockQuestions": 49
+      }
     }
   ],
-  "builtAt": "2026-04-24T06:28:19.029Z"
+  "builtAt": "2026-04-24T09:11:11.717Z"
 }

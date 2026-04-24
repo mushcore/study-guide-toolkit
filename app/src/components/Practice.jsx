@@ -222,6 +222,17 @@ const AppliedBody = ({ item }) => {
 
 const Practice = ({ courseId }) => {
   const course = window.COURSES.find(c => c.id === courseId) || window.COURSES[0];
+
+  if (course.practice_allowed === false) {
+    return (
+      <div className="page">
+        <div className="eyebrow">{course.code} · practice unavailable</div>
+        <h1 className="h1">Practice is not available for this course</h1>
+        <p className="sub">Study from lessons + mock exam + flash cards instead.</p>
+      </div>
+    );
+  }
+
   const items = (window.PRACTICE || {})[courseId] || [];
   const [idx, setIdx] = React.useState(0);
   const item = items[idx];

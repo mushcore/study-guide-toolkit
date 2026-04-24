@@ -8,9 +8,9 @@ questions:
 
   - id: mq-ai-01
     type: MCQ
-    topic: "SK credential (W02)"
+    topic: "SK credential — GitHub Models"
     marks: 1
-    question: "Which credential class does W02's `OpenAIClient` constructor take?"
+    question: "Which credential class does a GitHub Models `OpenAIClient` constructor take?"
     choices:
       - "`AzureKeyCredential(pat)`"
       - "`ApiKeyCredential(pat)`"
@@ -25,9 +25,9 @@ questions:
 
   - id: mq-ai-02
     type: MCQ
-    topic: "GitHub Models endpoint (W02)"
+    topic: "GitHub Models endpoint"
     marks: 1
-    question: "W02 `OpenAIClientOptions.Endpoint` — which URL?"
+    question: "GitHub Models `OpenAIClientOptions.Endpoint` — which URL?"
     choices:
       - "`https://api.github.com/ai`"
       - "`https://models.github.ai/inference`"
@@ -41,9 +41,9 @@ questions:
 
   - id: mq-ai-03
     type: MCQ
-    topic: "SK constructor injection (W02)"
+    topic: "SK constructor injection"
     marks: 1
-    question: "W02 `IndexModel` constructor — which interface injected?"
+    question: "A Razor Pages `IndexModel` uses Semantic Kernel — which interface does the constructor inject?"
     choices:
       - "`IKernel`"
       - "`IChatCompletionService`"
@@ -73,9 +73,9 @@ questions:
 
   - id: mq-ai-05
     type: MCQ
-    topic: "SK streaming call (W02)"
+    topic: "SK streaming call"
     marks: 1
-    question: "W02 streams tokens — which call?"
+    question: "Which call streams tokens from `IChatCompletionService`?"
     choices:
       - "`await _chat.GetStreamAsync(chat)`"
       - "`await foreach (var m in _chat.GetStreamingChatMessageContentsAsync(chat)) sb.Append(m.Content);`"
@@ -257,7 +257,7 @@ questions:
     type: MCQ
     topic: "CopyColumns Label"
     marks: 1
-    question: "Why start every TaxiFarePrediction pipeline with `CopyColumns(\"Label\", \"FareAmount\")`?"
+    question: "Why does an ML.NET regression pipeline start with `CopyColumns(\"Label\", \"FareAmount\")`?"
     choices:
       - "`FareAmount` must be cloned before transforms"
       - "Trainers find target by the literal name `\"Label\"`; CopyColumns gives it that name"
@@ -437,7 +437,7 @@ questions:
     type: MCQ
     topic: "IMemoryCache check-then-fetch"
     marks: 1
-    question: "DataCacheDemo's `IMemoryCache` check-then-fetch pattern?"
+    question: "Which `IMemoryCache` check-then-fetch pattern does a Razor Pages model use?"
     choices:
       - "`var p = _cache.GetOrCreateAsync(key, factory);`"
       - "`if (!_cache.TryGetValue(key, out T? v)) { v = await fetch(); _cache.Set(key, v, opts); }`"
@@ -553,7 +553,7 @@ questions:
     type: MCQ
     topic: "File-based app args"
     marks: 1
-    question: "Run `Locations.cs`, pass `Kevin` as first arg?"
+    question: "Run `Script.cs`, pass `Kevin` as first arg?"
     choices:
       - "`dotnet run Locations.cs Kevin`"
       - "`dotnet run Locations.cs -- Kevin`"
@@ -726,7 +726,7 @@ questions:
       - "`ServiceBase`"
       - "`GrpcServiceBase`"
     correct: 1
-    rationale: "`Grpc.Tools` generates `[ServiceName].[ServiceName]Base`. Lab: `public class StudentsService : StudentRemote.StudentRemoteBase`."
+    rationale: "`Grpc.Tools` generates `[ServiceName].[ServiceName]Base`. Example: `public class StudentsService : StudentRemote.StudentRemoteBase`."
     source: "Labs/W09 gRPC/GrpcBasics/GrpcStudentsServer/Services/StudentsService.cs"
     bloom: remember
 
@@ -782,7 +782,7 @@ questions:
     type: MCQ
     topic: "Aspire gRPC client address"
     marks: 1
-    question: "W09 Blazor client `AddGrpcClient` address with Aspire?"
+    question: "A Blazor client uses `AddGrpcClient<T>` with Aspire service discovery. Which address?"
     choices:
       - "`new Uri(\"http://localhost:5099\")`"
       - "`new Uri(\"http://backend\")`"
@@ -1107,7 +1107,7 @@ questions:
     type: MCQ
     topic: "Paginator binding"
     marks: 1
-    question: "W07 server lab: `PaginationState pagination = new { ItemsPerPage = 15 }`. Render paginator controls?"
+    question: "`PaginationState pagination = new() { ItemsPerPage = 15 }`. Which element renders paginator controls?"
     choices:
       - "`<Paginator Pagination=\"@pagination\" />`"
       - "`<Paginator State=\"@pagination\" />`"
@@ -1123,7 +1123,7 @@ questions:
     type: MCQ
     topic: "oninput vs onchange"
     marks: 1
-    question: "W07 filter pairs `@bind` with `@bind:event=\"oninput\"`. Why?"
+    question: "A search input pairs `@bind` with `@bind:event=\"oninput\"`. Why not `@bind` alone?"
     choices:
       - "Performance optimization"
       - "`@bind` defaults to `onchange` (focus loss only); `oninput` fires per keystroke for live filtering"

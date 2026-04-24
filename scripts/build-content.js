@@ -371,6 +371,7 @@ function loadCourseMeta(dir) {
     room: course.room || '',
     format: course.format || '',
     cheatsheet_allowed: course.cheatsheet_allowed,
+    practice_allowed: course.practice_allowed !== false,
     instructor: course.instructor,
     sections: course.sections,
     notes_html: course.notes ? renderBlockHtml(course.notes) : undefined
