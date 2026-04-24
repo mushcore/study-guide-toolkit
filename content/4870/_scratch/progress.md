@@ -4,7 +4,7 @@ Materials: courses/COMP4870/materials/
 Started: 2026-04-23
 
 ## Current stage
-stage5
+done
 
 ## Course parameters
 cheatsheet_allowed: true
@@ -28,3 +28,5 @@ cheatsheet_allowed: true
 - Materials gaps documented in topic-map.md §Materials gaps flagged — most acute for `ai-agent-framework` (script-only, no slide deck) despite being the highest-weighted topic (13 marks).
 - "AI" breakdown bucket folds Semantic Kernel + SLM + Ollama + MAF + cloud models (GitHub/Azure). Total 13 marks spread across 5 sub-topics.
 - Coding question on final is not topic-pre-announced; Stage 4 should generate a coding-question bank covering gRPC service method / cache-aside method / ML.NET pipeline snippet / Tag Helper `ProcessAsync` / file-based-app filter / PDF action / xUnit test method.
+
+- stage5: 2026-04-23 — cheat-sheet.md fully filled from all 35 lesson bodies (12 sections + final-hour triage). Wired app: added '4870' to `scripts/build-content.js` COURSES array (now 7 ids); added side-effect import `'../../content/_dist/4870.js'` to `app/src/main.jsx` before `4911.js`. Content bundle compiles clean. App `npm run build` succeeds. Stage 5 complete. Phase A done.

@@ -25,7 +25,7 @@ const { marked } = require('marked');
 const ROOT = path.resolve(__dirname, '..');
 const CONTENT_DIR = path.join(ROOT, 'content');
 const DIST_DIR = path.join(CONTENT_DIR, '_dist');
-const COURSES = ['4736', '4911', '4915', '3522', 'COMP3975', 'COMP4537'];
+const COURSES = ['4736', '4870', '4911', '4915', '3522', 'COMP3975', 'COMP4537'];
 
 const RECOGNISED_CALLOUTS = {
   analogy: 'analogy',

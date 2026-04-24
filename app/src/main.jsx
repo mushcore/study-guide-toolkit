@@ -32,6 +32,7 @@ import './styles.css';
 // aggregator flattens that into window.COURSES / ALL_TOPICS / LESSONS / etc.
 // Side-effect imports execute them in order.
 import '../../content/_dist/4736.js';
+import '../../content/_dist/4870.js';
 import '../../content/_dist/4911.js';
 import '../../content/_dist/4915.js';
 import '../../content/_dist/3522.js';
